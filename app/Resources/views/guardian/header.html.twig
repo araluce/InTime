@@ -1,0 +1,104 @@
+<!--
+<nav class="navbar navbar-default navbar-fixed-top " role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand logo" rel="home" href="#"><div>$in TIME</div></a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li class="menu" id="usuario"><a href="usuario.html">Usuario</a></li>
+                <li class="menu" id="peticion"><a href="peticion.html">Peticiones</a></li>
+                <li class="menu" id="ocio"><a href="ocio.html">Ocio</a></li>
+                <li class="menu" id="alimentacion"><a href="alimentacion.html">Alimentación</a></li>
+                <li class="menu" id="prestamo"><a href="prestamo.html">Préstamos</a></li>
+                <li class="menu" id="cita_medica"><a href="cita_medica.html">Cita médica</a></li>
+                <li class="menu" id="clasificacion"><a href="clasificacion.html">Clasificación</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/logout" id="salir">Salir</a></li>
+            </ul>
+    </div>
+</nav>
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div id="reload_tdv"><a href="#" ><div id="countdown-1"></div></a></div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+<div class="row">
+    <div class="col-md-11" style="margin: 3% 0% 3% 4%;">
+
+</div>
+</div>
+-->
+<!--
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+        <center><img alt="Logo" src="{{ asset('images/inTime.png') }}" height="90" /></center>
+    </div>
+</div>
+-->
+
+
+<div class="row">
+    <div class="col-md-11" style="margin: 3% 0% 3% 4%;">
+        {% if info.message is defined or info.type is defined%}
+            <button type="button" class="btn btn-info btn-lg"
+                    data-toggle="modal" data-target="#modal_result"
+                    style="display:none;" id="box_modal_result">Open Modal
+            </button>
+            <div id="error_general">
+                <div id="modal_result" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content {{ info.type }}">
+                            <div class="modal-header panel-heading">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" style="color:white;">Resultado</h4>
+                            </div>
+                            <div class="modal-body">
+                                {% if 'danger' in info.type %}
+                                    <img id="image" 
+                                         src="{{ asset('images/generic/error.jpg') }}"
+                                         class="img-rounded" width="200" height="200" />
+                                {% else %}
+                                    <img id="image" 
+                                         src="{{ asset('images/generic/success.jpg') }}"
+                                         class="img-rounded" width="200" height="200" />
+                                {% endif %}
+
+                                <div class="col-sm-6" style="float: right">
+                                    {% if info.message is defined%}
+                                        <p style="color: white;">{{ info.message }}</p>
+                                    {%endif%}
+                                    {% if info.correctos is defined%}
+                                        <h5 style="color:green;"><strong>Usuarios registrados</strong></h5>
+                                        <p style="color: white;">{{ info.correctos }}</p>
+                                    {%endif%}
+                                    {% if info.incorrectos is defined%}
+                                        <h5 style="color:red;"><strong>Formato no válido</strong></h5>
+                                        <p style="color: white;">{{ info.incorrectos }}</p>
+                                    {%endif%}
+                                    {% if info.repetidos is defined%}
+                                        <h5 style="color:orangered;"><strong>Usuarios que ya existian</strong></h5>
+                                        <p style="color: white;">{{ info.repetidos }}</p>
+                                    {%endif%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+    

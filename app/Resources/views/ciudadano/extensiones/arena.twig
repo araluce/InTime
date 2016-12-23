@@ -1,0 +1,220 @@
+{# empty Twig template #}
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block form_row %}
+    {% spaceless %}
+        <div class="form-group">
+            {{ form_label(form) }}
+            {{ form_widget(form, { 'attr' : { 'class' : 'form-control' } }) }}
+            {{ form_errors(form) }}
+        </div>
+    {% endspaceless %}
+{% endblock form_row %}
+
+{% block body %}
+    {% if SECCION == 'inspeccion_trabajo' %}
+        {% set SECCION_TEXT = "inspección de trabajo" %}
+    {% endif %}
+    {% if SECCION == 'paga_extra' %}
+        {% set SECCION_TEXT = "paga extra" %}
+    {% endif %}
+    {% if SECCION == 'comida' %}
+        {% set SECCION_TEXT = "comida" %}
+    {% endif %}
+    {% if SECCION == 'bebida' %}
+        {% set SECCION_TEXT = "bebida" %}
+    {% endif %}
+    {% set CHECKBOX = 1 %}
+    {% set N_EJERCICIO = 1 %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                            <span class="divider">/</span>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-flag-checkered"></i> DESAFÍO
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 1%;">
+                {% if ENUNCIADO is defined %}
+                    <div class="col-md-12">
+                        <legend style="text-transform: uppercase;">DESAFIO TIPO {{ TIPO }} EN {{ SECCION_TEXT }}</legend>
+                        <div class="row">
+                            <form method="POST" role="form" action="/arena/{{ ID }}" enctype="multipart/form-data">
+                                <div class="col-md-12" style="font-size: 15px; font-weight: 600; text-transform: uppercase;">
+                                    <div class="form-group">
+                                        {{ ENUNCIADO }}
+                                    </div>
+                                    <div class="row">
+                                        {% if RESPUESTAS is defined %}
+                                            {% for RESPUESTA in RESPUESTAS %}
+                                                <div class="col-lg-12">
+                                                    <div class="input-group">
+                                                        <input type="checkbox" name="RESPUESTAS_CHECK_{{ CHECKBOX }}">
+                                                        {{ RESPUESTA.RESPUESTA }}
+                                                    </div>
+                                                </div>
+                                                {% set CHECKBOX = CHECKBOX +1 %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="col-lg-12">
+                                                {% spaceless %}
+                                                    <div class="form-group">
+                                                        {% if ENTREGA is defined %}
+                                                            <div class="tree well">
+                                                                <ul>
+                                                                    <li>
+                                                                        <span><i class="fa fa-folder-open-o"></i> ENTREGA</span>
+                                                                        <ul>
+                                                                            <li>
+                                                                                <span style="width: 100%;">
+                                                                                    <div class="col-md-1">
+                                                                                        <i class="fa fa-file-o"></i>
+                                                                                    </div>
+                                                                                    <div class="col-md-5">
+                                                                                        <a href="{{ asset(ENTREGA.URL) }}">{{ ENTREGA.NOMBRE }}</a>
+                                                                                    </div>
+                                                                                    <div class="col-md-5" style="float: right; text-align: right;">
+                                                                                        {{ ENTREGA.FECHA.date }}
+                                                                                    </div>
+                                                                                </span>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="input-group">
+                                                            <label class="input-group-btn">
+                                                                <span class="btn btn-primary">
+                                                                    Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">
+                                                                </span>
+                                                            </label>
+                                                            <input type="text" class="form-control" readonly placeholder="Sube tu entrega">
+                                                        </div>
+                                                    </div>
+                                                {% endspaceless %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-12" style="margin-top: 2%;">
+                                        <button type="submit" class="btn btn-success btn-block">
+                                            <span class="fa fa-send-o" style="font-weight: bold"> 
+                                                ENVIAR
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if EJERCICIOS is defined %}
+                    <div class="col-md-12">
+                        <legend style="text-transform: uppercase;">DESAFIO TIPO {{ TIPO }} EN {{ SECCION_TEXT }}</legend>
+                        <div class="row">
+                            <form method="POST" role="form" action="/arena/{{ EJERCICIOS.0.ID }}">
+                                {% for EJERCICIO in EJERCICIOS %}
+                                    <input type="hidden" name="N_EJERCICIO" value="{{ N_EJERCICIO }}" />
+                                    <div class="col-md-12" style="font-size: 15px; font-weight: 600; text-transform: uppercase;">
+                                        <div class="form-group">
+                                            {{ EJERCICIO.ENUNCIADO }}
+                                        </div>
+                                        <div class="row">
+                                            {% for RESPUESTA in EJERCICIO.RESPUESTAS %}
+                                                <div class="col-lg-12">
+                                                    <div class="input-group">
+                                                        <input type="checkbox" name="RESPUESTAS_CHECK_{{ N_EJERCICIO }}{{ CHECKBOX }}">
+                                                        {{ RESPUESTA.RESPUESTA }}
+                                                    </div>
+                                                </div>
+                                                {% set CHECKBOX = CHECKBOX +1 %}
+                                            {% endfor %}
+                                        </div>
+                                        {% set CHECKBOX = 1 %}
+                                        {% set N_EJERCICIO = N_EJERCICIO +1 %}
+                                    </div>
+                                {% endfor %}
+                                <div class="col-lg-12">
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <span class="fa fa-send-o" style="font-weight: bold"> 
+                                            ENVIAR
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script>
+            $(document).ready(function () {
+            {% if info.message is defined or info.type is defined%}
+                    $('#box_modal_result').click();
+            {% endif %}
+                });
+                $(function () {
+
+                    // We can attach the `fileselect` event to all file inputs on the page
+                    $(document).on('change', ':file', function () {
+                        var input = $(this),
+                                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                        input.trigger('fileselect', [numFiles, label]);
+                    });
+
+                    // We can watch for our custom `fileselect` event like this
+                    $(document).ready(function () {
+                        $(':file').on('fileselect', function (event, numFiles, label) {
+
+                            var input = $(this).parents('.input-group').find(':text'),
+                                    log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                            if (input.length) {
+                                input.val(log);
+                            } else {
+                                if (log)
+                                    alert(log);
+                            }
+
+                        });
+                    });
+                    $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Minimizar');
+                    $('.tree li.parent_li > span').on('click', function (e) {
+                        var children = $(this).parent('li.parent_li').find(' > ul > li');
+                        if (children.is(":visible")) {
+                            children.hide('fast');
+                            $(this).attr('title', 'Expandir').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+                        } else {
+                            children.show('fast');
+                            $(this).attr('title', 'Minimizar').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+                        }
+                        e.stopPropagation();
+                    });
+                });
+        </script>
+    {% endblock %}

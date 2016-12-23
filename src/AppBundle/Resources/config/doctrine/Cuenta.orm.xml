@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Cuenta" table="CUENTA">
+    <id name="idCuenta" type="integer" column="id_cuenta">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="tdv" type="datetime" column="tdv" nullable="false">
+      <options>
+        <option name="default">CURRENT_TIMESTAMP</option>
+      </options>
+    </field>
+    <field name="finbloqueo" type="datetime" column="finbloqueo" nullable="true"/>
+  </entity>
+</doctrine-mapping>

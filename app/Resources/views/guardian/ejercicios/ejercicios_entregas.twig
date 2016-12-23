@@ -1,0 +1,266 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                            <span class="divider">/</span>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-pencil-square"></i> EJERCICIOS Y ENTREGAS
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <legend>PROPONER UN EJERCICIO</legend>
+                    <div class="form-group">
+                        <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="inspeccion_trabajo">INSPECCIÓN DE TRABAJO</label>
+                        <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="paga_extra">PAGA EXTRA</label>
+                        <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="comida">COMIDA</label>
+                        <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="bebida">BEBIDA</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="formulario-ejercicios">
+                        <legend id="seccion_text">SECCIÓN DE EJERCICIOS</legend>
+                        <form method="POST" action="/guardian/ejercicios_entregas" enctype="multipart/form-data">
+                            <input type="hidden" id="seccion" name="SECCION" />
+                            <input type="hidden" id="tipo_de_ejercicio" name="TIPO" />
+                            <input type="hidden" id="grupo_o_no" name="GRUPO_O_NO" />
+                            <input type="hidden" name="NUMERO_EJERCICIOS" id="NUMERO_EJERCICIOS" value="1" />
+                            <div class="form-group">
+                                <label class="radio-inline"><input type="radio" class="te" name="TIPO_EJERCICIO" value="test">TIPO TEST</label>
+                                <label class="radio-inline"><input type="radio" class="te" name="TIPO_EJERCICIO" value="entrega">ENTREGA DE ARCHIVOS</label>
+                            </div>
+                            <div class="form-group" id="panel-grupo">
+                                <label class="radio-inline"><input type="radio" class="gr" name="GRUPO" value="individual">EJERCICIO ÚNICO </label>
+                                <label class="radio-inline"><input type="radio" class="gr" name="GRUPO" value="grupo">GRUPO DE EJERCICIOS</label>
+                            </div>
+                            <div id="ejercicios"></div>
+                            <div class="row" id="panel-envio" style="margin-top:2%;">
+                                <div class="col-lg-1 col-xs-3">
+                                    <button type="button" class="btn btn-warning btn-block" id="aniade" onclick="aniade_ejercicio();">
+                                        <span class="fa fa-plus"> 
+                                            <!--Añadir-->
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="col-lg-6 col-xs-8" style="float:right;">
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <span class="fa fa-send-o" style="font-weight: bold"> 
+                                            ENVIAR
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            {% if info.message is defined or info.type is defined%}
+            $('#box_modal_result').click();
+            {% endif %}
+            $('#formulario-ejercicios').hide();
+            $('#panel-envio').hide();
+            $('#aniade').hide();
+            $('#panel-grupo').hide();
+        });
+            
+        var n_test = 1;
+        var te_anterior = 0;
+        var gr_anterior = 0;
+        //var array_ejercicios = [];
+
+        $(function () {
+            $(".om").click(function () {
+                var opcion = $('input[name=OPCION_MENSAJE]:checked').val();
+                var seccion_text;
+                set_enabled_tipos_ejercicios();
+                if (opcion === 'inspeccion_trabajo') {
+                    $('.te:input[value="entrega"]').prop('disabled', true);
+                    seccion_text = "INSPECCIÓN DE TRABAJO";
+                }
+                if (opcion === 'paga_extra') {
+                    $('.te:input[value="test"]').prop('disabled', true);
+                    $('.gr:input[value="grupo"]').prop('disabled', true);
+                    seccion_text = "PAGA EXTRA";
+                }
+                if (opcion === 'comida') {
+                    $('.te:input[value="test"]').prop('disabled', true);
+                    $('.gr:input[value="grupo"]').prop('disabled', true);
+                    seccion_text = "ALIMENTACIÓN/COMIDA";
+                }
+                if (opcion === 'bebida') {
+                    $('.te:input[value="test"]').prop('disabled', true);
+                    $('.gr:input[value="grupo"]').prop('disabled', true);
+                    seccion_text = "ALIMENTACIÓN/BEBIDA";
+                }
+                $("#seccion_text").html('EJERCICIO PARA LA SECCIÓN (' + seccion_text + '):');
+                $("#seccion").val(opcion);
+                $('#formulario-ejercicios').show();
+            });
+            $(".te").click(function () {
+                $('#panel-grupo').show();
+                $('#ejercicios').empty();
+                n_test = 1;
+            });
+            $(".gr").click(function () {
+                var gr = $('input[name=GRUPO]:checked').val();
+                var te = $('input[name=TIPO_EJERCICIO]:checked').val();
+                if( gr !== gr_anterior){
+                    gr_anterior = gr;
+                    n_test = 1;
+                    $('#ejercicios').empty();
+                }
+                if(gr === 'grupo'){
+                    $('#aniade').show();
+                    if (te === 'test'){
+                        $("#tipo_de_ejercicio").val('grupo_test');
+                    }
+                    if (te === 'entrega'){
+                        $("#tipo_de_ejercicio").val('grupo_entrega');
+                    }
+                }
+                else{
+                    $('#aniade').hide();
+                    if (te === 'test'){
+                        $("#tipo_de_ejercicio").val('test');
+                    }
+                    if (te === 'entrega'){
+                        $("#tipo_de_ejercicio").val('entrega');
+                    }
+                }
+                $("#grupo_o_no").val(gr);
+                $("#aniade").click();
+                $('#panel-envio').show();
+            });
+
+        });
+        function set_enabled_tipos_ejercicios() {
+            $('.te:input[value="entrega"]').prop('disabled', false);
+            $('.te:input[value="test"]').prop('disabled', false);
+            $('.te:input[value="grupo"]').prop('disabled', false);
+        }
+                
+        function crea_ejercicio() {
+            var te = $('input[name=TIPO_EJERCICIO]:checked').val();
+            var test = '';
+            
+            if ( te !== te_anterior ){
+                n_test = 1;
+                te_anterior = te;
+                $('#ejercicios').empty();
+                gr_anterior = 0;
+                //$('#ejercicios').append('<input type="hidden" name="NUMERO_EJERCICIOS" id="NUMERO_EJERCICIOS" value="1" />');
+                //array_ejercicios = [];
+        }
+            if (te === 'entrega') {
+                test += '<div class="row">';
+                test += '                    <div class="col-md-12">';
+                test += '                        <legend id="ejercicio1">Ejercicio tipo entrega #' + n_test + '</legend>';
+                test += '                        <div class="form-group">';
+                test += '                            <input type="text" class="form-control" name="ENUNCIADO[]" placeholder="Enunciado del ejercicio #' + n_test + '" />';
+                test += '                        </div>';
+                /*test += '                        <div class="row">';
+                test += '                            <div class="col-lg-12">';
+                test += '                                <div class="input-group">';
+                test += '                                   <label class="control-label">Select File</label>';
+                test += '                                   <input id="input-id" type="file" class="file" data-preview-file-type="text">'; 
+                test += '                                </div>';
+                test += '                            </div>';
+                test += '                        </div>';*/
+                test += '                    </div>';
+                test += '                </div>';
+                //$('#ejercicios').append(test);
+                //$('#NUMERO_EJERCICIOS').val(n_test);
+            }
+            if (te === 'test') {
+                var test = '';
+                test += '<div class="row">';
+                test += '                    <div class="col-md-12">';
+                test += '                        <legend id="ejercicio1">Ejercicio tipo test #' + n_test + '</legend>';
+                test += '                        <div class="form-group">';
+                test += '                            <input type="text" class="form-control" name="ENUNCIADO[]" placeholder="Enunciado del ejercicio #' + n_test + '" />';
+                test += '                        </div>';
+                test += '                        <div class="row">';
+                test += '                            <div class="col-lg-3">';
+                test += '                                <div class="input-group">';
+                test += '                                    <span class="input-group-addon">';
+                test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '1">';
+                test += '                                    </span>';
+                test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
+                test += '                                </div>';
+                test += '                            </div>';
+                test += '                            <div class="col-lg-3">';
+                test += '                                <div class="input-group">';
+                test += '                                    <span class="input-group-addon">';
+                test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '2">';
+                test += '                                    </span>';
+                test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
+                test += '                                </div>';
+                test += '                            </div>';
+                test += '                            <div class="col-lg-3">';
+                test += '                                <div class="input-group">';
+                test += '                                    <span class="input-group-addon">';
+                test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '3">';
+                test += '                                    </span>';
+                test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
+                test += '                                </div>';
+                test += '                            </div>';
+                test += '                            <div class="col-lg-3">';
+                test += '                                <div class="input-group">';
+                test += '                                    <span class="input-group-addon">';
+                test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '4">';
+                test += '                                    </span>';
+                test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
+                test += '                                </div>';
+                test += '                            </div>';
+                test += '                        </div>';
+                test += '                    </div>';
+                test += '                </div>';
+                //$('#ejercicios').append(test);
+                //$('#NUMERO_EJERCICIOS').val(n_test);
+            }
+            n_test++;
+            return test;
+        }
+        
+        function aniade_ejercicio() {
+            var texto = crea_ejercicio();
+            //array_ejercicios.push(texto);
+            $('#ejercicios').append(texto);
+        }
+    </script>
+{% endblock %}

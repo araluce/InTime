@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\UsuarioApuesta" table="USUARIO_APUESTA">
+    <indexes>
+      <index name="id_usuario" columns="id_usuario,id_apuesta_posibilidad"/>
+      <index name="id_apuesta_posibilidad" columns="id_apuesta_posibilidad"/>
+      <index name="IDX_42A94AE7FCF8192D" columns="id_usuario"/>
+    </indexes>
+    <id name="idUsuarioApuesta" type="integer" column="id_usuario_apuesta">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="tdvApostado" type="bigint" column="tdv_apostado" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idApuestaPosibilidad" target-entity="ApuestaPosibilidad" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_apuesta_posibilidad" referenced-column-name="id_apuesta_posibilidad"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

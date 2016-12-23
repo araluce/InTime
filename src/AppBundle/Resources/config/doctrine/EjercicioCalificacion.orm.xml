@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\EjercicioCalificacion" table="EJERCICIO_CALIFICACION">
+    <indexes>
+      <index name="id_usuario" columns="id_usuario"/>
+      <index name="id_grupo" columns="id_grupo"/>
+      <index name="id_ejercicio" columns="id_ejercicio"/>
+      <index name="id_calificaciones" columns="id_calificaciones"/>
+      <index name="id_evaluador" columns="id_evaluador"/>
+      <index name="id_ejercicio_estado" columns="id_ejercicio_estado"/>
+    </indexes>
+    <id name="idEjercicioCalificacion" type="integer" column="id_ejercicio_calificacion">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="fecha" type="datetime" column="fecha" nullable="false">
+      <options>
+        <option name="default">CURRENT_TIMESTAMP</option>
+      </options>
+    </field>
+    <many-to-one field="idGrupo" target-entity="GrupoEjercicios" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_grupo" referenced-column-name="id_grupo_ejercicios"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idEvaluador" target-entity="Usuario" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_evaluador" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idEjercicioEstado" target-entity="EjercicioEstado" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_ejercicio_estado" referenced-column-name="id_ejercicio_estado"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idCalificaciones" target-entity="Calificaciones" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_calificaciones" referenced-column-name="id_calificaciones"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

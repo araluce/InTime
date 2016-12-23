@@ -1,0 +1,154 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li class="active">
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>Opciones de administrador</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-group">
+                        <a href="/guardian/censo/ciudadanos">
+                            <li class="list-group-item">
+                                Censo
+                            </li>
+                        </a>
+                        <a href="/guardian/mensajeria">
+                            <li class="list-group-item">
+                                <span class="badge">14</span>
+                                Mensajes
+                            </li>
+                        </a>
+                        
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <ul class="list-group">
+                        <a href="/guardian/ejercicios_entregas">
+                            <li class="list-group-item">
+                                Ejercicios y entregas
+                            </li>
+                        </a>
+                        <a href="/guardian/apuestas/proponer">
+                            <li class="list-group-item">
+                                Loterías y apuestas
+                            </li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+                $('.day').parent('.form-group').addClass('col-xs-4');
+                $('.hour').parent('.form-group').addClass('col-xs-4');
+                $('.minute').parent('.form-group').addClass('col-xs-4');
+                $('.help').css("margin-left", "1%");
+                $(".help-block").each(function () {
+                    $(this).parent('.form-group').children('.control-label').after($(this).children('.help'));
+                });
+                $('.datetimepicker').datetimepicker({
+                    lang: 'es',
+                    timepicker: true,
+                    format: 'd-m-Y h:i',
+                    minDate: $.now()
+                });
+                $('.datepicker').datetimepicker({
+                    lang: 'es',
+                    timepicker: false,
+                    format: 'd-m-Y',
+                    minDate: $.now()
+                });
+
+                var convertDate = function (tdv) {
+                    var part = tdv.split(" ");
+                    var sdate = part[0].split('-');
+                    var stime = part[1].split(':');
+                    return new Date(Date.UTC(sdate[0], sdate[1] - 1, sdate[2], stime[0], stime[1], stime[2]))
+                };
+
+                function responsive_screen() {
+                    if (window.matchMedia('screen and (max-width: 368px)').matches) {
+                        return 25;
+                    } else {
+                        return 40;
+                    }
+                }
+
+        {% if tdv is defined %}
+                var t1 = convertDate('{{ tdv }}'), now = (new Date()).getTime();
+                if (t1.getTime() < now) {
+                    t1 = 0
+                }
+                $('#countdown-1').timeTo({
+                    timeTo: t1, //Mostramos un contador con la fecha de fin
+                    displayDays: 3,
+                    theme: "white",
+                    displayCaptions: true,
+                    fontSize: responsive_screen(),
+                    start:      {% if estado == 4 %} false{% else %}{% if estado == 2 %}
+                            true{% endif %}{% endif %},
+                    captionSize: 10
+                }, function () {
+                    $('#countdown-1').timeTo("stop");
+                });
+        {% endif %}
+        {% if tdv_usuario is defined %}
+                var t2 = convertDate('{{ tdv_usuario }}'), now = (new Date()), s = true;
+                if (t2.getTime() < now.getTime()) {
+                    t2 = 0;
+                    s = false
+                }
+                $('#countdown-2').timeTo({
+                    timeTo: t2, //Mostramos un contador con la fecha de fin
+                    displayDays: 3,
+                    countdown: s,
+                    theme: "white",
+                    displayCaptions: true,
+                    fontSize: 18,
+                    start:      {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
+                    captionSize: 10
+                }, function () {
+                    $('#countdown-2').timeTo("stop");
+                });
+        {% endif %}
+            });
+    </script>
+{% endblock %}

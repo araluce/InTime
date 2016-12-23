@@ -1,0 +1,162 @@
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    {% if SECCION is defined %}
+        {% if SECCION == 'inspeccion_trabajo'%}
+            {% set SECCION_TEXTO = 'INSPECCIÓN DE TRABAJO' %}
+        {% elseif SECCION == 'paga_extra'%}
+            {% set SECCION_TEXTO = 'PAGA EXTRA' %}
+        {% endif %}
+    {% else %}
+        {% set SECCION_TEXTO = 'SECCIÓN NO DEFINIDA' %}
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                            <span class="divider">/</span>
+                        </li>
+                        <li>
+                            <a href="/ciudadano/trabajo">
+                                <i class="fa fa-briefcase"></i>
+                                TRABAJO
+                            </a> 
+                            <span class="divider">/</span>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-search"></i> {{ SECCION_TEXTO }}
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 1%;">
+                <div class="col-md-12">
+                    {% if EJERCICIOS is defined and EJERCICIOS|length > 0 %}
+                        {% set contador = 1 %}
+                        {% for EJERCICIO in EJERCICIOS %}
+                            {%if not contador is divisible by(2)%}
+                             <div class="row">
+                            {% endif %}
+                            <div class="col-md-5 tarjeta-ejercicio {%if contador is divisible by(2)%} col-md-offset-2 {%endif%}" 
+                                 style="margin-top: 1%; 
+                                 {% if not EJERCICIO.ELEGIBLE %}
+                                     opacity: 0.5;
+                                 {% endif %} ">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        {% if not EJERCICIO.VISTO %}
+                                            <span class="badge" style="font-size: 14px; background-color: #E0B831; padding: 9px 9px;">NUEVO</span>
+                                        {% elseif EJERCICIO.EVALUADO is defined %}
+                                            <span class="fa fa-eye"></span> <span style="font-size: 14px;"> EJERCICIO EVALUADO</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-xs-6" style="text-align: right; font-size: 16px;">
+                                        {% if EJERCICIO.EVALUADO is defined %}
+                                            <img src="{{ asset('images/badges/' ~ EJERCICIO.EVALUADO.getCorrespondenciaIcono()) }}" width="20" title="{{ EJERCICIO.EVALUADO.getCorrespondenciaTexto() }}" />
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 tarjeta-ejercicio-tipo">
+                                        <span class="fa fa-check-square"> </span>
+                                        {{ EJERCICIO.TIPO }}
+                                    </div>
+                                    <div class="col-xs-6 tarjeta-ejercicio-fecha" style="float:right;">
+                                        <span class="fa fa-calendar"> </span>
+                                        {{ EJERCICIO.FECHA.date }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 tarjeta-ejercicio-enunciado">
+                                        <div class="row">
+                                            <div class="col-xs-1">
+                                                <span class="fa fa-graduation-cap"></span>
+                                            </div>
+                                            <div class="col-xs-11">
+                                                {{ EJERCICIO.ENUNCIADO }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if (SECCION_TEXTO == 'PAGA EXTRA' and EJERCICIO.ELEGIBLE) or (SECCION_TEXTO == 'INSPECCIÓN DE TRABAJO' and EJERCICIO.EVALUADO is not defined) %}
+                                    <div class="row" style="margin-top: 2%;">
+                                        {% if (SECCION_TEXTO == 'PAGA EXTRA') %}
+                                            {% if EJERCICIO.ESTADO == 'solicitado' %}
+                                                <div class="col-md-6 col-md-offset-6">
+                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> ENTREGAR </button>
+                                                </div>
+                                            {% elseif EJERCICIO.ESTADO == 'entregado' %}
+                                                <div class="col-md-6 col-md-offset-6">
+                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> MODIFICAR ENTREGA </button>
+                                                </div>
+                                            {% else %}
+                                                <div class="col-md-6 col-md-offset-6">
+                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="solicitar({{ EJERCICIO.ID }});">SOLICITAR({{ EJERCICIO.SOLICITANTES }}/{{ EJERCICIO.NUM_MAX_SOLICITANTES }})</button>
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-md-4 col-md-offset-8">
+                                                <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});">HAZLO!</button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% elseif SECCION_TEXTO == 'PAGA EXTRA' and not EJERCICIO.ELEGIBLE %}
+                                    
+                                {% endif %}
+                            </div>
+                            {%if contador is divisible by(2)%}
+                             </div>
+                            {% endif %}
+                            {% set contador = contador + 1 %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+            });
+
+            function arena_ejercicio(id) {
+                var ruta = '/arena/' + id;
+                window.location.replace(ruta);
+            }
+            function solicitar(id) {
+                var ruta = '/solicitar/' + id;
+                $.get(ruta, function (data, status) {
+                    console.log(data);
+                    if (data.respuesta === 'OK') {
+                        var redirect_ruta = '/ciudadano/trabajo/paga_extra';
+                        window.location.replace(redirect_ruta);
+                    } else {
+                        $('#mensaje-titulo').html('&nbsp;ERROR...');
+                        $('#mensaje-texto').html(data.mensaje);
+                        $('#modal-avisos2').click();
+                    }
+                });
+            }
+    </script>
+{% endblock %}

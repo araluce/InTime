@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\ApuestaPosibilidad" table="APUESTA_POSIBILIDAD">
+    <indexes>
+      <index name="id_apuesta" columns="id_apuesta"/>
+    </indexes>
+    <id name="idApuestaPosibilidad" type="integer" column="id_apuesta_posibilidad">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="posibilidad" type="string" column="posibilidad" length="1000" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="resultado" type="boolean" column="resultado" nullable="true"/>
+    <many-to-one field="idApuesta" target-entity="Apuesta" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_apuesta" referenced-column-name="id_apuesta"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

@@ -1,0 +1,52 @@
+{# empty Twig template #}
+
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-xs-4 menu menu-principal">
+            <center>
+                <a href="/">
+                    <img alt="Logo" src="{{ asset('images/iconos/Trabajo1.png') }}" />
+                </a>
+            </center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 col-lg-offset-5 col-xs-4 col-xs-offset-3 menu">
+                <a href="/ciudadano/trabajo/jornada_laboral">
+                    <img alt="Logo" src="{{ asset('images/iconos/Jornada_laboral.png') }}" />
+                </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-lg-offset-2 col-xs-4 menu contenedor-badge">
+                <a href="/ciudadano/trabajo/inspeccion">
+                    <img alt="Logo" src="{{ asset('images/iconos/Inspeccion_trabajo.png') }}" />
+                    {% if MENSAJES_INSPECCION is defined %}
+                    {% if MENSAJES_INSPECCION|length > 0%}
+                        <span class="badge badge-aviso">
+                            {{ MENSAJES_INSPECCION|length}}
+                        </span>
+                    {% endif %}
+                    {% endif %}
+                </a>
+        </div>
+        <div class="col-lg-3 col-lg-offset-3 col-xs-4 col-xs-offset-3 menu contenedor-badge">
+                <a href="/ciudadano/trabajo/paga_extra">
+                    <img alt="Logo" src="{{ asset('images/iconos/Paga_extra.png') }}" />
+                    {% if MENSAJES_PAGA is defined %}
+                    {% if MENSAJES_PAGA|length > 0%}
+                        <span class="badge badge-aviso">
+                            {{ MENSAJES_PAGA|length}}
+                        </span>
+                    {% endif %}
+                    {% endif %}
+                </a>
+        </div>
+    </div>
+{% endblock %}

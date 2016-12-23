@@ -1,0 +1,173 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                            <span class="divider">/</span>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-info-circle"></i> INFORMACIÓN
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <form role="form" method="POST" action="/ciudadano/info" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6">
+                        <legend>Información personal</legend>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-at" style="font-weight: bold;"></i></span>
+                                <input type="text" class="form-control" name="ALIAS" placeholder="Alias"
+                                       {% if ALIAS is defined %} value="{{ ALIAS }}" {% endif %}/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" style="font-weight: bold;"></i></span>
+                                <input type="text" class="form-control" name="NOMBRE" placeholder="Nombre"
+                                       {% if NOMBRE is defined %} value="{{ NOMBRE }}" {% endif %}/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" style="font-weight: bold;"></i></span>
+                                <input type="text" class="form-control" name="APELLIDOS" placeholder="Apellidos"
+                                       {% if APELLIDOS is defined %} value="{{ APELLIDOS }}" {% endif %}/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-envelope" style="font-weight: bold;"></i></span>
+                                <input type="email" class="form-control" name="EMAIL" placeholder="Email"
+                                       {% if EMAIL is defined %} value="{{ EMAIL }}" {% endif %}/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <legend style="font-weight: bold; color:white;">Perfil</legend>
+                        <div class="form-group">
+                            {% if IMAGEN is defined%}
+                                <center>
+                                    <img id="image"
+                                         src="{{ asset('images/users/' ~ IMAGEN ) }}"
+                                         class="img-circle"
+                                         width="130" height="130"/>
+                                </center>
+                            {% else %}
+                                <center>
+                                    <img id="image"
+                                         src="{{ asset('images/fotos-usuarios/default.jpg') }}"
+                                         class="img-circle"
+                                         width="130" height="130"/>
+                                </center>
+                            {% endif %}
+                            <div class="form-group" style="margin-top: 1%;">
+                                <div class="input-group">
+                                    <label class="input-group-btn">
+                                        <span class="btn btn-primary">
+                                            Buscar&hellip; <input type="file" name="IMAGEN" style="display: none;">
+                                        </span>
+                                    </label>
+                                    <input type="text" class="form-control" readonly placeholder="Selecciona una foto de perfil">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <legend style="font-weight: bold; color:white;">Cambiar contraseña</legend>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-key" style="font-weight: bold;"></i></span>
+                                <input type="password" class="form-control" id="CLAVE" name="CLAVE" placeholder="Contraseña" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-key" style="font-weight: bold;"></i></span>
+                                <input type="password" class="form-control" id="CLAVE2" name="CLAVE2" placeholder="Repita la contraseña" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <legend style="font-weight: bold; color:white;">Runtastic</legend>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon1"><i class="fa fa-child" style="font-weight: bold;"></i></span>
+                                        <input type="text" class="form-control" name="RUNTASIC" placeholder="Usuario de runtastic"
+                                               {% if RUNTASTIC is defined %} value="{{ RUNTASTIC }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-default btn-block">
+                    Cambiar
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+            });
+            $(function () {
+
+                // We can attach the `fileselect` event to all file inputs on the page
+                $(document).on('change', ':file', function () {
+                    var input = $(this),
+                            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                    input.trigger('fileselect', [numFiles, label]);
+                });
+
+                // We can watch for our custom `fileselect` event like this
+                $(document).ready(function () {
+                    $(':file').on('fileselect', function (event, numFiles, label) {
+
+                        var input = $(this).parents('.input-group').find(':text'),
+                                log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                        if (input.length) {
+                            input.val(log);
+                        } else {
+                            if (log)
+                                alert(log);
+                        }
+
+                    });
+                });
+
+            });
+    </script>
+{% endblock %}

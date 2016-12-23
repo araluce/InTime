@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Tuits" table="tuits">
+    <id name="idTuit" type="integer" column="id_tuit">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="usuTwitter" type="string" column="usu_twitter" length="100" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="descripcion" type="string" column="descripcion" length="100" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-many field="idUsuario" target-entity="Usuario" inversed-by="idTuit" fetch="LAZY">
+      <join-table name="tuits_usuario">
+        <join-columns>
+          <join-column name="id_tuit" referenced-column-name="id_tuit"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
+  </entity>
+</doctrine-mapping>

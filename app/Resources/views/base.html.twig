@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>{% if TITULO is defined %}{{ TITULO }}{% else %}InTime{% endif %}</title>
+
+        <!-- CSS -->
+        <!--<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>-->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet"/>
+        <!--<link href="{{ asset('css/theme_glossy.css') }}" rel="stylesheet"/>-->
+        <link href="{{ asset('css/freelancer.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('css/timeTo.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('css/clockpicker.css') }}" rel="stylesheet"/>
+        <script src="https://use.fontawesome.com/fa9b27f1c6.js"></script>
+
+        <!-- Menu circular -->
+        <!--
+        <link href="{{ asset('css/normalize.css')}}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('css/demo.css')}}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('css/component2.css')}}" rel="stylesheet" type="text/css" />
+        <script src="{{ asset('js/modernizr-2.6.2.min.js') }}"></script>
+        -->
+        <link href="{{ asset('css/inTime.css')}}" rel="stylesheet" type="text/css" />
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'/>
+        <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <button type="button" class="btn btn-primary" id="modal-avisos2" style="display:none;" data-toggle="modal" data-target="#modal-advice2">Small modal</button>
+    <div id="modales">
+        <div class="modal modal-advice" id="modal-advice2" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header panel-heading">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="fa fa-send" id="mensaje-titulo"></span></h4>
+                    </div>
+                    <div class="modal-body modal-advice-body">
+                        <p id="mensaje-texto"></p>
+                        <div class="row">
+                            <div class="col-lg-4" style="float: right;">
+                                <button class="btn" class="close" data-dismiss="modal" aria-label="Close">ACEPTAR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if MENSAJES is defined and MENSAJES|length > 0%}
+        <!-- Small modal -->
+        <button type="button" class="btn btn-primary" id="modal-avisos" style="display:none;" data-toggle="modal" data-target="#modal-advice0">Small modal</button>
+        <div id="modales">
+            <div class="modal modal-advice" id="modal-advice0" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <!--
+                        <div class="modal-header panel-heading">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><span class="fa fa-send"></span> <span id="mensaje-titulo">{{ MENSAJES.0.TITULO }}</span> </h4>
+                        </div>
+                        -->
+                        <div class="modal-body modal-advice-body">
+                            <div class="row" style="margin: 20px 0px;">
+                                <div class="col-xs-3">
+                                    <img id="image"
+                                         src="{{ asset('images/generic/GdTII.png' ) }}" />
+                                </div>
+                                <div class="col-xs-9">
+                                    <p id="mensaje-texto" style="margin-top: 7%;">
+                                        <span style="color:red;">
+                                            {{ MENSAJES.0.TITULO }}:
+                                        </span>
+                                        {{ MENSAJES.0.TEXTO }}    
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 modal-advice-button">
+                            <button class="btn" class="close" data-dismiss="modal" aria-label="Close"><b>ACEPTAR</b></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 col-lg-offset-4 col-xs-10 col-xs-offset-2">
+                <div id="countdown-11"></div>
+            </div>
+        </div>
+        <div class="header">
+            {% block header %}
+                {% include "extension/header.html.twig" %}
+            {% endblock %}
+        </div>
+
+
+    {% block body %}{% endblock %}
+
+
+    <div class="footer">
+        {% include "extension/footer.html.twig" %}
+    </div>
+</div>
+<!-- JS -->
+<script src="{{ asset('js/jquery-2.2.3.min.js') }}"></script>
+<script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+<script src="{{ asset('js/fileinput.min.js') }}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!--<script src="{{ asset('js/bootstrap.min.js') }}"></script>-->
+<script src="{{ asset('js/clockpicker.js') }}"></script>
+<script src="{{ asset('js/weekly_schedule.js') }}"></script>
+<script src="{{ asset('js/jquery.timeTo.js') }}"></script>
+<script>
+    $(document).ready(function () {
+    {% if MENSAJES is defined and MENSAJES|length > 0 %}
+            $('#modal-avisos').click();
+    {% endif %}
+
+    {% if TDV is defined %}
+            function responsive_screen() {
+                if (window.matchMedia('screen and (max-width: 368px)').matches) {
+                    return 25;
+                } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
+                    return 35;
+                } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
+                    return 46;
+                } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
+                    return 56;
+                } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
+                    return 66;
+                } else {
+                    return 40;
+                }
+            }
+            $('#countdown-11').timeTo({
+                //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
+                timeTo: new Date(new Date('{{ TDV.date }}')),
+                displayDays: 2,
+                theme: "white",
+                displayCaptions: true,
+                fontSize: responsive_screen(),
+                captionSize: 14
+            });
+    {% endif %}
+        });
+</script>
+{% block javascripts %}{% endblock %}
+<!--
+<script src="{{ asset('js/polyfills.js') }}"></script>
+<script src="{{ asset('js/menu.js') }}"></script>
+<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>
+-->
+</body>
+</html>

@@ -1,0 +1,361 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css">
+    <style>
+        #tabla_wrapper{
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 jumbotron">
+            <div class="row" style="margin-top:-4%;">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">
+                                <i class="fa fa-home"></i>
+                                HOME
+                            </a>
+                            <span class="divider">/</span>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-bookmark"></i> CENSO
+                        </li>
+                        <li style="float:right;">
+                            <a href="/logout">
+                                <i class="fa fa-sign-out"></i>
+                                SALIR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 1%;">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
+                        <li {% if SECCION == 'CIUDADANOS' %} class="active" {% endif %}>
+                            <a href="/guardian/censo/ciudadanos">CIUDADANOS</a>
+                        </li>
+                        <li {% if SECCION == 'CENSO' %} class="active" {% endif %}>
+                            <a href="/guardian/censo/registro">CENSO</a>
+                        </li>
+                        <li {% if SECCION == 'DISTRITOS' %} class="active" {% endif %}>
+                            <a href="/guardian/censo/distritos">DISTRITOS</a>
+                        </li>
+                        <li class="disabled">
+                            <a href="#">OTRO</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% if SECCION == 'CENSO' %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <legend style="font-weight: bold; color:white;">Registro de usuarios</legend>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <dl class="dl-horizontal" style="color:black; font-size: 15px;">
+                                <dt>
+                                    Instrucciones
+                                </dt>
+                                <dt>
+                                    Registro de usuarios
+                                </dt>
+                                <dd>
+                                    Este formulario registra usuarios <strong>exclusivamente</strong> por DNI/NIE.
+                                </dd>
+                                <dd>
+                                    Introduzca de forma separada (por espacio en blanco) los DNI/NIE con letra que desea dar de alta.
+                                </dd>
+                                <dt>
+                                    Resultado
+                                </dt>
+                                <dd>
+                                    Se dará de alta a cada jugador asignándole su correspondiente DNI/NIE como contraseña.
+                                </dd>
+                                <dd>
+                                    En caso de que se introduzca un DNI/NIE en un formato no válido se le comunicará.
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <form id="form" method="post" action="/guardian/censo/registro" >
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <legend style="font-weight: bold; color:white;"><i class="fa fa-heartbeat"></i> Tiempo de vida</leyend>
+                                            <div class="left-inner-addon ">
+                                                <i class="fa fa-calendar" style="color:black;"></i>
+                                                <input class="form-control" type="datetime-local" name="TDV">
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12" style="display:inline-block; position:relative;">
+                                        <legend style="font-weight: bold; color:white;"><i class="fa fa-id-card"></i> Entrada de DNI/NIE</leyend>
+                                            <textarea class="form-control" name="DATOS_REGISTRO" rows="5" style="resize:none; width:100%;"></textarea>
+                                            <i class="fa fa-users" style="color:black; position:absolute; bottom:37px; right:85px;"></i>
+                                            <button class="btn btn-default" style="position:absolute; bottom:30px; right:25px;" type="submit">Alta</button>                                
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% elseif SECCION == 'CIUDADANOS' %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="tabla" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>DISTRITO</th>
+                                    <th>SEUDÓNIMO</th>
+                                    <th>NOMBRE</th>
+                                    <th>APELLIDOS</th>
+                                    <th>EMAIL</th>
+                                    <th>TdV</th>
+                                    <th>ESTADO</th>
+                                    <th>DIRECTORIO</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>DISTRITO</th>
+                                    <th>SEUDÓNIMO</th>
+                                    <th>NOMBRE</th>
+                                    <th>APELLIDOS</th>
+                                    <th>EMAIL</th>
+                                    <th>TdV</th>
+                                    <th>ESTADO</th>
+                                    <th>DIRECTORIO</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                {% for JUGADOR in JUGADORES %}
+                                    <tr>
+                                        <td>{{ JUGADOR.getDni() }}</td>
+                                        <td>{% if JUGADOR.getIdDistrito() is not null %}{{ JUGADOR.getIdDistrito().getNombre() }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</td>
+                                        <td>{{ JUGADOR.getSeudonimo() }}</td>
+                                        <td>{{ JUGADOR.getNombre() }}</td>
+                                        <td>{{ JUGADOR.getApellidos() }}</td>
+                                        <td>{{ JUGADOR.getEmail() }}</td>
+                                        <td>{{ JUGADOR.getIdCuenta().getTdv().date }}</td>
+                                        <td title="{{ JUGADOR.getIdEstado().getDescripcion() }}">{{ JUGADOR.getIdEstado().getNombre() }}</td>
+                                        <td><span class="fa fa-user-o"></span></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% elseif SECCION == 'DISTRITOS' %}
+                <div class="row">
+                    <legend>CREAR UN DISTRITO</legend>
+                    <form method="post" action="/guardian/censo/creardistrito">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-addon1"><i class="fa fa-users" style=""></i></span>
+                                    <input type="text" class="form-control" name="NOMBRE" placeholder="NOMBRE DEL DISTRITO" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-default btn-block">
+                                Crear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <legend>GESTIÓN DE DISTRITOS</legend>
+                    <div class="row" style="margin-bottom: 1%;">
+                        <div class="col-md-6 col-md-offset-3">
+                            <select class="form-control" id="id-selector-distritos">
+                                {% if DISTRITOS is not empty %}
+                                    <option value="0"> - SELECCIONA UN DISTRITO - </option>
+                                    {% for DISTRITO in DISTRITOS %}
+                                        <option value="{{ DISTRITO.getIdUsuarioDistrito() }}">{{ DISTRITO.getNombre() }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="desplegable-titulo">
+                                <center><i class="fa fa-users"></i> CIUDADANOS SIN DISTRITO</center>
+                            </div>
+                            <div class="desplegable" id="id-desplegable-sin-distrito"> </div>
+
+                        </div>
+
+                        <div class="col-xs-6">
+                            <div class="desplegable-titulo">
+                                <center><i class="fa fa-users"></i><span id="id-desplegable-titulo">CIUDADANOS DEL DISTRITO</span></center>
+                            </div>
+                            <div class="desplegable" id="id-desplegable-distrito"> </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 15px; font-weight: bold; text-transform: uppercase;">
+                    <legend>DISTRITOS</legend>
+                    {% if DISTRITOS is not empty %}
+                        {% for DISTRITO in DISTRITOS %}
+                            <div class="col-md-12">
+                                <legend style="font-size:15px;">CIUDADANOS DEL DISTRITO {{ DISTRITO.getNombre() }}</legend>
+                                <table id="{{'tabla' ~ DISTRITO.getIdUsuarioDistrito() }}" class="table table-striped table-bordered" cellspacing="0" width="100%" >
+                                    <thead>
+                                        <tr>
+                                            <th>DNI</th>
+                                            <th>SEUDÓNIMO</th>
+                                            <th>NOMBRE</th>
+                                            <th>APELLIDOS</th>
+                                            <th>DIRECTORIO</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>DNI</th>
+                                            <th>SEUDÓNIMO</th>
+                                            <th>NOMBRE</th>
+                                            <th>APELLIDOS</th>
+                                            <th>DIRECTORIO</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        {% for JUGADOR in JUGADORES %}
+                                            {% if JUGADOR.getIdDistrito() is not null %}
+                                                {% if JUGADOR.getIdDistrito() == DISTRITO %}
+                                                    <tr>
+                                                        <td>{{ JUGADOR.getDni() }}</td>
+                                                        <td>{{ JUGADOR.getSeudonimo() }}</td>
+                                                        <td>{{ JUGADOR.getNombre() }}</td>
+                                                        <td>{{ JUGADOR.getApellidos() }}</td>
+                                                        <td><span class="fa fa-user-o"></span></td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <center><p style="font-weight: bold; font-size: 15px; color:red;">AÚN NO HAY NINGÚN DISTRITO DEFINIDO</p></center>
+                        {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            rellenaCiudadanosSinDistritos();
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+        {% if SECCION == 'CIUDADANOS' %}
+                $('#tabla').DataTable({
+                    "dom": '<"top"iflp<"clear">>rt<"bottom"iflp<"clear">>'
+                });
+        {% endif %}
+            });
+        {% if SECCION == 'DISTRITOS' %}
+            {% if DISTRITOS is defined %}
+                {% for DISTRITO in DISTRITOS %}
+                    $('#tabla{{ DISTRITO.getIdUsuarioDistrito() }}').DataTable({
+                        "dom": '<"top"iflp<"clear">>rt<"bottom"iflp<"clear">>'
+                    });
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+            distrito = 0;
+            $('#id-selector-distritos').change(function () {
+                $('#id-desplegable-titulo').text('CIUDADANOS DEL DISTRITO ' + $('#id-selector-distritos :selected').text());
+                distrito = $(this).val();
+                rellenaListaDistritoSeleccionado();
+
+            });
+            function rellenaListaDistritoSeleccionado() {
+                $('#id-desplegable-distrito').empty();
+                if (distrito !== 0 && distrito !== '0') {
+                    ruta = '/guardian/obtenerCiudadanosDistrito/' + distrito;
+                    $.get(ruta, function (data, status) {
+                        console.log(data);
+                        if (data.respuesta === 'OK') {
+                            $.each(data.ciudadanos, function (k, v) {
+                                texto = '';
+                                if ((typeof v.DNI) !== 'undefined') {
+                                    texto += '<div class="col-md-12 usuario-item" onclick="quitar(' + v.ID + ');">';
+                                    texto += v.DNI + ' ' + v.NOMBRE + ' ' + v.APELLIDOS + ' <small><i class="fa fa-at"></i>' + v.SEUDONIMO + '</small>';
+                                    texto += '</div>';
+                                } else {
+                                    texto += v + '';
+                                }
+                                $('#id-desplegable-distrito').append(texto);
+                            });
+                        }
+                    });
+                }
+            }
+            function rellenaCiudadanosSinDistritos() {
+                $('#id-desplegable-sin-distrito').empty();
+                ruta = '/guardian/obtenerCiudadanosSinDistrito';
+                $.get(ruta, function (data, status) {
+                    console.log(data);
+                    if (data.respuesta === 'OK') {
+                        $.each(data.ciudadanos, function (k, v) {
+                            texto = '';
+                            if ((typeof v.DNI) !== 'undefined') {
+                                texto += '<div class="col-md-12 usuario-item" onclick="aniade(' + v.ID + ');">';
+                                texto += v.DNI + ' ' + v.NOMBRE + ' ' + v.APELLIDOS + ' <small><i class="fa fa-at"></i>' + v.SEUDONIMO + '</small>';
+                                texto += '</div>';
+                            } else {
+                                texto += v + '';
+                            }
+                            $('#id-desplegable-sin-distrito').append(texto);
+                        });
+                    }
+                });
+            }
+            function aniade(idCiudadano) {
+                if (distrito !== 0 && distrito !== '0') {
+                    ruta = '/guardian/aniadeCiudadanoADistrito/' + idCiudadano + '/' + distrito;
+                    $.get(ruta, function (data, status) {
+                        console.log(data);
+                        if (data.respuesta === 'OK') {
+                            rellenaListaDistritoSeleccionado();
+                            rellenaCiudadanosSinDistritos();
+                        }
+                    });
+                } else {
+                    alert('Debes seleccionar un distrito');
+                }
+            }
+    </script>
+{% endblock %}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Usuario" table="USUARIO">
+    <indexes>
+      <index name="id_rol" columns="id_rol,id_estado"/>
+      <index name="id_estado" columns="id_estado"/>
+      <index name="id_cuenta" columns="id_cuenta"/>
+      <index name="id_distrito" columns="id_distrito"/>
+      <index name="IDX_1D204E4790F1D76D" columns="id_rol"/>
+    </indexes>
+    <id name="idUsuario" type="integer" column="id_usuario">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="nombre" type="string" column="nombre" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="apellidos" type="string" column="apellidos" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="clave" type="string" column="clave" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="email" type="string" column="email" length="120" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="seudonimo" type="string" column="seudonimo" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="dni" type="string" column="dni" length="9" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="usuRuntastic" type="string" column="usu_runtastic" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="certificado" type="string" column="certificado" length="40" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="imagen" type="string" column="imagen" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="tiempoSinComer" type="datetime" column="tiempo_sin_comer" nullable="true"/>
+    <field name="tiempoSinBeber" type="datetime" column="tiempo_sin_beber" nullable="true"/>
+    <many-to-one field="idDistrito" target-entity="UsuarioDistrito" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_distrito" referenced-column-name="id_usuario_distrito"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idRol" target-entity="Rol" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_rol" referenced-column-name="id_rol"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idEstado" target-entity="UsuarioEstado" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_estado" referenced-column-name="id_estado"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idCuenta" target-entity="UsuarioCuenta" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_cuenta" referenced-column-name="id_cuenta"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

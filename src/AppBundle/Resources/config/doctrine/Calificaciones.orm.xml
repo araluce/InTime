@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Calificaciones" table="CALIFICACIONES">
+    <id name="idCalificaciones" type="integer" column="id_calificaciones">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="correspondenciaNumerica" type="float" column="correspondencia_numerica" precision="10" scale="0" nullable="false"/>
+    <field name="correspondenciaTexto" type="string" column="correspondencia_texto" length="100" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="correspondenciaIcono" type="string" column="correspondencia_icono" length="100" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>

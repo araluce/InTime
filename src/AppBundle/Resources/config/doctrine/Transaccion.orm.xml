@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Transaccion" table="transaccion">
+    <indexes>
+      <index name="id_usuario_origen" columns="id_usuario_origen"/>
+      <index name="id_usuario_destino" columns="id_usuario_destino"/>
+      <index name="id_tipo_transaccion" columns="id_tipo_transaccion"/>
+      <index name="id_transaccion_pagar" columns="id_transaccion_pagar"/>
+    </indexes>
+    <id name="idTransaccion" type="integer" column="id_transaccion">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="tiempoCedido" type="datetime" column="tiempo_cedido" nullable="true"/>
+    <field name="pagado" type="boolean" column="pagado" nullable="true"/>
+    <field name="fechaTransaccion" type="datetime" column="fecha_transaccion" nullable="true"/>
+    <many-to-one field="idUsuarioOrigen" target-entity="Usuario" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_usuario_origen" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idUsuarioDestino" target-entity="Usuario" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_usuario_destino" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idTipoTransaccion" target-entity="TipoTransaccion" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_tipo_transaccion" referenced-column-name="id_tipo_transaccion"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idTransaccionPagar" target-entity="Transaccion" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_transaccion_pagar" referenced-column-name="id_transaccion"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

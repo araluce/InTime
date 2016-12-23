@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\UsuarioXDistrito" table="USUARIO_X_DISTRITO">
+    <indexes>
+      <index name="id_distrito" columns="id_distrito,id_usuario"/>
+    </indexes>
+    <id name="idUsuarioXDistrito" type="integer" column="id_usuario_x_distrito">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="idDistrito" type="integer" column="id_distrito" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="idUsuario" type="integer" column="id_usuario" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>

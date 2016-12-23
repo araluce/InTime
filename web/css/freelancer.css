@@ -1,0 +1,80 @@
+/*body {
+  background-color: #D9D9D8;
+}
+.navbar{
+
+}
+.box-footer{
+    background-color: #283849;
+    color: white;
+    border-radius:3px;
+    padding: 8px 0px 8px 0px;
+}
+
+.content{
+    background-color: white;
+    border-radius:3px;
+    margin-bottom: 21px;
+}
+
+.botones{
+    background-color: red;
+}
+
+#myCarousel{
+    background-color: #8aa4be;
+    border: solid;
+    border-radius:10px;
+    border-color: transparent;
+    box-shadow: 2px 2px;
+    #opacity: 0.5;
+}
+
+.item-carousel{
+    font-family: 'Poiret One', cursive;
+}*/
+
+.write_interior strong{
+    font-size: 18px !important;
+}
+.write_interior{
+    font-size: 16px !important;
+}
+.pick, .pick_tuit{
+    cursor: pointer;
+}
+.date{
+    padding-left: 10px;
+}
+
+.tagit{
+    border-color: #1c5ede;
+    border-radius: 0px;
+    background: none !important;
+}
+
+.pick:hover {
+    background-color: rgba(22, 75, 177, 0.15);
+
+}
+
+.no_pick:hover {
+    background-color: rgba(22, 75, 177, 0.15) !important;
+}
+
+.modal-dialog{
+    position: absolute;
+    left: 50%;
+    margin-left: -312px;
+    height: 500px;
+    top: 50%;
+    margin-top: -250px;
+}
+
+.schedule-rows td[data-status="available"] { background-color: rgba(102, 215, 131, 0.3); border-color: rgba(82, 210, 94, 0.3);}
+.schedule-rows td[data-status="selected"] { background-color: rgba(232, 204, 106, 0.3); border-color: rgba(230, 176, 93, 0.3);}
+.schedule-rows td[data-status="occupied"] { background-color: rgba(236, 102, 120, 0.3); border-color: rgba(234, 88, 132, 0.3);}
+
+.clockpicker-popover{
+    z-index: 9999!important;
+}

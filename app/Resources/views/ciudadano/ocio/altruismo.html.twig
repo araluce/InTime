@@ -1,0 +1,31 @@
+{# empty Twig template #}
+{# empty Twig template #}
+{# empty Twig template #}
+
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-xs-4 menu menu-principal">
+            <center><a href="/"><img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" /></a></center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 menu menu-principal">
+            <center><a href="/ciudadano/ocio"><img alt="Logo" src="{{ asset('images/iconos/Altruismo.png') }}" /></a></center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-4 menu">
+            <center><a href="#"><img alt="Logo" src="{{ asset('images/iconos/Minas.png') }}" /></a></center>
+        </div>
+        <div class="col-xs-2 menu">
+            <center><a href="#"><img alt="Logo" src="{{ asset('images/iconos/Donar_TdV.png') }}" /></a></center>
+        </div>
+        <div class="col-xs-4 menu"></div>
+    </div>
+{% endblock %}
