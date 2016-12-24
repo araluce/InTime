@@ -5,168 +5,170 @@
 {% endblock %}
 
 {% block body %}
-    {% if SECCION is defined %}
-        {% if SECCION == 'comida'%}
-            {% set SECCION_TEXTO = 'COMIDA' %}
-        {% elseif SECCION == 'bebida'%}
-            {% set SECCION_TEXTO = 'BEBIDA' %}
+    <div class="container">
+        {% if SECCION is defined %}
+            {% if SECCION == 'comida'%}
+                {% set SECCION_TEXTO = 'COMIDA' %}
+            {% elseif SECCION == 'bebida'%}
+                {% set SECCION_TEXTO = 'BEBIDA' %}
+            {% endif %}
+        {% else %}
+            {% set SECCION_TEXTO = 'SECCIÓN NO DEFINIDA' %}
         {% endif %}
-    {% else %}
-        {% set SECCION_TEXTO = 'SECCIÓN NO DEFINIDA' %}
-    {% endif %}
-    <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-top:-4%;">
-                <div class="col-md-12">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
-                            </a>
-                            <span class="divider">/</span>
-                        </li>
-                        <li>
-                            <a href="/ciudadano/alimentacion">
-                                <i class="fa fa-briefcase"></i>
-                                ALIMENTACION
-                            </a> 
-                            <span class="divider">/</span>
-                        </li>
-                        <li class="active">
-                            <i class="fa fa-cutlery"></i> {{ SECCION_TEXTO }}
-                        </li>
-                        <li style="float:right;">
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i>
-                                SALIR
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row" id="seccion_actividad" style="margin-bottom: 1%">
-                <div class="progress progress-striped active">
-                    <div class="progress-bar progress-success" id="progress-tsc">
+        <div class="row">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-top:-4%;">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="/">
+                                    <i class="fa fa-home"></i>
+                                    HOME
+                                </a>
+                                <span class="divider">/</span>
+                            </li>
+                            <li>
+                                <a href="/ciudadano/alimentacion">
+                                    <i class="fa fa-briefcase"></i>
+                                    ALIMENTACION
+                                </a> 
+                                <span class="divider">/</span>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-cutlery"></i> {{ SECCION_TEXTO }}
+                            </li>
+                            <li style="float:right;">
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i>
+                                    SALIR
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-            <div class="row" id="seccion_compra" style="margin-bottom: 1%;">
-                <div class="col-md-12">
-                    {% if EJERCICIOS is defined and EJERCICIOS|length > 0 %}
-                        {% set contador = 1 %}
-                        {% for EJERCICIO in EJERCICIOS %}
-                            {%if not contador is divisible by(2)%}
-                                <div class="row">
-                                {% endif %}
-                                <div class="col-md-5 tarjeta-ejercicio post-it {%if contador is divisible by(2)%} col-md-offset-2 {%endif%}" 
-                                     style="margin-top: 1%; 
-                                     {% if not EJERCICIO.ELEGIBLE %}
-                                         opacity: 0.5;
-                                     {% endif %} ">
+                <div class="row" id="seccion_actividad" style="margin-bottom: 1%">
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-success" id="progress-tsc">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="seccion_compra" style="margin-bottom: 1%;">
+                    <div class="col-md-12">
+                        {% if EJERCICIOS is defined and EJERCICIOS|length > 0 %}
+                            {% set contador = 1 %}
+                            {% for EJERCICIO in EJERCICIOS %}
+                                {%if not contador is divisible by(2)%}
                                     <div class="row">
-                                        {% if EJERCICIO.ESTADO == 'solicitado' %}
-                                            <div class="col-xs-12">
-                                                <span style="font-size: 14px;">
-                                                    <div class="col-xs-5">
-                                                        TIEMPO RESTANTE: 
-                                                    </div>
-                                                    <div class="col-xs-7">
-                                                        <div id="countdown-tsc">
-                                                            <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
-                                                            <script>
-                                                                function responsive_screen() {
-                                                                    if (window.matchMedia('screen and (max-width: 368px)').matches) {
-                                                                        return 12;
-                                                                    } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
-                                                                        return 17;
-                                                                    } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
-                                                                        return 23;
-                                                                    } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
-                                                                        return 28;
-                                                                    } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
-                                                                        return 33;
-                                                                    } else {
-                                                                        return 20;
-                                                                    }
-                                                                }
-                                                                $('#countdown-tsc').timeTo({
-                                                                    timeTo: new Date(new Date('{{ EJERCICIO.TSC.date }}')),
-                                                                    displayDays: 2,
-                                                                    theme: "white",
-                                                                    displayCaptions: true,
-                                                                    fontSize: responsive_screen(),
-                                                                    captionSize: 14
-                                                                });
-                                                            </script>
-                                                        </div>
-                                                    </div>
-                                                </span>
-                                            </div>
-                                        {% else %}
-                                            <div class="col-xs-6">
-                                                {% if not EJERCICIO.VISTO %}
-                                                    <span class="badge" style="font-size: 14px; background-color: #E0B831; padding: 9px 9px;">NUEVO</span>
-                                                {% elseif EJERCICIO.EVALUADO is defined %}
-                                                    <span class="fa fa-eye"></span> <span style="font-size: 14px;"> EJERCICIO EVALUADO</span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="col-xs-6" style="text-align: right; font-size: 16px;">
-                                                {% if EJERCICIO.EVALUADO is defined %}
-                                                    <img src="{{ asset('images/badges/' ~ EJERCICIO.EVALUADO.getCorrespondenciaIcono()) }}" width="20" title="{{ EJERCICIO.EVALUADO.getCorrespondenciaTexto() }}" />
-                                                {% endif %}
-
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 tarjeta-ejercicio-tipo">
-                                            <span class="fa fa-check-square"> </span>
-                                            {{ EJERCICIO.TIPO }}
-                                        </div>
-                                        <div class="col-xs-6 tarjeta-ejercicio-fecha" style="float:right;">
-                                            <span class="fa fa-calendar"> </span>
-                                            {{ EJERCICIO.FECHA.date }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12 tarjeta-ejercicio-enunciado">
-                                            <div class="row">
-                                                <div class="col-xs-1">
-                                                    <span class="fa fa-graduation-cap"></span>
-                                                </div>
-                                                <div class="col-xs-11">
-                                                    {{ EJERCICIO.ENUNCIADO }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% if EJERCICIO.ELEGIBLE %}
-                                        <div class="row" style="margin-top: 2%;">
+                                    {% endif %}
+                                    <div class="col-md-5 tarjeta-ejercicio post-it {%if contador is divisible by(2)%} col-md-offset-2 {%endif%}" 
+                                         style="margin-top: 1%; 
+                                         {% if not EJERCICIO.ELEGIBLE %}
+                                             opacity: 0.5;
+                                         {% endif %} ">
+                                        <div class="row">
                                             {% if EJERCICIO.ESTADO == 'solicitado' %}
-                                                <div class="col-md-6 col-md-offset-6">
-                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> ENTREGAR </button>
-                                                </div>
-                                            {% elseif EJERCICIO.ESTADO == 'entregado' %}
-                                                <div class="col-md-6 col-md-offset-6">
-                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> MODIFICAR ENTREGA </button>
+                                                <div class="col-xs-12">
+                                                    <span style="font-size: 14px;">
+                                                        <div class="col-xs-5">
+                                                            TIEMPO RESTANTE: 
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <div id="countdown-tsc">
+                                                                <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
+                                                                <script>
+                                                                    function responsive_screen() {
+                                                                        if (window.matchMedia('screen and (max-width: 368px)').matches) {
+                                                                            return 12;
+                                                                        } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
+                                                                            return 17;
+                                                                        } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
+                                                                            return 23;
+                                                                        } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
+                                                                            return 28;
+                                                                        } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
+                                                                            return 33;
+                                                                        } else {
+                                                                            return 20;
+                                                                        }
+                                                                    }
+                                                                    $('#countdown-tsc').timeTo({
+                                                                        timeTo: new Date(new Date('{{ EJERCICIO.TSC.date }}')),
+                                                                        displayDays: 2,
+                                                                        theme: "white",
+                                                                        displayCaptions: true,
+                                                                        fontSize: responsive_screen(),
+                                                                        captionSize: 14
+                                                                    });
+                                                                </script>
+                                                            </div>
+                                                        </div>
+                                                    </span>
                                                 </div>
                                             {% else %}
-                                                <div class="col-md-6 col-md-offset-6">
-                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="solicitar({{ EJERCICIO.ID }});"><span class="fa fa-shopping-cart"></span> COMPRAR</button>
+                                                <div class="col-xs-6">
+                                                    {% if not EJERCICIO.VISTO %}
+                                                        <span class="badge" style="font-size: 14px; background-color: #E0B831; padding: 9px 9px;">NUEVO</span>
+                                                    {% elseif EJERCICIO.EVALUADO is defined %}
+                                                        <span class="fa fa-eye"></span> <span style="font-size: 14px;"> EJERCICIO EVALUADO</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-xs-6" style="text-align: right; font-size: 16px;">
+                                                    {% if EJERCICIO.EVALUADO is defined %}
+                                                        <img src="{{ asset('images/badges/' ~ EJERCICIO.EVALUADO.getCorrespondenciaIcono()) }}" width="20" title="{{ EJERCICIO.EVALUADO.getCorrespondenciaTexto() }}" />
+                                                    {% endif %}
+
                                                 </div>
                                             {% endif %}
                                         </div>
-                                    {% elseif SECCION_TEXTO == 'PAGA EXTRA' and not EJERCICIO.ELEGIBLE %}
+                                        <div class="row">
+                                            <div class="col-xs-6 tarjeta-ejercicio-tipo">
+                                                <span class="fa fa-check-square"> </span>
+                                                {{ EJERCICIO.TIPO }}
+                                            </div>
+                                            <div class="col-xs-6 tarjeta-ejercicio-fecha" style="float:right;">
+                                                <span class="fa fa-calendar"> </span>
+                                                {{ EJERCICIO.FECHA.date }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 tarjeta-ejercicio-enunciado">
+                                                <div class="row">
+                                                    <div class="col-xs-1">
+                                                        <span class="fa fa-graduation-cap"></span>
+                                                    </div>
+                                                    <div class="col-xs-11">
+                                                        {{ EJERCICIO.ENUNCIADO }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if EJERCICIO.ELEGIBLE %}
+                                            <div class="row" style="margin-top: 2%;">
+                                                {% if EJERCICIO.ESTADO == 'solicitado' %}
+                                                    <div class="col-md-6 col-md-offset-6">
+                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> ENTREGAR </button>
+                                                    </div>
+                                                {% elseif EJERCICIO.ESTADO == 'entregado' %}
+                                                    <div class="col-md-6 col-md-offset-6">
+                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> MODIFICAR ENTREGA </button>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-md-6 col-md-offset-6">
+                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="solicitar({{ EJERCICIO.ID }});"><span class="fa fa-shopping-cart"></span> COMPRAR</button>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% elseif SECCION_TEXTO == 'PAGA EXTRA' and not EJERCICIO.ELEGIBLE %}
 
-                                    {% endif %}
-                                </div>
-                                {%if contador is divisible by(2)%}
-                                </div>
-                            {% endif %}
-                            {% set contador = contador + 1 %}
-                        {% endfor %}
-                    {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    {%if contador is divisible by(2)%}
+                                    </div>
+                                {% endif %}
+                                {% set contador = contador + 1 %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

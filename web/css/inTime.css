@@ -26,6 +26,24 @@
     .contenedor-badge .badge{
         padding: 5px 8px;
     }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
 }
 @media only screen and (min-width:365px) and (max-width: 500px){
     .modal-advice .modal-dialog{
@@ -40,6 +58,24 @@
     }
     .contenedor-badge .badge{
         padding: 5px 8px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
     }
 }
 @media only screen and (min-width:500px) and (max-width: 668px){
@@ -56,6 +92,34 @@
     .contenedor-badge .badge{
         padding: 8px 14px;
     }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 45px;
+        padding: 9px 15px; 
+        font-size: 25px; 
+    }
+    .item-carousel{
+        font-size: 50px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
 }
 @media only screen and (min-width:668px) and (max-width: 868px){
     .modal-advice .modal-dialog{
@@ -71,12 +135,59 @@
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 45px;
+        padding: 9px 15px; 
+        font-size: 25px; 
+    }
+    .item-carousel{
+        font-size: 50px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
 }
 @media only screen and (min-width:868px) and (max-width: 1068px){
     .modal-advice .modal-dialog{
         width: 35%;
         left: 60%;
         top: 40%;
+    }
+    .modal_tweet .modal-dialog{
+        width: 80%;
+        left: 40%;
+        top: 20%;
+    }
+    .texto-tweet p{
+        font-size: 45px;
+        line-height: normal; 
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 146px;
+        height: 146px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 26px;
+    }
+    .ventana-tweets{
+        height: 800px;
     }
     .badge-aviso{
         top: 0px;
@@ -85,6 +196,38 @@
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
+    }
+    .menu img{
+        height: 255px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 85px;
+        padding: 9px 15px; 
+        font-size: 35px; 
+    }
+    select {
+        width: 100%;
+        height: 85px;
+        padding: 9px 15px; 
+        font-size: 35px; 
+    }
+    .item-carousel{
+        font-size: 95px;
+    }
+    .login-form h4{
+        font-size: 35px;
+    }
+    .btn{
+        font-size: 35px;
+    }
+    .container{
+        width: 95%;
     }
 }
 @media only screen and (min-width: 1068px){
@@ -93,6 +236,9 @@
         left:48%;
         top: 70%;
     }
+    .texto-tweet{
+        font-size: 16px;
+    }
     .badge-aviso{
         top: 0px;
         left: 0px;
@@ -101,8 +247,29 @@
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
+    select{
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
 }
 
+.ventana-tweets{
+    background-color: rgba(255,255,255,0.2); 
+    color: black; 
+    overflow-y: auto;
+}
 
 .panel-default, .panel{
     border: none;

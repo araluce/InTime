@@ -87,69 +87,66 @@
             </div>
         </div>
     {% endif %}
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-5 col-lg-offset-4 col-xs-10 col-xs-offset-2">
-                <div id="countdown-11"></div>
-            </div>
+
+    <div class="row">
+        <div class="col-lg-5 col-lg-offset-4 col-xs-10 col-xs-offset-2">
+            <div id="countdown-11"></div>
         </div>
-        <div class="header">
-            {% block header %}
-                {% include "extension/header.html.twig" %}
-            {% endblock %}
-        </div>
-
-
-    {% block body %}{% endblock %}
-
-
-    <div class="footer">
-        {% include "extension/footer.html.twig" %}
     </div>
-</div>
-<!-- JS -->
-<script src="{{ asset('js/jquery-2.2.3.min.js') }}"></script>
-<script src="{{ asset('js/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('js/fileinput.min.js') }}"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<!--<script src="{{ asset('js/bootstrap.min.js') }}"></script>-->
-<script src="{{ asset('js/clockpicker.js') }}"></script>
-<script src="{{ asset('js/weekly_schedule.js') }}"></script>
-<script src="{{ asset('js/jquery.timeTo.js') }}"></script>
-<script>
-    $(document).ready(function () {
-    {% if MENSAJES is defined and MENSAJES|length > 0 %}
-            $('#modal-avisos').click();
-    {% endif %}
+    <div class="header">
+        {% block header %}
+            {% include "extension/header.html.twig" %}
+        {% endblock %}
+    </div>
 
-    {% if TDV is defined %}
-            function responsive_screen() {
-                if (window.matchMedia('screen and (max-width: 368px)').matches) {
-                    return 25;
-                } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
-                    return 35;
-                } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
-                    return 46;
-                } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
-                    return 56;
-                } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
-                    return 66;
-                } else {
-                    return 40;
+    {% block body %}
+    {% endblock %}
+
+
+    <div class="footer"> {% include "extension/footer.html.twig" %}</div>
+    <!-- JS -->
+    <script src="{{ asset('js/jquery-2.2.3.min.js') }}"></script>
+    <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('js/fileinput.min.js') }}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!--<script src="{{ asset('js/bootstrap.min.js') }}"></script>-->
+    <script src="{{ asset('js/clockpicker.js') }}"></script>
+    <script src="{{ asset('js/weekly_schedule.js') }}"></script>
+    <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+        {% if MENSAJES is defined and MENSAJES|length > 0 %}
+                $('#modal-avisos').click();
+        {% endif %}
+
+        {% if TDV is defined %}
+                function responsive_screen() {
+                    if (window.matchMedia('screen and (max-width: 368px)').matches) {
+                        return 25;
+                    } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
+                        return 35;
+                    } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
+                        return 46;
+                    } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
+                        return 56;
+                    } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
+                        return 85;
+                    } else {
+                        return 40;
+                    }
                 }
-            }
-            $('#countdown-11').timeTo({
-                //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
-                timeTo: new Date(new Date('{{ TDV.date }}')),
-                displayDays: 2,
-                theme: "white",
-                displayCaptions: true,
-                fontSize: responsive_screen(),
-                captionSize: 14
+                $('#countdown-11').timeTo({
+                    //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
+                    timeTo: new Date(new Date('{{ TDV.date }}')),
+                    displayDays: 2,
+                    theme: "white",
+                    displayCaptions: true,
+                    fontSize: responsive_screen(),
+                    captionSize: 14
+                });
+        {% endif %}
             });
-    {% endif %}
-        });
-</script>
+    </script>
 {% block javascripts %}{% endblock %}
 <!--
 <script src="{{ asset('js/polyfills.js') }}"></script>

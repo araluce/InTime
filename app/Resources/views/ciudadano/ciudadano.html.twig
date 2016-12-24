@@ -4,81 +4,83 @@
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
-{% block body %}
 
-    <!--
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="component">
-                <button class="cn-button" id="cn-button">Menu</button>
-                <div class="cn-wrapper" id="cn-wrapper">
-                    <ul>
-                        <li><a href="/ciudadano/info"><span>Información</span></a></li>
-                        <li><a href="#"><span>Tutorials</span></a></li>
-                        <li><a href="#"><span>Articles</span></a></li>
-                        <li><a href="#"><span>Snippets</span></a></li>
-                        <li><a href="#"><span>Plugins</span></a></li>
-                        <li><a href="#"><span>Contact</span></a></li>
-                        <li><a href="#"><span>Follow</span></a></li>
-                    </ul>
+{% block body %}
+    <div class="container-fluid">
+        <!--
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="component">
+                    <button class="cn-button" id="cn-button">Menu</button>
+                    <div class="cn-wrapper" id="cn-wrapper">
+                        <ul>
+                            <li><a href="/ciudadano/info"><span>Información</span></a></li>
+                            <li><a href="#"><span>Tutorials</span></a></li>
+                            <li><a href="#"><span>Articles</span></a></li>
+                            <li><a href="#"><span>Snippets</span></a></li>
+                            <li><a href="#"><span>Plugins</span></a></li>
+                            <li><a href="#"><span>Contact</span></a></li>
+                            <li><a href="#"><span>Follow</span></a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    -->
-    <div class="row">
-        <div class="col-xs-2 col-xs-offset-5 menu">
+        -->
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-5 menu">
 
-            <a href="/ciudadano/info">
-                <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
-            </a>
+                <a href="/ciudadano/info">
+                    <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
+                </a>
 
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-2 col-xs-offset-3 menu">
-            <a href="/ciudadano/rankings"><img alt="Logo" src="{{ asset('images/iconos/Clasificaciones.png') }}"  /></a>
-        </div>
-        <div class="col-xs-2 col-xs-offset-2 menu contenedor-badge">
-            <a href="/ciudadano/trabajo">
-                <img alt="Logo" src="{{ asset('images/iconos/Trabajo.png') }}"  />
-                {% if MENSAJES_INSPECCION is defined and MENSAJES_PAGA is defined %}
-                    {% if MENSAJES_INSPECCION|length > 0 or MENSAJES_PAGA|length > 0%}
-                        <span class="badge badge-aviso">
-                            {{ MENSAJES_INSPECCION|length + MENSAJES_PAGA|length}}
-                        </span>
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-3 menu">
+                <a href="/ciudadano/rankings"><img alt="Logo" src="{{ asset('images/iconos/Clasificaciones.png') }}"  /></a>
+            </div>
+            <div class="col-xs-2 col-xs-offset-2 menu contenedor-badge">
+                <a href="/ciudadano/trabajo">
+                    <img alt="Logo" src="{{ asset('images/iconos/Trabajo.png') }}"  />
+                    {% if MENSAJES_INSPECCION is defined and MENSAJES_PAGA is defined %}
+                        {% if MENSAJES_INSPECCION|length > 0 or MENSAJES_PAGA|length > 0%}
+                            <span class="badge badge-aviso">
+                                {{ MENSAJES_INSPECCION|length + MENSAJES_PAGA|length}}
+                            </span>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </a>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-2 col-xs-offset-2 menu">
-            <a href="/ciudadano/felicidad"><img alt="Logo" src="{{ asset('images/iconos/Felicidad.png') }}"  /></a>
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-2 menu">
+                <a href="/ciudadano/felicidad"><img alt="Logo" src="{{ asset('images/iconos/Felicidad.png') }}"  /></a>
+            </div>
+            <div class="col-xs-2 col-xs-offset-4 menu">
+                <a href="/ciudadano/ocio">
+                    <img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" />
+                </a>
+            </div>
         </div>
-        <div class="col-xs-2 col-xs-offset-4 menu">
-            <a href="/ciudadano/ocio">
-                <img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" />
-            </a>
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-3 menu">
+                <a href="/ciudadano/asistencia_medica"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
+            </div>
+            <div class="col-xs-2 col-xs-offset-2 menu">
+                <a href="/ciudadano/alimentacion"><img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  /></a>
+
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-2 col-xs-offset-3 menu">
-            <a href="/ciudadano/asistencia_medica"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-5 menu">
+                <a href="/ciudadano/prestamos"><img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  /></a>
+
+            </div>
         </div>
-        <div class="col-xs-2 col-xs-offset-2 menu">
-            <a href="/ciudadano/alimentacion"><img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  /></a>
-            
+        <div class="row">
+            <div class="col-xs-3 col-xs-offset-9"><a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" height="40" /></a></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-2 col-xs-offset-5 menu">
-            <a href="/ciudadano/prestamos"><img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  /></a>
-            
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-3 col-xs-offset-9"><a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" height="40" /></a></div>
     </div>
 {% endblock %}
 

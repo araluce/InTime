@@ -252,6 +252,7 @@ class CiudadanoController extends Controller {
             $MENSAJE->setIdUsuario($Usuario);
             $MENSAJE->setMensaje($mensaje);
             $MENSAJE->setFecha($fecha);
+            $MENSAJE->setVisto(0);
 
             $em->persist($MENSAJE);
             $em->flush();

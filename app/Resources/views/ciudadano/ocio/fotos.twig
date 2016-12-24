@@ -230,7 +230,7 @@
         a:hover, a:visited, a {
             text-decoration: none;
         }
-        
+
         .like:hover{
             cursor: pointer;
             color: green;
@@ -247,76 +247,78 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-top:-4%;">
-                <div class="col-md-12">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
-                            </a>
-                            <span class="divider">/</span>
-                        </li>
-                        <li>
-                            <a href="/ciudadano">
-                                <i class="fa fa-child"></i>
-                                CIUDADANO
-                            </a> 
-                            <span class="divider">/</span>
-                        </li>
-                        <li>
-                            <a href="/ciudadano/ocio">
-                                <i class="fa fa-comments-o"></i>
-                                OCIO
-                            </a> 
-                            <span class="divider">/</span>
-                        </li>
-                        <li>
-                            <a href="/ciudadano/ocio/amigos">
-                                <i class="fa fa-group"></i>
-                                AMIGOS
-                            </a> 
-                            <span class="divider">/</span>
-                        </li>
-                        <li class="active">
-                            <span class="glyphicon glyphicon-picture"></span> FOTOS
-                        </li>
-                        <li style="float:right;">
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i>
-                                SALIR
-                            </a>
-                        </li>
-                    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-top:-4%;">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="/">
+                                    <i class="fa fa-home"></i>
+                                    HOME
+                                </a>
+                                <span class="divider">/</span>
+                            </li>
+                            <li>
+                                <a href="/ciudadano">
+                                    <i class="fa fa-child"></i>
+                                    CIUDADANO
+                                </a> 
+                                <span class="divider">/</span>
+                            </li>
+                            <li>
+                                <a href="/ciudadano/ocio">
+                                    <i class="fa fa-comments-o"></i>
+                                    OCIO
+                                </a> 
+                                <span class="divider">/</span>
+                            </li>
+                            <li>
+                                <a href="/ciudadano/ocio/amigos">
+                                    <i class="fa fa-group"></i>
+                                    AMIGOS
+                                </a> 
+                                <span class="divider">/</span>
+                            </li>
+                            <li class="active">
+                                <span class="glyphicon glyphicon-picture"></span> FOTOS
+                            </li>
+                            <li style="float:right;">
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i>
+                                    SALIR
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-bottom: 2%;">
-                <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
-            </div>
-            {% if FOTOS is defined %}
-            <div class="row">
-                {% for foto in FOTOS %}
-                <div class="col-md-3 single-portfolio col-sm-6">
-                    <figure class="portfolio-item">
-                        <img class="img-responsive" src="{{ asset('images/users/' ~ foto.usuario.getDni() ~ '/galeria/' ~ foto.imagen) }}" alt="">
-                        <figcaption class="portfolio-details">
-                            {% if foto.usuario.getSeudonimo() is not null %}
-                                <h4>@{{ foto.usuario.getSeudonimo() }}</h4>
-                            {% else %}
-                                <h4>ANONIMO</h4>
-                            {% endif %}
-                            <div id="social-panel">
-                                <span class='fa fa-thumbs-up like' onclick="reaccion({{ foto.id }}, '1');">{{ foto.likes }}</span>
-                                <span class='fa fa-thumbs-down dislike' onclick="reaccion({{ foto.id }}, '0');">{{ foto.dislikes }}</span>
+                <div class="row" style="margin-bottom: 2%;">
+                    <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
+                </div>
+                {% if FOTOS is defined %}
+                    <div class="row">
+                        {% for foto in FOTOS %}
+                            <div class="col-md-3 single-portfolio col-sm-6">
+                                <figure class="portfolio-item">
+                                    <img class="img-responsive" src="{{ asset('images/users/' ~ foto.usuario.getDni() ~ '/galeria/' ~ foto.imagen) }}" alt="">
+                                    <figcaption class="portfolio-details">
+                                        {% if foto.usuario.getSeudonimo() is not null %}
+                                            <h4>@{{ foto.usuario.getSeudonimo() }}</h4>
+                                        {% else %}
+                                            <h4>ANONIMO</h4>
+                                        {% endif %}
+                                        <div id="social-panel">
+                                            <span class='fa fa-thumbs-up like' onclick="reaccion({{ foto.id }}, '1');">{{ foto.likes }}</span>
+                                            <span class='fa fa-thumbs-down dislike' onclick="reaccion({{ foto.id }}, '0');">{{ foto.dislikes }}</span>
+                                        </div>
+                                    </figcaption>
+                                </figure>
                             </div>
-                        </figcaption>
-                    </figure>
-                </div>
-                {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -325,24 +327,24 @@
     <script>
         $(document).ready(function () {
         {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
+            $('#box_modal_result').click();
         {% endif %}
             });
             $("#input-711").fileinput({
-                uploadUrl: "/ciudadano/subirImagenAlbum",
-                uploadAsync: true,
-                maxFileCount: 2,
-                showBrowse: false,
-                browseOnZoneClick: true
+            uploadUrl: "/ciudadano/subirImagenAlbum",
+                    uploadAsync: true,
+                    maxFileCount: 2,
+                    showBrowse: false,
+                    browseOnZoneClick: true
             });
-            function reaccion( foto_id , like){
-                var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
-                $.get(url, function (data) {
-                    console.log(data);
-                    if(data.estado === 'OK'){
-                        location.reload();
-                    }
-                });
+            function reaccion(foto_id, like){
+            var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
+            $.get(url, function (data) {
+            console.log(data);
+            if (data.estado === 'OK'){
+            location.reload();
+            }
+            });
             }
     </script>
 {% endblock %}

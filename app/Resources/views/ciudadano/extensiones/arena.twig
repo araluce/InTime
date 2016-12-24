@@ -1,5 +1,3 @@
-{# empty Twig template #}
-{# empty Twig template #}
 {% extends "base.html.twig" %}
 
 {% block header %}
@@ -17,6 +15,7 @@
 {% endblock form_row %}
 
 {% block body %}
+    <div class="container">
     {% if SECCION == 'inspeccion_trabajo' %}
         {% set SECCION_TEXT = "inspección de trabajo" %}
     {% endif %}
@@ -168,6 +167,7 @@
                 {% endif %}
             </div>
         </div>
+    </div>
     {% endblock %}
 
     {% block javascripts %}

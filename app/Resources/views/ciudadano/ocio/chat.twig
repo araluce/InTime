@@ -11,7 +11,7 @@
             width: 100%;
         }
         .navbar{
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: #FEFEFE;
             border-bottom: 1px solid #ccc;
         }
         #wrapper {
@@ -24,7 +24,7 @@
             top: 51px;
             left: 250px;
             width: 250px;
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: #FCFCFC;
             position: fixed;
             height: 100%;
             overflow-y: auto;
@@ -97,19 +97,22 @@
             margin: 0;
             padding: 0;
         }
-
+        .sidebar-nav h6{
+            font-size: 13px;
+        }
         .sidebar-nav li {
             /*line-height: 40px;*/
             text-indent: 20px;
+            width: 100%;
         }
-
-        .sidebar-nav li a button:before {
+        .sidebar-nav li button:before {
             position: absolute;
             left: 0;
             color: #41484c;
             text-align: center;
             width: 20px;
             line-height: 18px;
+            width: 100%;
         }
 
         .sidebar-nav li button img,
@@ -122,10 +125,7 @@
             display: block;
             text-decoration: none;
             padding-left: 60px;
-        }
-
-        .sidebar-nav li button{
-            padding-left: 0px; 
+            width: 100%;
             border: none; 
             background-color: transparent; 
             text-align: left;
@@ -166,8 +166,28 @@
             color: black;
             padding-right: 15px;
         }
+        .button-usuario{
+            font-size: 13px;
+            width: 100%;
+        }
 
-
+        .button-usuario img{
+            height: 30px;
+            width: 30px;
+        }
+        .sidebar-nav{
+            width: 100%;
+        }
+        .navbar-brand a::before{
+            display: none;
+        }
+        .navbar-brand a i,
+        .navbar-brand a i::before{
+            font-size: 30px;
+        }
+        .navbar-header{
+            width: 100%;
+        }
         @media (max-width:767px) {
 
             #wrapper {
@@ -193,6 +213,80 @@
             }
 
         }
+        @media only screen and (min-width:868px) and (max-width: 1068px){
+            #sidebar-wrapper {
+                margin-left: -550px;
+                left: 550px;
+                width: 550px;
+            }
+            .sidebar-nav h6{
+                font-size: 25px;
+            }
+            #wrapper {
+                padding-left: 0;
+            }
+
+            #sidebar-wrapper {
+                left: 0;
+            }
+            #sidebar-wrapper,
+            #page-content-wrapper{
+                top: 151px;
+            }
+
+            #wrapper.active {
+                position: relative;
+                left: 550px;
+            }
+
+            #wrapper.active #sidebar-wrapper {
+                left: 550px;
+                width: 550px;
+            }
+            .button-usuario{
+                font-size: 35px;
+                width: 100%;
+            }
+
+            .button-usuario img{
+                height: 85px;
+                width: 85px;
+            }
+            #menu-toggle {
+                display: inline-block;
+            }
+
+            .navbar-header,
+            .navbar{
+                height: 120px;
+                font-size: 45px;
+            }
+            .navbar-brand a span,
+            .navbar-brand a span::before,
+            .navbar-brand a i,
+            .navbar-brand a i::before{
+                font-size: 75px;
+            }
+            #panel-envio{
+                bottom: 100px;
+                height: 235px;
+            }
+            #panel-chat-descripcion{
+                font-size: 55px;
+                height: 180px;
+            }
+            #panel-chat-descripcion img{
+                height: 120px;
+                width: 120px;
+            }
+            #panel-chat{
+                font-size: 55px;
+            }
+            .sidebar-nav li button img,
+            .sidebar-nav li button span{
+                margin-left: 0px;
+            }
+        }
 
     </style>
 {% endblock %}
@@ -215,36 +309,12 @@
                             <i class="fa fa-bars"></i>
                         </a>
                     </div>
-                    <a href="/ciudadano/ocio/amigos"><span class="fa fa-arrow-left" style=" margin-top:15px; font-size: 20px;"></span></a>
+                    <div  class="navbar-brand" style="float:right;">
+                        <a href="/ciudadano/ocio/amigos">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </div>
                 </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/ciudadano/ocio">
-                                <i class="fa fa-briefcase"></i>
-                                OCIO
-                            </a> 
-                        </li>
-                        <li>
-                            <a href="/ciudadano/ocio/amigos">
-                                <i class="fa fa-briefcase"></i>
-                                AMIGOS
-                            </a> 
-                        </li>
-                        <li class="active">
-                            <a href="#">
-                                <i class="fa fa-briefcase"></i>
-                                CHAT
-                            </a> 
-                        </li>
-                    </ul>
-                </div><!--/.nav-collapse -->
             </div>
         </nav>
         <!-- Sidebar -->
@@ -252,36 +322,33 @@
             <nav id="spy">
 
                 <ul class="sidebar-nav nav">
-                    <center><h6 style="font-size: 13px; text-transform: uppercase; font-weight: bold;">CHATS DE DISTRITOS</h6></center>
+                    <center><h6 style="text-transform: uppercase; font-weight: bold;">CHATS DE DISTRITOS</h6></center>
                         {% if DISTRITOS is not null %}
                             {% for DISTRITO in DISTRITOS %}
                             <li>
-                                <button onclick="abrir_chat(null, {{ DISTRITO.getIdUsuarioDistrito() }});" id="{{ DISTRITO.getIdUsuarioDistrito() }}" class="btn-block">
+                                <button class="button-usuario" style="width: 100%;" onclick="abrir_chat(null, {{ DISTRITO.getIdUsuarioDistrito() }});" id="{{ DISTRITO.getIdUsuarioDistrito() }}" class="btn-block">
                                     <span class="fa fa-bank"></span> 
-                                    <span style="padding-left: 30px; text-transform: uppercase; font-size: 13px;">{{ DISTRITO.getNombre() }}</span>
+                                    <span style="margin-left: 10px; text-transform: uppercase;">{{ DISTRITO.getNombre() }}</span>
                                 </button>
                             </li>
                         {% endfor %}
                     {% endif %}
                     <li role="separator" class="divider"><hr></li>
-                    <center><h6 style="font-size: 13px; text-transform: uppercase; font-weight: bold;">CHATS INDIVIDUALES</h6></center>
+                    <center><h6 style="text-transform: uppercase; font-weight: bold;">CHATS INDIVIDUALES</h6></center>
                         {% if CIUDADANOS is not null %}
                             {% for CIUDADANO in CIUDADANOS %}
                             <li>
-                                <button onclick="abrir_chat({{ CIUDADANO.getIdUsuario() }}, null);" id="{{ CIUDADANO.getIdUsuario() }}" class="btn-block">
+                                <button class="button-usuario" onclick="abrir_chat({{ CIUDADANO.getIdUsuario() }}, null);" id="{{ CIUDADANO.getIdUsuario() }}" class="btn-block">
                                     {% if CIUDADANO.getImagen() is not null%}
                                         <img id="image"
                                              src="{{ asset('images/users/' ~ CIUDADANO.getDni() ~ '/' ~ CIUDADANO.getImagen() ) }}"
-                                             class="img-circle"
-                                             width="30" height="30"
-                                             />
+                                             class="img-circle"/>
                                     {% else %}
                                         <img id="image"
                                              src="{{ asset('images/fotos-usuarios/default.jpg') }}"
-                                             class="img-circle"
-                                             width="30" height="30"/>
+                                             class="img-circle"/>
                                     {% endif %}
-                                    <span style="padding-left: 30px; text-transform: lowercase; font-size: 13px;">@{{ CIUDADANO.getSeudonimo() }}</span>
+                                    <span style="margin-left: 10px; text-transform: lowercase;">@{{ CIUDADANO.getSeudonimo() }}</span>
                                 </button>
                             </li>
                         {% endfor %}
@@ -320,7 +387,7 @@
         $(document).ready(function () {
             var height = $(this).height(), width = $(this).width();
 
-            $('#panel-chat').height($(window).height() - 200);
+            $('#panel-chat').height($(window).height() - $('#panel-envio').height() - $('.navbar-header').height() - $('#panel-chat-descripcion').height());
             ajustarTamanioContenido();
             getDistrito();
             getUltimoChat();
@@ -329,9 +396,9 @@
             }, 6000);
             $(window).resize(function () {
                 if ($(this).height() !== height || $(this).width() !== width) {
-                    $('#panel-chat').height($(this).height() - 200);
+                    $('#panel-chat').height($(this).height() - $('#panel-envio').height() - $('.navbar-header').height() - $('#panel-chat-descripcion').height());
                     ajustarTamanioContenido();
-                    $('.sidebar-nav').height($(this).height() - 50);
+                    $('.sidebar-nav').height($(this).height() - $('.navbar-header').height());
                 }
             });
         {% if info.message is defined or info.type is defined%}
@@ -350,8 +417,8 @@
                     $('#page-content-wrapper').width($(window).width());
                     $('#panel-envio').width($(window).width());
                 } else {
-                    $('#page-content-wrapper').width($(window).width() - 250);
-                    $('#panel-envio').width($(window).width() - 250);
+                    $('#page-content-wrapper').width($(window).width() - $('#sidebar-wrapper').width());
+                    $('#panel-envio').width($(window).width() - $('#sidebar-wrapper').width());
                 }
             }
             function getDistrito() {
@@ -415,7 +482,7 @@
                                 if (v.usuario.alias === v.usuario.mi_alias) {
                                     contenido += '<span style="float:right; background-color: #EBF8A4; padding: 1%; color:black;">';
                                 } else {
-                                    contenido += '<span style="float:left; background-color: #EBF8A4; padding: 1%; color:black;">';
+                                    contenido += '<span style="float:left; background-color: #FFC0CB; padding: 1%; color:black;">';
                                 }
                                 contenido += v.mensaje;
                                 contenido += '</span>';

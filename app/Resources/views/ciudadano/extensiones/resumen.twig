@@ -8,42 +8,44 @@
 {% endblock %}
 
 {% block body %}
-    {% if SECCION == 'inspeccion_trabajo' %}
-        {% set SECCION_TEXT = "inspección de trabajo" %}
-    {% endif %}
-    {% if SECCION == 'paga_extra' %}
-        {% set SECCION_TEXT = "paga extra" %}
-    {% endif %}
-    {% if SECCION == 'comida' %}
-        {% set SECCION_TEXT = "comida" %}
-    {% endif %}
-    {% if SECCION == 'bebida' %}
-        {% set SECCION_TEXT = "bebida" %}
-    {% endif %}
-    <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-bottom: 1%;">
-                {% if RESULTADO is defined %}
-                    <div class="col-md-12">
-                        <legend style="text-transform: uppercase;">RESULTADOS DEL EJERCICIO</legend>
-                        <div class="row resultados">
-                            <div class="col-md-12">
-                                <div class="row resultados-titulo">
-                                    <center>{{ RESULTADO.NOTA_TEXTO }}</center>
-                                </div>
-                                <div class="row resultados-icono">
-                                    <center><img src="{{ asset('images/badges/' ~ RESULTADO.NOTA_ICONO) }}" /></center>
-                                </div>
-                                <div class="row" style="margin-top: 1%;">
-                                    <a class="btn btn-primary btn-block" href="/">
-                                        <i class="fa fa-home"></i>
-                                        Volver
-                                    </a>
+    <div class="container">
+        {% if SECCION == 'inspeccion_trabajo' %}
+            {% set SECCION_TEXT = "inspección de trabajo" %}
+        {% endif %}
+        {% if SECCION == 'paga_extra' %}
+            {% set SECCION_TEXT = "paga extra" %}
+        {% endif %}
+        {% if SECCION == 'comida' %}
+            {% set SECCION_TEXT = "comida" %}
+        {% endif %}
+        {% if SECCION == 'bebida' %}
+            {% set SECCION_TEXT = "bebida" %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-bottom: 1%;">
+                    {% if RESULTADO is defined %}
+                        <div class="col-md-12">
+                            <legend style="text-transform: uppercase;">RESULTADOS DEL EJERCICIO</legend>
+                            <div class="row resultados">
+                                <div class="col-md-12">
+                                    <div class="row resultados-titulo">
+                                        <center>{{ RESULTADO.NOTA_TEXTO }}</center>
+                                    </div>
+                                    <div class="row resultados-icono">
+                                        <center><img src="{{ asset('images/badges/' ~ RESULTADO.NOTA_ICONO) }}" /></center>
+                                    </div>
+                                    <div class="row" style="margin-top: 1%;">
+                                        <a class="btn btn-primary btn-block" href="/">
+                                            <i class="fa fa-home"></i>
+                                            Volver
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     {% endblock %}
