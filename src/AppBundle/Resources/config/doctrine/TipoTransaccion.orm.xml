@@ -4,37 +4,13 @@
     <id name="idTipoTransaccion" type="integer" column="id_tipo_transaccion">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="30" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="descripcion" type="string" column="descripcion" length="120" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="origen" type="string" column="origen" length="30" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="destino" type="string" column="destino" length="30" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="nombre" type="string" column="nombre" length="30" nullable="false"/>
+    <field name="descripcion" type="string" column="descripcion" length="120" nullable="true"/>
+    <field name="origen" type="string" column="origen" length="30" nullable="true"/>
+    <field name="destino" type="string" column="destino" length="30" nullable="true"/>
     <field name="devuelve" type="boolean" column="devuelve" nullable="true"/>
     <field name="tiempoDevolucion" type="time" column="tiempo_devolucion" nullable="true"/>
-    <field name="veces" type="integer" column="veces" nullable="true">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
-    <field name="limiteMaxTdv" type="datetime" column="limite_max_tdv" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
+    <field name="veces" type="integer" column="veces" nullable="true"/>
+    <field name="limiteMaxTdv" type="datetime" column="limite_max_tdv" nullable="false"/>
   </entity>
 </doctrine-mapping>

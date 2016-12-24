@@ -41,7 +41,6 @@ class UsuarioXDistrito
      * Set idDistrito
      *
      * @param integer $idDistrito
-     *
      * @return UsuarioXDistrito
      */
     public function setIdDistrito($idDistrito)
@@ -54,7 +53,7 @@ class UsuarioXDistrito
     /**
      * Get idDistrito
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdDistrito()
     {
@@ -65,7 +64,6 @@ class UsuarioXDistrito
      * Set idUsuario
      *
      * @param integer $idUsuario
-     *
      * @return UsuarioXDistrito
      */
     public function setIdUsuario($idUsuario)
@@ -78,7 +76,7 @@ class UsuarioXDistrito
     /**
      * Get idUsuario
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuario()
     {
@@ -88,7 +86,7 @@ class UsuarioXDistrito
     /**
      * Get idUsuarioXDistrito
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuarioXDistrito()
     {

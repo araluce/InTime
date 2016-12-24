@@ -39,7 +39,6 @@ class UsuarioXTuitero
      * Set idTuitero
      *
      * @param string $idTuitero
-     *
      * @return UsuarioXTuitero
      */
     public function setIdTuitero($idTuitero)
@@ -52,7 +51,7 @@ class UsuarioXTuitero
     /**
      * Get idTuitero
      *
-     * @return string
+     * @return string 
      */
     public function getIdTuitero()
     {
@@ -63,7 +62,6 @@ class UsuarioXTuitero
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return UsuarioXTuitero
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario)
@@ -76,7 +74,7 @@ class UsuarioXTuitero
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

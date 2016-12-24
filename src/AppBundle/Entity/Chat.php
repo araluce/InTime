@@ -17,7 +17,7 @@ class Chat
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var \DateTime
@@ -71,7 +71,6 @@ class Chat
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return Chat
      */
     public function setFecha($fecha)
@@ -84,7 +83,7 @@ class Chat
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -95,7 +94,6 @@ class Chat
      * Set fechaUltimoMensaje
      *
      * @param \DateTime $fechaUltimoMensaje
-     *
      * @return Chat
      */
     public function setFechaUltimoMensaje($fechaUltimoMensaje)
@@ -108,7 +106,7 @@ class Chat
     /**
      * Get fechaUltimoMensaje
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFechaUltimoMensaje()
     {
@@ -118,7 +116,7 @@ class Chat
     /**
      * Get idChat
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdChat()
     {
@@ -129,7 +127,6 @@ class Chat
      * Set idDistrito
      *
      * @param \AppBundle\Entity\UsuarioDistrito $idDistrito
-     *
      * @return Chat
      */
     public function setIdDistrito(\AppBundle\Entity\UsuarioDistrito $idDistrito = null)
@@ -142,7 +139,7 @@ class Chat
     /**
      * Get idDistrito
      *
-     * @return \AppBundle\Entity\UsuarioDistrito
+     * @return \AppBundle\Entity\UsuarioDistrito 
      */
     public function getIdDistrito()
     {
@@ -153,7 +150,6 @@ class Chat
      * Set idUsuario2
      *
      * @param \AppBundle\Entity\Usuario $idUsuario2
-     *
      * @return Chat
      */
     public function setIdUsuario2(\AppBundle\Entity\Usuario $idUsuario2 = null)
@@ -166,7 +162,7 @@ class Chat
     /**
      * Get idUsuario2
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario2()
     {
@@ -177,7 +173,6 @@ class Chat
      * Set idUsuario1
      *
      * @param \AppBundle\Entity\Usuario $idUsuario1
-     *
      * @return Chat
      */
     public function setIdUsuario1(\AppBundle\Entity\Usuario $idUsuario1 = null)
@@ -190,7 +185,7 @@ class Chat
     /**
      * Get idUsuario1
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario1()
     {

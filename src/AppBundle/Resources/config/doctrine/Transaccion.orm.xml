@@ -13,22 +13,22 @@
     <field name="tiempoCedido" type="datetime" column="tiempo_cedido" nullable="true"/>
     <field name="pagado" type="boolean" column="pagado" nullable="true"/>
     <field name="fechaTransaccion" type="datetime" column="fecha_transaccion" nullable="true"/>
-    <many-to-one field="idUsuarioOrigen" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuarioOrigen" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario_origen" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuarioDestino" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuarioDestino" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario_destino" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idTipoTransaccion" target-entity="TipoTransaccion" fetch="LAZY">
+    <many-to-one field="idTipoTransaccion" target-entity="TipoTransaccion">
       <join-columns>
         <join-column name="id_tipo_transaccion" referenced-column-name="id_tipo_transaccion"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idTransaccionPagar" target-entity="Transaccion" fetch="LAZY">
+    <many-to-one field="idTransaccionPagar" target-entity="Transaccion">
       <join-columns>
         <join-column name="id_transaccion_pagar" referenced-column-name="id_transaccion"/>
       </join-columns>

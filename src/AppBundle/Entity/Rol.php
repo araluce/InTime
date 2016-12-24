@@ -34,7 +34,6 @@ class Rol
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return Rol
      */
     public function setNombre($nombre)
@@ -47,7 +46,7 @@ class Rol
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -57,7 +56,7 @@ class Rol
     /**
      * Get idRol
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdRol()
     {

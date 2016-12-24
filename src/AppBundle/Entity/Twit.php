@@ -41,7 +41,6 @@ class Twit
      * Set idTwittero
      *
      * @param string $idTwittero
-     *
      * @return Twit
      */
     public function setIdTwittero($idTwittero)
@@ -54,7 +53,7 @@ class Twit
     /**
      * Get idTwittero
      *
-     * @return string
+     * @return string 
      */
     public function getIdTwittero()
     {
@@ -65,7 +64,6 @@ class Twit
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return Twit
      */
     public function setFecha($fecha)
@@ -78,7 +76,7 @@ class Twit
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -88,7 +86,7 @@ class Twit
     /**
      * Get idTwit
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTwit()
     {

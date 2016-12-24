@@ -24,7 +24,7 @@ class MochilaTweets
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=true)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var integer
@@ -71,7 +71,6 @@ class MochilaTweets
      * Set idTweet
      *
      * @param integer $idTweet
-     *
      * @return MochilaTweets
      */
     public function setIdTweet($idTweet)
@@ -84,7 +83,7 @@ class MochilaTweets
     /**
      * Get idTweet
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTweet()
     {
@@ -95,7 +94,6 @@ class MochilaTweets
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return MochilaTweets
      */
     public function setFecha($fecha)
@@ -108,7 +106,7 @@ class MochilaTweets
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -118,7 +116,7 @@ class MochilaTweets
     /**
      * Get idMochila
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdMochila()
     {
@@ -129,7 +127,6 @@ class MochilaTweets
      * Set idTipoTweet
      *
      * @param \AppBundle\Entity\TipoTweet $idTipoTweet
-     *
      * @return MochilaTweets
      */
     public function setIdTipoTweet(\AppBundle\Entity\TipoTweet $idTipoTweet = null)
@@ -142,7 +139,7 @@ class MochilaTweets
     /**
      * Get idTipoTweet
      *
-     * @return \AppBundle\Entity\TipoTweet
+     * @return \AppBundle\Entity\TipoTweet 
      */
     public function getIdTipoTweet()
     {
@@ -153,7 +150,6 @@ class MochilaTweets
      * Set idUsuarioDestino
      *
      * @param \AppBundle\Entity\Usuario $idUsuarioDestino
-     *
      * @return MochilaTweets
      */
     public function setIdUsuarioDestino(\AppBundle\Entity\Usuario $idUsuarioDestino = null)
@@ -166,7 +162,7 @@ class MochilaTweets
     /**
      * Get idUsuarioDestino
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuarioDestino()
     {
@@ -177,7 +173,6 @@ class MochilaTweets
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return MochilaTweets
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -190,7 +185,7 @@ class MochilaTweets
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

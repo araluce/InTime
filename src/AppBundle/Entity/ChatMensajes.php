@@ -24,14 +24,14 @@ class ChatMensajes
      *
      * @ORM\Column(name="visto", type="boolean", nullable=false)
      */
-    private $visto = '0';
+    private $visto;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var integer
@@ -68,7 +68,6 @@ class ChatMensajes
      * Set mensaje
      *
      * @param string $mensaje
-     *
      * @return ChatMensajes
      */
     public function setMensaje($mensaje)
@@ -81,7 +80,7 @@ class ChatMensajes
     /**
      * Get mensaje
      *
-     * @return string
+     * @return string 
      */
     public function getMensaje()
     {
@@ -92,7 +91,6 @@ class ChatMensajes
      * Set visto
      *
      * @param boolean $visto
-     *
      * @return ChatMensajes
      */
     public function setVisto($visto)
@@ -105,7 +103,7 @@ class ChatMensajes
     /**
      * Get visto
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getVisto()
     {
@@ -116,7 +114,6 @@ class ChatMensajes
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return ChatMensajes
      */
     public function setFecha($fecha)
@@ -129,7 +126,7 @@ class ChatMensajes
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -139,7 +136,7 @@ class ChatMensajes
     /**
      * Get idChatMensajes
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdChatMensajes()
     {
@@ -150,7 +147,6 @@ class ChatMensajes
      * Set idChat
      *
      * @param \AppBundle\Entity\Chat $idChat
-     *
      * @return ChatMensajes
      */
     public function setIdChat(\AppBundle\Entity\Chat $idChat = null)
@@ -163,7 +159,7 @@ class ChatMensajes
     /**
      * Get idChat
      *
-     * @return \AppBundle\Entity\Chat
+     * @return \AppBundle\Entity\Chat 
      */
     public function getIdChat()
     {
@@ -174,7 +170,6 @@ class ChatMensajes
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return ChatMensajes
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -187,7 +182,7 @@ class ChatMensajes
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

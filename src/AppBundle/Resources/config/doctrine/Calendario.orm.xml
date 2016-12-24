@@ -8,22 +8,10 @@
     <id name="idCalendario" type="integer" column="id_calendario">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="contenido" type="string" column="contenido" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="semanaIni" type="string" column="semana_ini" length="100" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="semanaFin" type="string" column="semana_fin" length="100" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <field name="contenido" type="string" column="contenido" length="1000" nullable="false"/>
+    <field name="semanaIni" type="string" column="semana_ini" length="100" nullable="true"/>
+    <field name="semanaFin" type="string" column="semana_fin" length="100" nullable="true"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

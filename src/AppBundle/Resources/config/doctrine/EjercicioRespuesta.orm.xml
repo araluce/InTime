@@ -7,13 +7,9 @@
     <id name="idEjercicioRespuesta" type="integer" column="id_ejercicio_respuesta">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="respuesta" type="string" column="respuesta" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="respuesta" type="string" column="respuesta" length="1000" nullable="false"/>
     <field name="correcta" type="boolean" column="correcta" nullable="true"/>
-    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+    <many-to-one field="idEjercicio" target-entity="Ejercicio">
       <join-columns>
         <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
       </join-columns>

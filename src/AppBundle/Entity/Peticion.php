@@ -17,7 +17,7 @@ class Peticion
      *
      * @ORM\Column(name="fecha_peticion", type="datetime", nullable=false)
      */
-    private $fechaPeticion = 'CURRENT_TIMESTAMP';
+    private $fechaPeticion;
 
     /**
      * @var string
@@ -86,7 +86,6 @@ class Peticion
      * Set fechaPeticion
      *
      * @param \DateTime $fechaPeticion
-     *
      * @return Peticion
      */
     public function setFechaPeticion($fechaPeticion)
@@ -99,7 +98,7 @@ class Peticion
     /**
      * Get fechaPeticion
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFechaPeticion()
     {
@@ -110,7 +109,6 @@ class Peticion
      * Set finalidad
      *
      * @param string $finalidad
-     *
      * @return Peticion
      */
     public function setFinalidad($finalidad)
@@ -123,7 +121,7 @@ class Peticion
     /**
      * Get finalidad
      *
-     * @return string
+     * @return string 
      */
     public function getFinalidad()
     {
@@ -134,7 +132,6 @@ class Peticion
      * Set coste
      *
      * @param \DateTime $coste
-     *
      * @return Peticion
      */
     public function setCoste($coste)
@@ -147,7 +144,7 @@ class Peticion
     /**
      * Get coste
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getCoste()
     {
@@ -158,7 +155,6 @@ class Peticion
      * Set motivo
      *
      * @param string $motivo
-     *
      * @return Peticion
      */
     public function setMotivo($motivo)
@@ -171,7 +167,7 @@ class Peticion
     /**
      * Get motivo
      *
-     * @return string
+     * @return string 
      */
     public function getMotivo()
     {
@@ -182,7 +178,6 @@ class Peticion
      * Set aceptada
      *
      * @param boolean $aceptada
-     *
      * @return Peticion
      */
     public function setAceptada($aceptada)
@@ -195,7 +190,7 @@ class Peticion
     /**
      * Get aceptada
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getAceptada()
     {
@@ -206,7 +201,6 @@ class Peticion
      * Set fechaFin
      *
      * @param \DateTime $fechaFin
-     *
      * @return Peticion
      */
     public function setFechaFin($fechaFin)
@@ -219,7 +213,7 @@ class Peticion
     /**
      * Get fechaFin
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFechaFin()
     {
@@ -230,7 +224,6 @@ class Peticion
      * Set tipo
      *
      * @param string $tipo
-     *
      * @return Peticion
      */
     public function setTipo($tipo)
@@ -243,7 +236,7 @@ class Peticion
     /**
      * Get tipo
      *
-     * @return string
+     * @return string 
      */
     public function getTipo()
     {
@@ -253,7 +246,7 @@ class Peticion
     /**
      * Get idPeticion
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdPeticion()
     {
@@ -264,7 +257,6 @@ class Peticion
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return Peticion
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -277,7 +269,7 @@ class Peticion
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

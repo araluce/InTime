@@ -4,11 +4,7 @@
     <id name="idCuenta" type="integer" column="id_cuenta">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="tdv" type="datetime" column="tdv" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
+    <field name="tdv" type="datetime" column="tdv" nullable="false"/>
     <field name="finbloqueo" type="datetime" column="finbloqueo" nullable="true"/>
   </entity>
 </doctrine-mapping>

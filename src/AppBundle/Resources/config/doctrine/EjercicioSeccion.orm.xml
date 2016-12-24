@@ -4,10 +4,6 @@
     <id name="idEjercicioSeccion" type="integer" column="id_ejercicio_seccion">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="seccion" type="string" column="seccion" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="seccion" type="string" column="seccion" length="100" nullable="false"/>
   </entity>
 </doctrine-mapping>

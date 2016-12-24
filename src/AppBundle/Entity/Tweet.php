@@ -48,7 +48,6 @@ class Tweet
      * Set idTuitero
      *
      * @param string $idTuitero
-     *
      * @return Tweet
      */
     public function setIdTuitero($idTuitero)
@@ -61,7 +60,7 @@ class Tweet
     /**
      * Get idTuitero
      *
-     * @return string
+     * @return string 
      */
     public function getIdTuitero()
     {
@@ -72,7 +71,6 @@ class Tweet
      * Set fecha
      *
      * @param string $fecha
-     *
      * @return Tweet
      */
     public function setFecha($fecha)
@@ -85,7 +83,7 @@ class Tweet
     /**
      * Get fecha
      *
-     * @return string
+     * @return string 
      */
     public function getFecha()
     {
@@ -96,7 +94,6 @@ class Tweet
      * Set idTweet
      *
      * @param integer $idTweet
-     *
      * @return Tweet
      */
     public function setIdTweet($idTweet)
@@ -109,7 +106,7 @@ class Tweet
     /**
      * Get idTweet
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTweet()
     {
@@ -119,7 +116,7 @@ class Tweet
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {

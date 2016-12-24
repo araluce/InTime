@@ -17,7 +17,7 @@ class Mensaje
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var string
@@ -58,7 +58,6 @@ class Mensaje
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return Mensaje
      */
     public function setFecha($fecha)
@@ -71,7 +70,7 @@ class Mensaje
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -82,7 +81,6 @@ class Mensaje
      * Set titulo
      *
      * @param string $titulo
-     *
      * @return Mensaje
      */
     public function setTitulo($titulo)
@@ -95,7 +93,7 @@ class Mensaje
     /**
      * Get titulo
      *
-     * @return string
+     * @return string 
      */
     public function getTitulo()
     {
@@ -106,7 +104,6 @@ class Mensaje
      * Set mensaje
      *
      * @param string $mensaje
-     *
      * @return Mensaje
      */
     public function setMensaje($mensaje)
@@ -119,7 +116,7 @@ class Mensaje
     /**
      * Get mensaje
      *
-     * @return string
+     * @return string 
      */
     public function getMensaje()
     {
@@ -129,7 +126,7 @@ class Mensaje
     /**
      * Get idMensaje
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdMensaje()
     {
@@ -140,7 +137,6 @@ class Mensaje
      * Set idTipoMensaje
      *
      * @param \AppBundle\Entity\TipoMensaje $idTipoMensaje
-     *
      * @return Mensaje
      */
     public function setIdTipoMensaje(\AppBundle\Entity\TipoMensaje $idTipoMensaje = null)
@@ -153,7 +149,7 @@ class Mensaje
     /**
      * Get idTipoMensaje
      *
-     * @return \AppBundle\Entity\TipoMensaje
+     * @return \AppBundle\Entity\TipoMensaje 
      */
     public function getIdTipoMensaje()
     {

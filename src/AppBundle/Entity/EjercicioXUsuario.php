@@ -17,7 +17,7 @@ class EjercicioXUsuario
      *
      * @ORM\Column(name="visto", type="boolean", nullable=false)
      */
-    private $visto = '0';
+    private $visto;
 
     /**
      * @var integer
@@ -74,7 +74,6 @@ class EjercicioXUsuario
      * Set visto
      *
      * @param boolean $visto
-     *
      * @return EjercicioXUsuario
      */
     public function setVisto($visto)
@@ -87,7 +86,7 @@ class EjercicioXUsuario
     /**
      * Get visto
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getVisto()
     {
@@ -97,7 +96,7 @@ class EjercicioXUsuario
     /**
      * Get idEjercicioXUsuario
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioXUsuario()
     {
@@ -108,7 +107,6 @@ class EjercicioXUsuario
      * Set idUsu
      *
      * @param \AppBundle\Entity\Usuario $idUsu
-     *
      * @return EjercicioXUsuario
      */
     public function setIdUsu(\AppBundle\Entity\Usuario $idUsu = null)
@@ -121,7 +119,7 @@ class EjercicioXUsuario
     /**
      * Get idUsu
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsu()
     {
@@ -132,7 +130,6 @@ class EjercicioXUsuario
      * Set idSeccion
      *
      * @param \AppBundle\Entity\EjercicioSeccion $idSeccion
-     *
      * @return EjercicioXUsuario
      */
     public function setIdSeccion(\AppBundle\Entity\EjercicioSeccion $idSeccion = null)
@@ -145,7 +142,7 @@ class EjercicioXUsuario
     /**
      * Get idSeccion
      *
-     * @return \AppBundle\Entity\EjercicioSeccion
+     * @return \AppBundle\Entity\EjercicioSeccion 
      */
     public function getIdSeccion()
     {
@@ -156,7 +153,6 @@ class EjercicioXUsuario
      * Set idGrupo
      *
      * @param \AppBundle\Entity\GrupoEjercicios $idGrupo
-     *
      * @return EjercicioXUsuario
      */
     public function setIdGrupo(\AppBundle\Entity\GrupoEjercicios $idGrupo = null)
@@ -169,7 +165,7 @@ class EjercicioXUsuario
     /**
      * Get idGrupo
      *
-     * @return \AppBundle\Entity\GrupoEjercicios
+     * @return \AppBundle\Entity\GrupoEjercicios 
      */
     public function getIdGrupo()
     {
@@ -180,7 +176,6 @@ class EjercicioXUsuario
      * Set idEjercicio
      *
      * @param \AppBundle\Entity\Ejercicio $idEjercicio
-     *
      * @return EjercicioXUsuario
      */
     public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
@@ -193,7 +188,7 @@ class EjercicioXUsuario
     /**
      * Get idEjercicio
      *
-     * @return \AppBundle\Entity\Ejercicio
+     * @return \AppBundle\Entity\Ejercicio 
      */
     public function getIdEjercicio()
     {

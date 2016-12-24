@@ -144,7 +144,6 @@ class Usuario
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return Usuario
      */
     public function setNombre($nombre)
@@ -157,7 +156,7 @@ class Usuario
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -168,7 +167,6 @@ class Usuario
      * Set apellidos
      *
      * @param string $apellidos
-     *
      * @return Usuario
      */
     public function setApellidos($apellidos)
@@ -181,7 +179,7 @@ class Usuario
     /**
      * Get apellidos
      *
-     * @return string
+     * @return string 
      */
     public function getApellidos()
     {
@@ -192,7 +190,6 @@ class Usuario
      * Set clave
      *
      * @param string $clave
-     *
      * @return Usuario
      */
     public function setClave($clave)
@@ -205,7 +202,7 @@ class Usuario
     /**
      * Get clave
      *
-     * @return string
+     * @return string 
      */
     public function getClave()
     {
@@ -216,7 +213,6 @@ class Usuario
      * Set email
      *
      * @param string $email
-     *
      * @return Usuario
      */
     public function setEmail($email)
@@ -229,7 +225,7 @@ class Usuario
     /**
      * Get email
      *
-     * @return string
+     * @return string 
      */
     public function getEmail()
     {
@@ -240,7 +236,6 @@ class Usuario
      * Set seudonimo
      *
      * @param string $seudonimo
-     *
      * @return Usuario
      */
     public function setSeudonimo($seudonimo)
@@ -253,7 +248,7 @@ class Usuario
     /**
      * Get seudonimo
      *
-     * @return string
+     * @return string 
      */
     public function getSeudonimo()
     {
@@ -264,7 +259,6 @@ class Usuario
      * Set dni
      *
      * @param string $dni
-     *
      * @return Usuario
      */
     public function setDni($dni)
@@ -277,7 +271,7 @@ class Usuario
     /**
      * Get dni
      *
-     * @return string
+     * @return string 
      */
     public function getDni()
     {
@@ -288,7 +282,6 @@ class Usuario
      * Set usuRuntastic
      *
      * @param string $usuRuntastic
-     *
      * @return Usuario
      */
     public function setUsuRuntastic($usuRuntastic)
@@ -301,7 +294,7 @@ class Usuario
     /**
      * Get usuRuntastic
      *
-     * @return string
+     * @return string 
      */
     public function getUsuRuntastic()
     {
@@ -312,7 +305,6 @@ class Usuario
      * Set certificado
      *
      * @param string $certificado
-     *
      * @return Usuario
      */
     public function setCertificado($certificado)
@@ -325,7 +317,7 @@ class Usuario
     /**
      * Get certificado
      *
-     * @return string
+     * @return string 
      */
     public function getCertificado()
     {
@@ -336,7 +328,6 @@ class Usuario
      * Set imagen
      *
      * @param string $imagen
-     *
      * @return Usuario
      */
     public function setImagen($imagen)
@@ -349,7 +340,7 @@ class Usuario
     /**
      * Get imagen
      *
-     * @return string
+     * @return string 
      */
     public function getImagen()
     {
@@ -360,7 +351,6 @@ class Usuario
      * Set tiempoSinComer
      *
      * @param \DateTime $tiempoSinComer
-     *
      * @return Usuario
      */
     public function setTiempoSinComer($tiempoSinComer)
@@ -373,7 +363,7 @@ class Usuario
     /**
      * Get tiempoSinComer
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTiempoSinComer()
     {
@@ -384,7 +374,6 @@ class Usuario
      * Set tiempoSinBeber
      *
      * @param \DateTime $tiempoSinBeber
-     *
      * @return Usuario
      */
     public function setTiempoSinBeber($tiempoSinBeber)
@@ -397,7 +386,7 @@ class Usuario
     /**
      * Get tiempoSinBeber
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTiempoSinBeber()
     {
@@ -407,7 +396,7 @@ class Usuario
     /**
      * Get idUsuario
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuario()
     {
@@ -418,7 +407,6 @@ class Usuario
      * Set idDistrito
      *
      * @param \AppBundle\Entity\UsuarioDistrito $idDistrito
-     *
      * @return Usuario
      */
     public function setIdDistrito(\AppBundle\Entity\UsuarioDistrito $idDistrito = null)
@@ -431,7 +419,7 @@ class Usuario
     /**
      * Get idDistrito
      *
-     * @return \AppBundle\Entity\UsuarioDistrito
+     * @return \AppBundle\Entity\UsuarioDistrito 
      */
     public function getIdDistrito()
     {
@@ -442,7 +430,6 @@ class Usuario
      * Set idRol
      *
      * @param \AppBundle\Entity\Rol $idRol
-     *
      * @return Usuario
      */
     public function setIdRol(\AppBundle\Entity\Rol $idRol = null)
@@ -455,7 +442,7 @@ class Usuario
     /**
      * Get idRol
      *
-     * @return \AppBundle\Entity\Rol
+     * @return \AppBundle\Entity\Rol 
      */
     public function getIdRol()
     {
@@ -466,7 +453,6 @@ class Usuario
      * Set idEstado
      *
      * @param \AppBundle\Entity\UsuarioEstado $idEstado
-     *
      * @return Usuario
      */
     public function setIdEstado(\AppBundle\Entity\UsuarioEstado $idEstado = null)
@@ -479,7 +465,7 @@ class Usuario
     /**
      * Get idEstado
      *
-     * @return \AppBundle\Entity\UsuarioEstado
+     * @return \AppBundle\Entity\UsuarioEstado 
      */
     public function getIdEstado()
     {
@@ -490,7 +476,6 @@ class Usuario
      * Set idCuenta
      *
      * @param \AppBundle\Entity\UsuarioCuenta $idCuenta
-     *
      * @return Usuario
      */
     public function setIdCuenta(\AppBundle\Entity\UsuarioCuenta $idCuenta = null)
@@ -503,7 +488,7 @@ class Usuario
     /**
      * Get idCuenta
      *
-     * @return \AppBundle\Entity\UsuarioCuenta
+     * @return \AppBundle\Entity\UsuarioCuenta 
      */
     public function getIdCuenta()
     {

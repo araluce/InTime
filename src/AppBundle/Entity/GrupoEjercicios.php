@@ -26,7 +26,7 @@ class GrupoEjercicios
     /**
      * Get idGrupoEjercicios
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdGrupoEjercicios()
     {

@@ -51,7 +51,6 @@ class ApuestaPosibilidad
      * Set posibilidad
      *
      * @param string $posibilidad
-     *
      * @return ApuestaPosibilidad
      */
     public function setPosibilidad($posibilidad)
@@ -64,7 +63,7 @@ class ApuestaPosibilidad
     /**
      * Get posibilidad
      *
-     * @return string
+     * @return string 
      */
     public function getPosibilidad()
     {
@@ -75,7 +74,6 @@ class ApuestaPosibilidad
      * Set resultado
      *
      * @param boolean $resultado
-     *
      * @return ApuestaPosibilidad
      */
     public function setResultado($resultado)
@@ -88,7 +86,7 @@ class ApuestaPosibilidad
     /**
      * Get resultado
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getResultado()
     {
@@ -98,7 +96,7 @@ class ApuestaPosibilidad
     /**
      * Get idApuestaPosibilidad
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdApuestaPosibilidad()
     {
@@ -109,7 +107,6 @@ class ApuestaPosibilidad
      * Set idApuesta
      *
      * @param \AppBundle\Entity\Apuesta $idApuesta
-     *
      * @return ApuestaPosibilidad
      */
     public function setIdApuesta(\AppBundle\Entity\Apuesta $idApuesta = null)
@@ -122,7 +119,7 @@ class ApuestaPosibilidad
     /**
      * Get idApuesta
      *
-     * @return \AppBundle\Entity\Apuesta
+     * @return \AppBundle\Entity\Apuesta 
      */
     public function getIdApuesta()
     {

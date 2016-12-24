@@ -34,7 +34,6 @@ class UsuarioDistrito
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return UsuarioDistrito
      */
     public function setNombre($nombre)
@@ -47,7 +46,7 @@ class UsuarioDistrito
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -57,7 +56,7 @@ class UsuarioDistrito
     /**
      * Get idUsuarioDistrito
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuarioDistrito()
     {

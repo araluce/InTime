@@ -46,7 +46,7 @@ class EjercicioXGrupo
     /**
      * Get idEjercicioXGrupo
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioXGrupo()
     {
@@ -57,7 +57,6 @@ class EjercicioXGrupo
      * Set idGrupoEjercicios
      *
      * @param \AppBundle\Entity\GrupoEjercicios $idGrupoEjercicios
-     *
      * @return EjercicioXGrupo
      */
     public function setIdGrupoEjercicios(\AppBundle\Entity\GrupoEjercicios $idGrupoEjercicios = null)
@@ -70,7 +69,7 @@ class EjercicioXGrupo
     /**
      * Get idGrupoEjercicios
      *
-     * @return \AppBundle\Entity\GrupoEjercicios
+     * @return \AppBundle\Entity\GrupoEjercicios 
      */
     public function getIdGrupoEjercicios()
     {
@@ -81,7 +80,6 @@ class EjercicioXGrupo
      * Set idEjercicio
      *
      * @param \AppBundle\Entity\Ejercicio $idEjercicio
-     *
      * @return EjercicioXGrupo
      */
     public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
@@ -94,7 +92,7 @@ class EjercicioXGrupo
     /**
      * Get idEjercicio
      *
-     * @return \AppBundle\Entity\Ejercicio
+     * @return \AppBundle\Entity\Ejercicio 
      */
     public function getIdEjercicio()
     {

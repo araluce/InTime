@@ -17,7 +17,7 @@ class MensajeXUsuario
      *
      * @ORM\Column(name="visto", type="boolean", nullable=false)
      */
-    private $visto = '0';
+    private $visto;
 
     /**
      * @var integer
@@ -54,7 +54,6 @@ class MensajeXUsuario
      * Set visto
      *
      * @param boolean $visto
-     *
      * @return MensajeXUsuario
      */
     public function setVisto($visto)
@@ -67,7 +66,7 @@ class MensajeXUsuario
     /**
      * Get visto
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getVisto()
     {
@@ -77,7 +76,7 @@ class MensajeXUsuario
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {
@@ -88,7 +87,6 @@ class MensajeXUsuario
      * Set idMensaje
      *
      * @param \AppBundle\Entity\Mensaje $idMensaje
-     *
      * @return MensajeXUsuario
      */
     public function setIdMensaje(\AppBundle\Entity\Mensaje $idMensaje = null)
@@ -101,7 +99,7 @@ class MensajeXUsuario
     /**
      * Get idMensaje
      *
-     * @return \AppBundle\Entity\Mensaje
+     * @return \AppBundle\Entity\Mensaje 
      */
     public function getIdMensaje()
     {
@@ -112,7 +110,6 @@ class MensajeXUsuario
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return MensajeXUsuario
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -125,7 +122,7 @@ class MensajeXUsuario
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

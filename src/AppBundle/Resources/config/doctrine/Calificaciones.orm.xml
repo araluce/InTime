@@ -5,15 +5,7 @@
       <generator strategy="IDENTITY"/>
     </id>
     <field name="correspondenciaNumerica" type="float" column="correspondencia_numerica" precision="10" scale="0" nullable="false"/>
-    <field name="correspondenciaTexto" type="string" column="correspondencia_texto" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="correspondenciaIcono" type="string" column="correspondencia_icono" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="correspondenciaTexto" type="string" column="correspondencia_texto" length="100" nullable="false"/>
+    <field name="correspondenciaIcono" type="string" column="correspondencia_icono" length="100" nullable="false"/>
   </entity>
 </doctrine-mapping>

@@ -8,12 +8,12 @@
     <id name="idEjercicioXGrupo" type="integer" column="id_ejercicio_x_grupo">
       <generator strategy="IDENTITY"/>
     </id>
-    <many-to-one field="idGrupoEjercicios" target-entity="GrupoEjercicios" fetch="LAZY">
+    <many-to-one field="idGrupoEjercicios" target-entity="GrupoEjercicios">
       <join-columns>
         <join-column name="id_grupo_ejercicios" referenced-column-name="id_grupo_ejercicios"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+    <many-to-one field="idEjercicio" target-entity="Ejercicio">
       <join-columns>
         <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
       </join-columns>

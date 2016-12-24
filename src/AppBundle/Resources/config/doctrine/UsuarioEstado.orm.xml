@@ -7,15 +7,7 @@
     <id name="idEstado" type="integer" column="id_estado">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="30" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="descripcion" type="string" column="descripcion" length="100" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="nombre" type="string" column="nombre" length="30" nullable="false"/>
+    <field name="descripcion" type="string" column="descripcion" length="100" nullable="true"/>
   </entity>
 </doctrine-mapping>

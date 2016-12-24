@@ -4,15 +4,7 @@
     <id name="idApuesta" type="integer" column="id_apuesta">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="descripcion" type="string" column="descripcion" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="disponible" type="boolean" column="disponible" nullable="false">
-      <options>
-        <option name="default">1</option>
-      </options>
-    </field>
+    <field name="descripcion" type="string" column="descripcion" length="1000" nullable="false"/>
+    <field name="disponible" type="boolean" column="disponible" nullable="false"/>
   </entity>
 </doctrine-mapping>

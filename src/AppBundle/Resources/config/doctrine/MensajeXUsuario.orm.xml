@@ -9,17 +9,13 @@
     <id name="id" type="integer" column="id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="visto" type="boolean" column="visto" nullable="false">
-      <options>
-        <option name="default">0</option>
-      </options>
-    </field>
-    <many-to-one field="idMensaje" target-entity="Mensaje" fetch="LAZY">
+    <field name="visto" type="boolean" column="visto" nullable="false"/>
+    <many-to-one field="idMensaje" target-entity="Mensaje">
       <join-columns>
         <join-column name="id_mensaje" referenced-column-name="id_mensaje"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

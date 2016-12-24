@@ -4,10 +4,6 @@
     <id name="idTipoMensaje" type="integer" column="id_tipo_mensaje">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="tipo" type="string" column="tipo" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="tipo" type="string" column="tipo" length="100" nullable="false"/>
   </entity>
 </doctrine-mapping>

@@ -88,7 +88,6 @@ class Transaccion
      * Set tiempoCedido
      *
      * @param \DateTime $tiempoCedido
-     *
      * @return Transaccion
      */
     public function setTiempoCedido($tiempoCedido)
@@ -101,7 +100,7 @@ class Transaccion
     /**
      * Get tiempoCedido
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTiempoCedido()
     {
@@ -112,7 +111,6 @@ class Transaccion
      * Set pagado
      *
      * @param boolean $pagado
-     *
      * @return Transaccion
      */
     public function setPagado($pagado)
@@ -125,7 +123,7 @@ class Transaccion
     /**
      * Get pagado
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getPagado()
     {
@@ -136,7 +134,6 @@ class Transaccion
      * Set fechaTransaccion
      *
      * @param \DateTime $fechaTransaccion
-     *
      * @return Transaccion
      */
     public function setFechaTransaccion($fechaTransaccion)
@@ -149,7 +146,7 @@ class Transaccion
     /**
      * Get fechaTransaccion
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFechaTransaccion()
     {
@@ -159,7 +156,7 @@ class Transaccion
     /**
      * Get idTransaccion
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTransaccion()
     {
@@ -170,7 +167,6 @@ class Transaccion
      * Set idUsuarioOrigen
      *
      * @param \AppBundle\Entity\Usuario $idUsuarioOrigen
-     *
      * @return Transaccion
      */
     public function setIdUsuarioOrigen(\AppBundle\Entity\Usuario $idUsuarioOrigen = null)
@@ -183,7 +179,7 @@ class Transaccion
     /**
      * Get idUsuarioOrigen
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuarioOrigen()
     {
@@ -194,7 +190,6 @@ class Transaccion
      * Set idUsuarioDestino
      *
      * @param \AppBundle\Entity\Usuario $idUsuarioDestino
-     *
      * @return Transaccion
      */
     public function setIdUsuarioDestino(\AppBundle\Entity\Usuario $idUsuarioDestino = null)
@@ -207,7 +202,7 @@ class Transaccion
     /**
      * Get idUsuarioDestino
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuarioDestino()
     {
@@ -218,7 +213,6 @@ class Transaccion
      * Set idTipoTransaccion
      *
      * @param \AppBundle\Entity\TipoTransaccion $idTipoTransaccion
-     *
      * @return Transaccion
      */
     public function setIdTipoTransaccion(\AppBundle\Entity\TipoTransaccion $idTipoTransaccion = null)
@@ -231,7 +225,7 @@ class Transaccion
     /**
      * Get idTipoTransaccion
      *
-     * @return \AppBundle\Entity\TipoTransaccion
+     * @return \AppBundle\Entity\TipoTransaccion 
      */
     public function getIdTipoTransaccion()
     {
@@ -242,7 +236,6 @@ class Transaccion
      * Set idTransaccionPagar
      *
      * @param \AppBundle\Entity\Transaccion $idTransaccionPagar
-     *
      * @return Transaccion
      */
     public function setIdTransaccionPagar(\AppBundle\Entity\Transaccion $idTransaccionPagar = null)
@@ -255,7 +248,7 @@ class Transaccion
     /**
      * Get idTransaccionPagar
      *
-     * @return \AppBundle\Entity\Transaccion
+     * @return \AppBundle\Entity\Transaccion 
      */
     public function getIdTransaccionPagar()
     {

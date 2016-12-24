@@ -7,30 +7,14 @@
     <id name="idPeticion" type="integer" column="id_peticion">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="fechaPeticion" type="datetime" column="fecha_peticion" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <field name="finalidad" type="string" column="finalidad" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="fechaPeticion" type="datetime" column="fecha_peticion" nullable="false"/>
+    <field name="finalidad" type="string" column="finalidad" length="100" nullable="false"/>
     <field name="coste" type="time" column="coste" nullable="true"/>
-    <field name="motivo" type="string" column="motivo" length="100" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="motivo" type="string" column="motivo" length="100" nullable="true"/>
     <field name="aceptada" type="boolean" column="aceptada" nullable="true"/>
     <field name="fechaFin" type="datetime" column="fecha_fin" nullable="true"/>
-    <field name="tipo" type="string" column="tipo" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <field name="tipo" type="string" column="tipo" length="100" nullable="false"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

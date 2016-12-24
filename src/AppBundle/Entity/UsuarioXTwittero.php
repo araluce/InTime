@@ -39,7 +39,6 @@ class UsuarioXTwittero
      * Set idTwittero
      *
      * @param string $idTwittero
-     *
      * @return UsuarioXTwittero
      */
     public function setIdTwittero($idTwittero)
@@ -52,7 +51,7 @@ class UsuarioXTwittero
     /**
      * Get idTwittero
      *
-     * @return string
+     * @return string 
      */
     public function getIdTwittero()
     {
@@ -63,7 +62,6 @@ class UsuarioXTwittero
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return UsuarioXTwittero
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario)
@@ -76,7 +74,7 @@ class UsuarioXTwittero
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

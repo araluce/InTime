@@ -41,7 +41,6 @@ class Cuenta
      * Set tdv
      *
      * @param \DateTime $tdv
-     *
      * @return Cuenta
      */
     public function setTdv($tdv)
@@ -54,7 +53,7 @@ class Cuenta
     /**
      * Get tdv
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTdv()
     {
@@ -65,7 +64,6 @@ class Cuenta
      * Set finbloqueo
      *
      * @param \DateTime $finbloqueo
-     *
      * @return Cuenta
      */
     public function setFinbloqueo($finbloqueo)
@@ -78,7 +76,7 @@ class Cuenta
     /**
      * Get finbloqueo
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFinbloqueo()
     {
@@ -88,7 +86,7 @@ class Cuenta
     /**
      * Get idCuenta
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdCuenta()
     {

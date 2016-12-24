@@ -4,10 +4,6 @@
     <id name="idUsuarioDistrito" type="integer" column="id_usuario_distrito">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="nombre" type="string" column="nombre" length="1000" nullable="false"/>
   </entity>
 </doctrine-mapping>

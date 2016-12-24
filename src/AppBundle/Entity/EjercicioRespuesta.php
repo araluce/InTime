@@ -51,7 +51,6 @@ class EjercicioRespuesta
      * Set respuesta
      *
      * @param string $respuesta
-     *
      * @return EjercicioRespuesta
      */
     public function setRespuesta($respuesta)
@@ -64,7 +63,7 @@ class EjercicioRespuesta
     /**
      * Get respuesta
      *
-     * @return string
+     * @return string 
      */
     public function getRespuesta()
     {
@@ -75,7 +74,6 @@ class EjercicioRespuesta
      * Set correcta
      *
      * @param boolean $correcta
-     *
      * @return EjercicioRespuesta
      */
     public function setCorrecta($correcta)
@@ -88,7 +86,7 @@ class EjercicioRespuesta
     /**
      * Get correcta
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getCorrecta()
     {
@@ -98,7 +96,7 @@ class EjercicioRespuesta
     /**
      * Get idEjercicioRespuesta
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioRespuesta()
     {
@@ -109,7 +107,6 @@ class EjercicioRespuesta
      * Set idEjercicio
      *
      * @param \AppBundle\Entity\Ejercicio $idEjercicio
-     *
      * @return EjercicioRespuesta
      */
     public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
@@ -122,7 +119,7 @@ class EjercicioRespuesta
     /**
      * Get idEjercicio
      *
-     * @return \AppBundle\Entity\Ejercicio
+     * @return \AppBundle\Entity\Ejercicio 
      */
     public function getIdEjercicio()
     {

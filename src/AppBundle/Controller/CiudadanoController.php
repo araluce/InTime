@@ -102,12 +102,10 @@ class CiudadanoController extends Controller {
             } else if ($CHAT[0]->getIdUsuario2() === $Usuario && $CHAT[0]->getIdUsuario1() !== null) {
                 $JsonResponse_data['id_chat'] = $CHAT[0]->getIdUsuario1()->getIdUsuario();
                 $JsonResponse_data['id_grupo'] = null;
-            }
-            else if ($CHAT[0]->getIdUsuario1() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
+            } else if ($CHAT[0]->getIdUsuario1() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
                 $JsonResponse_data['id_chat'] = null;
                 $JsonResponse_data['id_grupo'] = $CHAT[0]->getIdDistrito()->getIdUsuarioDistrito();
-            }
-            else if ($CHAT[0]->getIdUsuario2() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
+            } else if ($CHAT[0]->getIdUsuario2() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
                 $JsonResponse_data['id_chat'] = null;
                 $JsonResponse_data['id_grupo'] = $CHAT[0]->getIdDistrito()->getIdUsuarioDistrito();
             }
@@ -158,7 +156,7 @@ class CiudadanoController extends Controller {
         $CHAT[0]->setFechaUltimoMensaje(new \DateTime('now'));
         $em->persist($CHAT[0]);
         $em->flush();
-        
+
         $query = $qb->select('cm')
                 ->from('\AppBundle\Entity\ChatMensajes', 'cm')
                 ->where('cm.idChat = :idChat')
@@ -184,7 +182,7 @@ class CiudadanoController extends Controller {
                 $aux['visto'] = $CHAT->getVisto();
                 $aux['fecha'] = $CHAT->getFecha();
                 $JsonResponse_data['mensajes'][] = $aux;
-                
+
                 $CHAT->setVisto(1);
                 $em->persist($CHAT);
             }
@@ -231,38 +229,155 @@ class CiudadanoController extends Controller {
             }
             $CHAT = $query->getQuery()->getResult();
             $fecha = new \DateTime('now');
-            
-            if (!count($CHAT)){
+
+            if (!count($CHAT)) {
                 $CHAT = new \AppBundle\Entity\Chat();
                 $CHAT->setIdUsuario1($Usuario);
-                if ($receptor_usuario !== null){
+                if ($receptor_usuario !== null) {
                     $CHAT->setIdUsuario2($receptor_usuario);
-                }
-                else if( $Distrito !== null){
+                } else if ($Distrito !== null) {
                     $CHAT->setIdDistrito($Distrito);
                 }
                 $CHAT->setFecha($fecha);
                 $CHAT->setFechaUltimoMensaje($fecha);
-            }
-            else{
+            } else {
                 $CHAT = $CHAT[0];
                 $CHAT->setFechaUltimoMensaje($fecha);
             }
             $em->persist($CHAT);
             $em->flush();
-            
+
             $MENSAJE = new \AppBundle\Entity\ChatMensajes();
             $MENSAJE->setIdChat($CHAT);
             $MENSAJE->setIdUsuario($Usuario);
             $MENSAJE->setMensaje($mensaje);
             $MENSAJE->setFecha($fecha);
-            
+
             $em->persist($MENSAJE);
             $em->flush();
-            
+
             return new JsonResponse(array('estado' => 'OK'), 200);
         }
         return new JsonResponse(array('estado' => 'ERROR'), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/amigos/fotos", name="fotos")
+     */
+    public function fotosAction(Request $request) {
+        $DataManager = new \AppBundle\Utils\DataManager();
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos');
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS = $DataManager->setDefaultData($doctrine, 'Fotos', $session);
+
+        $FOTOS = $doctrine->getRepository('AppBundle:AlbumFoto')->findAll();
+        if (count($FOTOS)) {
+            $DATOS['FOTOS'] = [];
+            foreach ($FOTOS AS $FOTO) {
+                $aux['usuario'] = $FOTO->getIdUsuario();
+                $aux['fecha'] = $FOTO->getFecha();
+                $aux['imagen'] = $FOTO->getImagen();
+                $aux['id'] = $FOTO->getIdAlbumFoto();
+                $REACCIONES = $doctrine->getRepository('AppBundle:FotoReaccion')->findByIdAlbumFoto($FOTO);
+                $aux['likes'] = 0;
+                $aux['dislikes'] = 0;
+                if (count($REACCIONES)) {
+                    foreach ($REACCIONES AS $REACCION) {
+                        if ($REACCION->getLikeSocial()) {
+                            $aux['likes'] ++;
+                        } else {
+                            $aux['dislikes'] ++;
+                        }
+                    }
+                }
+
+                $DATOS['FOTOS'][] = $aux;
+            }
+        }
+
+        return $this->render('ciudadano/ocio/fotos.twig', $DATOS);
+    }
+
+    /**
+     * @Route("/ciudadano/subirImagenAlbum", name="subirImagenAlbum")
+     */
+    public function subirImagenAlbumAction(Request $request) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/subirImagenAlbum');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR - Permiso denegado'), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $IMAGENES = $request->files->get('imagenes');
+
+            if (count($IMAGENES)) {
+                foreach ($IMAGENES as $IMAGEN) {
+                    $IMG = new \AppBundle\Entity\AlbumFoto();
+                    $IMG->setFecha(new \DateTime('now'));
+                    $IMG->setIdUsuario($USUARIO);
+                    $em->persist($IMG);
+                    $em->flush();
+
+                    $ruta = 'images/users/' . $USUARIO->getDni() . '/galeria';
+                    if (!file_exists($ruta)) {
+                        mkdir($ruta, 0777, true);
+                    }
+                    $nombre_foto = $IMG->getIdAlbumFoto() . '.' . $IMAGEN->getClientOriginalExtension();
+                    $IMG->setImagen($nombre_foto);
+                    $em->persist($IMG);
+                    $em->flush();
+                    $IMAGEN->move($ruta, $nombre_foto);
+                }
+            }
+            return new JsonResponse(array('estado' => 'OK'), 200);
+        }
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/amigos/fotos/like/{id_album_foto}/{like}", name="likeFoto")
+     */
+    public function likeFotoAction(Request $request, $id_album_foto, $like) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos/like/' . $id_album_foto . '/' . $like);
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR - Permiso denegado'), 200);
+        }
+        $FOTO = $doctrine->getRepository('AppBundle:AlbumFoto')->findOneByIdAlbumFoto($id_album_foto);
+        if ($FOTO) {
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $REACCION = $doctrine->getRepository('AppBundle:FotoReaccion')->findOneBy([
+                'idUsuario' => $USUARIO, 'idAlbumFoto' => $FOTO]);
+            if ($REACCION === null) {
+                $REACCION = new \AppBundle\Entity\FotoReaccion();
+                $REACCION->setIdAlbumFoto($FOTO);
+                $REACCION->setIdUsuario($USUARIO);
+                $REACCION->setLikeSocial(intval($like));
+                $em->persist($REACCION);
+            } else {
+                if(intval($like) !== intval($REACCION->getLikeSocial())){
+                    $REACCION->setLikeSocial($like);
+                }
+                else{
+                    $em->remove($REACCION);
+                }
+            }
+            $em->flush();            
+        } else {
+            return new JsonResponse(array('estado' => 'ERROR - No había ninguna foto con el id: ' . $id_album_foto), 200);
+        }
+        return new JsonResponse(array('estado' => 'OK'), 200);
     }
 
 }

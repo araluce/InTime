@@ -11,27 +11,23 @@
     <id name="idEjercicioXUsuario" type="integer" column="id_ejercicio_x_usuario">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="visto" type="boolean" column="visto" nullable="false">
-      <options>
-        <option name="default">0</option>
-      </options>
-    </field>
-    <many-to-one field="idUsu" target-entity="Usuario" fetch="LAZY">
+    <field name="visto" type="boolean" column="visto" nullable="false"/>
+    <many-to-one field="idUsu" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usu" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idSeccion" target-entity="EjercicioSeccion" fetch="LAZY">
+    <many-to-one field="idSeccion" target-entity="EjercicioSeccion">
       <join-columns>
         <join-column name="id_seccion" referenced-column-name="id_ejercicio_seccion"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idGrupo" target-entity="GrupoEjercicios" fetch="LAZY">
+    <many-to-one field="idGrupo" target-entity="GrupoEjercicios">
       <join-columns>
         <join-column name="id_grupo" referenced-column-name="id_grupo_ejercicios"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+    <many-to-one field="idEjercicio" target-entity="Ejercicio">
       <join-columns>
         <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
       </join-columns>

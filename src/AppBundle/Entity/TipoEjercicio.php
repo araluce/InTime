@@ -34,7 +34,6 @@ class TipoEjercicio
      * Set tipo
      *
      * @param string $tipo
-     *
      * @return TipoEjercicio
      */
     public function setTipo($tipo)
@@ -47,7 +46,7 @@ class TipoEjercicio
     /**
      * Get tipo
      *
-     * @return string
+     * @return string 
      */
     public function getTipo()
     {
@@ -57,7 +56,7 @@ class TipoEjercicio
     /**
      * Get idTipoEjercicio
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTipoEjercicio()
     {

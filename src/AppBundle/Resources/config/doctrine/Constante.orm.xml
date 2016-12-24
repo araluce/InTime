@@ -4,15 +4,7 @@
     <id name="idConstante" type="integer" column="id_constante">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="clave" type="string" column="clave" length="100" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="valor" type="string" column="valor" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="clave" type="string" column="clave" length="100" nullable="false"/>
+    <field name="valor" type="string" column="valor" length="1000" nullable="false"/>
   </entity>
 </doctrine-mapping>

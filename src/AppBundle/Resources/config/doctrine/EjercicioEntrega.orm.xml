@@ -8,27 +8,15 @@
     <id name="idEjercicioEntrega" type="integer" column="id_ejercicio_entrega">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="mime" type="string" column="mime" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <field name="nombre" type="string" column="nombre" length="1000" nullable="false"/>
+    <field name="mime" type="string" column="mime" length="1000" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+    <many-to-one field="idEjercicio" target-entity="Ejercicio">
       <join-columns>
         <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
       </join-columns>

@@ -6,7 +6,7 @@
     </indexes>
     <id name="idTuitero" type="string" column="id_tuitero" length="30"/>
     <id name="idUsuario" association-key="true"/>
-    <one-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <one-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

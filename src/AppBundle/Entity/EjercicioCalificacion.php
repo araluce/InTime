@@ -17,7 +17,7 @@ class EjercicioCalificacion
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var integer
@@ -94,7 +94,6 @@ class EjercicioCalificacion
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return EjercicioCalificacion
      */
     public function setFecha($fecha)
@@ -107,7 +106,7 @@ class EjercicioCalificacion
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -117,7 +116,7 @@ class EjercicioCalificacion
     /**
      * Get idEjercicioCalificacion
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioCalificacion()
     {
@@ -128,7 +127,6 @@ class EjercicioCalificacion
      * Set idGrupo
      *
      * @param \AppBundle\Entity\GrupoEjercicios $idGrupo
-     *
      * @return EjercicioCalificacion
      */
     public function setIdGrupo(\AppBundle\Entity\GrupoEjercicios $idGrupo = null)
@@ -141,7 +139,7 @@ class EjercicioCalificacion
     /**
      * Get idGrupo
      *
-     * @return \AppBundle\Entity\GrupoEjercicios
+     * @return \AppBundle\Entity\GrupoEjercicios 
      */
     public function getIdGrupo()
     {
@@ -152,7 +150,6 @@ class EjercicioCalificacion
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return EjercicioCalificacion
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -165,7 +162,7 @@ class EjercicioCalificacion
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {
@@ -176,7 +173,6 @@ class EjercicioCalificacion
      * Set idEvaluador
      *
      * @param \AppBundle\Entity\Usuario $idEvaluador
-     *
      * @return EjercicioCalificacion
      */
     public function setIdEvaluador(\AppBundle\Entity\Usuario $idEvaluador = null)
@@ -189,7 +185,7 @@ class EjercicioCalificacion
     /**
      * Get idEvaluador
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdEvaluador()
     {
@@ -200,7 +196,6 @@ class EjercicioCalificacion
      * Set idEjercicioEstado
      *
      * @param \AppBundle\Entity\EjercicioEstado $idEjercicioEstado
-     *
      * @return EjercicioCalificacion
      */
     public function setIdEjercicioEstado(\AppBundle\Entity\EjercicioEstado $idEjercicioEstado = null)
@@ -213,7 +208,7 @@ class EjercicioCalificacion
     /**
      * Get idEjercicioEstado
      *
-     * @return \AppBundle\Entity\EjercicioEstado
+     * @return \AppBundle\Entity\EjercicioEstado 
      */
     public function getIdEjercicioEstado()
     {
@@ -224,7 +219,6 @@ class EjercicioCalificacion
      * Set idEjercicio
      *
      * @param \AppBundle\Entity\Ejercicio $idEjercicio
-     *
      * @return EjercicioCalificacion
      */
     public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
@@ -237,7 +231,7 @@ class EjercicioCalificacion
     /**
      * Get idEjercicio
      *
-     * @return \AppBundle\Entity\Ejercicio
+     * @return \AppBundle\Entity\Ejercicio 
      */
     public function getIdEjercicio()
     {
@@ -248,7 +242,6 @@ class EjercicioCalificacion
      * Set idCalificaciones
      *
      * @param \AppBundle\Entity\Calificaciones $idCalificaciones
-     *
      * @return EjercicioCalificacion
      */
     public function setIdCalificaciones(\AppBundle\Entity\Calificaciones $idCalificaciones = null)
@@ -261,7 +254,7 @@ class EjercicioCalificacion
     /**
      * Get idCalificaciones
      *
-     * @return \AppBundle\Entity\Calificaciones
+     * @return \AppBundle\Entity\Calificaciones 
      */
     public function getIdCalificaciones()
     {

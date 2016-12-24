@@ -41,7 +41,6 @@ class UsuarioEstado
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return UsuarioEstado
      */
     public function setNombre($nombre)
@@ -54,7 +53,7 @@ class UsuarioEstado
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -65,7 +64,6 @@ class UsuarioEstado
      * Set descripcion
      *
      * @param string $descripcion
-     *
      * @return UsuarioEstado
      */
     public function setDescripcion($descripcion)
@@ -78,7 +76,7 @@ class UsuarioEstado
     /**
      * Get descripcion
      *
-     * @return string
+     * @return string 
      */
     public function getDescripcion()
     {
@@ -88,7 +86,7 @@ class UsuarioEstado
     /**
      * Get idEstado
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEstado()
     {

@@ -41,7 +41,6 @@ class Constante
      * Set clave
      *
      * @param string $clave
-     *
      * @return Constante
      */
     public function setClave($clave)
@@ -54,7 +53,7 @@ class Constante
     /**
      * Get clave
      *
-     * @return string
+     * @return string 
      */
     public function getClave()
     {
@@ -65,7 +64,6 @@ class Constante
      * Set valor
      *
      * @param string $valor
-     *
      * @return Constante
      */
     public function setValor($valor)
@@ -78,7 +76,7 @@ class Constante
     /**
      * Get valor
      *
-     * @return string
+     * @return string 
      */
     public function getValor()
     {
@@ -88,7 +86,7 @@ class Constante
     /**
      * Get idConstante
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdConstante()
     {

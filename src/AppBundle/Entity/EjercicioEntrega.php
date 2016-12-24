@@ -31,7 +31,7 @@ class EjercicioEntrega
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var integer
@@ -68,7 +68,6 @@ class EjercicioEntrega
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return EjercicioEntrega
      */
     public function setNombre($nombre)
@@ -81,7 +80,7 @@ class EjercicioEntrega
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -92,7 +91,6 @@ class EjercicioEntrega
      * Set mime
      *
      * @param string $mime
-     *
      * @return EjercicioEntrega
      */
     public function setMime($mime)
@@ -105,7 +103,7 @@ class EjercicioEntrega
     /**
      * Get mime
      *
-     * @return string
+     * @return string 
      */
     public function getMime()
     {
@@ -116,7 +114,6 @@ class EjercicioEntrega
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return EjercicioEntrega
      */
     public function setFecha($fecha)
@@ -129,7 +126,7 @@ class EjercicioEntrega
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -139,7 +136,7 @@ class EjercicioEntrega
     /**
      * Get idEjercicioEntrega
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioEntrega()
     {
@@ -150,7 +147,6 @@ class EjercicioEntrega
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return EjercicioEntrega
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -163,7 +159,7 @@ class EjercicioEntrega
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {
@@ -174,7 +170,6 @@ class EjercicioEntrega
      * Set idEjercicio
      *
      * @param \AppBundle\Entity\Ejercicio $idEjercicio
-     *
      * @return EjercicioEntrega
      */
     public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
@@ -187,7 +182,7 @@ class EjercicioEntrega
     /**
      * Get idEjercicio
      *
-     * @return \AppBundle\Entity\Ejercicio
+     * @return \AppBundle\Entity\Ejercicio 
      */
     public function getIdEjercicio()
     {

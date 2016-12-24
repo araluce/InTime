@@ -34,7 +34,6 @@ class EjercicioSeccion
      * Set seccion
      *
      * @param string $seccion
-     *
      * @return EjercicioSeccion
      */
     public function setSeccion($seccion)
@@ -47,7 +46,7 @@ class EjercicioSeccion
     /**
      * Get seccion
      *
-     * @return string
+     * @return string 
      */
     public function getSeccion()
     {
@@ -57,7 +56,7 @@ class EjercicioSeccion
     /**
      * Get idEjercicioSeccion
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioSeccion()
     {

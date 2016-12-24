@@ -24,7 +24,7 @@ class Apuesta
      *
      * @ORM\Column(name="disponible", type="boolean", nullable=false)
      */
-    private $disponible = '1';
+    private $disponible;
 
     /**
      * @var integer
@@ -41,7 +41,6 @@ class Apuesta
      * Set descripcion
      *
      * @param string $descripcion
-     *
      * @return Apuesta
      */
     public function setDescripcion($descripcion)
@@ -54,7 +53,7 @@ class Apuesta
     /**
      * Get descripcion
      *
-     * @return string
+     * @return string 
      */
     public function getDescripcion()
     {
@@ -65,7 +64,6 @@ class Apuesta
      * Set disponible
      *
      * @param boolean $disponible
-     *
      * @return Apuesta
      */
     public function setDisponible($disponible)
@@ -78,7 +76,7 @@ class Apuesta
     /**
      * Get disponible
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getDisponible()
     {
@@ -88,7 +86,7 @@ class Apuesta
     /**
      * Get idApuesta
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdApuesta()
     {

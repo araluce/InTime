@@ -34,7 +34,6 @@ class Distrito
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return Distrito
      */
     public function setNombre($nombre)
@@ -47,7 +46,7 @@ class Distrito
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -57,7 +56,7 @@ class Distrito
     /**
      * Get idDistrito
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdDistrito()
     {

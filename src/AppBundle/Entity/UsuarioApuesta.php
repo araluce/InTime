@@ -54,7 +54,6 @@ class UsuarioApuesta
      * Set tdvApostado
      *
      * @param integer $tdvApostado
-     *
      * @return UsuarioApuesta
      */
     public function setTdvApostado($tdvApostado)
@@ -67,7 +66,7 @@ class UsuarioApuesta
     /**
      * Get tdvApostado
      *
-     * @return integer
+     * @return integer 
      */
     public function getTdvApostado()
     {
@@ -77,7 +76,7 @@ class UsuarioApuesta
     /**
      * Get idUsuarioApuesta
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuarioApuesta()
     {
@@ -88,7 +87,6 @@ class UsuarioApuesta
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return UsuarioApuesta
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -101,7 +99,7 @@ class UsuarioApuesta
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {
@@ -112,7 +110,6 @@ class UsuarioApuesta
      * Set idApuestaPosibilidad
      *
      * @param \AppBundle\Entity\ApuestaPosibilidad $idApuestaPosibilidad
-     *
      * @return UsuarioApuesta
      */
     public function setIdApuestaPosibilidad(\AppBundle\Entity\ApuestaPosibilidad $idApuestaPosibilidad = null)
@@ -125,7 +122,7 @@ class UsuarioApuesta
     /**
      * Get idApuestaPosibilidad
      *
-     * @return \AppBundle\Entity\ApuestaPosibilidad
+     * @return \AppBundle\Entity\ApuestaPosibilidad 
      */
     public function getIdApuestaPosibilidad()
     {

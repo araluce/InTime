@@ -8,27 +8,15 @@
     <id name="idChatMensajes" type="integer" column="id_chat_mensajes">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="mensaje" type="string" column="mensaje" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="visto" type="boolean" column="visto" nullable="false">
-      <options>
-        <option name="default">0</option>
-      </options>
-    </field>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <many-to-one field="idChat" target-entity="Chat" fetch="LAZY">
+    <field name="mensaje" type="string" column="mensaje" length="1000" nullable="false"/>
+    <field name="visto" type="boolean" column="visto" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <many-to-one field="idChat" target-entity="Chat">
       <join-columns>
         <join-column name="id_chat" referenced-column-name="id_chat"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

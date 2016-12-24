@@ -66,7 +66,7 @@ class TipoTransaccion
      *
      * @ORM\Column(name="limite_max_tdv", type="datetime", nullable=false)
      */
-    private $limiteMaxTdv = 'CURRENT_TIMESTAMP';
+    private $limiteMaxTdv;
 
     /**
      * @var integer
@@ -83,7 +83,6 @@ class TipoTransaccion
      * Set nombre
      *
      * @param string $nombre
-     *
      * @return TipoTransaccion
      */
     public function setNombre($nombre)
@@ -96,7 +95,7 @@ class TipoTransaccion
     /**
      * Get nombre
      *
-     * @return string
+     * @return string 
      */
     public function getNombre()
     {
@@ -107,7 +106,6 @@ class TipoTransaccion
      * Set descripcion
      *
      * @param string $descripcion
-     *
      * @return TipoTransaccion
      */
     public function setDescripcion($descripcion)
@@ -120,7 +118,7 @@ class TipoTransaccion
     /**
      * Get descripcion
      *
-     * @return string
+     * @return string 
      */
     public function getDescripcion()
     {
@@ -131,7 +129,6 @@ class TipoTransaccion
      * Set origen
      *
      * @param string $origen
-     *
      * @return TipoTransaccion
      */
     public function setOrigen($origen)
@@ -144,7 +141,7 @@ class TipoTransaccion
     /**
      * Get origen
      *
-     * @return string
+     * @return string 
      */
     public function getOrigen()
     {
@@ -155,7 +152,6 @@ class TipoTransaccion
      * Set destino
      *
      * @param string $destino
-     *
      * @return TipoTransaccion
      */
     public function setDestino($destino)
@@ -168,7 +164,7 @@ class TipoTransaccion
     /**
      * Get destino
      *
-     * @return string
+     * @return string 
      */
     public function getDestino()
     {
@@ -179,7 +175,6 @@ class TipoTransaccion
      * Set devuelve
      *
      * @param boolean $devuelve
-     *
      * @return TipoTransaccion
      */
     public function setDevuelve($devuelve)
@@ -192,7 +187,7 @@ class TipoTransaccion
     /**
      * Get devuelve
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getDevuelve()
     {
@@ -203,7 +198,6 @@ class TipoTransaccion
      * Set tiempoDevolucion
      *
      * @param \DateTime $tiempoDevolucion
-     *
      * @return TipoTransaccion
      */
     public function setTiempoDevolucion($tiempoDevolucion)
@@ -216,7 +210,7 @@ class TipoTransaccion
     /**
      * Get tiempoDevolucion
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTiempoDevolucion()
     {
@@ -227,7 +221,6 @@ class TipoTransaccion
      * Set veces
      *
      * @param integer $veces
-     *
      * @return TipoTransaccion
      */
     public function setVeces($veces)
@@ -240,7 +233,7 @@ class TipoTransaccion
     /**
      * Get veces
      *
-     * @return integer
+     * @return integer 
      */
     public function getVeces()
     {
@@ -251,7 +244,6 @@ class TipoTransaccion
      * Set limiteMaxTdv
      *
      * @param \DateTime $limiteMaxTdv
-     *
      * @return TipoTransaccion
      */
     public function setLimiteMaxTdv($limiteMaxTdv)
@@ -264,7 +256,7 @@ class TipoTransaccion
     /**
      * Get limiteMaxTdv
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getLimiteMaxTdv()
     {
@@ -274,7 +266,7 @@ class TipoTransaccion
     /**
      * Get idTipoTransaccion
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTipoTransaccion()
     {

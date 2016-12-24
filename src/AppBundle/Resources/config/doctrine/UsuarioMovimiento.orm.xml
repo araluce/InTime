@@ -7,22 +7,10 @@
     <id name="idUsuarioMovimiento" type="integer" column="id_usuario_movimiento">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="cantidad" type="bigint" column="cantidad" nullable="false">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
-    <field name="causa" type="string" column="causa" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <field name="cantidad" type="bigint" column="cantidad" nullable="false"/>
+    <field name="causa" type="string" column="causa" length="1000" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>

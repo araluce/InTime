@@ -17,7 +17,7 @@ class UsuarioCuenta
      *
      * @ORM\Column(name="tdv", type="datetime", nullable=false)
      */
-    private $tdv = 'CURRENT_TIMESTAMP';
+    private $tdv;
 
     /**
      * @var \DateTime
@@ -41,7 +41,6 @@ class UsuarioCuenta
      * Set tdv
      *
      * @param \DateTime $tdv
-     *
      * @return UsuarioCuenta
      */
     public function setTdv($tdv)
@@ -54,7 +53,7 @@ class UsuarioCuenta
     /**
      * Get tdv
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getTdv()
     {
@@ -65,7 +64,6 @@ class UsuarioCuenta
      * Set finbloqueo
      *
      * @param \DateTime $finbloqueo
-     *
      * @return UsuarioCuenta
      */
     public function setFinbloqueo($finbloqueo)
@@ -78,7 +76,7 @@ class UsuarioCuenta
     /**
      * Get finbloqueo
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFinbloqueo()
     {
@@ -88,7 +86,7 @@ class UsuarioCuenta
     /**
      * Get idCuenta
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdCuenta()
     {

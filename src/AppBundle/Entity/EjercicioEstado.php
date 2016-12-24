@@ -34,7 +34,6 @@ class EjercicioEstado
      * Set estado
      *
      * @param string $estado
-     *
      * @return EjercicioEstado
      */
     public function setEstado($estado)
@@ -47,7 +46,7 @@ class EjercicioEstado
     /**
      * Get estado
      *
-     * @return string
+     * @return string 
      */
     public function getEstado()
     {
@@ -57,7 +56,7 @@ class EjercicioEstado
     /**
      * Get idEjercicioEstado
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicioEstado()
     {

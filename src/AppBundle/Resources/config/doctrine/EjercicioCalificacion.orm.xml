@@ -12,37 +12,33 @@
     <id name="idEjercicioCalificacion" type="integer" column="id_ejercicio_calificacion">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <many-to-one field="idGrupo" target-entity="GrupoEjercicios" fetch="LAZY">
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <many-to-one field="idGrupo" target-entity="GrupoEjercicios">
       <join-columns>
         <join-column name="id_grupo" referenced-column-name="id_grupo_ejercicios"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEvaluador" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idEvaluador" target-entity="Usuario">
       <join-columns>
         <join-column name="id_evaluador" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEjercicioEstado" target-entity="EjercicioEstado" fetch="LAZY">
+    <many-to-one field="idEjercicioEstado" target-entity="EjercicioEstado">
       <join-columns>
         <join-column name="id_ejercicio_estado" referenced-column-name="id_ejercicio_estado"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idEjercicio" target-entity="Ejercicio" fetch="LAZY">
+    <many-to-one field="idEjercicio" target-entity="Ejercicio">
       <join-columns>
         <join-column name="id_ejercicio" referenced-column-name="id_ejercicio"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idCalificaciones" target-entity="Calificaciones" fetch="LAZY">
+    <many-to-one field="idCalificaciones" target-entity="Calificaciones">
       <join-columns>
         <join-column name="id_calificaciones" referenced-column-name="id_calificaciones"/>
       </join-columns>

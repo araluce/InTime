@@ -34,7 +34,6 @@ class TipoMensaje
      * Set tipo
      *
      * @param string $tipo
-     *
      * @return TipoMensaje
      */
     public function setTipo($tipo)
@@ -47,7 +46,7 @@ class TipoMensaje
     /**
      * Get tipo
      *
-     * @return string
+     * @return string 
      */
     public function getTipo()
     {
@@ -57,7 +56,7 @@ class TipoMensaje
     /**
      * Get idTipoMensaje
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTipoMensaje()
     {

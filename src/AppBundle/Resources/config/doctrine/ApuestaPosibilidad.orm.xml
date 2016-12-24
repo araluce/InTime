@@ -7,13 +7,9 @@
     <id name="idApuestaPosibilidad" type="integer" column="id_apuesta_posibilidad">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="posibilidad" type="string" column="posibilidad" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+    <field name="posibilidad" type="string" column="posibilidad" length="1000" nullable="false"/>
     <field name="resultado" type="boolean" column="resultado" nullable="true"/>
-    <many-to-one field="idApuesta" target-entity="Apuesta" fetch="LAZY">
+    <many-to-one field="idApuesta" target-entity="Apuesta">
       <join-columns>
         <join-column name="id_apuesta" referenced-column-name="id_apuesta"/>
       </join-columns>

@@ -9,17 +9,13 @@
     <id name="idUsuarioApuesta" type="integer" column="id_usuario_apuesta">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="tdvApostado" type="bigint" column="tdv_apostado" nullable="false">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
-    <many-to-one field="idUsuario" target-entity="Usuario" fetch="LAZY">
+    <field name="tdvApostado" type="bigint" column="tdv_apostado" nullable="false"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idApuestaPosibilidad" target-entity="ApuestaPosibilidad" fetch="LAZY">
+    <many-to-one field="idApuestaPosibilidad" target-entity="ApuestaPosibilidad">
       <join-columns>
         <join-column name="id_apuesta_posibilidad" referenced-column-name="id_apuesta_posibilidad"/>
       </join-columns>

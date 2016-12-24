@@ -34,7 +34,6 @@ class Constantes
      * Set valor
      *
      * @param string $valor
-     *
      * @return Constantes
      */
     public function setValor($valor)
@@ -47,7 +46,7 @@ class Constantes
     /**
      * Get valor
      *
-     * @return string
+     * @return string 
      */
     public function getValor()
     {
@@ -57,7 +56,7 @@ class Constantes
     /**
      * Get clave
      *
-     * @return string
+     * @return string 
      */
     public function getClave()
     {

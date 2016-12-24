@@ -63,7 +63,6 @@ class Tuits
      * Set usuTwitter
      *
      * @param string $usuTwitter
-     *
      * @return Tuits
      */
     public function setUsuTwitter($usuTwitter)
@@ -76,7 +75,7 @@ class Tuits
     /**
      * Get usuTwitter
      *
-     * @return string
+     * @return string 
      */
     public function getUsuTwitter()
     {
@@ -87,7 +86,6 @@ class Tuits
      * Set descripcion
      *
      * @param string $descripcion
-     *
      * @return Tuits
      */
     public function setDescripcion($descripcion)
@@ -100,7 +98,7 @@ class Tuits
     /**
      * Get descripcion
      *
-     * @return string
+     * @return string 
      */
     public function getDescripcion()
     {
@@ -110,7 +108,7 @@ class Tuits
     /**
      * Get idTuit
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdTuit()
     {
@@ -121,7 +119,6 @@ class Tuits
      * Add idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return Tuits
      */
     public function addIdUsuario(\AppBundle\Entity\Usuario $idUsuario)
@@ -144,7 +141,7 @@ class Tuits
     /**
      * Get idUsuario
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getIdUsuario()
     {

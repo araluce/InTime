@@ -10,23 +10,19 @@
     <id name="idChat" type="integer" column="id_chat">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
     <field name="fechaUltimoMensaje" type="datetime" column="fecha_ultimo_mensaje" nullable="true"/>
-    <many-to-one field="idDistrito" target-entity="UsuarioDistrito" fetch="LAZY">
+    <many-to-one field="idDistrito" target-entity="UsuarioDistrito">
       <join-columns>
         <join-column name="id_distrito" referenced-column-name="id_usuario_distrito"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuario2" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuario2" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario_2" referenced-column-name="id_usuario"/>
       </join-columns>
     </many-to-one>
-    <many-to-one field="idUsuario1" target-entity="Usuario" fetch="LAZY">
+    <many-to-one field="idUsuario1" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario_1" referenced-column-name="id_usuario"/>
       </join-columns>

@@ -7,22 +7,10 @@
     <id name="idMensaje" type="integer" column="id_mensaje">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="fecha" type="datetime" column="fecha" nullable="false">
-      <options>
-        <option name="default">CURRENT_TIMESTAMP</option>
-      </options>
-    </field>
-    <field name="titulo" type="string" column="titulo" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="mensaje" type="string" column="mensaje" length="1000" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <many-to-one field="idTipoMensaje" target-entity="TipoMensaje" fetch="LAZY">
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <field name="titulo" type="string" column="titulo" length="1000" nullable="false"/>
+    <field name="mensaje" type="string" column="mensaje" length="1000" nullable="false"/>
+    <many-to-one field="idTipoMensaje" target-entity="TipoMensaje">
       <join-columns>
         <join-column name="id_tipo_mensaje" referenced-column-name="id_tipo_mensaje"/>
       </join-columns>

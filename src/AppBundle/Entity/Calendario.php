@@ -58,7 +58,6 @@ class Calendario
      * Set contenido
      *
      * @param string $contenido
-     *
      * @return Calendario
      */
     public function setContenido($contenido)
@@ -71,7 +70,7 @@ class Calendario
     /**
      * Get contenido
      *
-     * @return string
+     * @return string 
      */
     public function getContenido()
     {
@@ -82,7 +81,6 @@ class Calendario
      * Set semanaIni
      *
      * @param string $semanaIni
-     *
      * @return Calendario
      */
     public function setSemanaIni($semanaIni)
@@ -95,7 +93,7 @@ class Calendario
     /**
      * Get semanaIni
      *
-     * @return string
+     * @return string 
      */
     public function getSemanaIni()
     {
@@ -106,7 +104,6 @@ class Calendario
      * Set semanaFin
      *
      * @param string $semanaFin
-     *
      * @return Calendario
      */
     public function setSemanaFin($semanaFin)
@@ -119,7 +116,7 @@ class Calendario
     /**
      * Get semanaFin
      *
-     * @return string
+     * @return string 
      */
     public function getSemanaFin()
     {
@@ -129,7 +126,7 @@ class Calendario
     /**
      * Get idCalendario
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdCalendario()
     {
@@ -140,7 +137,6 @@ class Calendario
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return Calendario
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -153,7 +149,7 @@ class Calendario
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

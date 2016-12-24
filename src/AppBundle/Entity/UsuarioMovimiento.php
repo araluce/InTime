@@ -31,7 +31,7 @@ class UsuarioMovimiento
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var integer
@@ -58,7 +58,6 @@ class UsuarioMovimiento
      * Set cantidad
      *
      * @param integer $cantidad
-     *
      * @return UsuarioMovimiento
      */
     public function setCantidad($cantidad)
@@ -71,7 +70,7 @@ class UsuarioMovimiento
     /**
      * Get cantidad
      *
-     * @return integer
+     * @return integer 
      */
     public function getCantidad()
     {
@@ -82,7 +81,6 @@ class UsuarioMovimiento
      * Set causa
      *
      * @param string $causa
-     *
      * @return UsuarioMovimiento
      */
     public function setCausa($causa)
@@ -95,7 +93,7 @@ class UsuarioMovimiento
     /**
      * Get causa
      *
-     * @return string
+     * @return string 
      */
     public function getCausa()
     {
@@ -106,7 +104,6 @@ class UsuarioMovimiento
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return UsuarioMovimiento
      */
     public function setFecha($fecha)
@@ -119,7 +116,7 @@ class UsuarioMovimiento
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -129,7 +126,7 @@ class UsuarioMovimiento
     /**
      * Get idUsuarioMovimiento
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdUsuarioMovimiento()
     {
@@ -140,7 +137,6 @@ class UsuarioMovimiento
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
-     *
      * @return UsuarioMovimiento
      */
     public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
@@ -153,7 +149,7 @@ class UsuarioMovimiento
     /**
      * Get idUsuario
      *
-     * @return \AppBundle\Entity\Usuario
+     * @return \AppBundle\Entity\Usuario 
      */
     public function getIdUsuario()
     {

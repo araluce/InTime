@@ -17,7 +17,7 @@ class Ejercicio
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
-    private $fecha = 'CURRENT_TIMESTAMP';
+    private $fecha;
 
     /**
      * @var string
@@ -61,7 +61,6 @@ class Ejercicio
      * Set fecha
      *
      * @param \DateTime $fecha
-     *
      * @return Ejercicio
      */
     public function setFecha($fecha)
@@ -74,7 +73,7 @@ class Ejercicio
     /**
      * Get fecha
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getFecha()
     {
@@ -85,7 +84,6 @@ class Ejercicio
      * Set enunciado
      *
      * @param string $enunciado
-     *
      * @return Ejercicio
      */
     public function setEnunciado($enunciado)
@@ -98,7 +96,7 @@ class Ejercicio
     /**
      * Get enunciado
      *
-     * @return string
+     * @return string 
      */
     public function getEnunciado()
     {
@@ -108,7 +106,7 @@ class Ejercicio
     /**
      * Get idEjercicio
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdEjercicio()
     {
@@ -119,7 +117,6 @@ class Ejercicio
      * Set idTipoEjercicio
      *
      * @param \AppBundle\Entity\EjercicioTipo $idTipoEjercicio
-     *
      * @return Ejercicio
      */
     public function setIdTipoEjercicio(\AppBundle\Entity\EjercicioTipo $idTipoEjercicio = null)
@@ -132,7 +129,7 @@ class Ejercicio
     /**
      * Get idTipoEjercicio
      *
-     * @return \AppBundle\Entity\EjercicioTipo
+     * @return \AppBundle\Entity\EjercicioTipo 
      */
     public function getIdTipoEjercicio()
     {
@@ -143,7 +140,6 @@ class Ejercicio
      * Set idEjercicioSeccion
      *
      * @param \AppBundle\Entity\EjercicioSeccion $idEjercicioSeccion
-     *
      * @return Ejercicio
      */
     public function setIdEjercicioSeccion(\AppBundle\Entity\EjercicioSeccion $idEjercicioSeccion = null)
@@ -156,7 +152,7 @@ class Ejercicio
     /**
      * Get idEjercicioSeccion
      *
-     * @return \AppBundle\Entity\EjercicioSeccion
+     * @return \AppBundle\Entity\EjercicioSeccion 
      */
     public function getIdEjercicioSeccion()
     {

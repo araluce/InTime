@@ -34,7 +34,6 @@ class TipoTweet
      * Set tipo
      *
      * @param string $tipo
-     *
      * @return TipoTweet
      */
     public function setTipo($tipo)
@@ -47,7 +46,7 @@ class TipoTweet
     /**
      * Get tipo
      *
-     * @return string
+     * @return string 
      */
     public function getTipo()
     {
@@ -57,7 +56,7 @@ class TipoTweet
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {

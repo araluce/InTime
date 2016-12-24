@@ -48,7 +48,6 @@ class Calificaciones
      * Set correspondenciaNumerica
      *
      * @param float $correspondenciaNumerica
-     *
      * @return Calificaciones
      */
     public function setCorrespondenciaNumerica($correspondenciaNumerica)
@@ -61,7 +60,7 @@ class Calificaciones
     /**
      * Get correspondenciaNumerica
      *
-     * @return float
+     * @return float 
      */
     public function getCorrespondenciaNumerica()
     {
@@ -72,7 +71,6 @@ class Calificaciones
      * Set correspondenciaTexto
      *
      * @param string $correspondenciaTexto
-     *
      * @return Calificaciones
      */
     public function setCorrespondenciaTexto($correspondenciaTexto)
@@ -85,7 +83,7 @@ class Calificaciones
     /**
      * Get correspondenciaTexto
      *
-     * @return string
+     * @return string 
      */
     public function getCorrespondenciaTexto()
     {
@@ -96,7 +94,6 @@ class Calificaciones
      * Set correspondenciaIcono
      *
      * @param string $correspondenciaIcono
-     *
      * @return Calificaciones
      */
     public function setCorrespondenciaIcono($correspondenciaIcono)
@@ -109,7 +106,7 @@ class Calificaciones
     /**
      * Get correspondenciaIcono
      *
-     * @return string
+     * @return string 
      */
     public function getCorrespondenciaIcono()
     {
@@ -119,7 +116,7 @@ class Calificaciones
     /**
      * Get idCalificaciones
      *
-     * @return integer
+     * @return integer 
      */
     public function getIdCalificaciones()
     {
