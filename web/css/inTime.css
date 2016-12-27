@@ -178,8 +178,8 @@
 }
 @media only screen and (min-width:868px) and (max-width: 1068px){
     .modal-advice .modal-dialog{
-        width: 35%;
-        left: 60%;
+        width: 85%;
+        left: 40%;
         top: 40%;
     }
     .modal_tweet .modal-dialog{

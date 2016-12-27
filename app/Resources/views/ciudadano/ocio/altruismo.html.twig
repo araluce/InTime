@@ -5,6 +5,45 @@
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .menu span{
+            cursor: pointer;
+        }
+        .modal-header{
+            padding: 4% 6%;
+        }
+        .modal-title{
+            font-size: 25px;
+        }
+        #mensaje-texto{
+            font-size: 20px;
+        }
+        .modal-advice .modal-dialog{
+            top: 50%;
+        }
+        #selector_ciudadanos{
+            width: 100%;
+        }
+        #advertencia{
+            font-size: 15px;
+        }
+        @media only screen and (max-width: 1068px){
+            #mensaje-texto,
+            .modal-title{
+                font-size: 35px;
+                font-weight: inherit;
+            }
+            
+            #advertencia{
+                font-size: 25px;
+                font-weight: lighter;
+            }
+        }
+
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container-fluid">
         <div class="row">
@@ -19,12 +58,133 @@
         </div>
         <div class="row">
             <div class="col-xs-2 col-xs-offset-4 menu">
-                <center><a href="#"><img alt="Logo" src="{{ asset('images/iconos/Minas.png') }}" /></a></center>
+                <center><span onclick="modalQR();"><img alt="Logo" src="{{ asset('images/iconos/Minas.png') }}" /></span></center>
             </div>
             <div class="col-xs-2 menu">
-                <center><a href="#"><img alt="Logo" src="{{ asset('images/iconos/Donar_TdV.png') }}" /></a></center>
+                <center><span onclick="modalDonar();"><img alt="Logo" src="{{ asset('images/iconos/Donar_TdV.png') }}" /></span></center>
             </div>
-            <div class="col-xs-4 menu"></div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function modalDonar() {
+            $("#mensaje-titulo").html('Donar TdV');
+            $("#modal-button-aceptar").hide();
+            getFormularioDonar();
+            $("#modal-avisos2").click();
+        }
+        function getFormularioDonar() {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row">';
+            contenido += '  <div class="col-md-12">';
+            contenido += '      <div id="texto-tdv">';
+            contenido += '          <p>Ayuda a un ciudadano en apuros</p> <small id="advertencia"><span style="color:red; font-weight: bold;">Atención: </span> sólo puedes donar una vez a cada usuario</small>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            contenido += '<div class="row">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <select class="custom-select" id="selector_ciudadanos">';
+            contenido += '          <option selected value="0">Selecciona la cuenta de un ciudadano</option>';
+            {% for CIUDADANO in CIUDADANOS %}contenido += '<option value="{{ CIUDADANO.idUsuario }}">@{{ CIUDADANO.seudonimo }}</option>';{% endfor %}
+            contenido += '      </select>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3">';
+            contenido += '      <div class="input-group">';
+            contenido += '          <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />';
+            contenido += '          <span class="input-group-addon">d</span>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '  <div class="col-xs-3">';
+            contenido += '      <div class="input-group">';
+            contenido += '          <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />';
+            contenido += '          <span class="input-group-addon">h</span>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '  <div class="col-xs-3">';
+            contenido += '      <div class="input-group">';
+            contenido += '          <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />';
+            contenido += '          <span class="input-group-addon">m</span>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '  <div class="col-xs-3">';
+            contenido += '      <div class="input-group">';
+            contenido += '          <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />';
+            contenido += '          <span class="input-group-addon">s</span>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="donar()"> DONAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function donar(){
+            var id_ciudadano = $("#selector_ciudadanos").val();
+            if(id_ciudadano === "0"){
+                mostrarResultadoOperacion('No se ha seleccionado ningún ciudadano');
+            }
+            else{
+                var segundos = parseInt($('#segundos').val());
+                var minutos = parseInt($('#minutos').val());
+                var horas = parseInt($('#horas').val());
+                var dias = parseInt($('#dias').val());
+                
+                if (!Number.isInteger(segundos)
+                        || !Number.isInteger(minutos)
+                        || !Number.isInteger(horas)
+                        || !Number.isInteger(dias))
+                {
+                    mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números positivos.');
+                } else {
+                    mostrarCarga('Realizando donación');
+                    var tdv = (((((dias*24) + horas)*60) + minutos)*60) + segundos;
+                    ruta = '/ciudadano/ocio/altruismo/donarTdv/'+id_ciudadano+'/'+tdv;
+                    $.get(ruta, function (data, status) {
+                        console.log(data);
+                        mostrarResultadoOperacion(data.message);
+                    });
+                }
+            }
+        }
+        function modalQR() {
+            $("#mensaje-titulo").html('Minas');
+            $("#mensaje-texto").html('Formulario para introducir QR');
+            $("#modal-avisos2").click();
+        }
+        function mostrarCarga(texto){
+            $("#mensaje-texto").empty();
+            contenido  = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        
+        function mostrarResultadoOperacion(resultado){
+            $("#mensaje-texto").empty();
+            contenido  = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            //$("#modal-button-aceptar").show();
+            $("#mensaje-texto").append(contenido);
+        }
+    </script>
 {% endblock %}

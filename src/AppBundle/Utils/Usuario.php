@@ -133,9 +133,9 @@ class Usuario {
         $em->persist($USUARIO);
         $em->flush();
     }
-    
+
     static function addTdV($doctrine, $USUARIO, $timestamp, $causa) {
-        if($USUARIO === null){
+        if ($USUARIO === null) {
             return 0;
         }
         $em = $doctrine->getManager();
@@ -158,7 +158,7 @@ class Usuario {
         $USUARIO_MOVIMIENTO->setFecha($HOY);
         $em->persist($USUARIO_MOVIMIENTO);
         $em->flush();
-        
+
         return 1;
     }
 
@@ -185,7 +185,7 @@ class Usuario {
         $USUARIOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL);
         return $USUARIOS;
     }
-    
+
     /**
      * Función que sirve para comprobar si un usuario tiene el rol solicitado por el 4 parámetro
      * (false = ciudadano, true = admin), además se registra el acceso o intento de acceso de un
@@ -223,6 +223,83 @@ class Usuario {
             }
         }
         return 1;
+    }
+
+    /**
+     * Comprueba que se pueda realizar una operación de cobro sobre el usuario 
+     * de la sesión
+     * 
+     * @param type $doctrine
+     * @param type $session
+     * @param int $tdv TdV que se le quiere cobrar al usuario
+     * @return int 0 si no tiene TdV suficiente, 1 en cualquier otro caso
+     */
+    static function puedoRealizarTransaccion($doctrine, $session, $tdv) {
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
+        $TDV_RESTANTE = $TDV_USUARIO - $tdv;
+        $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
+        $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
+        $HOY = new \DateTime('now');
+        if ($TDV_RESTANTE_DATETIME <= $HOY) {
+            return 0;
+        }
+        return 1;
+    }
+
+    /**
+     * Esta función retorna si el usuario de la sesión ha realizado ya una 
+     * donación al usuario que se pasa por parámetro.
+     * 
+     * @param type $doctrine
+     * @param type $session
+     * @param Entity $usuario_destino Usuario destino de la donación
+     * @return int 1 si se ha realizado una donación con anterioridad al 
+     * usuario pasado por parámetro, 0 en cualquier otro caso
+     */
+    static function heDonadoYa($doctrine, $session, $usuario_destino) {
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $query = $qb->select('d')
+                ->from('\AppBundle\Entity\UsuarioMovimiento', 'd')
+                ->where('d.idUsuario = :Usuario AND d.causa = :Causa')
+                ->setParameters(['Usuario' => $USUARIO, 'Causa' => 'Cobro - Donación a @'.$usuario_destino->getSeudonimo()]);
+        $DONACION = $query->getQuery()->getResult();
+        if(count($DONACION)){
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Función que realiza operaciones de ingreso o cobro sobre una cuenta
+     * de un usuario
+     * 
+     * @param type $doctrine Para poder hacer operaciones con BD
+     * @param Entity $USUARIO Entidad usuario del usuario al que se va a cobrar/ingresar
+     * @param type $tdv TdV a pagar/cobrar
+     * @param type $concepto Concepto del ingreso o cobro
+     */
+    static function operacionSobreTdV($doctrine, $USUARIO, $tdv, $concepto) {
+        $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
+        $TDV_RESTANTE = $TDV_USUARIO + $tdv;
+        $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
+        $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
+        $fecha = new \DateTime('now');
+
+        $USUARIO->getIdCuenta()->setTdv($TDV_RESTANTE_DATETIME);
+        $MOVIMIENTO = new \AppBundle\Entity\UsuarioMovimiento();
+        $MOVIMIENTO->setCantidad($tdv);
+        $MOVIMIENTO->setCausa($concepto);
+        $MOVIMIENTO->setIdUsuario($USUARIO);
+        $MOVIMIENTO->setFecha($fecha);
+        $em = $doctrine->getManager();
+        $em->persist($USUARIO);
+        $em->persist($MOVIMIENTO);
+        $em->flush();
     }
 
 }

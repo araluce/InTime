@@ -603,22 +603,6 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/ocio/altruismo", name="altruismo")
-     */
-    public function altruismo_ciudadanoAction(Request $request) {
-        $DataManager  = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
-        $doctrine     = $this->getDoctrine();
-        $session      = $request->getSession();
-        $status       = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo');
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $DATOS = $DataManager->setDefaultData($doctrine,'Altruismo', $session);
-        return $this->render('ciudadano/ocio/altruismo.html.twig', $DATOS);
-    }
-
-    /**
      * @Route("/ciudadano/alimentacion", name="alimentacion")
      */
     public function alimentacion_ciudadanoAction(Request $request) {

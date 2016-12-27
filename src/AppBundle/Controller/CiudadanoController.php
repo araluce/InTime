@@ -535,5 +535,57 @@ class CiudadanoController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha apostado tiempo'), 200);
         }
     }
+    
+    /**
+     * @Route("/ciudadano/ocio/altruismo", name="altruismo")
+     */
+    public function altruismo_ciudadanoAction(Request $request) {
+        $DataManager  = new \AppBundle\Utils\DataManager();
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $doctrine     = $this->getDoctrine();
+        $em           = $doctrine->getManager();
+        $qb           = $em->createQueryBuilder();
+        $session      = $request->getSession();
+        $status       = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo');
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS = $DataManager->setDefaultData($doctrine,'Altruismo', $session);
+        $ROL   = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $query = $qb->select(['c.seudonimo', 'c.idUsuario'])
+                ->from('\AppBundle\Entity\Usuario', 'c')
+                ->where('c.idRol = :ROL AND c.idUsuario != :ID_USUARIO AND c.seudonimo IS NOT NULL')
+                ->setParameters(['ROL' => $ROL, 'ID_USUARIO' => $USUARIO->getIdUsuario()]);
+        $DATOS['CIUDADANOS'] = $query->getQuery()->getResult();
+        return $this->render('ciudadano/ocio/altruismo.html.twig', $DATOS);
+    }
+    /**
+     * @Route("/ciudadano/ocio/altruismo/donarTdv/{id_usuario}/{tdv}", name="donar")
+     */
+    public function donarAction(Request $request, $id_usuario, $tdv) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $doctrine     = $this->getDoctrine();
+        $session      = $request->getSession();
+        $status       = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/donarTdv/'.$id_usuario.'/'.$tdv);
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        
+        if(!$UsuarioClass->puedoRealizarTransaccion($doctrine, $session, $tdv)){
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No tienes suficiente TdV'), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $USUARIO_DESTINO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        if( $USUARIO_DESTINO === null || $USUARIO === null){
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Se ha producido un error al intentar encontrar al usuario'), 200);
+        }
+        if($UsuarioClass->heDonadoYa($doctrine, $session, $USUARIO_DESTINO)){
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() .' anteriormente. No puedes volver a donarle TdV.'), 200);
+        }
+        $UsuarioClass->operacionSobreTdV($doctrine, $USUARIO, $tdv*(-1), 'Cobro - Donación a @' . $USUARIO_DESTINO->getSeudonimo());
+        $UsuarioClass->operacionSobreTdV($doctrine, $USUARIO_DESTINO, $tdv, 'Ingreso - Donación a @' . $USUARIO->getSeudonimo());
+        return new JsonResponse(array('estado' => 'OK', 'message' => 'Tdv donado'), 200);
+    }
 
 }
