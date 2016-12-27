@@ -454,43 +454,43 @@ class CiudadanoController extends Controller {
             foreach ($APUESTA_POSIBILIDAD as $POSIBILIDAD) {
 //                if ($POSIBILIDAD->getResultado() === null) {
                 $aux2 = [];
-                    
-                    $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
-                    $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
-                    $aux2['TdV'] = 0;
-                    $aux2['N_APUESTAS'] = 0;
-                    $aux2['APOSTADORES'] = [];
-                    $array_apostadores = [];
-                    $USUARIOS_APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
-                    if (count($USUARIOS_APUESTA)) {
-                        foreach ($USUARIOS_APUESTA as $USUARIO_APUESTA) {
-                            $apostador = [];
-                            $apostador['alias'] = $USUARIO_APUESTA->getIdUsuario()->getSeudonimo();
-                            $apostador['TdV'] = $USUARIO_APUESTA->getTdvApostado();
-                            if (in_array($apostador['alias'], $array_apostadores)) {
-                                foreach ($aux2['APOSTADORES'] as $a) {
-                                    if ($a['alias'] === $apostador['alias']) {
-                                        $a['TdV'] += $apostador['TdV'];
-                                    }
-                                }
-                            } else {
-                                $aux2['APOSTADORES'][] = $apostador;
-                                $array_apostadores[] = $apostador['alias'];
-                                $aux2['N_APUESTAS'] += 1;
-                                $aux['N_APUESTAS'] += 1;
-                            }
 
-                            $aux['TIEMPO_TOTAL'] += $USUARIO_APUESTA->getTdvApostado();
-                            $aux2['TdV'] += $USUARIO_APUESTA->getTdvApostado();
+                $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
+                $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
+                $aux2['TdV'] = 0;
+                $aux2['N_APUESTAS'] = 0;
+                $aux2['APOSTADORES'] = [];
+                $array_apostadores = [];
+                $USUARIOS_APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
+                if (count($USUARIOS_APUESTA)) {
+                    foreach ($USUARIOS_APUESTA as $USUARIO_APUESTA) {
+                        $apostador = [];
+                        $apostador['alias'] = $USUARIO_APUESTA->getIdUsuario()->getSeudonimo();
+                        $apostador['TdV'] = $USUARIO_APUESTA->getTdvApostado();
+                        if (in_array($apostador['alias'], $array_apostadores)) {
+                            foreach ($aux2['APOSTADORES'] as $a) {
+                                if ($a['alias'] === $apostador['alias']) {
+                                    $a['TdV'] += $apostador['TdV'];
+                                }
+                            }
+                        } else {
+                            $aux2['APOSTADORES'][] = $apostador;
+                            $array_apostadores[] = $apostador['alias'];
+                            $aux2['N_APUESTAS'] += 1;
+                            $aux['N_APUESTAS'] += 1;
                         }
+
+                        $aux['TIEMPO_TOTAL'] += $USUARIO_APUESTA->getTdvApostado();
+                        $aux2['TdV'] += $USUARIO_APUESTA->getTdvApostado();
                     }
-                    $aux['POSIBILIDAD'][] = $aux2;
+                }
+                $aux['POSIBILIDAD'][] = $aux2;
 //                } else {
 //                    $aniadir = false;
 //                }
             }
 //            if ($aniadir) {
-                $APUESTAS_ACTUALES[] = $aux;
+            $APUESTAS_ACTUALES[] = $aux;
 //            }
         }
         $resultado['apuestas'] = $APUESTAS_ACTUALES;
@@ -523,7 +523,7 @@ class CiudadanoController extends Controller {
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha encontrado la apuesta'), 200);
             }
             $TIEMPO = (((( ($dias * 24) + $horas ) * 60) + $minutos) * 60) + $segundos;
-            if($TIEMPO > 0) {
+            if ($TIEMPO > 0) {
                 $APUESTA = new \AppBundle\Entity\UsuarioApuesta();
                 $APUESTA->setIdApuestaPosibilidad($OPCION_APUESTA);
                 $APUESTA->setIdUsuario($USUARIO);
@@ -535,55 +535,148 @@ class CiudadanoController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha apostado tiempo'), 200);
         }
     }
-    
+
     /**
      * @Route("/ciudadano/ocio/altruismo", name="altruismo")
      */
     public function altruismo_ciudadanoAction(Request $request) {
-        $DataManager  = new \AppBundle\Utils\DataManager();
+        $DataManager = new \AppBundle\Utils\DataManager();
         $UsuarioClass = new \AppBundle\Utils\Usuario();
-        $doctrine     = $this->getDoctrine();
-        $em           = $doctrine->getManager();
-        $qb           = $em->createQueryBuilder();
-        $session      = $request->getSession();
-        $status       = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo');
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine,'Altruismo', $session);
-        $ROL   = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $DATOS = $DataManager->setDefaultData($doctrine, 'Altruismo', $session);
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
         $query = $qb->select(['c.seudonimo', 'c.idUsuario'])
                 ->from('\AppBundle\Entity\Usuario', 'c')
                 ->where('c.idRol = :ROL AND c.idUsuario != :ID_USUARIO AND c.seudonimo IS NOT NULL')
                 ->setParameters(['ROL' => $ROL, 'ID_USUARIO' => $USUARIO->getIdUsuario()]);
         $DATOS['CIUDADANOS'] = $query->getQuery()->getResult();
+
         return $this->render('ciudadano/ocio/altruismo.html.twig', $DATOS);
     }
+
+    /**
+     * @Route("/ciudadano/ocio/altruismo/getMina", name="getMina")
+     */
+    public function getMinaAction(Request $request) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/getMina');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $MINAS = $doctrine->getRepository('AppBundle:Mina')->findAll();
+        if (count($MINAS)) {
+            $ahora = new \DateTime('now');
+            foreach ($MINAS as $MINA) {
+                if ($ahora <= $MINA->getFechaFinal()) {
+                    $datos = [];
+                    $datos['fecha_final'] = $MINA->getFechaFinal();
+                    $datos['ciudadanos_mina'] = null;
+                    $datos['alias'] = null;
+                    $datos['distrito'] = null;
+                    $datos['tiempo_prorroga'] = null;
+                    $query = $qb->select('um')
+                            ->from('\AppBundle\Entity\UsuarioMina', 'um')
+                            ->where('um.idMina = :IdMina')
+                            ->orderBy('um.fecha', 'DESC')
+                            ->setParameters(['IdMina' => $MINA]);
+                    $USUARIO_MINA = $query->getQuery()->getOneOrNullResult();
+
+                    if ($USUARIO->getSeudonimo() === null) {
+                        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Para participar debes tener un alias.<br>Puedes crearte uno en la sección Jugador de la página principal'), 200);
+                    }
+                    if ($USUARIO->getIdDistrito() === null) {
+                        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Para participar debes pertenecer a un distrito.<br> Solicita un distrito a tu Guardián del tiempo'), 200);
+                    }
+                    $datos['mi_distrito'] = $USUARIO->getIdDistrito()->getNombre();
+                    if ($USUARIO_MINA !== null) {
+                        $datos['alias'] = $USUARIO_MINA->getIdUsuario()->getSeudonimo();
+                        $datos['distrito'] = $USUARIO_MINA->getIdUsuario()->getIdDistrito()->getNombre();
+                        $datos['tiempo_prorroga'] = $USUARIO_MINA->getFecha();
+                    }
+                    return new JsonResponse(array('estado' => 'OK', 'datos' => $datos), 200);
+                }
+            }
+        }
+        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Actualmente no hay minas que desactivar'), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/altruismo/enviarCodigo", name="enviarCodigo")
+     */
+    public function enviarCodigoAction(Request $request) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $PagoClass = new \AppBundle\Utils\Pago();
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $em = $doctrine->getManager();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/enviarCodigo');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $codigo = $request->request->get('codigo');
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $MINAS = $doctrine->getRepository('AppBundle:Mina')->findAll();
+            if (count($MINAS)) {
+                $ahora = new \DateTime('now');
+                foreach ($MINAS as $MINA) {
+                    if ($ahora <= $MINA->getFechaFinal()) {
+                        if ($MINA->getCodigo() === $codigo) {
+                            $USUARIO_MINA = new \AppBundle\Entity\UsuarioMina();
+                            $USUARIO_MINA->setFecha(new \DateTime('now'));
+                            $USUARIO_MINA->setIdMina($MINA);
+                            $USUARIO_MINA->setIdUsuario($USUARIO);
+                            $em->persist($USUARIO_MINA);
+                            $em->flush();
+                            $PagoClass->pagarMina($doctrine, $USUARIO);
+                            return new JsonResponse(array('estado' => 'OK', 'message' => 'Enhorabuena! La mina ha sido desactivada'), 200);
+                        } else {
+                            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'El código es incorrecto'), 200);
+                        }
+                    }
+                }
+            }
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Actualmente no hay minas que desactivar'), 200);
+        }
+    }
+
     /**
      * @Route("/ciudadano/ocio/altruismo/donarTdv/{id_usuario}/{tdv}", name="donar")
      */
     public function donarAction(Request $request, $id_usuario, $tdv) {
         $UsuarioClass = new \AppBundle\Utils\Usuario();
-        $doctrine     = $this->getDoctrine();
-        $session      = $request->getSession();
-        $status       = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/donarTdv/'.$id_usuario.'/'.$tdv);
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/donarTdv/' . $id_usuario . '/' . $tdv);
         if (!$status) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
         }
-        
-        if(!$UsuarioClass->puedoRealizarTransaccion($doctrine, $session, $tdv)){
+
+        if (!$UsuarioClass->puedoRealizarTransaccion($doctrine, $session, $tdv)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No tienes suficiente TdV'), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
         $USUARIO_DESTINO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        if( $USUARIO_DESTINO === null || $USUARIO === null){
+        if ($USUARIO_DESTINO === null || $USUARIO === null) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Se ha producido un error al intentar encontrar al usuario'), 200);
         }
-        if($UsuarioClass->heDonadoYa($doctrine, $session, $USUARIO_DESTINO)){
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() .' anteriormente. No puedes volver a donarle TdV.'), 200);
+        if ($UsuarioClass->heDonadoYa($doctrine, $session, $USUARIO_DESTINO)) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() . ' anteriormente. No puedes volver a donarle TdV.'), 200);
         }
-        $UsuarioClass->operacionSobreTdV($doctrine, $USUARIO, $tdv*(-1), 'Cobro - Donación a @' . $USUARIO_DESTINO->getSeudonimo());
+        $UsuarioClass->operacionSobreTdV($doctrine, $USUARIO, $tdv * (-1), 'Cobro - Donación a @' . $USUARIO_DESTINO->getSeudonimo());
         $UsuarioClass->operacionSobreTdV($doctrine, $USUARIO_DESTINO, $tdv, 'Ingreso - Donación a @' . $USUARIO->getSeudonimo());
         return new JsonResponse(array('estado' => 'OK', 'message' => 'Tdv donado'), 200);
     }

@@ -134,34 +134,6 @@ class Usuario {
         $em->flush();
     }
 
-    static function addTdV($doctrine, $USUARIO, $timestamp, $causa) {
-        if ($USUARIO === null) {
-            return 0;
-        }
-        $em = $doctrine->getManager();
-        $TdV_u = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
-        $TdV = $TdV_u;
-        $TdV += $timestamp;
-        $HOY = new \DateTime('now');
-        //$TDV_TIMESTAMP = $HOY->getTimestamp() + $TdV;
-        $TDV_FORMATO = date('Y-m-d H:i:s', intval($TdV));
-        $CUENTA = $USUARIO->getIdCuenta();
-        $CREATE_FORMAT = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_FORMATO);
-//        \AppBundle\Utils\Utils::pretty_print($CREATE_FORMAT);
-        $CUENTA->setTdv($CREATE_FORMAT);
-        //\AppBundle\Utils\Utils::pretty_print($CREATE_FORMAT);
-        $em->persist($CUENTA);
-        $USUARIO_MOVIMIENTO = new \AppBundle\Entity\UsuarioMovimiento();
-        $USUARIO_MOVIMIENTO->setIdUsuario($USUARIO);
-        $USUARIO_MOVIMIENTO->setCantidad($timestamp);
-        $USUARIO_MOVIMIENTO->setCausa($causa);
-        $USUARIO_MOVIMIENTO->setFecha($HOY);
-        $em->persist($USUARIO_MOVIMIENTO);
-        $em->flush();
-
-        return 1;
-    }
-
     /**
      * Obtener todos los usuarios por Rol (especificando el Rol por String)
      * 

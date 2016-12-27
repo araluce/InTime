@@ -44,8 +44,8 @@ class Utils {
                 'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
             ]);
         }
-        
-        if ( !count($EJERCICIO_CALIFICACION) ) {
+
+        if (!count($EJERCICIO_CALIFICACION)) {
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
             $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
         }
@@ -365,17 +365,44 @@ class Utils {
         }
     }
 
-    static function addTimestampToDatetime($timestamp, $datetime) {
-        $t = $datetime->getTimestamp() + $timestamp;
-        $datetime_new = new \DateTime();
-        $datetime_new->setTimestamp($t);
-
-        return $datetime_new;
+    static function getConstante($doctrine, $constante) {
+        $C = $doctrine->getRepository('AppBundle:Constante')->findOneByClave($constante);
+        if ($C !== null) {
+            $VALOR = $C->getValor();
+            if ($VALOR === 0) {
+                \AppBundle\Utils\Utils::setError($doctrine, 0, 'Constante ' . $constante . ' tiene valor 0');
+                return "0";
+            }
+            return $VALOR;
+        }
+        \AppBundle\Utils\Utils::setError($doctrine, 1, 'No se encuentra la constante ' . $constante);
+        return 0;
     }
 
-    static function addTimestampsToDatetime($timestamp) {
-
-        return date('Y-m-d H:i:s', $timestamp);
+    /**
+     * Registra el mal funcionamiento en la base de datos
+     * @param type $doctrine
+     * @param int $nivel 0 para Warning, 1 para Error
+     * @param string $accion La acción que ha producido el error
+     * @param Entity $usuario Usuario involucrado si lo hubiera
+     */
+    static function setError($doctrine, $nivel, $accion, $usuario=null) {
+        $em = $doctrine->getManager();
+        $REPORT = new \AppBundle\Entity\LogError();
+        switch ($nivel){
+            case '0':
+                $REPORT->setNivel('Warning');
+                break;
+            case '1':
+                $REPORT->setNivel('Error');
+        }
+        if($usuario !== null){
+            $REPORT->setIdUsuario($usuario);
+        }
+        $REPORT->setAccion($accion);
+        $REPORT->setFecha(new \DateTime('now'));
+        $em->persist($REPORT);
+        $em->flush();
     }
 
 }

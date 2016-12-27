@@ -25,7 +25,7 @@
         #selector_ciudadanos{
             width: 100%;
         }
-        #advertencia{
+        .advertencia{
             font-size: 15px;
         }
         @media only screen and (max-width: 1068px){
@@ -35,7 +35,7 @@
                 font-weight: inherit;
             }
             
-            #advertencia{
+            .advertencia{
                 font-size: 25px;
                 font-weight: lighter;
             }
@@ -75,13 +75,19 @@
             getFormularioDonar();
             $("#modal-avisos2").click();
         }
+        function modalQR() {
+            $("#mensaje-titulo").html('Minas');
+            $("#modal-button-aceptar").hide();
+            getFormularioMinas();
+            $("#modal-avisos2").click();
+        }
         function getFormularioDonar() {
             $("#mensaje-texto").empty();
             contenido = '';
             contenido += '<div class="row">';
             contenido += '  <div class="col-md-12">';
             contenido += '      <div id="texto-tdv">';
-            contenido += '          <p>Ayuda a un ciudadano en apuros</p> <small id="advertencia"><span style="color:red; font-weight: bold;">Atención: </span> sólo puedes donar una vez a cada usuario</small>';
+            contenido += '          <p>Ayuda a un ciudadano en apuros</p> <small class="advertencia"><span style="color:red; font-weight: bold;">Atención: </span> sólo puedes donar una vez a cada usuario</small>';
             contenido += '      </div>';
             contenido += '  </div>';
             contenido += '</div>';
@@ -126,6 +132,91 @@
             contenido += '</div>';
             $("#mensaje-texto").append(contenido);
         }
+        function getFormularioMinas() {
+            
+            mostrarCarga('Buscando minas');
+            ruta = '/ciudadano/ocio/altruismo/getMina';
+            $.get(ruta, function (data, status) {
+                console.log(data);
+                if(data.estado === 'OK'){
+                    //mostrarResultadoOperacion(data.estado);
+                    $("#mensaje-texto").empty();
+                    contenido  = '';
+                    
+                    contenido += '<div class="advertencia">';
+                    contenido += '  <div class="row">';
+                    contenido += '      <div class="col-xs-12">';
+                    contenido += '          <p>PARA ESCANEAR EL CÓDIGO QR SE RECOMIENDA LA APP <strong>i-nigma</strong><p>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '  <div class="row">';
+                    contenido += '      <div class="col-xs-3">';
+                    contenido += '          <a target="_blank" href="https://play.google.com/store/apps/details?id=com.threegvision.products.inigma.Android">Play Store</a>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="col-xs-3">';
+                    contenido += '          <a target="_blank" href="https://itunes.apple.com/app/i-nigma-4-qr-datamatrix-barcode/id388923203?mt=8">iTunes</a>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="col-xs-3">';
+                    contenido += '          <a target="_blank" href="https://appworld.blackberry.com/webstore/content/27049/?lang=en">BlackBerry World</a>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="col-xs-3">';
+                    contenido += '          <a target="_blank" href="https://www.microsoft.com/en-us/store/p/i-nigma/9wzdncrcwnwp">Windows</a>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<hr>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-6 advertencia">';
+                    contenido += '      Fecha de la explosión:';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-6 advertencia">';
+                    contenido += '      '+data.datos.fecha_final.date;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    if(data.datos.alias === null){
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12">';
+                        contenido += '      <div class="form-group">';
+                        contenido += '            <div class="input-group">';
+                        contenido += '                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-barcode" style="font-weight: bold;"></i></span>';
+                        contenido += '                <input type="text" class="form-control" id="codigo" placeholder="Inserte el código para desactivar la mina"/>';
+                        contenido += '            </div>';
+                        contenido += '       </div>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-12">';
+                        contenido += '      <button class="btn btn-block" onclick="enviarQR();"> ENVIAR CÓDIGO </button>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                    } else{
+                        contenido += '<hr>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 advertencia">';
+                        contenido += '      MINA DESACTIVADA  (' + data.datos.tiempo_prorroga.date +')';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-6 advertencia">';
+                        contenido += '      Ciudadano: @' + data.datos.alias;
+                        contenido += '  </div>';
+                        contenido += '  <div class="col-md-6 advertencia">';
+                        contenido += '      Distrito: ' + data.datos.distrito;
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-12">';
+                        contenido += '      <button class="btn btn-block" onclick="location.reload();"> OK </button>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                    }
+                    $("#mensaje-texto").append(contenido);
+                }
+                else{
+                    mostrarResultadoOperacion(data.message);
+                }
+            });
+        }
         function donar(){
             var id_ciudadano = $("#selector_ciudadanos").val();
             if(id_ciudadano === "0"){
@@ -136,7 +227,7 @@
                 var minutos = parseInt($('#minutos').val());
                 var horas = parseInt($('#horas').val());
                 var dias = parseInt($('#dias').val());
-                
+                mostrarCarga('Realizando donación');
                 if (!Number.isInteger(segundos)
                         || !Number.isInteger(minutos)
                         || !Number.isInteger(horas)
@@ -144,7 +235,6 @@
                 {
                     mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números positivos.');
                 } else {
-                    mostrarCarga('Realizando donación');
                     var tdv = (((((dias*24) + horas)*60) + minutos)*60) + segundos;
                     ruta = '/ciudadano/ocio/altruismo/donarTdv/'+id_ciudadano+'/'+tdv;
                     $.get(ruta, function (data, status) {
@@ -154,10 +244,20 @@
                 }
             }
         }
-        function modalQR() {
-            $("#mensaje-titulo").html('Minas');
-            $("#mensaje-texto").html('Formulario para introducir QR');
-            $("#modal-avisos2").click();
+        function enviarQR(){
+            var codigo = $("#codigo").val();
+            mostrarCarga('Verificando código');
+            if( $.trim(codigo) !== '' ){
+                ruta = '/ciudadano/ocio/altruismo/enviarCodigo';
+                datos = {'codigo': codigo};
+                $.post(ruta, datos, function (data, status) {
+                    console.log(data);
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+            else{
+                mostrarResultadoOperacion('El campo del código está vacío');
+            }
         }
         function mostrarCarga(texto){
             $("#mensaje-texto").empty();

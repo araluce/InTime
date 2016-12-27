@@ -1284,7 +1284,7 @@ class DefaultController extends Controller {
                 if (in_array($UA->getIdApuestaPosibilidad(), $POSIBILIDADES)) {
                     $APUESTAS_USUARIO_ESTA_APUESTA[] = $UA;
                     $RECAUDACION += $UA->getTdvApostado();
-                    $UsuarioClass->addTdV($doctrine, $UA->getIdUsuario(), $UA->getTdvApostado()*(-1), 'Gasto de apuesta');
+                    $UsuarioClass->operacionSobreTdV($doctrine, $UA->getIdUsuario(), $UA->getTdvApostado()*(-1), 'Cobro - Apuestas');
                 }
             }
 
@@ -1294,7 +1294,7 @@ class DefaultController extends Controller {
                 $DISPARADOR_APUESTAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta')->getValor();
                 $GANANCIAS = round(($RECAUDACION * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
                 foreach ($APUESTAS_GANADORAS as $A) {
-                    $UsuarioClass->addTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Apuesta Ganadora!');
+                    $UsuarioClass->operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
                 }
             }
         }
