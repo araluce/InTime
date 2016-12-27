@@ -7,12 +7,24 @@
             margin: 0;
             padding: 0;
             position: relative;
+
+            /*Diseño flexible*/
+            /*display: -ms-flex;
+            display: -webkit-flex;
+            display: flex;*/
         }
         .portfolio-item {
             background-color: white;
             border: 1px solid #ccc;
             position: relative;
             z-index: 10;
+
+            /*Diseño flexible*/
+            /*display: -ms-flex;
+            display: -webkit-flex;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;*/
         }
         .portfolio-item img {
             margin: 0;
@@ -20,16 +32,24 @@
             width: 100%;
             height: 100%;
         }
-        .single-portfolio:hover .portfolio-details {
+        .single-portfolio:hover .details-social,
+        .single-portfolio:hover .details-author
+        {
             display: block;
         }
-        .portfolio-details {
+        .details-social {
             position: absolute;
             z-index: 99;
             bottom: 0px;
-            /*left: 32px;*/
             width: 100%;
-            /*height: 20*/
+            background: rgba(0, 0, 0, 0.77);
+            display: none;
+        }
+        .details-author {
+            position: absolute;
+            z-index: 99;
+            top: 0px;
+            width: 100%;
             background: rgba(0, 0, 0, 0.77);
             display: none;
         }
@@ -221,10 +241,11 @@
             opacity: .8;
             width: 60%;
         }
-        #social-panel{
+        .details-social{
+            font-size: 25px;
             float: right;
         }
-        #social-panel span::after{
+        .details-social span::after{
             padding-left: 30px;
         }
         a:hover, a:visited, a {
@@ -239,8 +260,17 @@
             cursor: pointer;
             color: red;
         }
-
-        @media (max-width:767px) {
+        #mosaico-fotos{
+            width: 100%;
+        }
+        @media (max-width: 1068px) {
+            .portfolio-details h4 {
+                font-size: 35px;
+            }
+            .portfolio-details span,
+            .portfolio-details p {
+                font-size: 35px;
+            }
         }
 
     </style>
@@ -296,28 +326,10 @@
                 <div class="row" style="margin-bottom: 2%;">
                     <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
                 </div>
-                {% if FOTOS is defined %}
-                    <div class="row">
-                        {% for foto in FOTOS %}
-                            <div class="col-md-3 single-portfolio col-sm-6">
-                                <figure class="portfolio-item">
-                                    <img class="img-responsive" src="{{ asset('images/users/' ~ foto.usuario.getDni() ~ '/galeria/' ~ foto.imagen) }}" alt="">
-                                    <figcaption class="portfolio-details">
-                                        {% if foto.usuario.getSeudonimo() is not null %}
-                                            <h4>@{{ foto.usuario.getSeudonimo() }}</h4>
-                                        {% else %}
-                                            <h4>ANONIMO</h4>
-                                        {% endif %}
-                                        <div id="social-panel">
-                                            <span class='fa fa-thumbs-up like' onclick="reaccion({{ foto.id }}, '1');">{{ foto.likes }}</span>
-                                            <span class='fa fa-thumbs-down dislike' onclick="reaccion({{ foto.id }}, '0');">{{ foto.dislikes }}</span>
-                                        </div>
-                                    </figcaption>
-                                </figure>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <div class="row" id="photo-grid">
+                    <div class="col-xs-6" id="columna1"></div>
+                    <div class="col-xs-6" id="columna2"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -325,26 +337,87 @@
 
 {% block javascripts %}
     <script>
+
         $(document).ready(function () {
+            getPhotos();
         {% if info.message is defined or info.type is defined%}
-            $('#box_modal_result').click();
+                $('#box_modal_result').click();
         {% endif %}
             });
-            $("#input-711").fileinput({
-            uploadUrl: "/ciudadano/subirImagenAlbum",
-                    uploadAsync: true,
-                    maxFileCount: 2,
-                    showBrowse: false,
-                    browseOnZoneClick: true
-            });
-            function reaccion(foto_id, like){
-            var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
-            $.get(url, function (data) {
-            console.log(data);
-            if (data.estado === 'OK'){
-            location.reload();
+            function getPhotos() {
+                ruta = '/ciudadano/obtenerFotos';
+                $.get(ruta, function (data, status) {
+                    console.log(data);
+                    if (data.estado === 'OK') {
+                        var contenido = '';
+                        $.each(data.fotos, function (k, v) {
+                            contenido = '<div class="single-portfolio">';
+                            contenido += '  <figure class="portfolio-item">';
+                            contenido += '      <figcaption class="portfolio-details details-author">';
+                            if (v.usuario.alias !== null) {
+                                contenido += '      <h4>@' + v.usuario.alias + '</h4>';
+                            } else {
+                                contenido += '      <h4>ANONIMO</h4>';
+                            }
+                            contenido += '      </figcaption>';
+                            contenido += '      <img class="img-responsive" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
+                            contenido += '      <figcaption class="portfolio-details details-social">';
+                            contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', "1");">' + v.likes + '</span>';
+                            contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', "0");">' + v.dislikes + '</span>';
+                            contenido += '      </figcaption>';
+                            contenido += '  </figure>';
+                            contenido += '</div>';
+                            var loaded = false;
+                            var img = document.createElement('img');
+                            width_img = 0;
+                            height_img = 0;
+
+                            img.onload = function () {
+                                loaded = true;
+                            };
+                            img.src = "{{ asset('images/users/') }}" + v.usuario.dni + "/galeria/" + v.imagen;
+
+                            var wait = setInterval(function () {
+                                if (loaded) {
+                                    clearInterval(wait);
+                                } else {
+                                    console.log(img.naturalWidth, img.naturalHeight);
+                                    width_img = img.naturalWidth;
+                                    height_img = img.naturalHeight;
+                                    /*
+                                     alert('Imagen (' + img.src + '): ' + width_img + 'px x' + height_img + 'px');
+                                     alert('columna1: ' + $('#columna1').height() + img.naturalHeight + 'px columna2: ' + $('#columna2').height() + img.naturalHeight + 'px');*/
+                                }
+                            }, 0);
+                            if ($('#columna1').height() + height_img >= $('#columna2').height() + height_img) {
+                                $('#columna2').append(contenido);
+                            } else {
+                                $('#columna1').append(contenido);
+                            }
+
+                        });
+                    }
+                });
             }
+            $("#input-711").fileinput({
+                uploadUrl: "/ciudadano/subirImagenAlbum",
+                uploadAsync: true,
+                maxFileCount: 2,
+                showBrowse: false,
+                browseOnZoneClick: true,
+                allowedFileExtensions: ['jpg', 'png', 'gif'],
+                allowedFileTypes: ['image'],
+                maxFileSize: 2000
             });
+            function reaccion(foto_id, like) {
+                var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
+                $.get(url, function (data) {
+                    console.log(data);
+                    if (data.estado === 'OK') {
+                        location.reload();
+                    }
+                });
             }
     </script>
+    <!--<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>-->
 {% endblock %}

@@ -27,6 +27,13 @@ class Apuesta
     private $disponible;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id_apuesta", type="integer")
@@ -81,6 +88,29 @@ class Apuesta
     public function getDisponible()
     {
         return $this->disponible;
+    }
+
+    /**
+     * Set fecha
+     *
+     * @param \DateTime $fecha
+     * @return Apuesta
+     */
+    public function setFecha($fecha)
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    /**
+     * Get fecha
+     *
+     * @return \DateTime 
+     */
+    public function getFecha()
+    {
+        return $this->fecha;
     }
 
     /**

@@ -6,5 +6,6 @@
     </id>
     <field name="descripcion" type="string" column="descripcion" length="1000" nullable="false"/>
     <field name="disponible" type="boolean" column="disponible" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
   </entity>
 </doctrine-mapping>

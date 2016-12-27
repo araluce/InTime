@@ -44,6 +44,9 @@
     .ventana-tweets{
         height: 350px;
     }
+    .breadcrumb{
+        font-size: 17px;
+    }
 }
 @media only screen and (min-width:365px) and (max-width: 500px){
     .modal-advice .modal-dialog{
@@ -76,6 +79,9 @@
     }
     .ventana-tweets{
         height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
     }
 }
 @media only screen and (min-width:500px) and (max-width: 668px){
@@ -120,6 +126,9 @@
     .ventana-tweets{
         height: 350px;
     }
+    .breadcrumb{
+        font-size: 17px;
+    }
 }
 @media only screen and (min-width:668px) and (max-width: 868px){
     .modal-advice .modal-dialog{
@@ -162,6 +171,9 @@
     }
     .ventana-tweets{
         height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
     }
 }
 @media only screen and (min-width:868px) and (max-width: 1068px){
@@ -211,6 +223,15 @@
         padding: 9px 15px; 
         font-size: 35px; 
     }
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a{
+        height: 85px;
+        padding: 9px 15px; 
+        font-size: 35px; 
+    }
+    .file-drop-zone-title{
+        font-size: 35px; 
+    }
     select {
         width: 100%;
         height: 85px;
@@ -228,6 +249,9 @@
     }
     .container{
         width: 95%;
+    }
+    .breadcrumb{
+        font-size: 30px;
     }
 }
 @media only screen and (min-width: 1068px){
@@ -262,6 +286,9 @@
     }
     .ventana-tweets{
         height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
     }
 }
 
@@ -503,7 +530,6 @@ tr th:last-child {
 }
 
 .breadcrumb{
-    font-size: 17px;
     font-weight: bold;
     background-color: inherit;
 }

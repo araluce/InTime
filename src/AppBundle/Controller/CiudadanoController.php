@@ -276,11 +276,33 @@ class CiudadanoController extends Controller {
         }
         $DATOS = $DataManager->setDefaultData($doctrine, 'Fotos', $session);
 
-        $FOTOS = $doctrine->getRepository('AppBundle:AlbumFoto')->findAll();
+        return $this->render('ciudadano/ocio/fotos.twig', $DATOS);
+    }
+
+    /**
+     * @Route("/ciudadano/obtenerFotos", name="getPhotos")
+     */
+    public function getPhotos(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+
+        $query = $qb->select('f')
+                ->from('\AppBundle\Entity\AlbumFoto', 'f')
+                ->orderBy('f.fecha', 'DESC');
+        $FOTOS = $query->getQuery()->getResult();
+
         if (count($FOTOS)) {
-            $DATOS['FOTOS'] = [];
+            $datos = [];
             foreach ($FOTOS AS $FOTO) {
-                $aux['usuario'] = $FOTO->getIdUsuario();
+                $aux['usuario']['alias'] = $FOTO->getIdUsuario()->getSeudonimo();
+                $aux['usuario']['dni'] = $FOTO->getIdUsuario()->getDni();
                 $aux['fecha'] = $FOTO->getFecha();
                 $aux['imagen'] = $FOTO->getImagen();
                 $aux['id'] = $FOTO->getIdAlbumFoto();
@@ -297,11 +319,10 @@ class CiudadanoController extends Controller {
                     }
                 }
 
-                $DATOS['FOTOS'][] = $aux;
+                $datos[] = $aux;
             }
         }
-
-        return $this->render('ciudadano/ocio/fotos.twig', $DATOS);
+        return new JsonResponse(array('estado' => 'OK', 'fotos' => $datos), 200);
     }
 
     /**
@@ -367,18 +388,152 @@ class CiudadanoController extends Controller {
                 $REACCION->setLikeSocial(intval($like));
                 $em->persist($REACCION);
             } else {
-                if(intval($like) !== intval($REACCION->getLikeSocial())){
+                if (intval($like) !== intval($REACCION->getLikeSocial())) {
                     $REACCION->setLikeSocial($like);
-                }
-                else{
+                } else {
                     $em->remove($REACCION);
                 }
             }
-            $em->flush();            
+            $em->flush();
         } else {
             return new JsonResponse(array('estado' => 'ERROR - No había ninguna foto con el id: ' . $id_album_foto), 200);
         }
         return new JsonResponse(array('estado' => 'OK'), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/apuestas", name="apuestasCiudadano")
+     */
+    public function apuestasCiudadanoAction(Request $request) {
+        $DataManager = new \AppBundle\Utils\DataManager();
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/apuestas');
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS = $DataManager->setDefaultData($doctrine, 'Apuestas', $session);
+        $DATOS['SECCION'] = 'APUESTAS';
+        return $this->render('ciudadano/ocio/apuestas.twig', $DATOS);
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/ocio/apuestas/actualizar", name="actualizarApuestasCiudadanos")
+     */
+    public function actualizarApuestasCiudadanosAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/apuestas/actualizar');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $resultado['resultado'] = 'OK';
+        $APUESTAS_ACTUALES = [];
+
+        $query = $qb->select('a')
+                ->from('\AppBundle\Entity\Apuesta', 'a')
+                ->orderBy('a.fecha', 'DESC');
+        $APUESTAS = $query->getQuery()->getResult();
+        if (!count($APUESTAS)) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No hay apuestas'), 200);
+        }
+        foreach ($APUESTAS as $APUESTA) {
+//            $aniadir = true;
+            $aux = [];
+            $aux['DESCRIPCION'] = $APUESTA->getDescripcion();
+            $aux['ID'] = $APUESTA->getIdApuesta();
+            $aux['ESTADO'] = $APUESTA->getDisponible();
+            $aux['TIEMPO_TOTAL'] = 0;
+            $aux['N_APUESTAS'] = 0;
+            $APUESTA_POSIBILIDAD = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findByidApuesta($APUESTA);
+            foreach ($APUESTA_POSIBILIDAD as $POSIBILIDAD) {
+//                if ($POSIBILIDAD->getResultado() === null) {
+                $aux2 = [];
+                    
+                    $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
+                    $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
+                    $aux2['TdV'] = 0;
+                    $aux2['N_APUESTAS'] = 0;
+                    $aux2['APOSTADORES'] = [];
+                    $array_apostadores = [];
+                    $USUARIOS_APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
+                    if (count($USUARIOS_APUESTA)) {
+                        foreach ($USUARIOS_APUESTA as $USUARIO_APUESTA) {
+                            $apostador = [];
+                            $apostador['alias'] = $USUARIO_APUESTA->getIdUsuario()->getSeudonimo();
+                            $apostador['TdV'] = $USUARIO_APUESTA->getTdvApostado();
+                            if (in_array($apostador['alias'], $array_apostadores)) {
+                                foreach ($aux2['APOSTADORES'] as $a) {
+                                    if ($a['alias'] === $apostador['alias']) {
+                                        $a['TdV'] += $apostador['TdV'];
+                                    }
+                                }
+                            } else {
+                                $aux2['APOSTADORES'][] = $apostador;
+                                $array_apostadores[] = $apostador['alias'];
+                                $aux2['N_APUESTAS'] += 1;
+                                $aux['N_APUESTAS'] += 1;
+                            }
+
+                            $aux['TIEMPO_TOTAL'] += $USUARIO_APUESTA->getTdvApostado();
+                            $aux2['TdV'] += $USUARIO_APUESTA->getTdvApostado();
+                        }
+                    }
+                    $aux['POSIBILIDAD'][] = $aux2;
+//                } else {
+//                    $aniadir = false;
+//                }
+            }
+//            if ($aniadir) {
+                $APUESTAS_ACTUALES[] = $aux;
+//            }
+        }
+        $resultado['apuestas'] = $APUESTAS_ACTUALES;
+//        \AppBundle\Utils\Utils::pretty_print($APUESTAS_ACTUALES);
+        return new JsonResponse($resultado, 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/apuestas/apostar", name="apostar")
+     */
+    public function apostarAction(Request $request) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/apuestas/apostar');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $segundos = $request->request->get('segundos');
+            $minutos = $request->request->get('minutos');
+            $horas = $request->request->get('horas');
+            $dias = $request->request->get('dias');
+            $id = $request->request->get('id');
+
+            $OPCION_APUESTA = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findOneByIdApuestaPosibilidad($id);
+            if ($OPCION_APUESTA === null) {
+                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha encontrado la apuesta'), 200);
+            }
+            $TIEMPO = (((( ($dias * 24) + $horas ) * 60) + $minutos) * 60) + $segundos;
+            if($TIEMPO > 0) {
+                $APUESTA = new \AppBundle\Entity\UsuarioApuesta();
+                $APUESTA->setIdApuestaPosibilidad($OPCION_APUESTA);
+                $APUESTA->setIdUsuario($USUARIO);
+                $APUESTA->setTdvApostado($TIEMPO);
+                $em->persist($APUESTA);
+                $em->flush();
+                return new JsonResponse(array('estado' => 'OK', 'message' => 'La apuesta se ha realizado correctamente'), 200);
+            }
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha apostado tiempo'), 200);
+        }
     }
 
 }

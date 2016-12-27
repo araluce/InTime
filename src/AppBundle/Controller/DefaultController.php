@@ -1214,15 +1214,21 @@ class DefaultController extends Controller {
      */
     public function actualizarApuestas() {
         $doctrine               = $this->getDoctrine();
+        $em                     = $doctrine->getManager();
+        $qb                     = $em->createQueryBuilder();
         $resultado['resultado'] = 'OK';
         $APUESTAS_ACTUALES      = [];
 
-        $APUESTAS = $doctrine->getRepository('AppBundle:Apuesta')->findAll();
+        $query = $qb->select('a')
+                ->from('\AppBundle\Entity\Apuesta', 'a');;
+                //->orderBy('a.fecha', 'DESC');
+        $APUESTAS = $query->getQuery()->getResult();
         if (!count($APUESTAS)) {
             return new JsonResponse(array('resultado' => 'No hay apuestas'), 200);
         }
         foreach ($APUESTAS as $APUESTA) {
-            $aniadir = true;
+//            $aniadir = true;
+            $aux = [];
             $aux['DESCRIPCION'] = $APUESTA->getDescripcion();
             $aux['ID']          = $APUESTA->getIdApuesta();
             $aux['ESTADO']      = $APUESTA->getDisponible();
@@ -1230,7 +1236,8 @@ class DefaultController extends Controller {
             $aux['N_APUESTAS']  = 0;
             $APUESTA_POSIBILIDAD = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findByidApuesta($APUESTA);
             foreach ($APUESTA_POSIBILIDAD as $POSIBILIDAD) {
-                if ($POSIBILIDAD->getResultado() === null) {
+//                if ($POSIBILIDAD->getResultado() === null) {
+                    $aux2 = [];
                     $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
                     $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
                     $aux2['TdV'] = 0;
@@ -1245,13 +1252,13 @@ class DefaultController extends Controller {
                         }
                     }
                     $aux['POSIBILIDAD'][] = $aux2;
-                } else {
-                    $aniadir = false;
-                }
+//                } else {
+//                    $aniadir = false;
+//                }
             }
-            if ($aniadir) {
+//            if ($aniadir) {
                 $APUESTAS_ACTUALES[] = $aux;
-            }
+//            }
         }
         $resultado['apuestas'] = $APUESTAS_ACTUALES;
         return new JsonResponse($resultado, 200);

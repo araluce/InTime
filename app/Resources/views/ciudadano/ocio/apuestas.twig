@@ -1,11 +1,50 @@
-{# empty Twig template #}
 {% extends "base.html.twig" %}
 
 {% block title %}{% endblock %}
 
 {% block header %}
     {% include "guardian/header.html.twig" %}
+
+    <style>
+        .apuesta{
+            font-weight: bold; 
+            font-size: 15px; 
+            background-color: rgba(255, 255, 255, 0.8); 
+            color:black;
+            margin: 1%;
+            padding: 2% 2%;
+        }
+        .boton-opcion{
+            text-align: left;
+            border-radius: 0px;
+            margin-left: 1%;
+            margin-right: 1%;
+            width: 98%;
+        }
+        .boton-opcion span{
+            float:right;
+            font-weight: bold;
+        }
+        .apostador-alias{
+
+        }
+        .apostador-tdv{
+            text-align: right;
+        }
+        @media only screen and (max-width: 1068px){
+            .apuesta{
+                font-size: 55px;
+            }
+            .apostador-alias{
+                font-size: 45px;
+            }
+            .apostador-tdv{
+                font-size: 45px;
+            }
+        }
+    </style>
 {% endblock %}
+
 
 {% block body %}
     <div class="container">
@@ -37,74 +76,18 @@
                     <div class="col-md-12">
                         <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
                             <li {% if SECCION == 'APUESTAS' %} class="active" {% endif %}>
-                                <a href="/guardian/apuestas/proponer">APUESTAS</a>
+                                <a href="/ciudadano/ocio/apuestas">APUESTAS</a>
                             </li>
                             <li {% if SECCION == 'LOTERIA' %} class="active" {% endif %}>
-                                <a href="/guardian/loterias">LOTERÍAS</a>
+                                <a href="#" onclick="alert('Función no disponible por el momento');">LOTERÍAS</a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 {% if SECCION == 'APUESTAS' %}
-                    <div class="row" style="margin-bottom: 1%;">
-                        <div class="col-md-12">
-                            <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
-                                <li {% if SUBSECCION == 'PROPONER' %} class="active" {% endif %}>
-                                    <a href="/guardian/apuestas/proponer">PROPONER</a>
-                                </li>
-                                <li {% if SUBSECCION == 'GESTION' %} class="active" {% endif %}>
-                                    <a href="/guardian/apuestas/gestion">GESTIONAR LOTERÍAS</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
                     <div class="row">
-                        <div class="col-md-12">
-                            <legend>PROPONER UNA APUESTA</legend>
-                            <div class="form-group">
-                                <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="inspeccion_trabajo">INSPECCIÓN DE TRABAJO</label>
-                                <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="paga_extra">PAGA EXTRA</label>
-                                <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="comida">COMIDA</label>
-                                <label class="radio-inline"><input type="radio" class="om" name="OPCION_MENSAJE" value="bebida">BEBIDA</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="formulario-ejercicios">
-                                <legend id="seccion_text">SECCIÓN DE EJERCICIOS</legend>
-                                <form method="POST" action="/guardian/ejercicios_entregas" enctype="multipart/form-data">
-                                    <input type="hidden" id="seccion" name="SECCION" />
-                                    <input type="hidden" id="tipo_de_ejercicio" name="TIPO" />
-                                    <input type="hidden" id="grupo_o_no" name="GRUPO_O_NO" />
-                                    <input type="hidden" name="NUMERO_EJERCICIOS" id="NUMERO_EJERCICIOS" value="1" />
-                                    <div class="form-group">
-                                        <label class="radio-inline"><input type="radio" class="te" name="TIPO_EJERCICIO" value="test">TIPO TEST</label>
-                                        <label class="radio-inline"><input type="radio" class="te" name="TIPO_EJERCICIO" value="entrega">ENTREGA DE ARCHIVOS</label>
-                                    </div>
-                                    <div class="form-group" id="panel-grupo">
-                                        <label class="radio-inline"><input type="radio" class="gr" name="GRUPO" value="individual">EJERCICIO ÚNICO </label>
-                                        <label class="radio-inline"><input type="radio" class="gr" name="GRUPO" value="grupo">GRUPO DE EJERCICIOS</label>
-                                    </div>
-                                    <div id="ejercicios"></div>
-                                    <div class="row" id="panel-envio" style="margin-top:2%;">
-                                        <div class="col-lg-1 col-xs-3">
-                                            <button type="button" class="btn btn-warning btn-block" id="aniade" onclick="aniade_ejercicio();">
-                                                <span class="fa fa-plus"> 
-                                                    <!--Añadir-->
-                                                </span>
-                                            </button>
-                                        </div>
-                                        <div class="col-lg-6 col-xs-8" style="float:right;">
-                                            <button type="submit" class="btn btn-success btn-block">
-                                                <span class="fa fa-send-o" style="font-weight: bold"> 
-                                                    ENVIAR
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                        <div class="col-md-12" id="panel-apuestas-current">
+
                         </div>
                     </div>
                 {% endif %}
@@ -117,177 +100,167 @@
 {% block javascripts %}
     <script>
         $(document).ready(function () {
+        {% if SECCION == 'APUESTAS' %}
+                actualizarApuestas();
+                setInterval(function () {
+                    actualizarApuestas();
+                }, 30000);
+        {% endif %}
         {% if info.message is defined or info.type is defined%}
                 $('#box_modal_result').click();
         {% endif %}
-                $('#formulario-ejercicios').hide();
-                $('#panel-envio').hide();
-                $('#aniade').hide();
-                $('#panel-grupo').hide();
             });
 
-            var n_test = 1;
-            var te_anterior = 0;
-            var gr_anterior = 0;
-            //var array_ejercicios = [];
+            var n_posibilidades = 2;
 
-            $(function () {
-                $(".om").click(function () {
-                    var opcion = $('input[name=OPCION_MENSAJE]:checked').val();
-                    var seccion_text;
-                    set_enabled_tipos_ejercicios();
-                    if (opcion === 'inspeccion_trabajo') {
-                        $('.te:input[value="entrega"]').prop('disabled', true);
-                        seccion_text = "INSPECCIÓN DE TRABAJO";
+            function actualizarApuestas() {
+                ruta = '/ciudadano/ocio/apuestas/actualizar';
+                $.get(ruta, function (data, status) {
+                    console.log(data);
+                    $('#panel-apuestas-current').empty();
+                    if (data.resultado === 'OK') {
+                        $.each(data.apuestas, function (apuestak, apuestav) {
+                            contenido = '';
+                            contenido += '  <div class="col-md-6">';
+                            contenido += '      <div class="row apuesta">';
+                            contenido += '          <div class="col-md-12" style="text-align:center;">';
+                            contenido += '              ' + apuestav.DESCRIPCION;
+                            contenido += '          </div>';
+                            contenido += '          <div class="col-md-12" style="text-align:center;">';
+                            dias = Math.floor(apuestav.TIEMPO_TOTAL / 86400);
+                            horas = Math.floor(apuestav.TIEMPO_TOTAL / 3600) - (dias * 24);
+                            minutos = Math.floor(apuestav.TIEMPO_TOTAL / 60) - (dias * 24 * 60) - (horas * 60);
+                            segundos = Math.floor(apuestav.TIEMPO_TOTAL) - (dias * 24 * 60 * 60) - (horas * 60 * 60) - (minutos * 60);
+                            //contenido += '              <small>' + dias + ' días ' + horas + ' h ' + minutos + ' m ' + segundos + ' s</small> (' + apuestav.N_APUESTAS + ' apuestas)';
+                            contenido += '          </div>';
+                            contenido += '      </div>';
+
+                            var mas_tdv = [];
+                            mas_tdv['index'] = 0;
+                            mas_tdv['tdv'] = 0;
+                            index = 0;
+                            $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
+                                if (posibilidadv.TdV >= mas_tdv['tdv']) {
+                                    mas_tdv['index'] = index;
+                                    mas_tdv['tdv'] = posibilidadv.TdV;
+                                }
+                                index++;
+                            });
+                            index = 0;
+                            $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
+                                contenido += '<div class="row">';
+                                contenido += '      <div class="col-xs-12">';
+                                contenido += '          <button class="btn btn-block boton-opcion" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
+                                contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
+                                contenido += '          </button>';
+                                contenido += '      </div>';
+                                contenido += '      <div class="row collapse" id="datos' + posibilidadv.ID + '" style="margin: 0 22px;">';
+                                contenido += '          <div class="col-xs-12">';
+                                contenido += '              <div class="row">';
+                                if (!apuestav.ESTADO) {
+                                    contenido += '                  <div class="col-xs-2">';
+                                    contenido += '                      <div class="row">';
+                                    contenido += '                          <div class="input-group">';
+                                    contenido += '                              <input type="number" id="dias' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="100" />';
+                                    contenido += '                              <span class="input-group-addon">d</span>';
+                                    contenido += '                          </div>';
+                                    contenido += '                      </div>';
+                                    contenido += '                  </div>';
+                                    contenido += '                  <div class="col-xs-3">';
+                                    contenido += '                      <div class="row">';
+                                    contenido += '                          <div class="input-group">';
+                                    contenido += '                              <input type="number" id="horas' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="24" />';
+                                    contenido += '                              <span class="input-group-addon">h</span>';
+                                    contenido += '                          </div>';
+                                    contenido += '                      </div>';
+                                    contenido += '                  </div>';
+                                    contenido += '                  <div class="col-xs-3">';
+                                    contenido += '                      <div class="row">';
+                                    contenido += '                          <div class="input-group">';
+                                    contenido += '                              <input type="number" id="minutos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
+                                    contenido += '                              <span class="input-group-addon">m</span>';
+                                    contenido += '                          </div>';
+                                    contenido += '                      </div>';
+                                    contenido += '                  </div>';
+                                    contenido += '                  <div class="col-xs-3">';
+                                    contenido += '                      <div class="row">';
+                                    contenido += '                          <div class="input-group">';
+                                    contenido += '                              <input type="number" id="segundos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
+                                    contenido += '                              <span class="input-group-addon">s</span>';
+                                    contenido += '                          </div>';
+                                    contenido += '                      </div>';
+                                    contenido += '                  </div>';
+                                    contenido += '                  <div class="col-xs-1">';
+                                    contenido += '                      <div class="row">';
+                                    contenido += '                          <button class="btn btn-block" onclick="apostar(' + posibilidadv.ID + ');">';
+                                    contenido += '                             <i class="fa fa-money"></i>';
+                                    contenido += '                          </button>';
+                                    contenido += '                      </div>';
+                                    contenido += '                  </div>';
+                                } else {
+                                    contenido += '                  <span>APUESTA CERRADA</span>';
+                                }
+                                contenido += '              </div>';
+                                contenido += '      </div>';
+                                $.each(posibilidadv.APOSTADORES, function (apostador_k, apostador_v) {
+                                    contenido += '          <div class="col-xs-6 apostador-alias">@' + apostador_v.alias + '</div>';
+                                    contenido += '          <div class="col-xs-6 apostador-tdv">' + apostador_v.TdV + '</div>';
+                                });
+                                dias = Math.floor(posibilidadv.TdV / 86400);
+                                horas = Math.floor(posibilidadv.TdV / 3600) - (dias * 24);
+                                minutos = Math.floor(posibilidadv.TdV / 60) - (dias * 24 * 60) - (horas * 60);
+                                segundos = Math.floor(posibilidadv.TdV) - (dias * 24 * 60 * 60) - (horas * 60 * 60) - (minutos * 60);
+                                contenido += '          <div class="col-xs-12">';
+                                contenido += '              <small>' + dias + ' días ' + horas + ' h ' + minutos + ' m ' + segundos + ' s </small>';
+                                contenido += '          </div>';
+                                contenido += '      </div>';
+                                contenido += '</div>';
+                                index++;
+                            });
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                            $('#panel-apuestas-current').append(contenido);
+                        });
                     }
-                    if (opcion === 'paga_extra') {
-                        $('.te:input[value="test"]').prop('disabled', true);
-                        $('.gr:input[value="grupo"]').prop('disabled', true);
-                        seccion_text = "PAGA EXTRA";
-                    }
-                    if (opcion === 'comida') {
-                        $('.te:input[value="test"]').prop('disabled', true);
-                        $('.gr:input[value="grupo"]').prop('disabled', true);
-                        seccion_text = "ALIMENTACIÓN/COMIDA";
-                    }
-                    if (opcion === 'bebida') {
-                        $('.te:input[value="test"]').prop('disabled', true);
-                        $('.gr:input[value="grupo"]').prop('disabled', true);
-                        seccion_text = "ALIMENTACIÓN/BEBIDA";
-                    }
-                    $("#seccion_text").html('EJERCICIO PARA LA SECCIÓN (' + seccion_text + '):');
-                    $("#seccion").val(opcion);
-                    $('#formulario-ejercicios').show();
                 });
-                $(".te").click(function () {
-                    $('#panel-grupo').show();
-                    $('#ejercicios').empty();
-                    n_test = 1;
-                });
-                $(".gr").click(function () {
-                    var gr = $('input[name=GRUPO]:checked').val();
-                    var te = $('input[name=TIPO_EJERCICIO]:checked').val();
-                    if (gr !== gr_anterior) {
-                        gr_anterior = gr;
-                        n_test = 1;
-                        $('#ejercicios').empty();
-                    }
-                    if (gr === 'grupo') {
-                        $('#aniade').show();
-                        if (te === 'test') {
-                            $("#tipo_de_ejercicio").val('grupo_test');
-                        }
-                        if (te === 'entrega') {
-                            $("#tipo_de_ejercicio").val('grupo_entrega');
-                        }
+            }
+            function apostar(opcion_id) {
+                var segundos = parseInt($('#segundos' + opcion_id).val());
+                var minutos = parseInt($('#minutos' + opcion_id).val());
+                var horas = parseInt($('#horas' + opcion_id).val());
+                var dias = parseInt($('#dias' + opcion_id).val());
+
+                if (!Number.isInteger(segundos)
+                        || !Number.isInteger(minutos)
+                        || !Number.isInteger(horas)
+                        || !Number.isInteger(dias))
+                {
+                    alert('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
+                } else {
+                    if (segundos < 0
+                            || minutos < 0
+                            || horas < 0
+                            || dias < 0)
+                    {
+                        alert('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
                     } else {
-                        $('#aniade').hide();
-                        if (te === 'test') {
-                            $("#tipo_de_ejercicio").val('test');
-                        }
-                        if (te === 'entrega') {
-                            $("#tipo_de_ejercicio").val('entrega');
-                        }
+                        datos = {
+                            'segundos': segundos,
+                            'minutos': minutos,
+                            'horas': horas,
+                            'dias': dias,
+                            'id': opcion_id
+                        };
+                        $.post('/ciudadano/ocio/apuestas/apostar', datos, function (data) {
+                            console.log(data);
+                            if (data.estado === 'OK') {
+                                alert(data.message);
+                            } else if (data.estado === 'ERROR') {
+                                alert(data.message);
+                            }
+                        });
                     }
-                    $("#grupo_o_no").val(gr);
-                    $("#aniade").click();
-                    $('#panel-envio').show();
-                });
-
-            });
-            function set_enabled_tipos_ejercicios() {
-                $('.te:input[value="entrega"]').prop('disabled', false);
-                $('.te:input[value="test"]').prop('disabled', false);
-                $('.te:input[value="grupo"]').prop('disabled', false);
-            }
-
-            function crea_ejercicio() {
-                var te = $('input[name=TIPO_EJERCICIO]:checked').val();
-                var test = '';
-
-                if (te !== te_anterior) {
-                    n_test = 1;
-                    te_anterior = te;
-                    $('#ejercicios').empty();
-                    gr_anterior = 0;
-                    //$('#ejercicios').append('<input type="hidden" name="NUMERO_EJERCICIOS" id="NUMERO_EJERCICIOS" value="1" />');
-                    //array_ejercicios = [];
                 }
-                if (te === 'entrega') {
-                    test += '<div class="row">';
-                    test += '                    <div class="col-md-12">';
-                    test += '                        <legend id="ejercicio1">Ejercicio tipo entrega #' + n_test + '</legend>';
-                    test += '                        <div class="form-group">';
-                    test += '                            <input type="text" class="form-control" name="ENUNCIADO[]" placeholder="Enunciado del ejercicio #' + n_test + '" />';
-                    test += '                        </div>';
-                    /*test += '                        <div class="row">';
-                     test += '                            <div class="col-lg-12">';
-                     test += '                                <div class="input-group">';
-                     test += '                                   <label class="control-label">Select File</label>';
-                     test += '                                   <input id="input-id" type="file" class="file" data-preview-file-type="text">'; 
-                     test += '                                </div>';
-                     test += '                            </div>';
-                     test += '                        </div>';*/
-                    test += '                    </div>';
-                    test += '                </div>';
-                    //$('#ejercicios').append(test);
-                    //$('#NUMERO_EJERCICIOS').val(n_test);
-                }
-                if (te === 'test') {
-                    var test = '';
-                    test += '<div class="row">';
-                    test += '                    <div class="col-md-12">';
-                    test += '                        <legend id="ejercicio1">Ejercicio tipo test #' + n_test + '</legend>';
-                    test += '                        <div class="form-group">';
-                    test += '                            <input type="text" class="form-control" name="ENUNCIADO[]" placeholder="Enunciado del ejercicio #' + n_test + '" />';
-                    test += '                        </div>';
-                    test += '                        <div class="row">';
-                    test += '                            <div class="col-lg-3">';
-                    test += '                                <div class="input-group">';
-                    test += '                                    <span class="input-group-addon">';
-                    test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '1">';
-                    test += '                                    </span>';
-                    test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
-                    test += '                                </div>';
-                    test += '                            </div>';
-                    test += '                            <div class="col-lg-3">';
-                    test += '                                <div class="input-group">';
-                    test += '                                    <span class="input-group-addon">';
-                    test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '2">';
-                    test += '                                    </span>';
-                    test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
-                    test += '                                </div>';
-                    test += '                            </div>';
-                    test += '                            <div class="col-lg-3">';
-                    test += '                                <div class="input-group">';
-                    test += '                                    <span class="input-group-addon">';
-                    test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '3">';
-                    test += '                                    </span>';
-                    test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
-                    test += '                                </div>';
-                    test += '                            </div>';
-                    test += '                            <div class="col-lg-3">';
-                    test += '                                <div class="input-group">';
-                    test += '                                    <span class="input-group-addon">';
-                    test += '                                        <input type="checkbox" name="RESPUESTAS_CHECK_' + n_test + '4">';
-                    test += '                                    </span>';
-                    test += '                                    <input type="text" class="form-control" name="RESPUESTA_' + n_test + '[]">';
-                    test += '                                </div>';
-                    test += '                            </div>';
-                    test += '                        </div>';
-                    test += '                    </div>';
-                    test += '                </div>';
-                    //$('#ejercicios').append(test);
-                    //$('#NUMERO_EJERCICIOS').val(n_test);
-                }
-                n_test++;
-                return test;
-            }
-
-            function aniade_ejercicio() {
-                var texto = crea_ejercicio();
-                //array_ejercicios.push(texto);
-                $('#ejercicios').append(texto);
             }
     </script>
 {% endblock %}
