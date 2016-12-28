@@ -648,11 +648,6 @@ legend{
     padding: 10px 25px;
     background-color: rgba(0, 0, 0, 0.2);
 }
-.tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
-.tarjeta-ejercicio .tarjeta-ejercicio-tipo{
-    font-size: 15px;
-
-}
 .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
 .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
 .tarjeta-ejercicio .tarjeta-ejercicio-tipo{
@@ -663,13 +658,12 @@ legend{
     /*    border: 2px;*/
 }
 .tarjeta-ejercicio .tarjeta-ejercicio-tipo{
-    height: 40px;
+    height: auto;
     border-bottom: 2px;
     border-right: 2px;
 }
 .tarjeta-ejercicio .tarjeta-ejercicio-fecha{
-    height: 40px;
-    font-size: 12px;
+    height: auto;
     border-bottom: 2px;
 }
 .resultados-titulo{

@@ -4,6 +4,59 @@
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+        .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+        .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+        .ejercicio-seccion,
+        #ejercicio-calificacion,
+        #texto-badge{
+            font-size: 14px;
+        }
+        .ejercicio-seccion button{
+            font-weight: 600;
+        }
+        #ejercicio-calificacion{
+            text-align: right;
+        }
+        #ejercicio-calificacion img{
+            width: 20px;
+        }
+        #texto-badge{
+            background-color: #E0B831; 
+            padding: 9px 9px;
+        }
+        @media only screen and (max-width: 1068px){
+            .progress-bar,
+            .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+            .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+            .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+            .ejercicio-seccion
+            #ejercicio-calificacion,
+            #texto-badge,
+            .post-it{
+                font-size: 35px;
+            }
+            .progress-bar{
+                line-height: 45px;                
+                font-weight: 600;
+            }
+            .progress{
+                height: 50px;
+            }
+            .post-it{
+                margin: 0 20px;
+                margin-bottom: 2%;
+            }
+            #ejercicio-calificacion img{
+                width: 100px;
+            }
+        }
+
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         {% if SECCION is defined %}
@@ -67,6 +120,7 @@
                                          {% endif %} ">
                                         <div class="row">
                                             {% if EJERCICIO.ESTADO == 'solicitado' %}
+                                                <!--
                                                 <div class="col-xs-12">
                                                     <span style="font-size: 14px;">
                                                         <div class="col-xs-5">
@@ -104,23 +158,24 @@
                                                         </div>
                                                     </span>
                                                 </div>
+                                                -->
                                             {% else %}
-                                                <div class="col-xs-6">
+                                                <div class="col-xs-6 .ejercicio-seccion">
                                                     {% if not EJERCICIO.VISTO %}
-                                                        <span class="badge" style="font-size: 14px; background-color: #E0B831; padding: 9px 9px;">NUEVO</span>
+                                                        <span class="badge" id="texto-badge">NUEVO</span>
                                                     {% elseif EJERCICIO.EVALUADO is defined %}
-                                                        <span class="fa fa-eye"></span> <span style="font-size: 14px;"> EJERCICIO EVALUADO</span>
+                                                        <span class="fa fa-eye"></span> EJERCICIO EVALUADO
                                                     {% endif %}
                                                 </div>
-                                                <div class="col-xs-6" style="text-align: right; font-size: 16px;">
+                                                <div class="col-xs-6" id="ejercicio-calificacion">
                                                     {% if EJERCICIO.EVALUADO is defined %}
-                                                        <img src="{{ asset('images/badges/' ~ EJERCICIO.EVALUADO.getCorrespondenciaIcono()) }}" width="20" title="{{ EJERCICIO.EVALUADO.getCorrespondenciaTexto() }}" />
+                                                        <img src="{{ asset('images/badges/' ~ EJERCICIO.EVALUADO.getCorrespondenciaIcono()) }}" title="{{ EJERCICIO.EVALUADO.getCorrespondenciaTexto() }}" />
                                                     {% endif %}
 
                                                 </div>
                                             {% endif %}
                                         </div>
-                                        <div class="row">
+                                        <div class="row ejercicio-seccion">
                                             <div class="col-xs-6 tarjeta-ejercicio-tipo">
                                                 <span class="fa fa-check-square"> </span>
                                                 {{ EJERCICIO.TIPO }}
@@ -130,7 +185,7 @@
                                                 {{ EJERCICIO.FECHA.date }}
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row ejercicio-seccion">
                                             <div class="col-md-12 tarjeta-ejercicio-enunciado">
                                                 <div class="row">
                                                     <div class="col-xs-1">
@@ -143,18 +198,18 @@
                                             </div>
                                         </div>
                                         {% if EJERCICIO.ELEGIBLE %}
-                                            <div class="row" style="margin-top: 2%;">
+                                            <div class="row ejercicio-seccion" style="margin-top: 2%;">
                                                 {% if EJERCICIO.ESTADO == 'solicitado' %}
                                                     <div class="col-md-6 col-md-offset-6">
-                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> ENTREGAR </button>
+                                                        <button class="btn btn-warning btn-block" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> ENTREGAR </button>
                                                     </div>
                                                 {% elseif EJERCICIO.ESTADO == 'entregado' %}
                                                     <div class="col-md-6 col-md-offset-6">
-                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> MODIFICAR ENTREGA </button>
+                                                        <button class="btn btn-warning btn-block" onclick="arena_ejercicio({{ EJERCICIO.ID }});"> MODIFICAR ENTREGA </button>
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-6 col-md-offset-6">
-                                                        <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="solicitar({{ EJERCICIO.ID }});"><span class="fa fa-shopping-cart"></span> COMPRAR</button>
+                                                        <button class="btn btn-warning btn-block" onclick="solicitar({{ EJERCICIO.ID }});"><span class="fa fa-shopping-cart"></span> COMPRAR</button>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -211,9 +266,10 @@
             function setTSC() {
                 var ruta = '/getTiempoSinComer';
                 $.get(ruta, function (data, status) {
-                    if (data.tiempo_sin_comer !== 'null') {
-                        //alert(data.tiempo_sin_comer);
+                    if (data.porcentaje !== 'null') {
+                        console.log(data);
                         $('#progress-tsc').width(data.porcentaje + '%');
+                        $('#progress-tsc').html(data.porcentaje.toFixed(2) + '%');
                     }
                 });
             }

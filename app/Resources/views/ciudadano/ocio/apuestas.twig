@@ -31,6 +31,27 @@
         .apostador-tdv{
             text-align: right;
         }
+        .menu span{
+            cursor: pointer;
+        }
+        .modal-header{
+            padding: 4% 6%;
+        }
+        .modal-title{
+            font-size: 25px;
+        }
+        #mensaje-texto{
+            font-size: 20px;
+        }
+        .modal-advice .modal-dialog{
+            top: 50%;
+        }
+        #selector_ciudadanos{
+            width: 100%;
+        }
+        .advertencia{
+            font-size: 15px;
+        }
         @media only screen and (max-width: 1068px){
             .apuesta{
                 font-size: 55px;
@@ -40,6 +61,16 @@
             }
             .apostador-tdv{
                 font-size: 45px;
+            }
+            #mensaje-texto,
+            .modal-title{
+                font-size: 35px;
+                font-weight: inherit;
+            }
+
+            .advertencia{
+                font-size: 25px;
+                font-weight: lighter;
             }
         }
     </style>
@@ -229,20 +260,22 @@
                 var minutos = parseInt($('#minutos' + opcion_id).val());
                 var horas = parseInt($('#horas' + opcion_id).val());
                 var dias = parseInt($('#dias' + opcion_id).val());
-
+                $("#modal-button-aceptar").hide();
+                $("#modal-avisos2").click();
+                mostrarCarga('Procesando apuesta');
                 if (!Number.isInteger(segundos)
                         || !Number.isInteger(minutos)
                         || !Number.isInteger(horas)
                         || !Number.isInteger(dias))
                 {
-                    alert('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
+                    mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
                 } else {
                     if (segundos < 0
                             || minutos < 0
                             || horas < 0
                             || dias < 0)
                     {
-                        alert('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
+                        mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
                     } else {
                         datos = {
                             'segundos': segundos,
@@ -254,13 +287,40 @@
                         $.post('/ciudadano/ocio/apuestas/apostar', datos, function (data) {
                             console.log(data);
                             if (data.estado === 'OK') {
-                                alert(data.message);
+                                mostrarResultadoOperacion(data.message);
                             } else if (data.estado === 'ERROR') {
-                                alert(data.message);
+                                mostrarResultadoOperacion(data.message);
                             }
                         });
                     }
                 }
+            }
+            function mostrarCarga(texto) {
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+                contenido += '  </center>';
+                contenido += '</div>';
+                $("#mensaje-texto").append(contenido);
+            }
+
+            function mostrarResultadoOperacion(resultado) {
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      ' + resultado;
+                contenido += '  </center>';
+                contenido += '</div>';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                //$("#modal-button-aceptar").show();
+                $("#mensaje-texto").append(contenido);
             }
     </script>
 {% endblock %}
