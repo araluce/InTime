@@ -238,9 +238,9 @@ class Usuario {
         $query = $qb->select('d')
                 ->from('\AppBundle\Entity\UsuarioMovimiento', 'd')
                 ->where('d.idUsuario = :Usuario AND d.causa = :Causa')
-                ->setParameters(['Usuario' => $USUARIO, 'Causa' => 'Cobro - Donación a @'.$usuario_destino->getSeudonimo()]);
+                ->setParameters(['Usuario' => $USUARIO, 'Causa' => 'Cobro - Donación a @' . $usuario_destino->getSeudonimo()]);
         $DONACION = $query->getQuery()->getResult();
-        if(count($DONACION)){
+        if (count($DONACION)) {
             return 1;
         }
         return 0;
@@ -272,6 +272,26 @@ class Usuario {
         $em->persist($USUARIO);
         $em->persist($MOVIMIENTO);
         $em->flush();
+    }
+
+    static function aliasDisponible($doctrine, $session, $alias) {
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        
+        $query = $qb->select('u.seudonimo')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.seudonimo IS NOT NULL AND u.idUsuario != :IdUsuario')
+                ->setParameters(['IdUsuario' => $USUARIO->getIdUsuario()]);
+        $USUARIOS_ALIAS = $query->getQuery()->getResult();
+        if (count($USUARIOS_ALIAS)) {
+            foreach ($USUARIOS_ALIAS as $a) {
+                if ($a['seudonimo'] === $alias) {
+                    return 0;
+                }
+            }
+        }
+        return 1;
     }
 
 }

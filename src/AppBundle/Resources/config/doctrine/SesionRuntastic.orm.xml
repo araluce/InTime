@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\SesionRuntastic" table="SESION_RUNTASTIC">
+    <indexes>
+      <index name="id_usuario" columns="id_usuario_runtastic"/>
+    </indexes>
+    <id name="idSesionRuntastic" type="integer" column="id_sesion_runtastic">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="idRuntastic" type="integer" column="id_runtastic" nullable="false"/>
+    <field name="tipo" type="string" column="tipo" length="1000" nullable="false"/>
+    <field name="duracion" type="integer" column="duracion" nullable="false"/>
+    <field name="distancia" type="integer" column="distancia" nullable="false"/>
+    <field name="paso" type="integer" column="paso" nullable="false"/>
+    <field name="velocidad" type="float" column="velocidad" precision="10" scale="0" nullable="false"/>
+    <field name="kcal" type="integer" column="kcal" nullable="false"/>
+    <field name="ritmoCardiacoMedio" type="integer" column="ritmo_cardiaco_medio" nullable="false"/>
+    <field name="ritmoCardiacoMax" type="integer" column="ritmo_cardiaco_max" nullable="false"/>
+    <field name="desnivel" type="integer" column="desnivel" nullable="false"/>
+    <field name="perdidaNivel" type="integer" column="perdida_nivel" nullable="false"/>
+    <field name="superficie" type="string" column="superficie" length="1000" nullable="true"/>
+    <field name="tiempo" type="string" column="tiempo" length="1000" nullable="true"/>
+    <field name="sensacion" type="string" column="sensacion" length="1000" nullable="true"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <many-to-one field="idUsuarioRuntastic" target-entity="UsuarioRuntastic">
+      <join-columns>
+        <join-column name="id_usuario_runtastic" referenced-column-name="id_usuario_runtastic"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

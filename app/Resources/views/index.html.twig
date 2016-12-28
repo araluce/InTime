@@ -23,16 +23,17 @@
                                 <h4><span class="fa fa-lock"></span> INICIAR SESIÓN</h4>
                                 <form id="form" method="post" action="/login" >
                                     <div class="form-group col-md-10">
-                                        <input name="DNI" class="form-control inp_for" 
-                                               id="email" 
+                                        <input type="text"
+                                               name="DNI" id="usuario" 
+                                               class="form-control" 
                                                placeholder="DNI/NIE"
                                                required>
                                         <span class="help-block"></span>
                                     </div>
                                     <div id="box-key" class="form-group col-md-10">
                                         <input type="password" 
-                                               name="KEY" id="key"
-                                               class="form-control inp_for" 
+                                               name="KEY" id="clave"
+                                               class="form-control" 
                                                placeholder="Contraseña"
                                                required>
                                         <span id="help-key" class="help-block"></span>
@@ -50,19 +51,22 @@
                         </div>
                         <script>
                             $(document).ready(function () {
-
-                                $('.inp_for').blur(function ()
-                                {
-                                    if (!$(id).val()) {
-                                        $(id).addClass('panel-danger');
-                                    } else {
-                                        $(id).removeClass('panel-danger');
-                                    }
-                                });
-
-
-
+                                //$('.inp_for').blur(function ()
+                                //{
+                                //    if (!$(id).val()) {
+                                //        $(id).addClass('panel-danger');
+                                //    } else {
+                                //        $(id).removeClass('panel-danger');
+                                //    }
+                                //});
+                                //$('#form').submit( function (){
+                                //    if($.trim($(this).val()) === ''){
+                                //        $(this).addClass('panel-danger');
+                                //    }
+                                //});
                             });
+                            
+                            
 
                         </script>
                     </div>

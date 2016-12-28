@@ -546,4 +546,21 @@ class CiudadanoController extends Controller {
         return new JsonResponse(array('estado' => 'OK', 'message' => 'Tdv donado'), 200);
     }
 
+    /**
+     * @Route("/ciudadano/compruebaAlias/{alias}", name="compruebaAlias")
+     */
+    public function compruebaAlias(Request $request, $alias) {
+        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/compruebaAlias/' . $alias);
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        if($UsuarioClass->aliasDisponible($doctrine, $session, $alias)){
+            return new JsonResponse(array('estado' => 'OK', 'message' => 'Alias disponible'), 200);
+        }
+        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Este alias no está disponible'), 200);
+    }
+
 }

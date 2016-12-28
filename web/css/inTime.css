@@ -616,9 +616,9 @@ legend{
 
 .modal-advice .modal-title,
 .modal-advice-body{
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
+    /*font-size: 12px;*/
+    /*font-weight: 700;*/
+    /*text-transform: uppercase;*/
 
 }
 .radio-inline input[type=radio] {

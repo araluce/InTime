@@ -5,6 +5,40 @@
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .modal-header{
+            padding: 4% 6%;
+        }
+        .modal-title{
+            font-size: 25px;
+        }
+        #mensaje-texto{
+            font-size: 20px;
+        }
+        #reporte{
+            font-size: 12px;
+        }
+        .modal-advice .modal-dialog{
+            top: 50%;
+        }
+        .advertencia{
+            font-size: 15px;
+        }
+        @media only screen and (max-width: 1068px){
+            #mensaje-texto,
+            .modal-title{
+                font-size: 35px;
+            }
+            #reporte,
+            .advertencia{
+                font-size: 25px;
+            }
+        }
+
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="row">
@@ -31,35 +65,35 @@
                         </ul>
                     </div>
                 </div>
-                <form role="form" method="POST" action="/ciudadano/info" enctype="multipart/form-data">
+                <form role="form" method="POST" action="/ciudadano/info" id ="info-form" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6">
                             <legend>Información personal</legend>
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon" id="basic-addon1"><i class="fa fa-at" style="font-weight: bold;"></i></span>
-                                    <input type="text" class="form-control" name="ALIAS" placeholder="Alias"
+                                    <input type="text" class="form-control" name="ALIAS" id="alias" placeholder="Alias"
                                            {% if ALIAS is defined %} value="{{ ALIAS }}" {% endif %}/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" style="font-weight: bold;"></i></span>
-                                    <input type="text" class="form-control" name="NOMBRE" placeholder="Nombre"
+                                    <input type="text" class="form-control" name="NOMBRE" id="nombre" placeholder="Nombre"
                                            {% if NOMBRE is defined %} value="{{ NOMBRE }}" {% endif %}/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" style="font-weight: bold;"></i></span>
-                                    <input type="text" class="form-control" name="APELLIDOS" placeholder="Apellidos"
+                                    <input type="text" class="form-control" name="APELLIDOS" id="apellidos" placeholder="Apellidos"
                                            {% if APELLIDOS is defined %} value="{{ APELLIDOS }}" {% endif %}/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon" id="basic-addon1"><i class="fa fa-envelope" style="font-weight: bold;"></i></span>
-                                    <input type="email" class="form-control" name="EMAIL" placeholder="Email"
+                                    <input type="email" class="form-control" name="EMAIL" id="email" placeholder="Email"
                                            {% if EMAIL is defined %} value="{{ EMAIL }}" {% endif %}/>
                                 </div>
                             </div>
@@ -119,7 +153,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <span class="input-group-addon" id="basic-addon1"><i class="fa fa-child" style="font-weight: bold;"></i></span>
-                                            <input type="text" class="form-control" name="RUNTASIC" placeholder="Usuario de runtastic"
+                                            <input type="text" class="form-control" name="RUNTASIC" id="runtastic" placeholder="Usuario de runtastic"
                                                    {% if RUNTASTIC is defined %} value="{{ RUNTASTIC }}" {% endif %}/>
                                         </div>
                                     </div>
@@ -138,7 +172,23 @@
 
 {% block javascripts %}
     <script>
+        todoOk = true;
         $(document).ready(function () {
+            $('#info-form').submit(function (event) {
+                todoOk = true;
+                contenido = '';
+                contenido += '<div id="reporte">';
+                contenido += '</div>';
+                contenido += '<div id="panel-carga" class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      <i class="fa fa-spinner fa-spin"></i> Comprobando datos del formulario';
+                contenido += '  </center>';
+                contenido += '</div>';
+                $("#mensaje-texto").append(contenido);
+                $("#modal-avisos2").click();
+                comprobarDatos();
+                $.when(comprobarAlias()).done(terminarSubmit());
+            });
         {% if info.message is defined or info.type is defined%}
                 $('#box_modal_result').click();
         {% endif %}
@@ -171,5 +221,138 @@
                 });
 
             });
+            function mostrarCarga(texto) {
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+                contenido += '  </center>';
+                contenido += '</div>';
+                $("#mensaje-texto").append(contenido);
+            }
+
+            function mostrarResultadoOperacion(resultado) {
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      ' + resultado;
+                contenido += '  </center>';
+                contenido += '</div>';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                //$("#modal-button-aceptar").show();
+                $("#mensaje-texto").append(contenido);
+            }
+
+            function addReporte(texto, color) {
+                contenido = '';
+                contenido += '<div class="row">';
+                contenido += '  <div class="col-md-12">';
+                contenido += '      <p style="color:' + color + '">' + texto + '</p>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                $("#reporte").append(contenido);
+            }
+
+            function cerrarModal() {
+                $('#modal-avisos2').modal(toggle);
+            }
+            function comprobarDatos() {
+                todoOk = true;
+                if ($("#CLAVE").val().trim() !== '') {
+                    if ($("#CLAVE").val().length < 8) {
+                        addReporte('La contraseña es demasiado corta', 'red');
+                        $("#nombre").addClass('panel-danger');
+                        todoOk = false;
+                    } else {
+                        addReporte('Contraseña bien formada', 'green');
+                    }
+                } else {
+                    addReporte('No se comprueba la contraseña', 'black');
+                }
+                if ($.trim($("#CLAVE").val()) !== '') {
+                    if ($("#CLAVE").val() !== $("#CLAVE2").val()) {
+                        addReporte('Las contraseñas no coinciden', 'red');
+                        $("#CLAVE").addClass('panel-danger');
+                        $("#CLAVE2").addClass('panel-danger');
+                        todoOk = false;
+                    } else {
+                        addReporte('Las contraseñas coinciden', 'green');
+                    }
+                } else {
+                    addReporte('No se comprueban las contraseñas', 'black');
+                }
+
+                if ($("#nombre").val().trim() !== '') {
+                    if ($("#nombre").val().length < 2) {
+                        addReporte('El nombre es demasiado corto', 'red');
+                        $("#nombre").addClass('panel-danger');
+                        todoOk = false;
+                    } else {
+                        addReporte('Nombre bien formado', 'green');
+                    }
+                } else {
+                    addReporte('No se comprueban el nombre', 'black');
+                }
+                if ($.trim($("#apellidos").val()) !== '') {
+                    if ($("#apellidos").val().length < 3) {
+                        addReporte('El apellido es demasiado corto', 'red');
+                        $("#apellido").addClass('panel-danger');
+                        todoOk = false;
+                    } else {
+                        addReporte('Apellido bien formado', 'green');
+                    }
+                } else {
+                    addReporte('No se comprueban el apellido', 'black');
+                }
+
+                return todoOk;
+            }
+            function comprobarAlias() {
+                todoOk = true;
+                if ($("#alias").val().trim() !== '') {
+                    if ($("#alias").val().length < 4) {
+                        addReporte('El alias es demasiado corto', 'red');
+                        $("#alias").addClass('panel-danger');
+                        todoOk = false;
+                    } else {
+                        addReporte('Alias bien formado', 'green');
+                        ruta = '/ciudadano/compruebaAlias/' + $("#alias").val();
+                        $.get(ruta, function (data, status) {
+                            if (data.estado === 'OK') {
+                                addReporte(data.message, 'green');
+                            } else {
+                                event.preventDefault();
+                                addReporte(data.message, 'red');
+                                todoOk = false;
+                            }
+                        });
+                    }
+                } else {
+                    addReporte('No se comprueban el alias', 'black');
+                }
+                
+                return todoOk;
+            }
+            
+            function terminarSubmit(){
+                if (!todoOk) {
+                    $("#panel-carga").empty();
+                    contenido = '';
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      Corrija los fallos';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      <button class="btn btn-block" onclick="cerrarModal();"> OK </button>';
+                    contenido += '  </div>';
+                    $("#panel-carga").append(contenido);
+                    event.preventDefault();
+                }
+            }
     </script>
 {% endblock %}
