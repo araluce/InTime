@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <!--
     <div class="container">
         <div class="content jumbotron" style="margin-top:5%;">
             <div id="wrapper">
@@ -38,40 +39,84 @@
                                                required>
                                         <span id="help-key" class="help-block"></span>
                                         <span id="help-key" class="help-block" style="color:#FFFFFF; font-weight: bold;">
-                                            {% if ERROR is defined %} {{ ERROR }} {% endif %}
-                                        </span>
-                                    </div>
+    {% if ERROR is defined %} {{ ERROR }} {% endif %}
+</span>
+</div>
 
-                                    <div class="form-group col-md-5">
-                                        <button type="submit" class="btn btn-default">Enviar</button>
-                                    </div>
+<div class="form-group col-md-5">
+<button type="submit" class="btn btn-default">Enviar</button>
+</div>
 
-                                </form>
-                            </div>
+</form>
+</div>
+</div>
+<script>
+$(document).ready(function () {
+//$('.inp_for').blur(function ()
+//{
+//    if (!$(id).val()) {
+//        $(id).addClass('panel-danger');
+//    } else {
+//        $(id).removeClass('panel-danger');
+//    }
+//});
+//$('#form').submit( function (){
+//    if($.trim($(this).val()) === ''){
+//        $(this).addClass('panel-danger');
+//    }
+//});
+});
+
+
+
+</script>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+    -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="col-md-11" style="margin: 3% 0% 3% 3%;">
+                            <h2 class="item-carousel" style="font-style: italic;">
+                                "El tiempo es la moneda de tu vida. 
+                                Es la única moneda que tienes, y sólo tú podrás determinar cómo gastarla"
+                            </h2>
                         </div>
-                        <script>
-                            $(document).ready(function () {
-                                //$('.inp_for').blur(function ()
-                                //{
-                                //    if (!$(id).val()) {
-                                //        $(id).addClass('panel-danger');
-                                //    } else {
-                                //        $(id).removeClass('panel-danger');
-                                //    }
-                                //});
-                                //$('#form').submit( function (){
-                                //    if($.trim($(this).val()) === ''){
-                                //        $(this).addClass('panel-danger');
-                                //    }
-                                //});
-                            });
-                            
-                            
-
-                        </script>
                     </div>
-
                 </div>
+            </div>
+            <div class="col-md-6 login-form" style="margin: 3% 0% 3% 0%;">
+                <h4><span class="fa fa-lock"></span> INICIAR SESIÓN</h4>
+                <form id="form" method="post" action="/login" >
+                    <div class="form-group col-md-10">
+                        <input type="text"
+                               name="DNI" id="usuario" 
+                               class="form-control" 
+                               placeholder="DNI/NIE"
+                               required>
+                        <span class="help-block"></span>
+                    </div>
+                    <div id="box-key" class="form-group col-md-10">
+                        <input type="password" 
+                               name="KEY" id="clave"
+                               class="form-control" 
+                               placeholder="Contraseña"
+                               required>
+                        <span id="help-key" class="help-block"></span>
+                        <span id="help-key" class="help-block" style="color:#FFFFFF; font-weight: bold;">
+                            {% if ERROR is defined %} {{ ERROR }} {% endif %}
+                        </span>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <button type="submit" class="btn btn-default">Enviar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

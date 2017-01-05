@@ -99,7 +99,7 @@ class Usuario {
         return sha1($salt . $password);
     }
 
-    public function activar_usuario($doctrine, $USUARIO) {
+    static function activar_usuario($doctrine, $USUARIO) {
         $USUARIO_ESTADO = $USUARIO->getIdEstado();
 
         // Si el usuario está inactivo (no ha entrado nunca)

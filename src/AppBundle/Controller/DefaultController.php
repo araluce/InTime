@@ -7,6 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use AppBundle\Utils\Usuario;
+use AppBundle\Utils\DataManager;
+use AppBundle\Utils\Utils;
+use AppBundle\Utils\Twitter;
+use AppBundle\Utils\Trabajo;
 
 class DefaultController extends Controller {
 
@@ -14,11 +19,11 @@ class DefaultController extends Controller {
      * @Route("/", name="homepage")
      */
     public function indexAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         if ($session->get('id_usuario') !== null) {
-            $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/registro');
+            Usuario::compruebaUsuario($doctrine, $session, '/guardian/registro');
             $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
 
             return $this->inicio_usuario($usuario, $session);
@@ -34,7 +39,7 @@ class DefaultController extends Controller {
             $DNI = strtoupper($request->request->get('DNI'));
             $KEY = $request->request->get('KEY');
 
-            $USUARIO = new \AppBundle\Utils\Usuario();
+            
             $doctrine = $this->getDoctrine();
             $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
 
@@ -44,8 +49,8 @@ class DefaultController extends Controller {
                 $session = $request->getSession();
                 $session->set('id_usuario', $usuario->getIdUsuario());
 
-                $USUARIO->activar_usuario($doctrine, $usuario);
-                $USUARIO->compruebaUsuario($doctrine, $session, '/login');
+                Usuario::activar_usuario($doctrine, $usuario);
+                Usuario::compruebaUsuario($doctrine, $session, '/login');
 
                 //Cargar el menu del usuario según rol
                 return $this->inicio_usuario($usuario, $session);
@@ -63,110 +68,22 @@ class DefaultController extends Controller {
      * @Route("/logout", name="salir")
      */
     public function salirAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $UsuarioClass->compruebaUsuario($doctrine, $session, '/logout');
+        Usuario::compruebaUsuario($doctrine, $session, '/logout');
         $session->remove('id_usuario');
         return new RedirectResponse('/');
-    }
-
-    /**
-     * @Route("/ciudadano/info", name="informacion")
-     */
-    public function infoAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/info');
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $id_usuario = $session->get('id_usuario');
-        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-
-        $DATOS = [];
-        $DATOS['TITULO'] = 'Informacion';
-
-        if ($request->getMethod() == 'POST') {
-            $ALIAS = trim($request->request->get('ALIAS'));
-            $NOMBRE = trim($request->request->get('NOMBRE'));
-            $APELLIDOS = trim($request->request->get('APELLIDOS'));
-            $EMAIL = trim($request->request->get('EMAIL'));
-            $CLAVE = trim($request->request->get('CLAVE'));
-            $RUNTASTIC = trim($request->request->get('RUNTASTIC'));
-            $IMAGEN = $request->files->get('IMAGEN');
-
-            if ($ALIAS !== '') {
-                if ($UsuarioClass->aliasDisponible($doctrine, $session, $ALIAS)) {
-                    $usuario->setSeudonimo($ALIAS);
-                }
-            }
-            if ($NOMBRE !== '') {
-                $usuario->setNombre($NOMBRE);
-            }
-            if ($APELLIDOS !== '') {
-                $usuario->setApellidos($APELLIDOS);
-            }
-            if ($EMAIL !== '') {
-                $usuario->setEmail($EMAIL);
-            }
-            if ($CLAVE !== '') {
-                $usuario->setClave($this->encriptar($usuario, $CLAVE));
-            }
-            if ($RUNTASTIC != '') {
-                $usuario->setUsuRuntastic($RUNTASTIC);
-            }
-            if (!is_null($IMAGEN)) {
-                $ruta = 'images/users/' . $usuario->getDni();
-                if (!file_exists($ruta)) {
-                    mkdir($ruta, 0777, true);
-                }
-                // generate a random name for the file but keep the extension
-                //                $nombre_foto = uniqid() . "." . $file->getClientOriginalExtension();
-                $nombre_foto = "profile." . $IMAGEN->getClientOriginalExtension();
-                $usuario->setImagen($nombre_foto);
-                $IMAGEN->move($ruta, $nombre_foto);
-            }
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($usuario);
-            $em->flush();
-
-            $DATOS['info'] = [];
-            $DATOS['info']['message'] = 'Gracias por actualizar tu información';
-            $DATOS['info']['type'] = 'success';
-        }
-        if ($usuario->getSeudonimo()) {
-            $DATOS['ALIAS'] = $usuario->getSeudonimo();
-        }
-        if ($usuario->getNombre()) {
-            $DATOS['NOMBRE'] = $usuario->getNombre();
-        }
-        if ($usuario->getApellidos()) {
-            $DATOS['APELLIDOS'] = $usuario->getApellidos();
-        }
-        if ($usuario->getEmail()) {
-            $DATOS['EMAIL'] = $usuario->getEmail();
-        }
-        if ($usuario->getUsuRuntastic()) {
-            $DATOS['RUNTASTIC'] = $usuario->getUsuRuntastic();
-        }
-        if ($usuario->getImagen()) {
-            $DATOS['IMAGEN'] = $usuario->getDni() . '/' . $usuario->getImagen();
-        }
-        $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-        return $this->render('ciudadano/extensiones/informacion.html.twig', $DATOS);
     }
 
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral", name="twitter")
      */
     public function twitter(Request $request, $msg = null) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral');
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -187,9 +104,9 @@ class DefaultController extends Controller {
         $string = 0;
         if (isset($usuario_twitter)) {
             $string = [];
-            $string = \AppBundle\Utils\Twitter::twitter($usuario, $usuario_twitter, $count, $doctrine);
+            $string = Twitter::twitter($usuario, $usuario_twitter, $count, $doctrine);
         }
-        //\AppBundle\Utils\Utils::pretty_print($string);
+        
         // Recargamos la lista de usuarios de twitter a la que sigue el jugador
         $tuiteros = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($usuario);
 
@@ -216,7 +133,7 @@ class DefaultController extends Controller {
             $DATOS['info']['type'] = $msg['type'];
         }
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-//        \AppBundle\Utils\Utils::pretty_print($usuario_twitter);
+        
         return $this->render('ciudadano/trabajo/twitter.html.twig', $DATOS);
     }
 
@@ -228,7 +145,7 @@ class DefaultController extends Controller {
         if (count($coincidencias)) {
             $id_tuitero_real = str_replace('@', '', $coincidencias[0]);
         }
-        $fecha = \AppBundle\Utils\Twitter::getFecha($id_tweet);
+        $fecha = Twitter::getFecha($id_tweet);
 
         if (!$fecha) {
             $fecha = 'ERROR';
@@ -242,9 +159,9 @@ class DefaultController extends Controller {
             $id_usuario_destino = null;
         }
         if (count($coincidencias)) {
-            $respuesta = \AppBundle\Utils\Twitter::almacenar_tweet($id_tuitero_real, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
+            $respuesta = Twitter::almacenar_tweet($id_tuitero_real, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
         } else {
-            $respuesta = \AppBundle\Utils\Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
+            $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
         }
         return new JsonResponse(array('datos' => $respuesta), 200);
     }
@@ -255,7 +172,7 @@ class DefaultController extends Controller {
     public function showTweet($id_mochila) {
         $doctrine = $this->getDoctrine();
 
-        $respuesta = \AppBundle\Utils\Twitter::getTweetByIdMochila($id_mochila, $doctrine);
+        $respuesta = Twitter::getTweetByIdMochila($id_mochila, $doctrine);
 
         return new JsonResponse($respuesta, 200);
     }
@@ -264,10 +181,10 @@ class DefaultController extends Controller {
      * @Route("compartir", name="compartir")
      */
     public function compartir(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/compartir');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/compartir');
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -276,20 +193,15 @@ class DefaultController extends Controller {
             $lista_usuarios_id = $request->request->get('share_list');
             $id_tweet = $request->request->get('id_tweet');
             $id_tuitero = $request->request->get('id_tuitero');
-            $fecha = \AppBundle\Utils\Twitter::getFecha($id_tweet);
+            $fecha = Twitter::getFecha($id_tweet);
             $id_usuario = $this->get('session')->get('id_usuario');
             if (!empty($lista_usuarios_id)) {
                 foreach ($lista_usuarios_id as $id_usuario_destino) {
-                    $respuesta = \AppBundle\Utils\Twitter::almacenar_tweet($id_tuitero, $id_tweet, 4, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
+                    $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, 4, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
                 }
             }
-//            \AppBundle\Utils\Utils::pretty_print($lista_usuarios_id);
-//            \AppBundle\Utils\Utils::pretty_print($id_tweet);
+            
         }
-
-//        $msg = [];
-//        $msg['message'] = 'Tweet compartido con éxito';
-//        $msg['type'] = 'success';
 
         return new RedirectResponse('/ciudadano/trabajo/jornada_laboral');
     }
@@ -298,16 +210,16 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo", name="trabajo")
      */
     public function trabajo_ciudadanoAction(Request $request) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/trabajo');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo');
 
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Trabajo', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Trabajo', $session);
         return $this->render('ciudadano/extensiones/trabajo.html.twig', $DATOS);
     }
 
@@ -315,22 +227,22 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo/inspeccion", name="inspeccion")
      */
     public function inspeccion_trabajoAction(Request $request) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/inspeccion');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/inspeccion');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Inspección de trabajo', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Inspección de trabajo', $session);
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
         $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneByIdEjercicioSeccion(1);
         $EJERCICIO_X_GRUPO = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findAll();
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($EJERCICIO_SECCION);
         $DATOS['SECCION'] = $EJERCICIO_SECCION->getSeccion();
         $DATOS['EJERCICIOS'] = [];
-        $UTILS = new \AppBundle\Utils\Utils();
+        
         $ids_ejercicios = [];
 
         if (count($EJERCICIO_X_GRUPO)) {
@@ -339,7 +251,7 @@ class DefaultController extends Controller {
                 $ejercicio = $ejercicio_grupo->getIdEjercicio();
                 if (!in_array($ejercicio_grupo->getIdGrupoEjercicios(), $ids_ejercicios_grupos)) {
                     $ids_ejercicios_grupos[] = $ejercicio_grupo->getIdGrupoEjercicios();
-                    $DATOS['EJERCICIOS'][] = $UTILS::getDatosInspeccion($doctrine, $USUARIO, null, $ejercicio_grupo->getIdGrupoEjercicios());
+                    $DATOS['EJERCICIOS'][] = Utils::getDatosInspeccion($doctrine, $USUARIO, null, $ejercicio_grupo->getIdGrupoEjercicios());
                 }
                 $ids_ejercicios[] = $ejercicio->getIdEjercicio();
             }
@@ -347,7 +259,7 @@ class DefaultController extends Controller {
         if (count($EJERCICIOS)) {
             foreach ($EJERCICIOS as $ejercicio) {
                 if (!in_array($ejercicio->getIdEjercicio(), $ids_ejercicios)) {
-                    $DATOS['EJERCICIOS'][] = $UTILS::getDatosInspeccion($doctrine, $USUARIO, $ejercicio, null);
+                    $DATOS['EJERCICIOS'][] = Utils::getDatosInspeccion($doctrine, $USUARIO, $ejercicio, null);
                 }
             }
         }
@@ -359,15 +271,15 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo/paga_extra", name="paga_extra")
      */
     public function paga_extraAction(Request $request, $mensaje = null) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/paga_extra');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/paga_extra');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Paga extra', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Paga extra', $session);
         if ($mensaje !== null) {
             $DATOS['info'] = $mensaje['info'];
         }
@@ -386,17 +298,17 @@ class DefaultController extends Controller {
      * @Route("/arena/{id_ejercicio}", name="arenatest")
      */
     public function arenaAction(Request $request, $id_ejercicio) {
-        $UTILS = new \AppBundle\Utils\Utils();
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
+        
         $session = $this->get('session');
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/arena/' . $id_ejercicio);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/arena/' . $id_ejercicio);
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Desafío', $this->get('session'));
+        $DATOS = DataManager::setDefaultData($doctrine, 'Desafío', $this->get('session'));
         $id_usuario = $session->get('id_usuario');
 
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
@@ -404,7 +316,7 @@ class DefaultController extends Controller {
         $SECCION = $EJERCICIO->getIdEjercicioSeccion();
 
         if ($EJERCICIO->getIdTipoEjercicio()->getIdTipoEjercicio() !== 3) {
-            $UTILS::getDatosArenaTest($doctrine, $USUARIO, $EJERCICIO, $DATOS);
+            Utils::getDatosArenaTest($doctrine, $USUARIO, $EJERCICIO, $DATOS);
             $EJERCICIO_X_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
                 'idEjercicio' => $EJERCICIO,
                 'idUsu' => $USUARIO
@@ -416,7 +328,7 @@ class DefaultController extends Controller {
                 'idGrupo' => $GRUPO,
                 'idUsu' => $USUARIO
             ]);
-            $d = $UTILS::getDatosArenaGrupoTest($doctrine, $USUARIO, $GRUPO);
+            $d = Utils::getDatosArenaGrupoTest($doctrine, $USUARIO, $GRUPO);
             $DATOS['EJERCICIOS'] = $d['EJERCICIOS'];
             $DATOS['SECCION'] = $d['SECCION'];
             $DATOS['TIPO'] = $d['TIPO'];
@@ -444,7 +356,7 @@ class DefaultController extends Controller {
                         $cont++;
                     }
                     $nota = ($nota * 10) / 4;
-                    $DATOS['RESULTADO'] = $UTILS::setNota($doctrine, $USUARIO, null, $EJERCICIO, $nota);
+                    $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, $nota);
                 } else {
                     $DATOS['RESULTADO']['TITULO'] = 'Error';
                     $DATOS['RESULTADO']['NOTA_TEXTO'] = 'Este ejercicio ya ha sido evaluado';
@@ -482,7 +394,7 @@ class DefaultController extends Controller {
                         $cont_ejercicio++;
                     }
                     $nota = (($nota_4 / $cont_ejercicio) * 10) / 4;
-                    $DATOS['RESULTADO'] = $UTILS::setNota($doctrine, $USUARIO, $GRUPO, null, $nota);
+                    $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, $GRUPO, null, $nota);
                 } else {
                     $DATOS['RESULTADO']['TITULO'] = 'Error';
                     $DATOS['RESULTADO']['NOTA_TEXTO'] = 'Este ejercicio ya ha sido evaluado';
@@ -492,13 +404,13 @@ class DefaultController extends Controller {
             }
             if ($DATOS['TIPO'] === 'entrega') {
                 $NOTA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('nota_por_defecto');
-                $DATOS['RESULTADO'] = $UTILS::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getValor()));
+                $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getValor()));
                 $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                 ]);
                 $ENTREGA = $request->files->get('ENTREGA');
                 if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                    $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
+                    $ruta = 'USUARIOS/' . Usuario::getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
@@ -558,7 +470,7 @@ class DefaultController extends Controller {
                     //return $this->
                 }
             }
-            //$UTILS::pretty_print($DATOS);
+            //Utils::pretty_print($DATOS);
             return $this->render('ciudadano/extensiones/resumen.twig', $DATOS);
         }
 
@@ -569,11 +481,11 @@ class DefaultController extends Controller {
      * @Route("/solicitar/{id_ejercicio}", name="solicitar")
      */
     public function solicitarAction(Request $request, $id_ejercicio) {
-        $TRABAJO = new \AppBundle\Utils\Trabajo();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $UsuarioClass->compruebaUsuario($doctrine, $session, '/solicitar/' . $id_ejercicio);
+        Usuario::compruebaUsuario($doctrine, $session, '/solicitar/' . $id_ejercicio);
 
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
@@ -582,9 +494,9 @@ class DefaultController extends Controller {
 
         switch ($SECCION) {
             case 'paga_extra':
-                return $TRABAJO->solicitar_paga($doctrine, $USUARIO, $EJERCICIO);
+                return Trabajo::solicitar_paga($doctrine, $USUARIO, $EJERCICIO);
             case 'comida';
-                return $TRABAJO->solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
+                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
         }
     }
 
@@ -592,15 +504,15 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio", name="ocio")
      */
     public function ocio_ciudadanoAction(Request $request) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Ocio', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Ocio', $session);
         return $this->render('ciudadano/extensiones/ocio.html.twig', $DATOS);
     }
 
@@ -608,15 +520,15 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio/amigos", name="amigos")
      */
     public function amigos_ciudadanoAction(Request $request) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/coidadano/ocio/amigos');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/coidadano/ocio/amigos');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Amigos', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Amigos', $session);
         return $this->render('ciudadano/ocio/amigos.html.twig', $DATOS);
     }
 
@@ -624,15 +536,15 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/prestamos", name="prestamos")
      */
     public function prestamos_ciudadanoAction(Request $request) {
-        $DataManager = new \AppBundle\Utils\DataManager();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/prestamos');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/prestamos');
         if (!$status) {
             return new RedirectResponse('/');
         }
-        $DATOS = $DataManager->setDefaultData($doctrine, 'Préstamos', $session);
+        $DATOS = DataManager::setDefaultData($doctrine, 'Préstamos', $session);
         return $this->render('ciudadano/extensiones/prestamos.html.twig', $DATOS);
     }
 
@@ -640,10 +552,10 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/registro", name="registro")
      */
     public function registroAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/censo/registro', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/censo/registro', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -694,12 +606,12 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/ciudadanos", name="ciudadanos")
      */
     public function ciudadanosAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/censo/ciudadanos', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/censo/ciudadanos', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -716,12 +628,12 @@ class DefaultController extends Controller {
      * @Route("/guardian/obtenerCiudadanosDistrito/{idDistrito}", name="obtenerCiudadanosDistrito")
      */
     public function obtenerCiudadanosDistritoAction(Request $request, $idDistrito) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/obtenerCiudadanosDistritoAction/' . $idDistrito, true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/obtenerCiudadanosDistritoAction/' . $idDistrito, true);
         if (!$status) {
             return new JsonResponse(array('respuesta' => 'error'), 200);
         }
@@ -767,12 +679,12 @@ class DefaultController extends Controller {
      * @Route("/guardian/obtenerCiudadanosSinDistrito", name="obtenerCiudadanosSinDistrito")
      */
     public function obtenerCiudadanosSinDistritoAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/obtenerCiudadanosDistritoDistritoAction', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/obtenerCiudadanosDistritoDistritoAction', true);
         if (!$status) {
             return new JsonResponse(array('respuesta' => 'error'), 200);
         }
@@ -814,13 +726,13 @@ class DefaultController extends Controller {
      * @Route("/guardian/aniadeCiudadanoADistrito/{idCiudadano}/{idDistrito}", name="aniadeCiudadanoADistrito")
      */
     public function aniadeCiudadanoADistritoAction(Request $request, $idCiudadano, $idDistrito) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
 
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/aniadeCiudadanoADistrito/' . $idCiudadano . '/' . $idDistrito, true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/aniadeCiudadanoADistrito/' . $idCiudadano . '/' . $idDistrito, true);
         if (!$status) {
             return new JsonResponse(array('respuesta' => 'error'), 200);
         }
@@ -850,12 +762,12 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/distritos", name="distritos")
      */
     public function distritosAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/censo/distritos', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/censo/distritos', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -873,11 +785,11 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/creardistrito", name="crearDistrito")
      */
     public function crearDistritoAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/censo/crearDistrito', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/censo/crearDistrito', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -902,11 +814,11 @@ class DefaultController extends Controller {
      * @Route("/guardian/ejercicios_entregas", name="ejerciciosYentregas")
      */
     public function ejercicios_entregas(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/ejercicios_entregas', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios_entregas', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -1103,11 +1015,11 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/proponer", name="proponerApuesta")
      */
     public function proponerApuestaAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/apuestas/proponer', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/proponer', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -1143,10 +1055,10 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/gestion", name="gestionarApuestas")
      */
     public function gestionarApuestasAction(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/apuestas/gestion', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/gestion', true);
         if (!$status) {
             return new RedirectResponse('/');
         }
@@ -1216,11 +1128,11 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/terminarApuesta/{id_apuesta_posibilidad}", name="terminarApuesta")
      */
     public function terminarApuestaAction(Request $request, $id_apuesta_posibilidad) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/apuestas/terminarApuesta/' . $id_apuesta_posibilidad, true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/terminarApuesta/' . $id_apuesta_posibilidad, true);
 
         if (!$status) {
             return new RedirectResponse('/');
@@ -1248,7 +1160,7 @@ class DefaultController extends Controller {
                 if (in_array($UA->getIdApuestaPosibilidad(), $POSIBILIDADES)) {
                     $APUESTAS_USUARIO_ESTA_APUESTA[] = $UA;
                     $RECAUDACION += $UA->getTdvApostado();
-                    $UsuarioClass->operacionSobreTdV($doctrine, $UA->getIdUsuario(), $UA->getTdvApostado() * (-1), 'Cobro - Apuestas');
+                    Usuario::operacionSobreTdV($doctrine, $UA->getIdUsuario(), $UA->getTdvApostado() * (-1), 'Cobro - Apuestas');
                 }
             }
 
@@ -1258,7 +1170,7 @@ class DefaultController extends Controller {
                 $DISPARADOR_APUESTAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta')->getValor();
                 $GANANCIAS = round(($RECAUDACION * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
                 foreach ($APUESTAS_GANADORAS as $A) {
-                    $UsuarioClass->operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
+                    Usuario::operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
                 }
             }
         }
@@ -1270,11 +1182,11 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/pararApuesta/{id_apuesta}/{desactivar}", name="pararApuesta")
      */
     public function pararApuestaAction(Request $request, $id_apuesta, $desactivar) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/apuestas/pararApuesta/' . $id_apuesta . '/' . $desactivar, true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/pararApuesta/' . $id_apuesta . '/' . $desactivar, true);
 
         if (!$status) {
             return new RedirectResponse('/');
@@ -1299,10 +1211,10 @@ class DefaultController extends Controller {
      * @Route("/guardian/mensajeria", name="mensajeria")
      */
     public function mensajeria(Request $request) {
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
+        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/guardian/mensajeria', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/mensajeria', true);
 
         if (!$status) {
             return new RedirectResponse('/');
@@ -1373,15 +1285,15 @@ class DefaultController extends Controller {
     }
 
     public function inicio_ciudadano($usuario, $session) {
-        $DataManager = new \AppBundle\Utils\DataManager();
+        
         $doctrine = $this->getDoctrine();
         $DATOS = [];
 
         if ($usuario->getNombre() !== null) {
-            $DATOS = $DataManager->setDefaultData($doctrine, 'InTime - ' . $usuario->getNombre(), $session);
+            $DATOS = DataManager::setDefaultData($doctrine, 'InTime - ' . $usuario->getNombre(), $session);
         } else {
             $session->set('registro_completo', false);
-            $DATOS = $DataManager->setDefaultData($doctrine, 'InTime - Desconocido', $session);
+            $DATOS = DataManager::setDefaultData($doctrine, 'InTime - Desconocido', $session);
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
     }

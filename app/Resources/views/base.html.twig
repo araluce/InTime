@@ -19,8 +19,8 @@
         <link href="{{ asset('css/normalize.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/demo.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/component2.css')}}" rel="stylesheet" type="text/css" />
-        <script src="{{ asset('js/modernizr-2.6.2.min.js') }}"></script>
-        -->
+        <script src="{{ asset('js/modernizr-2.6.2.min.js') }}"></script>-->
+        
         <link href="{{ asset('css/inTime.css')}}" rel="stylesheet" type="text/css" />
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'/>
         <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -91,7 +91,7 @@
     {% endif %}
 
     <div class="row">
-        <div class="col-lg-5 col-lg-offset-4 col-xs-10 col-xs-offset-2">
+        <div id="posicion-reloj">
             <div id="countdown-11"></div>
         </div>
     </div>
@@ -124,15 +124,15 @@
         {% if TDV is defined %}
                 function responsive_screen() {
                     if (window.matchMedia('screen and (max-width: 368px)').matches) {
-                        return 25;
+                        return 40;
                     } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
-                        return 35;
+                        return 57;
                     } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
-                        return 46;
+                        return 72;
                     } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
-                        return 56;
+                        return 97;
                     } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
-                        return 85;
+                        return 115;
                     } else {
                         return 40;
                     }
@@ -144,16 +144,17 @@
                     theme: "white",
                     displayCaptions: true,
                     fontSize: responsive_screen(),
-                    captionSize: 14
+                    captionSize: 0
                 });
         {% endif %}
             });
     </script>
 {% block javascripts %}{% endblock %}
+
 <!--
 <script src="{{ asset('js/polyfills.js') }}"></script>
-<script src="{{ asset('js/menu.js') }}"></script>
-<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>
--->
+<script src="{{ asset('js/menu.js') }}"></script>-->
+<!--<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>-->
+
 </body>
 </html>

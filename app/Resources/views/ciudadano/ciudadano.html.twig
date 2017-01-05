@@ -10,37 +10,36 @@
         <!--
         <div class="row">
             <div class="col-xs-12">
-                <div class="component">
-                    <button class="cn-button" id="cn-button">Menu</button>
+                <div class="component" style="margin-top: 1%;">
+                    <button class="cn-button" id="cn-button">
+                    </button>
                     <div class="cn-wrapper" id="cn-wrapper">
                         <ul>
-                            <li><a href="/ciudadano/info"><span>Información</span></a></li>
-                            <li><a href="#"><span>Tutorials</span></a></li>
-                            <li><a href="#"><span>Articles</span></a></li>
-                            <li><a href="#"><span>Snippets</span></a></li>
-                            <li><a href="#"><span>Plugins</span></a></li>
-                            <li><a href="#"><span>Contact</span></a></li>
-                            <li><a href="#"><span>Follow</span></a></li>
+                            <li><a href="/ciudadano/info"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
+                            <li><a href="#"><span></span></a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
         -->
-        <div class="row">
-            <div class="col-xs-2 col-xs-offset-5 menu">
 
-                <a href="/ciudadano/info">
-                    <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
-                </a>
-
-            </div>
+        <div class="menu" id="menu-jugador">
+            <a href="/ciudadano/info">
+                <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
+            </a>
         </div>
-        <div class="row">
-            <div class="col-xs-2 col-xs-offset-3 menu">
-                <a href="/ciudadano/rankings"><img alt="Logo" src="{{ asset('images/iconos/Clasificaciones.png') }}"  /></a>
+
+        <div class="row" id="fel-tra">            
+            <div class="menu" id="menu-felicidad">
+                <a href="/ciudadano/felicidad"><img alt="Logo" src="{{ asset('images/iconos/Felicidad.png') }}"  /></a>
             </div>
-            <div class="col-xs-2 col-xs-offset-2 menu contenedor-badge">
+            <div class="menu contenedor-badge" id="menu-trabajo" style="float:right;">
                 <a href="/ciudadano/trabajo">
                     <img alt="Logo" src="{{ asset('images/iconos/Trabajo.png') }}"  />
                     {% if MENSAJES_INSPECCION is defined and MENSAJES_PAGA is defined %}
@@ -53,33 +52,34 @@
                 </a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-2 col-xs-offset-2 menu">
-                <a href="/ciudadano/felicidad"><img alt="Logo" src="{{ asset('images/iconos/Felicidad.png') }}"  /></a>
+        <div class="row" id="oci-asi">
+            <div class="menu" id="menu-asistencia">
+                <a href="/ciudadano/asistencia_medica"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
             </div>
-            <div class="col-xs-2 col-xs-offset-4 menu">
+            <div class="menu" id="menu-ocio" style="float:right;">
                 <a href="/ciudadano/ocio">
                     <img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" />
                 </a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-2 col-xs-offset-3 menu">
-                <a href="/ciudadano/asistencia_medica"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
-            </div>
-            <div class="col-xs-2 col-xs-offset-2 menu">
-                <a href="/ciudadano/alimentacion"><img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  /></a>
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-2 col-xs-offset-5 menu">
+        <div class="row" id="ali-pre">
+            <div class="menu" id="menu-prestamo">
                 <a href="/ciudadano/prestamos"><img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  /></a>
-
+            </div>
+            <div class="menu" id="menu-alimentacion" style="float:right;">
+                <a href="/ciudadano/alimentacion"><img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  /></a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-3 col-xs-offset-9"><a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" height="40" /></a></div>
+        <div class="row" id="log-sal">
+            <div id="menu-logo">
+                <img alt="Logo" src="{{ asset('images/inTime.png') }}"  />
+            </div>
+            <div id="menu-salir" style="float:right;">
+                <a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" /></a>
+            </div>
+        </div>
+        <div id="fondo-principal">
+            <img alt="Logo" src="{{ asset('fondo-principal.png') }}"  />
         </div>
     </div>
 {% endblock %}

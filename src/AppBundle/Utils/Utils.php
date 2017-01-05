@@ -386,23 +386,40 @@ class Utils {
      * @param string $accion La acción que ha producido el error
      * @param Entity $usuario Usuario involucrado si lo hubiera
      */
-    static function setError($doctrine, $nivel, $accion, $usuario=null) {
+    static function setError($doctrine, $nivel, $accion, $usuario = null) {
         $em = $doctrine->getManager();
         $REPORT = new \AppBundle\Entity\LogError();
-        switch ($nivel){
+        switch ($nivel) {
             case '0':
                 $REPORT->setNivel('Warning');
                 break;
             case '1':
                 $REPORT->setNivel('Error');
         }
-        if($usuario !== null){
+        if ($usuario !== null) {
             $REPORT->setIdUsuario($usuario);
         }
         $REPORT->setAccion($accion);
         $REPORT->setFecha(new \DateTime('now'));
         $em->persist($REPORT);
         $em->flush();
+    }
+
+    /**
+     * Convierte un número de segundos a días, minutos y segundos
+     * @param type $segundos segundos
+     * @return string Días Minutos Segundos
+     */
+    static function segundosToDias($segundos) {
+        if ($segundos < 0) {
+            $segundos *= -1;
+        }
+        
+        $aux['dias'] = floor($segundos/86400);
+        $aux['horas'] = floor($segundos/3600) - ($aux['dias'] * 24);
+        $aux['minutos'] = floor($segundos/ 60) - ($aux['dias'] * 24 * 60) - ($aux['horas'] * 60);
+        $aux['segundos'] = floor($segundos) - ($aux['dias'] * 24 * 60 * 60) - ($aux['horas'] * 60 * 60) - ($aux['minutos'] * 60);
+        return $aux;
     }
 
 }

@@ -1,297 +1,3 @@
-.menu img{
-    height: 120px;
-    width: auto;
-}
-.menu-principal img{
-    height: 100px;
-}
-@media only screen and (max-width: 365px){
-    .menu img{
-        height: 85px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 65px;
-    }
-    .modal-advice .modal-dialog{
-        width: 90%;
-        left:325px;
-        top: 300px;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 5px 8px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-}
-@media only screen and (min-width:365px) and (max-width: 500px){
-    .modal-advice .modal-dialog{
-        width: 90%;
-        left: 70%;
-        top: 80%;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 5px 8px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-}
-@media only screen and (min-width:500px) and (max-width: 668px){
-    .modal-advice .modal-dialog{
-        width: 80%;
-        left: 60%;
-        top: 50%;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 8px 14px;
-    }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 45px;
-        padding: 9px 15px; 
-        font-size: 25px; 
-    }
-    .item-carousel{
-        font-size: 50px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-}
-@media only screen and (min-width:668px) and (max-width: 868px){
-    .modal-advice .modal-dialog{
-        width: 35%;
-        left: 75%;
-        top: 60%;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 9px 12px;
-    }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 45px;
-        padding: 9px 15px; 
-        font-size: 25px; 
-    }
-    .item-carousel{
-        font-size: 50px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-}
-@media only screen and (min-width:868px) and (max-width: 1068px){
-    .modal-advice .modal-dialog{
-        width: 85%;
-        left: 40%;
-        top: 40%;
-    }
-    .modal_tweet .modal-dialog{
-        width: 80%;
-        left: 40%;
-        top: 20%;
-    }
-    .texto-tweet p{
-        font-size: 45px;
-        line-height: normal; 
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 146px;
-        height: 146px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 26px;
-    }
-    .ventana-tweets{
-        height: 800px;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 9px 12px;
-    }
-    .menu img{
-        height: 255px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 195px;
-    }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 85px;
-        padding: 9px 15px; 
-        font-size: 35px; 
-    }
-    .file-input .input-group-btn button,
-    .file-input .input-group-btn a{
-        height: 85px;
-        padding: 9px 15px; 
-        font-size: 35px; 
-    }
-    .file-drop-zone-title{
-        font-size: 35px; 
-    }
-    select {
-        width: 100%;
-        height: 85px;
-        padding: 9px 15px; 
-        font-size: 35px; 
-    }
-    .item-carousel{
-        font-size: 95px;
-    }
-    .login-form h4{
-        font-size: 35px;
-    }
-    .btn{
-        font-size: 35px;
-    }
-    .container{
-        width: 95%;
-    }
-    .breadcrumb{
-        font-size: 30px;
-    }
-}
-@media only screen and (min-width: 1068px){
-    .modal-advice .modal-sm{
-        width: 50%;
-        left:48%;
-        top: 70%;
-    }
-    .texto-tweet{
-        font-size: 16px;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 9px 12px;
-    }
-    select{
-        height: 34px;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-}
-
 .ventana-tweets{
     background-color: rgba(255,255,255,0.2); 
     color: black; 
@@ -305,14 +11,10 @@
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-.logo{
-    background: url(../images/inTime.png) center center fixed;
-    background-size: 100% 100%;
-    height: 70px;
-}
 
 body{
-    background: url(../propuesta_fondo.png) center center fixed;
+    /*    background: url(../fondo.png) center fixed no-repeat;
+        background-size: auto 100vh;*/
 }
 
 .input-group-btn > .btn {
@@ -375,38 +77,6 @@ select, select[size="1"]{
 table{
     font-size: 14px;
 }
-
-/*table {
-    border-collapse: separate;
-    border-spacing: 0 5px;
-}
-
-thead th {
-    background-color: #006DCC;
-    color: white;
-}
-
-tbody td {
-    background-color: #EEEEEE;
-}
-
-th, td {
-    border-style: solid;
-    border-right-color: #ff0000;
-    border-right: 6px;
-}
-
-tr td:first-child,
-tr th:first-child {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-}
-
-tr td:last-child,
-tr th:last-child {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-}*/
 
 .slot-mochila{
     border: 1px solid black;
@@ -773,6 +443,7 @@ legend{
 }
 /* FIN DE ARBOL DE DIRECTORIOS */
 
+/* POST-IT */
 .post-it {
     background:#fefabc; 
     padding:15px; 
@@ -792,6 +463,7 @@ legend{
     -webkit-box-shadow: 0px 4px 6px #333;
 
 }
+/* FIN DE POST-IT */
 
 .usuario-item{
     width: 100%;
@@ -826,4 +498,605 @@ legend{
 
 .dataTables_wrapper {
     font-size: 12px;
+}
+
+.svg-icon {
+    margin: 0 auto;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+}
+.svg-icon svg {
+    height: inherit;
+    width: inherit;
+}
+svg:not(:root) {
+    overflow: hidden;
+}
+
+.container{
+    /*    position: relative;
+        top: 10vh;*/
+}
+.menu img{
+    height: 130px;
+    width: auto;
+}
+.menu-principal img{
+    height: 100px;
+}
+#posicion-reloj{
+    margin-top: 0vh;
+    margin-left: 37vw;
+}
+#menu-jugador{
+    margin-top: 1%;
+    margin-left: 44vw;
+}
+#menu-clasificaciones{
+    margin-left:30vw;
+}
+#fel-tra{
+    margin-top: -50%;
+    margin-left:30vw;
+    width: 34vw;
+    display: inline-block;
+}
+#oci-asi{
+    margin-left:23vw;
+    width: 47vw;
+}
+#ali-pre{
+    margin-left:30vw;
+    width: 34vw;
+}
+#log-sal{
+    margin-left:42vw;
+}
+#fel-tra div,
+#oci-asi div,
+#ali-pre div,
+#log-sal div{
+    display: inline-block;
+}
+#menu-logo img,
+#menu-salir img{
+    height: 80px;
+}
+#fondo-principal{
+    position: absolute;
+    top: 42vh;
+    left:45vw;
+    z-index: -100;
+}
+
+#fondo-principal img{
+    height: 190px;
+}
+
+/** MEDIA **/
+
+@media only screen and (max-width: 365px){
+    #posicion-reloj{
+        margin-left: 3%;
+    }
+    .menu img{
+        height: 295px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    #menu-jugador{
+        margin-left: 37vw;
+    }
+    #fel-tra{
+        margin-top: -50%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #oci-asi{
+        margin-left:0vw;
+        width: 90vw;
+    }
+    #ali-pre{
+        margin-left:15vw;
+        width: 65vw;
+    }
+    #log-sal{
+        margin-left:25vw;
+    }
+    #fondo-principal{
+        top: 27vh;
+        left:45vw;
+    }
+    #menu-logo img{
+        height: 60px;
+    }
+    #menu-salir img{
+        height: 40px;
+    }
+    #fondo-principal{
+        top: 35vh;
+        left:43vw;
+    }
+    #fondo-principal img{
+        height: 130px;
+    }
+    .menu img{
+        height: 85px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 65px;
+    }
+    .modal-advice .modal-dialog{
+        width: 90%;
+        left:325px;
+        top: 300px;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
+    }
+    .contenedor-badge .badge{
+        padding: 5px 8px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
+    }
+    table{
+        font-size: 25px;
+    }
+}
+@media only screen and (min-width:365px) and (max-width: 500px){
+    #posicion-reloj{
+        margin-left: 3%;
+    }
+    .menu img{
+        height: 115px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    #menu-jugador{
+        margin-left: 37vw;
+    }
+    #fel-tra{
+        margin-top: -50%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #oci-asi{
+        margin-left:0vw;
+        width: 90vw;
+    }
+    #ali-pre{
+        margin-left:15vw;
+        width: 65vw;
+    }
+    #log-sal{
+        margin-left:25vw;
+    }
+    #menu-logo img{
+        height: 100px;
+    }
+    #menu-salir img{
+        height: 45px;
+    }
+    #fondo-principal{
+        top: 75vh;
+        left:43vw;
+    }
+    #fondo-principal img{
+        height: 150px;
+    }
+    .modal-advice .modal-dialog{
+        width: 90%;
+        left: 70%;
+        top: 80%;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
+    }
+    .contenedor-badge .badge{
+        padding: 5px 8px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
+    }
+    table{
+        font-size: 25px;
+    }
+}
+@media only screen and (min-width:500px) and (max-width: 668px){
+    #posicion-reloj{
+        margin-left: 3%;
+    }
+    .menu img{
+        height: 145px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    #menu-jugador{
+        margin-left: 37vw;
+    }
+    #fel-tra{
+        margin-top: -50%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #oci-asi{
+        margin-left:0vw;
+        width: 90vw;
+    }
+    #ali-pre{
+        margin-left:15vw;
+        width: 65vw;
+    }
+    #log-sal{
+        margin-left:25vw;
+    }
+    #menu-logo img{
+        height: 100px;
+    }
+    #menu-salir img{
+        height: 45px;
+    }
+    #fondo-principal{
+        top: 45vh;
+        left:43vw;
+    }
+    #fondo-principal img{
+        height: 150px;
+    }
+    .modal-advice .modal-dialog{
+        width: 80%;
+        left: 60%;
+        top: 50%;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
+    }
+    .contenedor-badge .badge{
+        padding: 8px 14px;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 45px;
+        padding: 9px 15px; 
+        font-size: 25px; 
+    }
+    .item-carousel{
+        font-size: 50px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
+    }
+    table{
+        font-size: 25px;
+    }
+}
+@media only screen and (min-width:668px) and (max-width: 868px){
+    #posicion-reloj{
+        margin-left: 3%;
+    }
+    .menu img{
+        height: 240px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    #menu-jugador{
+        margin-left: 37vw;
+    }
+    #fel-tra{
+        margin-top: -50%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #oci-asi{
+        margin-left:0vw;
+        width: 90vw;
+    }
+    #ali-pre{
+        margin-left:15vw;
+        width: 65vw;
+    }
+    #log-sal{
+        margin-left:25vw;
+    }
+    #menu-logo img{
+        height: 150px;
+    }
+    #menu-salir img{
+        height: 75px;
+    }
+    #fondo-principal{
+        top: 85vh;
+        left:43vw;
+    }
+    #fondo-principal img{
+        height: 220px;
+    }
+    .modal-advice .modal-dialog{
+        width: 35%;
+        left: 75%;
+        top: 60%;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
+    }
+    .contenedor-badge .badge{
+        padding: 9px 12px;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 45px;
+        padding: 9px 15px; 
+        font-size: 25px; 
+    }
+    .item-carousel{
+        font-size: 50px;
+    }
+    .modal_tweet .modal-dialog{
+        width: 50%;
+        left: 60%;
+        top: 40%;
+    }
+    .texto-tweet{
+        font-size: 25px;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
+    }
+    table{
+        font-size: 25px;
+    }
+}
+@media only screen and (min-width:868px) and (max-width: 1068px){
+    body{
+        /*        background: url(../fondo308x512.png);
+                background-size: auto 20vh;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-position: center;*/
+    }
+    #posicion-reloj{
+        margin-left: 3%;
+    }
+    .menu img{
+        height: 295px;
+        width: auto;
+    }
+    .menu-principal img{
+        height: 195px;
+    }
+    #menu-jugador{
+        margin-left: 37vw;
+    }
+    #fel-tra{
+        margin-top: -50%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #oci-asi{
+        margin-left:0vw;
+        width: 90vw;
+    }
+    #ali-pre{
+        margin-left:15vw;
+        width: 65vw;
+    }
+    #log-sal{
+        margin-left:25vw;
+    }
+    #fondo-principal{
+        top: 27vh;
+        left:45vw;
+    }
+
+    #menu-logo img{
+        height: 220px;
+    }
+    #fondo-principal{
+        top: 35vh;
+        left:43vw;
+    }
+    #fondo-principal img{
+        height: 280px;
+    }
+    .modal-advice .modal-dialog{
+        width: 85%;
+        left: 40%;
+        top: 40%;
+    }
+    .modal_tweet .modal-dialog{
+        width: 80%;
+        left: 40%;
+        top: 20%;
+    }
+    .texto-tweet p{
+        line-height: normal; 
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 146px;
+        height: 146px;
+    }
+    .ventana-tweets{
+        height: 800px;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+    }
+    .contenedor-badge .badge{
+        padding: 9px 12px;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 85px;
+        padding: 9px 15px;
+    }
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a{
+        height: 85px;
+        padding: 9px 15px;
+    }
+    select {
+        width: 100%;
+        height: 85px;
+        padding: 9px 15px; 
+    }
+    .container{
+        width: 95%;
+    }
+
+    .badge-aviso{
+        font-size: 14px;
+    }
+    .breadcrumb{
+        font-size: 30px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 26px;
+    }
+    .form-control,
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a,
+    .file-drop-zone-title,
+    select,
+    .btn,
+    .login-form h4{
+        font-size: 35px;
+    }
+    .texto-tweet p{
+        font-size: 45px;
+    }
+    .item-carousel{
+        font-size: 95px;
+    }
+    .input-group-addon i,
+    input-group-addon span,
+    .input-group-btn span{
+        font-size: 50px;
+    }
+    table{
+        font-size: 30px;
+    }
+}
+@media only screen and (min-width: 1068px){
+    .modal-advice .modal-sm{
+        width: 50%;
+        left:48%;
+        top: 70%;
+    }
+    .texto-tweet{
+        font-size: 16px;
+    }
+    .badge-aviso{
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
+    }
+    .contenedor-badge .badge{
+        padding: 9px 12px;
+    }
+    select{
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+    }
+    .modal_tweet #modal_tweet_perfil img{
+        width: 73px;
+        height: 73px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 13px;
+    }
+    .ventana-tweets{
+        height: 350px;
+    }
+    .breadcrumb{
+        font-size: 17px;
+    }
 }
