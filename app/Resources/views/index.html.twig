@@ -1,5 +1,89 @@
 {% extends 'base.html.twig' %}
 
+{% block header %}
+    <link href="https://fonts.googleapis.com/css?family=Oregano" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: "Kimberley";
+            src: url("{{ asset('font/digital-7.ttf') }}");
+        }
+        #index-titulo-app img{
+            height: 120px;
+        }
+        #index-logo-app img{
+            height: 120px;
+        }
+        .index-frase{
+            font-size: 50px;
+            font-family: 'Oregano', cursive;
+            text-align: center;
+        }
+        .index-autor{
+            font-family: 'Oregano', cursive;
+            text-align: right;
+            font-size: 30px;
+        }
+        .login-form h4{
+            font-size: 18px;
+        }
+        .no-padding{
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .login-form{
+            font-family: 'Kimberley';
+        }
+        .index-input{
+            /*padding: 15px 15px;*/
+            height: 50px;
+        }
+        .btn-index{
+            padding: 5px 15px;
+        }
+        .index-input,
+        .btn-index{
+            font-size: 20px;
+            border: 2px solid #000000;
+            border-radius: 7px;
+        }
+        .btn-index:hover,
+        .btn-index:focus{
+            color: #FFFFFF;
+            background-color:#000000;
+        }
+        
+        @media only screen and (max-width: 1068px){
+            #index-titulo-app img{
+                height: 350px;
+            }
+            #index-logo-app img{
+                height: 280px;
+            }
+            .index-frase{
+                font-size: 70px;
+                font-weight: 500;
+            }
+            .index-autor{
+                font-weight: 500;
+                font-size: 50px;
+            }
+            .login-form h4{
+                font-size: 50px;
+            }
+            .index-input{
+                padding: 50px;
+                height: 80px;
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+                font-size: 60px;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <!--
     <div class="container">
@@ -77,44 +161,54 @@ $(document).ready(function () {
 </div>
 </div>
     -->
+
     <div class="container-fluid">
-        <div class="row">
+        <div id="index-titulo-app">
+            <center>
+                <img alt="titulo-app" src="{{ asset('images/inTime.png') }}"  />
+            </center>
+        </div>
+        <div class="row" style="margin: 1%;">
             <div class="col-lg-6">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="col-md-11" style="margin: 3% 0% 3% 3%;">
-                            <h2 class="item-carousel" style="font-style: italic;">
-                                "El tiempo es la moneda de tu vida. 
-                                Es la única moneda que tienes, y sólo tú podrás determinar cómo gastarla"
-                            </h2>
+                <div class="col-md-12" id="index-logo-app">
+                    <center>
+                        <img alt="logo-app" src="{{ asset('fondo-principal.png') }}"  />
+                    </center>
+                </div>
+                <div class="col-md-12 index-frase">
+                    "La vida no se mide por las veces que respiras, sino por
+                    los momentos que te dejan sin aliento"
+                </div>
+                <div class="col-md-12 index-autor">(Hitch)</div>
+            </div>
+            <div class="col-md-6 login-form">
+                <h4><span class="fa fa-lock"></span> INICIAR SESION</h4>
+                <form id="form" method="post" action="/login">
+                    <div class="row">
+                        <div class="form-group col-md-10 col-xs-8 no-padding">
+                            <input type="text"
+                                   name="DNI" id="usuario" 
+                                   class="form-control index-input" 
+                                   placeholder="DNI/NIE"
+                                   required>
+                            <span class="help-block"></span>
+                        </div>
+                        <div id="box-key" class="form-group col-md-10 col-xs-8 no-padding">
+                            <input type="password" 
+                                   name="KEY" id="clave"
+                                   class="form-control index-input" 
+                                   placeholder="Contrasena"
+                                   required>
+                            <span id="help-key" class="help-block"></span>
+                            <span id="help-key" class="help-block" style="color:#FFFFFF; font-weight: bold;">
+                                {% if ERROR is defined %} {{ ERROR }} {% endif %}
+                            </span>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6 login-form" style="margin: 3% 0% 3% 0%;">
-                <h4><span class="fa fa-lock"></span> INICIAR SESIÓN</h4>
-                <form id="form" method="post" action="/login" >
-                    <div class="form-group col-md-10">
-                        <input type="text"
-                               name="DNI" id="usuario" 
-                               class="form-control" 
-                               placeholder="DNI/NIE"
-                               required>
-                        <span class="help-block"></span>
-                    </div>
-                    <div id="box-key" class="form-group col-md-10">
-                        <input type="password" 
-                               name="KEY" id="clave"
-                               class="form-control" 
-                               placeholder="Contraseña"
-                               required>
-                        <span id="help-key" class="help-block"></span>
-                        <span id="help-key" class="help-block" style="color:#FFFFFF; font-weight: bold;">
-                            {% if ERROR is defined %} {{ ERROR }} {% endif %}
-                        </span>
-                    </div>
-                    <div class="form-group col-md-5">
-                        <button type="submit" class="btn btn-default">Enviar</button>
+                    <div class="row">
+                        <div class="form-group col-md-5 no-padding">
+                            <button type="submit" class="btn btn-default btn-index">Enviar</button>
+                        </div>
                     </div>
                 </form>
             </div>
