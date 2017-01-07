@@ -43,16 +43,6 @@ class ChatMensajes
     private $idChatMensajes;
 
     /**
-     * @var \AppBundle\Entity\Chat
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_chat", referencedColumnName="id_chat")
-     * })
-     */
-    private $idChat;
-
-    /**
      * @var \AppBundle\Entity\Usuario
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
@@ -61,6 +51,16 @@ class ChatMensajes
      * })
      */
     private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Chat
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_chat", referencedColumnName="id_chat")
+     * })
+     */
+    private $idChat;
 
 
 
@@ -144,29 +144,6 @@ class ChatMensajes
     }
 
     /**
-     * Set idChat
-     *
-     * @param \AppBundle\Entity\Chat $idChat
-     * @return ChatMensajes
-     */
-    public function setIdChat(\AppBundle\Entity\Chat $idChat = null)
-    {
-        $this->idChat = $idChat;
-
-        return $this;
-    }
-
-    /**
-     * Get idChat
-     *
-     * @return \AppBundle\Entity\Chat 
-     */
-    public function getIdChat()
-    {
-        return $this->idChat;
-    }
-
-    /**
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
@@ -187,5 +164,28 @@ class ChatMensajes
     public function getIdUsuario()
     {
         return $this->idUsuario;
+    }
+
+    /**
+     * Set idChat
+     *
+     * @param \AppBundle\Entity\Chat $idChat
+     * @return ChatMensajes
+     */
+    public function setIdChat(\AppBundle\Entity\Chat $idChat = null)
+    {
+        $this->idChat = $idChat;
+
+        return $this;
+    }
+
+    /**
+     * Get idChat
+     *
+     * @return \AppBundle\Entity\Chat 
+     */
+    public function getIdChat()
+    {
+        return $this->idChat;
     }
 }

@@ -8,60 +8,62 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-top:-4%;">
-                <div class="col-md-12">
-                    <ul class="breadcrumb">
-                        <li class="active">
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
+        <div class="container">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-top:-4%;">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li class="active">
+                                <a href="/">
+                                    <i class="fa fa-home"></i>
+                                    HOME
+                                </a>
+                            </li>
+                            <li style="float:right;">
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i>
+                                    SALIR
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Opciones de administrador</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <ul class="list-group">
+                            <a href="/guardian/censo/ciudadanos">
+                                <li class="list-group-item">
+                                    Censo
+                                </li>
                             </a>
-                        </li>
-                        <li style="float:right;">
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i>
-                                SALIR
+                            <a href="/guardian/mensajeria">
+                                <li class="list-group-item">
+                                    <span class="badge">14</span>
+                                    Mensajes
+                                </li>
                             </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <h2>Opciones de administrador</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <ul class="list-group">
-                        <a href="/guardian/censo/ciudadanos">
-                            <li class="list-group-item">
-                                Censo
-                            </li>
-                        </a>
-                        <a href="/guardian/mensajeria">
-                            <li class="list-group-item">
-                                <span class="badge">14</span>
-                                Mensajes
-                            </li>
-                        </a>
-                        
-                    </ul>
-                </div>
-                <div class="col-lg-6">
-                    <ul class="list-group">
-                        <a href="/guardian/ejercicios_entregas">
-                            <li class="list-group-item">
-                                Ejercicios y entregas
-                            </li>
-                        </a>
-                        <a href="/guardian/apuestas/proponer">
-                            <li class="list-group-item">
-                                Loterías y apuestas
-                            </li>
-                        </a>
-                    </ul>
+
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="list-group">
+                            <a href="/guardian/ejercicios_entregas">
+                                <li class="list-group-item">
+                                    Ejercicios y entregas
+                                </li>
+                            </a>
+                            <a href="/guardian/apuestas/proponer">
+                                <li class="list-group-item">
+                                    Loterías y apuestas
+                                </li>
+                            </a>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,7 +125,7 @@
                     theme: "white",
                     displayCaptions: true,
                     fontSize: responsive_screen(),
-                    start:      {% if estado == 4 %} false{% else %}{% if estado == 2 %}
+                    start:       {% if estado == 4 %} false{% else %}{% if estado == 2 %}
                             true{% endif %}{% endif %},
                     captionSize: 10
                 }, function () {
@@ -143,7 +145,7 @@
                     theme: "white",
                     displayCaptions: true,
                     fontSize: 18,
-                    start:      {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
+                    start:       {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
                     captionSize: 10
                 }, function () {
                     $('#countdown-2').timeTo("stop");

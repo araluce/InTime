@@ -10,14 +10,14 @@
       <generator strategy="IDENTITY"/>
     </id>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
-    <many-to-one field="idMina" target-entity="Mina">
-      <join-columns>
-        <join-column name="id_mina" referenced-column-name="id_mina"/>
-      </join-columns>
-    </many-to-one>
     <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idMina" target-entity="Mina">
+      <join-columns>
+        <join-column name="id_mina" referenced-column-name="id_mina"/>
       </join-columns>
     </many-to-one>
   </entity>

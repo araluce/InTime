@@ -23,95 +23,97 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-top:-4%;">
-                <div class="col-md-12">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
-                            </a>
-                            <span class="divider">/</span>
-                        </li>
-                        <li class="active">
-                            <i class="fa fa-pencil-square"></i> LOTERÍAS Y APUESTAS
-                        </li>
-                        <li style="float:right;">
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i>
-                                SALIR
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row" style="margin-bottom: 1%;">
-                <div class="col-md-12">
-                    <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
-                        <li {% if SECCION == 'APUESTAS' %} class="active" {% endif %}>
-                            <a href="/guardian/apuestas/proponer">APUESTAS</a>
-                        </li>
-                        <li {% if SECCION == 'LOTERIA' %} class="active" {% endif %}>
-                            <a href="/guardian/loterias">LOTERÍAS</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            {% if SECCION == 'APUESTAS' %}
-                <div class="row" style="margin-bottom: 1%;">
-                    <div class="col-xs-12">
-                        <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 10px;">
-                            <li {% if SUBSECCION == 'PROPONER' %} class="active col-xs-offset-1" {% else %} class="col-xs-offset-1" {% endif %}>
-                                <a href="/guardian/apuestas/proponer">PROPONER</a>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-top:-4%;">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="/">
+                                    <i class="fa fa-home"></i>
+                                    HOME
+                                </a>
+                                <span class="divider">/</span>
                             </li>
-                            <li {% if SUBSECCION == 'GESTION' %} class="active" {% endif %}>
-                                <a href="/guardian/apuestas/gestion">GESTIONAR LOTERÍAS</a>
+                            <li class="active">
+                                <i class="fa fa-pencil-square"></i> LOTERÍAS Y APUESTAS
+                            </li>
+                            <li style="float:right;">
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i>
+                                    SALIR
+                                </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                {% if SUBSECCION == 'PROPONER' %}
-                    <form method="POST" action="/guardian/apuestas/proponer">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <textarea class="form-control" name="APUESTA" rows="5" style="resize:none; width:100%;"
-                                          placeholder="Escriba aquí su apuesta" required></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12" >
-                                <div class="form-group" id="panel-posibilidades">
-                                    <input type="text" class="form-control" name="POSIBILIDADES[]" placeholder="Posibilidad #1 (Ej:Que gane el equipo A)" />
-                                    <input type="text" class="form-control" name="POSIBILIDADES[]" placeholder="Posibilidad #2 (Ej:Que gane el equipo B)" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" id="panel-envio" style="margin-top:2%;">
-                            <div class="col-md-1 col-xs-3">
-                                <button type="button" class="btn btn-warning btn-block" onclick="aniadeOportunidad();">
-                                    <span class="fa fa-plus"></span>
-                                </button>
-                            </div>
-                            <div class="col-md-6 col-xs-8" style="float:right;">
-                                <button type="submit" class="btn btn-success btn-block">
-                                    <span class="fa fa-send-o" style="font-weight: bold"> 
-                                        ENVIAR
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                {% endif %}
-                {% if SUBSECCION == 'GESTIONAR' %}
-                    <div class="row">
-                        <div class="col-md-12" id="panel-apuestas-current">
-
+                <div class="row" style="margin-bottom: 1%;">
+                    <div class="col-md-12">
+                        <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
+                            <li {% if SECCION == 'APUESTAS' %} class="active" {% endif %}>
+                                <a href="/guardian/apuestas/proponer">APUESTAS</a>
+                            </li>
+                            <li {% if SECCION == 'LOTERIA' %} class="active" {% endif %}>
+                                <a href="/guardian/loterias">LOTERÍAS</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% if SECCION == 'APUESTAS' %}
+                    <div class="row" style="margin-bottom: 1%;">
+                        <div class="col-xs-12">
+                            <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 10px;">
+                                <li {% if SUBSECCION == 'PROPONER' %} class="active col-xs-offset-1" {% else %} class="col-xs-offset-1" {% endif %}>
+                                    <a href="/guardian/apuestas/proponer">PROPONER</a>
+                                </li>
+                                <li {% if SUBSECCION == 'GESTION' %} class="active" {% endif %}>
+                                    <a href="/guardian/apuestas/gestion">GESTIONAR LOTERÍAS</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                    {% if SUBSECCION == 'PROPONER' %}
+                        <form method="POST" action="/guardian/apuestas/proponer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <textarea class="form-control" name="APUESTA" rows="5" style="resize:none; width:100%;"
+                                              placeholder="Escriba aquí su apuesta" required></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" >
+                                    <div class="form-group" id="panel-posibilidades">
+                                        <input type="text" class="form-control" name="POSIBILIDADES[]" placeholder="Posibilidad #1 (Ej:Que gane el equipo A)" />
+                                        <input type="text" class="form-control" name="POSIBILIDADES[]" placeholder="Posibilidad #2 (Ej:Que gane el equipo B)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="panel-envio" style="margin-top:2%;">
+                                <div class="col-md-1 col-xs-3">
+                                    <button type="button" class="btn btn-warning btn-block" onclick="aniadeOportunidad();">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                </div>
+                                <div class="col-md-6 col-xs-8" style="float:right;">
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <span class="fa fa-send-o" style="font-weight: bold"> 
+                                            ENVIAR
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% endif %}
+                    {% if SUBSECCION == 'GESTIONAR' %}
+                        <div class="row">
+                            <div class="col-md-12" id="panel-apuestas-current">
+
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -144,8 +146,8 @@
                     console.log(data);
                 });
             }
-            
-            function pararApuesta(idApuesta, valorParada){
+
+            function pararApuesta(idApuesta, valorParada) {
                 ruta = '/guardian/apuestas/pararApuesta/' + idApuesta + '/' + valorParada;
                 $.get(ruta, function (data, status) {
                     console.log(data);
@@ -209,10 +211,9 @@
                                 index++;
                             });
                             contenido += '  <div class="col-md-12">';
-                            if(!apuestav.ESTADO){
+                            if (!apuestav.ESTADO) {
                                 contenido += '      <button type="button" class="btn btn-block" style="display: block;" onclick="pararApuesta(' + apuestav.ID + ',' + 1 + ');">REANUDAR APUESTAS</button>';
-                            }
-                            else if(apuestav.ESTADO){
+                            } else if (apuestav.ESTADO) {
                                 contenido += '      <button type="button" class="btn btn-block" style="display: block;" onclick="pararApuesta(' + apuestav.ID + ',' + 0 + ');">PAREN LAS APUESTAS!</button>';
                             }
                             contenido += '  </div>';

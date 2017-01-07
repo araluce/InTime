@@ -264,7 +264,7 @@
             .card.hovercard .card-info .card-title {
                 font-size: 45px;
             }
-            
+
         }
 
     </style>
@@ -665,10 +665,18 @@
                             } else {
                                 contenido += '      <span class="green-number-xs">';
                             }
-                            contenido += '          ' + v.CANTIDAD.dias + 'd ';
-                            contenido += '          ' + v.CANTIDAD.dias + 'h ';
-                            contenido += '          ' + v.CANTIDAD.dias + 'm ';
-                            contenido += '          ' + v.CANTIDAD.dias + 's ';
+                            if (v.CANTIDAD.dias > 0) {
+                                contenido += '          ' + v.CANTIDAD.dias + 'd&nbsp;';
+                            }
+                            if (v.CANTIDAD.horas > 0) {
+                                contenido += '          ' + v.CANTIDAD.horas + 'h&nbsp;';
+                            }
+                            if (v.CANTIDAD.minutos > 0) {
+                                contenido += '          ' + v.CANTIDAD.minutos + 'm&nbsp;';
+                            }
+                            if (v.CANTIDAD.segundos > 0) {
+                                contenido += '          ' + v.CANTIDAD.segundos + 's&nbsp;';
+                            }
                             contenido += '      </span>';
                             contenido += '  </td>';
                             contenido += '</tr>';

@@ -9,6 +9,7 @@
 namespace AppBundle\Utils;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use AppBundle\Utils\Usuario;
 
 /**
  * Description of Trabajo
@@ -69,17 +70,17 @@ class Trabajo {
             $em->flush();
 
             // Módulo para establecer tiempo sin comer
-            switch ($SECCION){
-                case 'comida':
-                    $TIEMPO = 'tiempo_sin_comer';
-                    break;
-                case 'bebida':
-                    $TIEMPO = 'tiempo_sin_beber';
-                    break;
-            }
-            $TIEMPO_SIN = $doctrine->getRepository('AppBundle:Constante')->findOneByClave($TIEMPO);
-            $HOY = new \DateTime('now');
-            $DATE_TIEMPO_SIN = $HOY->getTimestamp() + $TIEMPO_SIN->getValor();
+//            switch ($SECCION){
+//                case 'comida':
+//                    $TIEMPO = 'tiempo_sin_comer';
+//                    break;
+//                case 'bebida':
+//                    $TIEMPO = 'tiempo_sin_beber';
+//                    break;
+//            }
+//            $TIEMPO_SIN = $doctrine->getRepository('AppBundle:Constante')->findOneByClave($TIEMPO);
+            //$DATE_TIEMPO_SIN = $FECHA->getTimestamp() + $TIEMPO_SIN->getValor();
+            $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
             $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
             
             if($SECCION === 'comida'){
@@ -89,14 +90,16 @@ class Trabajo {
                 $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             }
             $em->persist($USUARIO);
-            $em->flush();            
+            $em->flush();
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$EJERCICIO->getCoste(), 'Cobro - Compra comida');
 
             return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
         } else {
-            $mensaje = 'Este ejercicio ya había sido solicitado, entregado o evaluado por usted';
+            return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => 
+                'Este ejercicio ya había sido solicitado, entregado o evaluado'), 200);
         }
 
-        return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => $mensaje), 200);
+        return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => 'Ejercicio solicitado correctamente'), 200);
     }
 
 }

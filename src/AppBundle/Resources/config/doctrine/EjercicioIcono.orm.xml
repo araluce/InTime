@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\EjercicioIcono" table="EJERCICIO_ICONO">
+    <indexes>
+      <index name="seccion" columns="seccion"/>
+    </indexes>
+    <id name="idEjercicioIcono" type="integer" column="id_ejercicio_icono">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="nombre" type="string" column="nombre" length="1000" nullable="false"/>
+    <field name="nombreImg" type="string" column="nombre_img" length="1000" nullable="false"/>
+    <many-to-one field="seccion" target-entity="EjercicioSeccion">
+      <join-columns>
+        <join-column name="seccion" referenced-column-name="id_ejercicio_seccion"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

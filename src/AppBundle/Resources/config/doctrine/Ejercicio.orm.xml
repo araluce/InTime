@@ -4,12 +4,14 @@
     <indexes>
       <index name="id_tipo_ejercicio" columns="id_tipo_ejercicio"/>
       <index name="id_ejercicio_seccion" columns="id_ejercicio_seccion"/>
+      <index name="icono" columns="icono"/>
     </indexes>
     <id name="idEjercicio" type="integer" column="id_ejercicio">
       <generator strategy="IDENTITY"/>
     </id>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
     <field name="enunciado" type="string" column="enunciado" length="1000" nullable="false"/>
+    <field name="coste" type="integer" column="coste" nullable="false"/>
     <many-to-one field="idTipoEjercicio" target-entity="EjercicioTipo">
       <join-columns>
         <join-column name="id_tipo_ejercicio" referenced-column-name="id_tipo_ejercicio"/>
@@ -18,6 +20,11 @@
     <many-to-one field="idEjercicioSeccion" target-entity="EjercicioSeccion">
       <join-columns>
         <join-column name="id_ejercicio_seccion" referenced-column-name="id_ejercicio_seccion"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="icono" target-entity="EjercicioIcono">
+      <join-columns>
+        <join-column name="icono" referenced-column-name="id_ejercicio_icono"/>
       </join-columns>
     </many-to-one>
   </entity>

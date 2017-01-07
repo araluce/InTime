@@ -17,10 +17,12 @@ footer{
     font-weight: bold; 
     margin-top: 1%; 
     margin-bottom:1%;
-    font-size: 20px;
+    font-size: 18px;
+    font-family: 'Oregano', cursive;
 }
 
 body{
+    background-color: #F7F7F7;
     /*    background: url(../fondo.png) center fixed no-repeat;
         background-size: auto 100vh;*/
 }
@@ -535,7 +537,7 @@ svg:not(:root) {
 }
 #posicion-reloj{
     margin-top: 0vh;
-    margin-left: 37vw;
+    margin-left: 38vw;
 }
 #menu-jugador{
     margin-top: 1%;
@@ -583,21 +585,30 @@ svg:not(:root) {
 }
 
 /** MEDIA **/
-@media only screen and (max-width: 1068px){
-    footer{
-        font-size: 40px;
-    }
+
+/**  QVGA  **/
+@media only screen and (max-width:639px){
+    
 }
-@media only screen and (max-width: 365px){
+/**  VGA  **/
+@media only screen and (min-width: 640px) and (max-width: 1279px){
+    body{
+        
+        /*        background: url(../fondo308x512.png);
+                background-size: auto 20vh;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-position: center;*/
+    }
     #posicion-reloj{
-        margin-left: 3%;
+        margin-left: 25%;
     }
     .menu img{
-        height: 295px;
+        height: 140px;
         width: auto;
     }
     .menu-principal img{
-        height: 195px;
+        height: 100px;
     }
     #menu-jugador{
         margin-left: 37vw;
@@ -618,292 +629,42 @@ svg:not(:root) {
     #log-sal{
         margin-left:25vw;
     }
-    #fondo-principal{
-        top: 27vh;
-        left:45vw;
-    }
-    #menu-logo img{
+    #log-sal img{
         height: 60px;
     }
-    #menu-salir img{
-        height: 40px;
+    #menu-logo img{
+        height: 140px;
     }
     #fondo-principal{
-        top: 35vh;
-        left:43vw;
+        top: 65vh;
+        left:40vw;
     }
     #fondo-principal img{
-        height: 130px;
-    }
-    .menu img{
-        height: 85px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 65px;
+        height: 190px;
     }
     .modal-advice .modal-dialog{
-        width: 90%;
-        left:325px;
-        top: 300px;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 5px 8px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
+        width: 85%;
+        left: 40%;
         top: 40%;
     }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-    table{
-        font-size: 25px;
-    }
-}
-@media only screen and (min-width:365px) and (max-width: 500px){
-    #posicion-reloj{
-        margin-left: 3%;
-    }
-    .menu img{
-        height: 115px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 195px;
-    }
-    #menu-jugador{
-        margin-left: 37vw;
-    }
-    #fel-tra{
-        margin-top: -50%;
-        margin-left:10vw;
-        width: 70vw;
-    }
-    #oci-asi{
-        margin-left:0vw;
-        width: 90vw;
-    }
-    #ali-pre{
-        margin-left:15vw;
-        width: 65vw;
-    }
-    #log-sal{
-        margin-left:25vw;
-    }
-    #menu-logo img{
-        height: 100px;
-    }
-    #menu-salir img{
-        height: 45px;
-    }
-    #fondo-principal{
-        top: 75vh;
-        left:43vw;
-    }
-    #fondo-principal img{
-        height: 150px;
-    }
-    .modal-advice .modal-dialog{
-        width: 90%;
-        left: 70%;
-        top: 80%;
-    }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 5px 8px;
-    }
     .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-    table{
-        font-size: 25px;
-    }
-}
-@media only screen and (min-width:500px) and (max-width: 668px){
-    #posicion-reloj{
-        margin-left: 3%;
-    }
-    .menu img{
-        height: 145px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 195px;
-    }
-    #menu-jugador{
-        margin-left: 37vw;
-    }
-    #fel-tra{
-        margin-top: -50%;
-        margin-left:10vw;
-        width: 70vw;
-    }
-    #oci-asi{
-        margin-left:0vw;
-        width: 90vw;
-    }
-    #ali-pre{
-        margin-left:15vw;
-        width: 65vw;
-    }
-    #log-sal{
-        margin-left:25vw;
-    }
-    #menu-logo img{
-        height: 100px;
-    }
-    #menu-salir img{
-        height: 45px;
-    }
-    #fondo-principal{
-        top: 45vh;
-        left:43vw;
-    }
-    #fondo-principal img{
-        height: 150px;
-    }
-    .modal-advice .modal-dialog{
         width: 80%;
-        left: 60%;
-        top: 50%;
+        left: 40%;
+        top: 20%;
     }
-    .badge-aviso{
-        top: 0px;
-        left: 0px;
-        font-size: 14px;
-    }
-    .contenedor-badge .badge{
-        padding: 8px 14px;
-    }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 45px;
-        padding: 9px 15px; 
-        font-size: 25px; 
-    }
-    .item-carousel{
-        font-size: 50px;
-    }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
+    .texto-tweet p{
+        line-height: normal; 
     }
     .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
+        width: 146px;
+        height: 146px;
     }
     .ventana-tweets{
-        height: 350px;
-    }
-    .breadcrumb{
-        font-size: 17px;
-    }
-    table{
-        font-size: 25px;
-    }
-}
-@media only screen and (min-width:668px) and (max-width: 868px){
-    #posicion-reloj{
-        margin-left: 3%;
-    }
-    .menu img{
-        height: 240px;
-        width: auto;
-    }
-    .menu-principal img{
-        height: 195px;
-    }
-    #menu-jugador{
-        margin-left: 37vw;
-    }
-    #fel-tra{
-        margin-top: -50%;
-        margin-left:10vw;
-        width: 70vw;
-    }
-    #oci-asi{
-        margin-left:0vw;
-        width: 90vw;
-    }
-    #ali-pre{
-        margin-left:15vw;
-        width: 65vw;
-    }
-    #log-sal{
-        margin-left:25vw;
-    }
-    #menu-logo img{
-        height: 150px;
-    }
-    #menu-salir img{
-        height: 75px;
-    }
-    #fondo-principal{
-        top: 85vh;
-        left:43vw;
-    }
-    #fondo-principal img{
-        height: 220px;
-    }
-    .modal-advice .modal-dialog{
-        width: 35%;
-        left: 75%;
-        top: 60%;
+        height: 800px;
     }
     .badge-aviso{
         top: 0px;
         left: 0px;
-        font-size: 14px;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -911,40 +672,67 @@ svg:not(:root) {
     .form-control {
         display: block;
         width: 100%;
-        height: 45px;
+        height: 85px;
+        padding: 9px 15px;
+    }
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a{
+        height: 85px;
+        padding: 9px 15px;
+    }
+    select {
+        width: 100%;
+        height: 85px;
         padding: 9px 15px; 
-        font-size: 25px; 
     }
-    .item-carousel{
-        font-size: 50px;
+    .container{
+        width: 95%;
     }
-    .modal_tweet .modal-dialog{
-        width: 50%;
-        left: 60%;
-        top: 40%;
-    }
-    .texto-tweet{
-        font-size: 25px;
-    }
-    .modal_tweet #modal_tweet_perfil img{
-        width: 73px;
-        height: 73px;
-    }
-    .modal_tweet #modal_tweet_descripcion{
-        font-size: 13px;
-    }
-    .ventana-tweets{
-        height: 350px;
+
+    .badge-aviso{
+        font-size: 14px;
     }
     .breadcrumb{
-        font-size: 17px;
+        font-size: 30px;
+    }
+    .modal_tweet #modal_tweet_descripcion{
+        font-size: 26px;
+    }
+    .form-control,
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a,
+    .file-drop-zone-title,
+    select,
+    .btn,
+    .login-form h4{
+        font-size: 35px;
+    }
+    .texto-tweet p{
+        font-size: 45px;
+    }
+    .item-carousel{
+        font-size: 95px;
+    }
+    .input-group-addon i,
+    input-group-addon span,
+    .input-group-btn span{
+        font-size: 50px;
     }
     table{
-        font-size: 25px;
+        font-size: 30px;
+    }
+    footer{
+        font-size: 20px;
     }
 }
-@media only screen and (min-width:868px) and (max-width: 1068px){
+/**  HD  **/
+@media only screen and (min-width: 1280px) and (max-width: 1919px){
+    
+}
+/**  FULL HD  **/
+@media only screen and (min-width: 1920px) and (max-width: 3839px){
     body{
+        
         /*        background: url(../fondo308x512.png);
                 background-size: auto 20vh;
                 background-repeat: no-repeat;
@@ -1074,8 +862,19 @@ svg:not(:root) {
     table{
         font-size: 30px;
     }
+    footer{
+        font-size: 35px;
+    }
 }
-@media only screen and (min-width: 1068px){
+/**  4K  **/
+@media only screen and (min-width: 3840px) and (max-width: 5119px){
+    
+}
+/**  5K  **/
+@media only screen and (min-width: 5120px){
+    
+}
+/*@media only screen and (min-width: 1068px){
     .modal-advice .modal-sm{
         width: 50%;
         left:48%;
@@ -1111,4 +910,4 @@ svg:not(:root) {
     .breadcrumb{
         font-size: 17px;
     }
-}
+}*/

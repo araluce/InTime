@@ -9,48 +9,50 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-12 jumbotron">
-            <div class="row" style="margin-top:-4%;">
-                <div class="col-md-12">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="/">
-                                <i class="fa fa-home"></i>
-                                HOME
-                            </a>
-                            <span class="divider">/</span>
-                        </li>
-                        <li class="active">
-                            <i class="fa fa-send"></i> MENSAJERÍA
-                        </li>
-                        <li style="float:right;">
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i>
-                                SALIR
-                            </a>
-                        </li>
-                    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 jumbotron">
+                <div class="row" style="margin-top:-4%;">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="/">
+                                    <i class="fa fa-home"></i>
+                                    HOME
+                                </a>
+                                <span class="divider">/</span>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-send"></i> MENSAJERÍA
+                            </li>
+                            <li style="float:right;">
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i>
+                                    SALIR
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <form method="POST" action="/guardian/mensajeria">
-                        <div class="form-group">
-                            <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DIFUSION">Difusión</label>
-                            <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DISTRITO">Distrito</label>
-                            <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DIRECTO">Directo</label>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="TITULO" placeholder="Título del mensaje" />
-                        </div>
-                        <div class="form-group">
-                            <textarea class="form-control" rows="5" name="MENSAJE" placeholder="Escriba aquí su mensaje"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-default btn-block">
-                            Enviar
-                        </button>
-                    </form>
+                <div class="row">
+                    <div class="col-md-12">
+                        <form method="POST" action="/guardian/mensajeria">
+                            <div class="form-group">
+                                <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DIFUSION">Difusión</label>
+                                <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DISTRITO">Distrito</label>
+                                <label class="radio-inline"><input type="radio" name="OPCION_MENSAJE" value="DIRECTO">Directo</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="TITULO" placeholder="Título del mensaje" />
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="5" name="MENSAJE" placeholder="Escriba aquí su mensaje"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-default btn-block">
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

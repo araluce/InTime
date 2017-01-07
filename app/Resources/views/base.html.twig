@@ -123,19 +123,20 @@
 
         {% if TDV is defined %}
                 function responsive_screen() {
-                    if (window.matchMedia('screen and (max-width: 368px)').matches) {
+                    if (window.matchMedia('screen and (max-width:639px)').matches) {
                         return 40;
-                    } else if (window.matchMedia('screen and (max-width: 500px)').matches) {
-                        return 57;
-                    } else if (window.matchMedia('screen and (max-width: 668px)').matches) {
-                        return 72;
-                    } else if (window.matchMedia('screen and (max-width: 868px)').matches) {
+                    } else if (window.matchMedia('screen and (min-width: 640px) and (max-width: 1279px)').matches) {
+                        return 40;
+                    } else if (window.matchMedia('screen and (min-width: 1280px) and (max-width: 1919px)').matches) {
+                        return 40;
+                    } else if (window.matchMedia('screen and (min-width: 1920px) and (max-width: 3839px)').matches) {
                         return 97;
-                    } else if (window.matchMedia('screen and (max-width: 1068px)').matches) {
+                    } else if (window.matchMedia('screen and (min-width: 3840px) and (max-width: 5119px)').matches) {
                         return 115;
-                    } else {
+                    } else if (window.matchMedia('screen and (min-width: 5120px)').matches) {
                         return 40;
                     }
+                    
                 }
                 $('#countdown-11').timeTo({
                     //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),

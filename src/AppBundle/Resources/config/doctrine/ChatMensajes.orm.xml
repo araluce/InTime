@@ -11,14 +11,14 @@
     <field name="mensaje" type="string" column="mensaje" length="1000" nullable="false"/>
     <field name="visto" type="boolean" column="visto" nullable="false"/>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
-    <many-to-one field="idChat" target-entity="Chat">
-      <join-columns>
-        <join-column name="id_chat" referenced-column-name="id_chat"/>
-      </join-columns>
-    </many-to-one>
     <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idChat" target-entity="Chat">
+      <join-columns>
+        <join-column name="id_chat" referenced-column-name="id_chat"/>
       </join-columns>
     </many-to-one>
   </entity>

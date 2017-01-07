@@ -29,16 +29,6 @@ class UsuarioMina
     private $idUsuarioMina;
 
     /**
-     * @var \AppBundle\Entity\Mina
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Mina")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_mina", referencedColumnName="id_mina")
-     * })
-     */
-    private $idMina;
-
-    /**
      * @var \AppBundle\Entity\Usuario
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
@@ -47,6 +37,16 @@ class UsuarioMina
      * })
      */
     private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Mina
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Mina")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_mina", referencedColumnName="id_mina")
+     * })
+     */
+    private $idMina;
 
 
 
@@ -84,29 +84,6 @@ class UsuarioMina
     }
 
     /**
-     * Set idMina
-     *
-     * @param \AppBundle\Entity\Mina $idMina
-     * @return UsuarioMina
-     */
-    public function setIdMina(\AppBundle\Entity\Mina $idMina = null)
-    {
-        $this->idMina = $idMina;
-
-        return $this;
-    }
-
-    /**
-     * Get idMina
-     *
-     * @return \AppBundle\Entity\Mina 
-     */
-    public function getIdMina()
-    {
-        return $this->idMina;
-    }
-
-    /**
      * Set idUsuario
      *
      * @param \AppBundle\Entity\Usuario $idUsuario
@@ -127,5 +104,28 @@ class UsuarioMina
     public function getIdUsuario()
     {
         return $this->idUsuario;
+    }
+
+    /**
+     * Set idMina
+     *
+     * @param \AppBundle\Entity\Mina $idMina
+     * @return UsuarioMina
+     */
+    public function setIdMina(\AppBundle\Entity\Mina $idMina = null)
+    {
+        $this->idMina = $idMina;
+
+        return $this;
+    }
+
+    /**
+     * Get idMina
+     *
+     * @return \AppBundle\Entity\Mina 
+     */
+    public function getIdMina()
+    {
+        return $this->idMina;
     }
 }

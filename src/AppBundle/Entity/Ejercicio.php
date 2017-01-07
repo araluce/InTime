@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Ejercicio
  *
- * @ORM\Table(name="EJERCICIO", indexes={@ORM\Index(name="id_tipo_ejercicio", columns={"id_tipo_ejercicio"}), @ORM\Index(name="id_ejercicio_seccion", columns={"id_ejercicio_seccion"})})
+ * @ORM\Table(name="EJERCICIO", indexes={@ORM\Index(name="id_tipo_ejercicio", columns={"id_tipo_ejercicio"}), @ORM\Index(name="id_ejercicio_seccion", columns={"id_ejercicio_seccion"}), @ORM\Index(name="icono", columns={"icono"})})
  * @ORM\Entity
  */
 class Ejercicio
@@ -25,6 +25,13 @@ class Ejercicio
      * @ORM\Column(name="enunciado", type="string", length=1000, nullable=false)
      */
     private $enunciado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="coste", type="integer", nullable=false)
+     */
+    private $coste;
 
     /**
      * @var integer
@@ -54,6 +61,16 @@ class Ejercicio
      * })
      */
     private $idEjercicioSeccion;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioIcono
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioIcono")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="icono", referencedColumnName="id_ejercicio_icono")
+     * })
+     */
+    private $icono;
 
 
 
@@ -101,6 +118,29 @@ class Ejercicio
     public function getEnunciado()
     {
         return $this->enunciado;
+    }
+
+    /**
+     * Set coste
+     *
+     * @param integer $coste
+     * @return Ejercicio
+     */
+    public function setCoste($coste)
+    {
+        $this->coste = $coste;
+
+        return $this;
+    }
+
+    /**
+     * Get coste
+     *
+     * @return integer 
+     */
+    public function getCoste()
+    {
+        return $this->coste;
     }
 
     /**
@@ -157,5 +197,28 @@ class Ejercicio
     public function getIdEjercicioSeccion()
     {
         return $this->idEjercicioSeccion;
+    }
+
+    /**
+     * Set icono
+     *
+     * @param \AppBundle\Entity\EjercicioIcono $icono
+     * @return Ejercicio
+     */
+    public function setIcono(\AppBundle\Entity\EjercicioIcono $icono = null)
+    {
+        $this->icono = $icono;
+
+        return $this;
+    }
+
+    /**
+     * Get icono
+     *
+     * @return \AppBundle\Entity\EjercicioIcono 
+     */
+    public function getIcono()
+    {
+        return $this->icono;
     }
 }
