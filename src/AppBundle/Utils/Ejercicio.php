@@ -14,7 +14,36 @@ namespace AppBundle\Utils;
  * @author araluce
  */
 class Ejercicio {
-    
-    
-    
+
+    /**
+     * Actualiza la lista de ejercicios del usuario
+     * 
+     * @param type $doctrine
+     * @param Entity:USUARIO $USUARIO
+     */
+    static function actualizarEjercicioXUsuario($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        $EJERCICIOS_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findByIdUsu($USUARIO);
+        $EJERCICIOS_ACTUALES = [];
+        if (count($EJERCICIOS_USUARIO)) {
+            foreach($EJERCICIOS_USUARIO as $EJERCICIO) {
+                $EJERCICIOS_ACTUALES[] = $EJERCICIO->getIdEjercicio();
+            }
+        }
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findAll();
+        if (count($EJERCICIOS)) {
+            foreach ($EJERCICIOS as $EJERCICIO) {
+                if (!in_array($EJERCICIO, $EJERCICIOS_ACTUALES)) {
+                    $EJERCICIO_X_USUARIO = new \AppBundle\Entity\EjercicioXUsuario();
+                    $EJERCICIO_X_USUARIO->setIdSeccion($EJERCICIO->getIdEjercicioSeccion());
+                    $EJERCICIO_X_USUARIO->setIdUsu($USUARIO);
+                    $EJERCICIO_X_USUARIO->setIdEjercicio($EJERCICIO);
+                    $EJERCICIO_X_USUARIO->setVisto(0);
+                    $em->persist($EJERCICIO_X_USUARIO);
+                }
+            }
+        }
+        $em->flush();
+    }
+
 }

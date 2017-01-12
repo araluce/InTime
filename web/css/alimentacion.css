@@ -1,0 +1,305 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 11-ene-2017, 22:46:52
+    Author     : araluce
+*/
+
+@font-face {
+    font-family: "Kimberley";
+    src: url("{{ asset('font/digital-7.ttf') }}");
+}
+.detalle-fecha,
+.detalle-coste,
+.tablon-progreso,
+.btn-pref .hidden-xs,
+.btn,
+.detalle-boton{
+    font-family: 'Kimberley';
+}
+.titulo-proceso,
+.tablon-progreso h5,
+.detalle-enunciado,
+.descripcion{
+    font-family: 'Oregano', cursive;
+}
+.tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+.tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+.tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+.ejercicio-seccion,
+#ejercicio-calificacion,
+#texto-badge{
+    font-size: 14px;
+}
+.ejercicio-seccion button{
+    font-weight: 600;
+}
+#ejercicio-calificacion{
+    text-align: right;
+}
+#ejercicio-calificacion img{
+    width: 20px;
+}
+#texto-badge{
+    background-color: #E0B831; 
+    padding: 9px 9px;
+}
+.progress{
+    background-color: #E1E1E1;
+    margin-bottom: 0px;
+    height: 40px;
+}
+.progress-bar{
+    font-size: 24px;
+    line-height: 35px;
+}
+.slot{
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2px;
+    height: 80px;
+    padding:10px;
+}
+.slot img{
+    height: 60px;
+    cursor: pointer;
+}
+.fila{
+    border-right: 0px;
+}
+.fila-abajo{
+    border-top: 0px;
+}
+.btn-pref .btn {
+    -webkit-border-radius:0 !important;
+}
+.btn13{
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2px;
+    border-right: 2px;
+}
+.btn4{
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2px;
+}
+.btn-pref span {
+    font-size: 25px;
+}
+.descripcion{
+    font-size: 25px;
+}
+.borde {
+    border-radius: 50%;
+    border-width: .15em;
+    border-style: dashed;
+    display:inline-block;
+}
+.tablon-progreso,
+.tablon-contenido{
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-style: solid;
+    border-color: #000000;
+}
+.tablon-progreso{
+    border-top: 2px;
+}
+.tablon-progreso h5{
+    margin-top: 0px;
+    text-align: center;
+}
+.btn-pref .hidden-xs,
+.tablon-progreso h5{
+    font-size: 25px;
+}
+.tablon-contenido{
+    border-top: 2px;
+}
+#detalle-terminado,
+#detalle-proceso-individual,
+#detalle-proceso-distrito,
+#detalle-tienda{
+    color: black;
+    border: 2px solid #000000;
+    min-height: 250px;
+}
+.detalle-fecha,
+.detalle-enunciado,
+.detalle-coste{
+    font-size: 25px;
+}
+.detalle-enunciado{
+    min-height: 150px;
+    margin: 1%;
+}
+.detalle-coste{
+    text-align: right;
+    margin-right: 3%;
+    margin-bottom: 1%;
+}
+.detalle-boton{
+    width: 98%;
+    margin: 1%;
+}
+.boton-entrega,
+.detalle-boton{
+    font-size: 20px;
+    border: 2px solid #000000;
+    background-color: #FFFFFF;
+}
+.boton-entrega:hover,
+.boton-entrega:focus,
+.detalle-boton:hover,
+.detalle-boton:focus{
+    color: #FFFFFF;
+    background-color:#000000;
+}
+.opacidad img{
+    opacity: 0.2;
+}
+@media (max-width: 760px){
+    .detalle-fecha{
+        font-size: 20px;
+    }
+    .slot img{
+        height: 40px;
+    }
+    .slot{
+        height: 60px;
+    }
+}
+@media (min-width: 760px){
+    .progress-bar,
+    .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+    .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+    .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+    .ejercicio-seccion
+    #ejercicio-calificacion,
+    #texto-badge,
+    .post-it{
+        font-size: 35px;
+    }
+    .progress-bar{
+        line-height: 45px;                
+        font-weight: 600;
+    }
+    .progress{
+        height: 50px;
+    }
+    .post-it{
+        margin: 0 20px;
+        margin-bottom: 2%;
+    }
+    #ejercicio-calificacion img{
+        width: 100px;
+    }
+    .progress{
+        height: 100px;
+    }
+    .progress-bar{
+        font-size: 50px;
+        line-height: 90px;
+    }
+    .slot{
+        height: 80px;
+    }
+    .slot img{
+        height: 60px;
+    }
+    #detalle-terminado,
+    #detalle-proceso-individual,
+    #detalle-proceso-distrito,
+    #detalle-tienda{
+        min-height: 400px;
+    }
+    .btn-pref .hidden-xs{
+        font-size: 40px;
+    }
+    .tablon-progreso h5{
+        font-size: 60px;
+    }
+    .btn-pref span {
+        font-size: 40px;
+    }
+    .titulo-proceso,
+    .descripcion{
+        font-size: 50px;
+    }
+    .detalle-fecha{
+        font-size: 30px;
+    }
+    .detalle-enunciado,
+    .detalle-coste{
+        font-size: 50px;
+    }
+    .detalle-enunciado{
+        min-height: 200px;
+        margin: 1%;
+    }
+    .detalle-boton{
+        font-size: 35px;
+    }
+}
+@media (min-width: 992px){
+
+}
+@media (min-width: 1200px){
+    .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+    .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+    .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+    .ejercicio-seccion,
+    #ejercicio-calificacion,
+    #texto-badge{
+        font-size: 14px;
+    }
+    .ejercicio-seccion button{
+        font-weight: 600;
+    }
+    #ejercicio-calificacion img{
+        width: 20px;
+    }
+    .progress{
+        height: 40px;
+    }
+    .progress-bar{
+        font-size: 24px;
+        line-height: 35px;
+    }
+    .slot{
+        height: 80px;
+    }
+    .slot img{
+        height: 60px;
+    }
+    #detalle-terminado,
+    #detalle-proceso-individual,
+    #detalle-proceso-distrito,
+    #detalle-tienda{
+        min-height: 250px;
+    }
+    .titulo-proceso,
+    .descripcion,
+    .btn-pref span,
+    .btn-pref .hidden-xs,
+    .tablon-progreso h5,
+    .detalle-fecha,
+    .detalle-enunciado,
+    .detalle-coste{
+        font-size: 25px;
+    }
+    .detalle-enunciado{
+        min-height: 150px;
+    }
+    .detalle-boton{
+        font-size: 20px;
+    }
+    #carga{
+        font-size: 40px;
+    }
+}
+

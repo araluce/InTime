@@ -298,9 +298,6 @@ class DefaultController extends Controller {
      * @Route("/arena/{id_ejercicio}", name="arenatest")
      */
     public function arenaAction(Request $request, $id_ejercicio) {
-        
-        
-        
         $session = $this->get('session');
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
@@ -333,7 +330,6 @@ class DefaultController extends Controller {
             $DATOS['SECCION'] = $d['SECCION'];
             $DATOS['TIPO'] = $d['TIPO'];
         }
-//        $UTILS->pretty_print($DATOS);
         if ($request->getMethod() == 'POST') {
             $seccion_texto = $SECCION->getSeccion();
             //$n_intentos = 0;
@@ -481,8 +477,6 @@ class DefaultController extends Controller {
      * @Route("/solicitar/{id_ejercicio}", name="solicitar")
      */
     public function solicitarAction(Request $request, $id_ejercicio) {
-        
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         Usuario::compruebaUsuario($doctrine, $session, '/solicitar/' . $id_ejercicio);

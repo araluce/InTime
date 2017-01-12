@@ -85,19 +85,9 @@ class RuntasticController extends Controller {
                     if (strlen($segundos) === 1) {
                         $segundos = '0' . $segundos;
                     }
-
+                    $aux['tipo'] = $SESION->getTipo();
                     $aux['duracion'] = $horas . ':' . $minutos . ':' . $segundos;
-                    $aux['distancia'] = $SESION->getDistancia();
-                    $aux['paso'] = $SESION->getPaso();
                     $aux['velocidad'] = $SESION->getVelocidad();
-                    $aux['kcal'] = $SESION->getKcal();
-                    $aux['ritmo_cardiaco_medio'] = $SESION->getRitmoCardiacoMedio();
-                    $aux['ritmo_cardiaco_max'] = $SESION->getRitmoCardiacoMax();
-                    $aux['desnivel'] = $SESION->getDesnivel();
-                    $aux['perdida_nivel'] = $SESION->getPerdidaNivel();
-                    $aux['superficie'] = $SESION->getSuperficie();
-                    $aux['tiempo'] = $SESION->getTiempo();
-                    $aux['sensacion'] = $SESION->getSensacion();
                     $aux['fecha'] = $SESION->getFecha();
                     $DATOS['SESIONES'][] = $aux;
                 }
@@ -172,7 +162,7 @@ class RuntasticController extends Controller {
                 ->where('sr.idUsuarioRuntastic = :idUsuarioRuntastic')
                 ->setParameters(['idUsuarioRuntastic' => $UR]);
         $SESIONES = $query->getQuery()->getResult();
-        if ($r->login()) {
+//        if ($r->login()) {
             $response['usuario'] = $r->getUsername();
             $response['Uid'] = $r->getUid();
 
@@ -212,8 +202,8 @@ class RuntasticController extends Controller {
             }
             $em->flush();
             return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
-        }
-        return new JsonResponse(['estatus' => 'ERROR', 'message' => 'Login failed'], 200);
+//        }
+//        return new JsonResponse(['estatus' => 'ERROR', 'message' => 'Login failed'], 200);
     }
 
     function iniciarSesionRuntastic($USUARIO, $rt_usuario, $rt_contrasena) {
@@ -233,6 +223,27 @@ class RuntasticController extends Controller {
         $USUARIO_RUNTASTIC->setActivo(1);
         $em->persist($USUARIO_RUNTASTIC);
         $em->flush();
+    }
+    
+    /**
+     * @Route("/ciudadano/ocio/deporte/test", name="test")
+     */
+    public function testAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/test');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+        }
+        $r = new Runtastic();
+        $r->setUsername('araluce@correo.ugr.es')->setPassword('102938');
+        
+        if ($r->login()) {
+            return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
+        }
+        return new JsonResponse(['estatus' => 'ERROR', 'message' => $r->getRedirectUrl()], 200);
     }
 
 }

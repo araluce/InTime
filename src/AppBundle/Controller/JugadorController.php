@@ -22,6 +22,7 @@ use AppBundle\Utils\Utils;
  * @author araluce
  */
 class JugadorController extends Controller {
+
     /**
      * @Route("/ciudadano/info", name="informacion")
      */
@@ -101,12 +102,12 @@ class JugadorController extends Controller {
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
         return $this->render('ciudadano/extensiones/informacion.html.twig', $DATOS);
     }
-    
+
     /**
      * 
      * @Route("/ciudadano/info/actualizarMovimientos", name="actualizarMovimiento")
      */
-    public function actualizarMovimientoAction(Request $request){
+    public function actualizarMovimientoAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
@@ -123,15 +124,15 @@ class JugadorController extends Controller {
                 ->orderBy('f.fecha', 'DESC')
                 ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario()]);
         $MOVIMIENTOS = $query->getQuery()->getResult();
-        if(!count($MOVIMIENTOS)){
+        if (!count($MOVIMIENTOS)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Aún no se han producido movimientos'));
         }
         $DATOS['MOVIMIENTOS'] = [];
-        foreach($MOVIMIENTOS as $MOVIMIENTO){
+        foreach ($MOVIMIENTOS as $MOVIMIENTO) {
             $aux = [];
             $aux['ID'] = $MOVIMIENTO->getIdUsuarioMovimiento();
             $aux['CANTIDAD'] = $MOVIMIENTO->getCantidad();
-            if($aux['CANTIDAD'] < 0){
+            if ($aux['CANTIDAD'] < 0) {
                 $aux['VALANCE'] = 'NEG';
             } else {
                 $aux['VALANCE'] = 'POS';
@@ -143,4 +144,110 @@ class JugadorController extends Controller {
         }
         return new JsonResponse(array('estado' => 'OK', 'message' => $DATOS['MOVIMIENTOS']));
     }
+
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionGlobal", name="getClasificacionGlobal")
+     */
+    public function getClasificacionGlobal(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionGlobal');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL')
+                ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
+        $USUARIOS = $query->getQuery()->getResult();
+
+        return Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionDistrito", name="getClasificacionDistrito")
+     */
+    public function getClasificacionDistrito(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionDistrito');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $DISTRITO = $USUARIO->getIdDistrito();
+        if ($DISTRITO === null) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No perteneces a ningún distrito'));
+        }
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL AND u.idDistrito = :DISTRITO')
+                ->setParameters([
+            'ID_USUARIO' => $USUARIO->getIdUsuario(),
+            'ROL' => $ROL,
+            'DISTRITO' => $DISTRITO
+        ]);
+        $USUARIOS = $query->getQuery()->getResult();
+
+        return Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionDistritos", name="getClasificacionDistritos")
+     */
+    public function getClasificacionDistritos(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionDistritos');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $DISTRITOS = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
+        if (!count($DISTRITOS)) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Por el momento no hay distritos'));
+        }
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $RESPUESTA = [];
+        foreach ($DISTRITOS AS $DISTRITO) {
+            $aux = [];
+            $aux['DISTRITO'] = $DISTRITO->getNombre();
+            $aux['CANTIDAD'] = 0;
+            $query = $doctrine
+                    ->getRepository('AppBundle:Usuario')
+                    ->createQueryBuilder('u');
+            $query->select('u');
+            $query->where('u.idRol = :ROL AND u.idDistrito = :DISTRITO');
+            $query->setParameters(['ROL' => $ROL, 'DISTRITO' => $DISTRITO]);
+            $USUARIOS = $query->getQuery()->getResult();
+            if (count($USUARIOS)) {
+                foreach ($USUARIOS AS $USUARIO) {
+                    $query = $doctrine
+                            ->getRepository('AppBundle:UsuarioMovimiento')
+                            ->createQueryBuilder('um');
+                    $query->select('SUM(um.cantidad)');
+                    $query->where('um.idUsuario = :ID_USUARIO');
+                    $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
+                    $aux['CANTIDAD'] = $query->getQuery()->getSingleScalarResult();
+                    if($aux['CANTIDAD'] === null){
+                        $aux['CANTIDAD'] = 0;
+                    }
+                }
+            }
+            $RESPUESTA[] = $aux;
+        }
+        return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
+    }
+
 }

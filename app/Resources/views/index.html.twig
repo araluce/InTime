@@ -7,25 +7,16 @@
             font-family: "Kimberley";
             src: url("{{ asset('font/digital-7.ttf') }}");
         }
-        #index-titulo-app img{
-            height: 120px;
-        }
         #index-logo-app img{
             margin-bottom: 4%;
-            height: 120px;
         }
         .index-frase{
-            font-size: 50px;
             font-family: 'Oregano', cursive;
             text-align: center;
         }
         .index-autor{
             font-family: 'Oregano', cursive;
             text-align: right;
-            font-size: 30px;
-        }
-        .login-form h4{
-            font-size: 18px;
         }
         .no-padding{
             padding-left: 0px;
@@ -34,26 +25,44 @@
         .login-form{
             font-family: 'Kimberley';
         }
-        .index-input{
-            /*padding: 15px 15px;*/
-            height: 50px;
-        }
         .btn-index{
             padding: 5px 15px;
-        }
-        .index-input,
-        .btn-index{
-            font-size: 20px;
-            border: 2px solid #000000;
-            border-radius: 7px;
         }
         .btn-index:hover,
         .btn-index:focus{
             color: #FFFFFF;
             background-color:#000000;
         }
-        
-        @media only screen and (max-width: 1068px){
+        @media (max-width: 760px){
+            #index-titulo-app img{
+                height: 150px;
+            }
+            #index-logo-app img{
+                height: 180px;
+            }
+            .index-frase{
+                font-size: 45px;
+                font-weight: 500;
+            }
+            .index-autor{
+                font-size: 40px;
+                font-weight: 500;
+            }
+            .login-form h4{
+                font-size: 40px;
+            }
+            .index-input{
+                padding: 10px;
+                height: 40px;
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+                font-size: 20px;
+            }
+        }
+        @media (min-width: 760px){
             #index-titulo-app img{
                 height: 350px;
             }
@@ -80,6 +89,61 @@
                 border: 5px solid #000000;
                 border-radius: 10px;
                 font-size: 60px;
+            }
+
+        }
+        @media (min-width: 992px){
+            #index-titulo-app img{
+                height: 10px;
+            }
+            #index-logo-app img{
+                height: 155px;
+            }
+            .index-frase{
+                font-size: 70px;
+                font-weight: 500;
+            }
+            .index-autor{
+                font-weight: 500;
+                font-size: 50px;
+            }
+            .login-form h4{
+                font-size: 50px;
+            }
+            .index-input{
+                padding: 50px;
+                height: 80px;
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+                font-size: 60px;
+            }
+        }
+        @media (min-width: 1200px){
+            #index-titulo-app img,
+            #index-logo-app img{
+                height: 120px;
+            }
+            .index-frase{
+                font-size: 50px;
+            }
+            .index-autor{
+                font-size: 30px;
+            }
+            .login-form h4{
+                font-size: 18px;
+            }
+            .index-input {
+                padding: 0 10px;
+                height: 50px;
+            }
+            .index-input,
+            .btn-index{
+                font-size: 20px;
+                border: 2px solid #000000;
+                border-radius: 7px;
             }
         }
     </style>

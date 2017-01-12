@@ -9,6 +9,8 @@
 namespace AppBundle\Utils;
 
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Alimentacion;
+use AppBundle\Utils\Ejercicio;
 
 /**
  * Description of Alimentacion
@@ -17,24 +19,18 @@ use AppBundle\Utils\Utils;
  */
 class Alimentacion {
 
-    static function getDatosComida($doctrine, $USUARIO, &$DATOS) {
-        $UTILS = new \AppBundle\Utils\Utils();
-        $ALIMENTACION = new \AppBundle\Utils\Alimentacion();
-
+    static function getDatosAlimentacion($doctrine, $USUARIO, &$DATOS, $SECCION) {
         // Obtenemos los ejercicios de comida del usuario
-        $SECCION_COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
+        Ejercicio::actualizarEjercicioXUsuario($doctrine, $USUARIO);
         $EJERCICIOS_COMIDA_DEL_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
-            'idUsu' => $USUARIO, 'idSeccion' => $SECCION_COMIDA
+            'idUsu' => $USUARIO, 'idSeccion' => $SECCION
         ]);
         $DATOS['NUMERO_EJERCICIOS'] = count($EJERCICIOS_COMIDA_DEL_USUARIO);
-
-        $DATOS['SECCION'] = 'comida';
-
         $DATOS['EJERCICIOS'] = [];
         // Si el usuario tiene ejercicios...
         if ($DATOS['NUMERO_EJERCICIOS']) {
             foreach ($EJERCICIOS_COMIDA_DEL_USUARIO as $EJERCICIO_USUARIO) {
-                $DATOS['EJERCICIOS'][] = $ALIMENTACION->makeInfoEjercicio($doctrine, $USUARIO, $EJERCICIO_USUARIO);
+                $DATOS['EJERCICIOS'][] = Alimentacion::makeInfoEjercicio($doctrine, $USUARIO, $EJERCICIO_USUARIO);
             }
         }
     }
@@ -67,8 +63,8 @@ class Alimentacion {
             if ($DATOS['ESTADO'] === 'solicitado') {
                 if ($DATOS['SECCION'] === 'comida') {
                     $DATOS['TSC'] = $USUARIO->getTiempoSinComer();
-                } else {
-                    $DATOS['TSC'] = $USUARIO->getTiempoSinBeber();
+                } else if ($DATOS['SECCION'] === 'bebida'){
+                    $DATOS['TSB'] = $USUARIO->getTiempoSinBeber();
                 }
             }
         }
@@ -137,5 +133,14 @@ class Alimentacion {
         }
         return 0;
     }
-
+    static function porcetajeEnergia($ts_usuario, $ts_defecto){
+        $HOY = new \DateTime('now');
+        $respuesta = [];
+        $respuesta['suelo'] = $ts_usuario->getTimestamp();
+        $respuesta['techo'] = $respuesta['suelo'] + $ts_defecto->getValor();
+        $respuesta['current'] = $HOY->getTimestamp();
+        $respuesta['recorrido'] = $respuesta['current'] - $respuesta['suelo'];
+        $respuesta['porcentaje'] = 100 - (($respuesta['recorrido'] * 100) / $ts_defecto->getValor());
+        return $respuesta;
+    }
 }

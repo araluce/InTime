@@ -2,6 +2,8 @@
 
 namespace AppBundle\Utils;
 
+use \Symfony\Component\HttpFoundation\JsonResponse;
+
 class Usuario {
 
     public function inicio_usuario($usuario, $session) {
@@ -135,6 +137,21 @@ class Usuario {
     }
 
     /**
+     * Retorna el TdV de bonificación dependiendo de la nota obtenida
+     * @param doctrine $doctrine
+     * @param Entity:CALIFICACIONES $CALIFICACION
+     * @return TdV|null
+     */
+    static function getTimesTampCalificacion($doctrine, $CALIFICACION) {
+        if(!$CALIFICACION === null){
+            return null;
+        }
+        $correspondencia_numerica = $CALIFICACION->getCorrespondenciaNumerica();
+        return $doctrine->getRepository('AppBundle:Constante')
+                        ->findOneByClave('pago_paga_' . $correspondencia_numerica)->getValor();
+    }
+
+    /**
      * Obtener todos los usuarios por Rol (especificando el Rol por String)
      * 
      * @param type $doctrine
@@ -255,7 +272,7 @@ class Usuario {
      * @param type $tdv TdV a pagar/cobrar
      * @param type $concepto Concepto del ingreso o cobro
      */
-    static function operacionSobreTdV($doctrine, $USUARIO, $tdv, $concepto) {
+    static function operacionSobreTdV($doctrine, $USUARIO, $tdv, $concepto, $comprobar_muerte = true) {
         $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
         $TDV_RESTANTE = $TDV_USUARIO + $tdv;
         $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
@@ -272,13 +289,19 @@ class Usuario {
         $em->persist($USUARIO);
         $em->persist($MOVIMIENTO);
         $em->flush();
+
+        // Opcional para no muera un ciudadano al mejorar la nota
+        //    La nota anterior se resta (en TdV) y se sustituye por la nueva
+        if ($comprobar_muerte) {
+            //Llamada a la función comprobar muerte
+        }
     }
 
     static function aliasDisponible($doctrine, $session, $alias) {
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-        
+
         $query = $qb->select('u.seudonimo')
                 ->from('\AppBundle\Entity\Usuario', 'u')
                 ->where('u.seudonimo IS NOT NULL AND u.idUsuario != :IdUsuario')
@@ -292,6 +315,47 @@ class Usuario {
             }
         }
         return 1;
+    }
+
+    static function getClasificacion($doctrine, $USUARIO, $USUARIOS) {
+        if ($USUARIO->getSeudonimo() === null) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Debes tener un alias para participar'
+                . 'en los rankings'));
+        }
+        if (!count($USUARIOS)) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No hay usuarios'));
+        }
+        $query = $doctrine
+                ->getRepository('AppBundle:UsuarioMovimiento')
+                ->createQueryBuilder('u');
+        $CUENTAS = [];
+        $query->select('SUM(u.cantidad)');
+        $query->where('u.idUsuario = :ID_USUARIO');
+        $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
+        $cantidad = $query->getQuery()->getSingleScalarResult();
+        $puesto = 1;
+        foreach ($USUARIOS as $U) {
+            if ($U->getSeudonimo() !== null) {
+                $aux = [];
+                $aux['UsuarioId'] = $U->getIdUsuario();
+                $aux['UsuarioAlias'] = $U->getSeudonimo();
+
+                $query->select('SUM(u.cantidad)');
+                $query->where('u.idUsuario = :ID_USUARIO');
+                $query->setParameter('ID_USUARIO', $U->getIdUsuario());
+                $aux['UsuarioMovimientos'] = $query->getQuery()->getSingleScalarResult();
+                if ($aux['UsuarioMovimientos'] !== null && $aux['UsuarioMovimientos'] > $cantidad) {
+                    $puesto++;
+                }
+                $CUENTAS[] = $aux;
+            }
+        }
+        $RESPUESTA = [];
+        $RESPUESTA['ID'] = $USUARIO->getIdUsuario();
+        $RESPUESTA['ALIAS'] = $USUARIO->getSeudonimo();
+        $RESPUESTA['CANTIDAD'] = $cantidad;
+        $RESPUESTA['PUESTO'] = $puesto;
+        return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
 
 }

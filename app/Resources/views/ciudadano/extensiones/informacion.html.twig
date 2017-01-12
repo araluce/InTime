@@ -229,7 +229,41 @@
         .green-number-xs {
             color: #41a68d;
         }
-        @media only screen and (max-width: 1068px){
+        @media (max-width: 760px){
+            legend,
+            #mensaje-texto,
+            .modal-title{
+                font-size: 23px;
+            }
+            #reporte,
+            .advertencia{
+                font-size: 17px;
+            }
+            #info-image-form{
+                width:  290px;
+                height: 290px;
+            }
+            #nivel img,
+            #clasificaciones img,
+            #badges img,
+            #movimientos img,
+            #modificar img{
+                height: 53px;
+            }
+            .card.hovercard .card-background {
+                height: 153px;
+            }
+            .card.hovercard .useravatar img {
+                width: 117px;
+                height: 117px;
+                max-width: 117px;
+                max-height: 117px;
+            }
+            .card.hovercard .card-info .card-title {
+                font-size: 30px;
+            }
+        }
+        @media (min-width: 760px){
             legend{
                 font-size: 35px;
             }
@@ -264,9 +298,57 @@
             .card.hovercard .card-info .card-title {
                 font-size: 45px;
             }
+        }
+        @media (min-width: 992px){
 
         }
-
+        @media (min-width: 1200px){
+            legend{
+                font-size: 17px;
+            }
+            .modal-title{
+                font-size: 25px;
+            }
+            #mensaje-texto{
+                font-size: 20px;
+            }
+            #reporte{
+                font-size: 12px;
+            }
+            #info-image-form{
+                width:  290px;
+                height: 290px;
+            }
+            .modal-advice .modal-dialog{
+                top: 50%;
+            }
+            .advertencia{
+                font-size: 15px;
+            }
+            #info-image-form{
+                width:  280px;
+                height: 280px;
+            }
+            #nivel img,
+            #clasificaciones img,
+            #badges img,
+            #movimientos img,
+            #modificar img{
+                height: 60px;
+            }
+            .card.hovercard .card-background {
+                height: 130px;
+            }
+            .card.hovercard .useravatar img {
+                width: 100px;
+                height: 100px;
+                max-width: 100px;
+                max-height: 100px;
+            }
+            .card.hovercard .card-info .card-title {
+                font-size: 20px;
+            }
+        }
     </style>
 {% endblock %}
 

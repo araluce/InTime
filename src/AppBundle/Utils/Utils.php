@@ -8,6 +8,8 @@
 
 namespace AppBundle\Utils;
 
+use AppBundle\Utils\Usuario;
+
 /**
  * Description of Utils
  *
@@ -45,9 +47,16 @@ class Utils {
             ]);
         }
 
-        if (!count($EJERCICIO_CALIFICACION)) {
+        if ($EJERCICIO_CALIFICACION === null) {
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
             $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
+        } else {
+            // Ejercicio ya calificado, se resta el TdV ganado con el y se le
+            //ingresa el TdV por defecto.
+            if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
+                $tdv = (-1) * Usuario::getcorrespondenciaNumerica($doctrine, $EJERCICIO_CALIFICACION->getIdCalificaciones());
+                Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
+            }
         }
         if ($id_grupo !== null) {
             $EJERCICIO_CALIFICACION->setIdGrupo($id_grupo);
@@ -55,7 +64,7 @@ class Utils {
             $EJERCICIO_CALIFICACION->setIdEjercicio($id_ejercicio);
         }
         $TdVDefecto = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('pago_paga_' . $corresponidencia_numerica);
-        \AppBundle\Utils\Usuario::addTdVEjercicio($doctrine, $id_usuario, $TdVDefecto->getValor(), $EJERCICIO_CALIFICACION->getIdCalificaciones());
+        Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto->getValor(), 'Ingreso - Pago por defecto temporal por entrega');
         $EJERCICIO_CALIFICACION->setIdCalificaciones($CALIFICACION);
         $EJERCICIO_CALIFICACION->setIdEvaluador($SISTEMA);
         $EJERCICIO_CALIFICACION->setFecha(new \DateTime('now'));
@@ -66,9 +75,7 @@ class Utils {
         if ($SECCION === 'paga_extra' || $SECCION === 'comida' || $SECCION === 'bebida') {
             $EJERCICIO_ESTADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
         }
-//        \AppBundle\Utils\Utils::pretty_print($EJERCICIO_ESTADO);
         $EJERCICIO_CALIFICACION->setIdEjercicioEstado($EJERCICIO_ESTADO);
-//        \AppBundle\Utils\Utils::pretty_print($EJERCICIO_CALIFICACION);
         $doctrine->getManager()->persist($EJERCICIO_CALIFICACION);
         $doctrine->getManager()->flush();
 
@@ -414,10 +421,10 @@ class Utils {
         if ($segundos < 0) {
             $segundos *= -1;
         }
-        
-        $aux['dias'] = floor($segundos/86400);
-        $aux['horas'] = floor($segundos/3600) - ($aux['dias'] * 24);
-        $aux['minutos'] = floor($segundos/ 60) - ($aux['dias'] * 24 * 60) - ($aux['horas'] * 60);
+
+        $aux['dias'] = floor($segundos / 86400);
+        $aux['horas'] = floor($segundos / 3600) - ($aux['dias'] * 24);
+        $aux['minutos'] = floor($segundos / 60) - ($aux['dias'] * 24 * 60) - ($aux['horas'] * 60);
         $aux['segundos'] = floor($segundos) - ($aux['dias'] * 24 * 60 * 60) - ($aux['horas'] * 60 * 60) - ($aux['minutos'] * 60);
         return $aux;
     }

@@ -2,46 +2,46 @@
 
 /*
 
-The MIT License (MIT)
+  The MIT License (MIT)
 
-Copyright (c) 2014 Timo Schlueter <timo.schlueter@me.com>
+  Copyright (c) 2014 Timo Schlueter <timo.schlueter@me.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
 
-*/
+ */
 
 namespace AppBundle\Runtastic;
 
-class Runtastic
-{
+class Runtastic {
+
     /**
      * HTTP Responses
      */
-    const HTTP_OK   = 200;
+    const HTTP_OK = 200;
 
     /**
      * Runtastic API Urls
      */
-    const RUNTASTIC_LOGIN_URL           = "https://www.runtastic.com/en/d/users/sign_in.json";
-    const RUNTASTIC_LOGOUT_URL          = "https://www.runtastic.com/en/d/users/sign_out";
-    const RUNTASTIC_SESSIONS_URL        = "https://www.runtastic.com/api/run_sessions/json";
-    const RUNTASTIC_SPORT_SESSIONS_URL  = "https://www.runtastic.com/en/users/%s/sport-sessions";
+    const RUNTASTIC_LOGIN_URL = "https://www.runtastic.com/en/d/users/sign_in.json";
+    const RUNTASTIC_LOGOUT_URL = "https://www.runtastic.com/en/d/users/sign_out";
+    const RUNTASTIC_SESSIONS_URL = "https://www.runtastic.com/api/run_sessions/json";
+    const RUNTASTIC_SPORT_SESSIONS_URL = "https://www.runtastic.com/en/users/%s/sport-sessions";
 
     /**
      * Runtastic Credentials
@@ -68,15 +68,14 @@ class Runtastic
      * Other private variables
      */
     private $doc;
-    private $loggedIn  = false;
-    private $timeout   = 10;
+    private $loggedIn = false;
+    private $timeout = 10;
     private $cookieJar = "/tmp/cookiejar";
 
     /**
      * Runtastic constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         libxml_use_internal_errors(true);
         $this->doc = new \DOMDocument();
     }
@@ -87,8 +86,7 @@ class Runtastic
      * @param  string $loginUsername
      * @return Runtastic
      */
-    public function setUsername($loginUsername)
-    {
+    public function setUsername($loginUsername) {
         $this->loginUsername = $loginUsername;
 
         return $this;
@@ -100,8 +98,7 @@ class Runtastic
      * @param  string $loginPassword
      * @return Runtastic
      */
-    public function setPassword($loginPassword)
-    {
+    public function setPassword($loginPassword) {
         $this->loginPassword = $loginPassword;
 
         return $this;
@@ -113,8 +110,7 @@ class Runtastic
      * @param  int $timeout
      * @return Runtastic
      */
-    public function setTimeout($timeout)
-    {
+    public function setTimeout($timeout) {
         $this->timeout = $timeout;
 
         return $this;
@@ -126,8 +122,7 @@ class Runtastic
      * @param  string $cookieJar
      * @return Runtastic
      */
-    public function setCookieJar($cookieJar)
-    {
+    public function setCookieJar($cookieJar) {
         $this->cookieJar = $cookieJar;
 
         return $this;
@@ -138,8 +133,7 @@ class Runtastic
      *
      * @return string
      */
-    public function getUsername()
-    {
+    public function getUsername() {
         return $this->username;
     }
 
@@ -148,8 +142,7 @@ class Runtastic
      *
      * @return string
      */
-    public function getUid()
-    {
+    public function getUid() {
         return $this->uid;
     }
 
@@ -158,8 +151,7 @@ class Runtastic
      *
      * @return string
      */
-    public function getToken()
-    {
+    public function getToken() {
         return $this->token;
     }
 
@@ -168,8 +160,7 @@ class Runtastic
      *
      * @return array
      */
-    public function getRawData()
-    {
+    public function getRawData() {
         return $this->rawData;
     }
 
@@ -178,10 +169,31 @@ class Runtastic
      *
      * @return int|null
      */
-    public function getResponseStatusCode()
-    {
+    public function getResponseStatusCode() {
         if (isset($this->lastRequestInfo['http_code'])) {
             return $this->lastRequestInfo['http_code'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Response info.
+     *
+     * @return array
+     */
+    public function getResponse() {
+        return $this->lastRequestInfo;
+    }
+    
+    /**
+     * Get Redirect URL.
+     *
+     * @return string|null
+     */
+    public function getRedirectUrl() {
+        if (isset($this->lastRequestInfo['redirect_url'])) {
+            return $this->lastRequestInfo['redirect_url'];
         }
 
         return null;
@@ -196,8 +208,7 @@ class Runtastic
      * @param  string $response
      * @return void
      */
-    private function setDataFromResponse($response)
-    {
+    private function setDataFromResponse($response) {
         $this->doc->loadHTML($response);
 
         $inputTags = $this->doc->getElementsByTagName('input');
@@ -235,14 +246,13 @@ class Runtastic
      *
      * @return bool
      */
-    public function login()
-    {
+    public function login() {
         $this->loggedIn = false;
 
         $postData = [
-            "user[email]"           => $this->loginUsername,
-            "user[password]"        => $this->loginPassword,
-            "authenticity_token"    => $this->token,
+            "user[email]" => $this->loginUsername,
+            "user[password]" => $this->loginPassword,
+            "authenticity_token" => $this->token,
         ];
 
         $responseOutputJson = $this->post(self::RUNTASTIC_LOGIN_URL, $postData);
@@ -264,8 +274,7 @@ class Runtastic
      *
      * @return void
      */
-    public function logout()
-    {
+    public function logout() {
         $this->get(self::RUNTASTIC_LOGOUT_URL);
 
         if ($this->getResponseStatusCode() == self::HTTP_OK) {
@@ -289,8 +298,7 @@ class Runtastic
      * @param  int|null $iYear  Number of the requested year.
      * @return bool|mixed
      */
-    public function getActivities($iWeek = null, $iMonth = null, $iYear = null)
-    {
+    public function getActivities($iWeek = null, $iMonth = null, $iYear = null) {
         $response = [];
 
         if (!$this->loggedIn) {
@@ -319,13 +327,13 @@ class Runtastic
                         $items[] = $item[0];
                     }
                 } elseif (!is_null($iMonth)) { /* Get month statistics */
-                    $tmpDate = $iYear."-".$iMonth."-";
-                    if ($tmpDate."01" <= $item[1] && $tmpDate."31" >= $item[1]) {
+                    $tmpDate = $iYear . "-" . $iMonth . "-";
+                    if ($tmpDate . "01" <= $item[1] && $tmpDate . "31" >= $item[1]) {
                         $items[] = $item[0];
                     }
                 } elseif (!is_null($iYear)) { /* Get year statistics */
-                    $tmpDate = $iYear."-";
-                    if ($tmpDate."01-01" <= $item[1] && $tmpDate."12-31" >= $item[1]) {
+                    $tmpDate = $iYear . "-";
+                    if ($tmpDate . "01-01" <= $item[1] && $tmpDate . "12-31" >= $item[1]) {
                         $items[] = $item[0];
                     }
                 } else { /* Get all statistics */
@@ -337,8 +345,8 @@ class Runtastic
             arsort($items);
 
             $postData = [
-                "user_id"            => $this->getUid(),
-                "items"              => join(',', $items),
+                "user_id" => $this->getUid(),
+                "items" => join(',', $items),
                 "authenticity_token" => $this->getToken(),
             ];
 
@@ -355,12 +363,11 @@ class Runtastic
      * @param  array  $query
      * @return string
      */
-    protected function parseGet($url, $query)
-    {
+    protected function parseGet($url, $query) {
         if (!empty($query)) {
             $append = strpos($url, '?') === false ? '?' : '&';
 
-            return $url.$append.http_build_query($query);
+            return $url . $append . http_build_query($query);
         }
 
         return $url;
@@ -372,8 +379,7 @@ class Runtastic
      * @param  string $response
      * @return object
      */
-    protected function parseResponse($response)
-    {
+    protected function parseResponse($response) {
         return @json_decode($response, false, 512, JSON_BIGINT_AS_STRING);
     }
 
@@ -386,19 +392,18 @@ class Runtastic
      * @param  bool        $json
      * @return object|null
      */
-    protected function request($url, $parameters = [], $request = null, $json = true)
-    {
-        $this->lastRequest     = $url;
+    protected function request($url, $parameters = [], $request = null, $json = true) {
+        $this->lastRequest = $url;
         $this->lastRequestData = $parameters;
 
         $curl = curl_init($url);
 
         $curlOptions = array(
-            CURLOPT_URL             => $url,
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_COOKIEFILE      => $this->cookieJar,
-            CURLOPT_COOKIEJAR       => $this->cookieJar,
-            CURLOPT_TIMEOUT         => $this->timeout,
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_COOKIEFILE => $this->cookieJar,
+            CURLOPT_COOKIEJAR => $this->cookieJar,
+            CURLOPT_TIMEOUT => $this->timeout,
         );
 
         if (!empty($parameters) || !empty($request)) {
@@ -428,8 +433,7 @@ class Runtastic
      * @param  bool   $json
      * @return string
      */
-    public function get($request, $parameters = [], $json = true)
-    {
+    public function get($request, $parameters = [], $json = true) {
         $requestUrl = $this->parseGet($request, $parameters);
 
         return $this->request($requestUrl, [], null, $json);
@@ -443,8 +447,7 @@ class Runtastic
      * @param  bool   $json
      * @return string
      */
-    public function put($request, $parameters = [], $json = true)
-    {
+    public function put($request, $parameters = [], $json = true) {
         return $this->request($request, $parameters, 'PUT', $json);
     }
 
@@ -456,8 +459,7 @@ class Runtastic
      * @param  bool   $json
      * @return string
      */
-    public function post($request, $parameters = [], $json = true)
-    {
+    public function post($request, $parameters = [], $json = true) {
         return $this->request($request, $parameters, null, $json);
     }
 
@@ -469,8 +471,8 @@ class Runtastic
      * @param  bool   $json
      * @return string
      */
-    public function delete($request, $parameters = [], $json = true)
-    {
+    public function delete($request, $parameters = [], $json = true) {
         return $this->request($request, $parameters, 'DELETE', $json);
     }
+
 }

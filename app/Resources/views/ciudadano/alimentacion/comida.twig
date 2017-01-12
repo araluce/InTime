@@ -1,0 +1,430 @@
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row" style="margin-top: 1%;">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-shopping-cart" aria-hidden="true"></span>
+                        <div class="hidden-xs">TIENDA</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="proceso" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                        <span class="fa fa-refresh" aria-hidden="true"></span>
+                        <div class="hidden-xs">EN PROCESO</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="terminado" class="btn btn-default btn13" href="#tab3" data-toggle="tab">
+                        <span class="fa fa-archive" aria-hidden="true"></span>
+                        <div class="hidden-xs">REALIZADO</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRAS</div>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row tablon-progreso">
+                    <h5>Energía</h5>
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-danger" id="progress-tsc"></div>
+                    </div>
+                </div>
+                <div class="row tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tab1">
+                            <div class="col-xs-5" id="estanteria-tienda">
+                                <div class="row">
+                                    <div class="slot col-xs-2 fila" id="tienda-1"></div>
+                                    <div class="slot col-xs-2 fila" id="tienda-2"></div>
+                                    <div class="slot col-xs-2 fila" id="tienda-3"></div>
+                                    <div class="slot col-xs-2 fila" id="tienda-4"></div>
+                                    <div class="slot col-xs-2" id="tienda-5"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="slot col-xs-2 fila-abajo fila" id="tienda-6"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="tienda-7"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="tienda-8"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="tienda-9"></div>
+                                    <div class="slot col-xs-2 fila-abajo" id="tienda-10"></div>
+                                </div>
+                                <div class="row" style="margin-bottom: 1%;">
+                                    <span class="descripcion">
+                                        Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-7" id="detalle-tienda"></div>
+                        </div>
+                        <div class="tab-pane fade in" id="tab2">
+                            <div class="row">
+                                <div class="col-xs-5 titulo-proceso">
+                                    Alimento individual
+                                </div>
+                                <div class="col-xs-5 col-xs-offset-2 titulo-proceso">
+                                    Alimento de distrito
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-5" id="detalle-proceso-individual"></div>
+                                <div class="col-xs-5 col-xs-offset-2" id="detalle-proceso-distrito"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade in" id="tab3">
+                            <div class="col-xs-5" id="estanteria-terminado">
+                                <div class="row">
+                                    <div class="slot col-xs-2 fila" id="terminado-1"></div>
+                                    <div class="slot col-xs-2 fila" id="terminado-2"></div>
+                                    <div class="slot col-xs-2 fila" id="terminado-3"></div>
+                                    <div class="slot col-xs-2 fila" id="terminado-4"></div>
+                                    <div class="slot col-xs-2" id="terminado-5"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-6"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-7"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-8"></div>
+                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-9"></div>
+                                    <div class="slot col-xs-2 fila-abajo" id="terminado-10"></div>
+                                </div>
+                                <div class="row" style="margin-bottom: 1%;">
+                                    <span class="descripcion">
+                                        Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-7" id="detalle-terminado"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var ya_solicitado = false;
+        var puede_entregar = true;
+        $(document).ready(function () {
+            obtenerTienda();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+                setTSC();
+
+            });
+
+            function arena_ejercicio(id) {
+                var ruta = '/arena/' + id;
+                window.location.replace(ruta);
+            }
+            function solicitar(id) {
+                var ruta = '/solicitar/' + id;
+                $.get(ruta, function (data, status) {
+                    if (data.respuesta === 'OK') {
+                        location.reload();
+                    } else {
+                        $('#mensaje-titulo').html('&nbsp;ERROR...');
+                        $('#mensaje-texto').html(data.mensaje);
+                        $('#modal-avisos2').click();
+                    }
+                });
+            }
+            $(function () {
+                setInterval(function () {
+                    setTSC();
+                }, 5000);
+            });
+            function setTSC() {
+                var ruta = '/getTiempoSinComer';
+                $.get(ruta, function (data, status) {
+                    if (data.porcentaje !== 'null') {
+                        $('#progress-tsc').width(data.porcentaje + '%');
+                        contenido = '';
+                        if (data.porcentaje > 0) {
+                            contenido += data.porcentaje.toFixed(2) + '%';
+                        }
+                        if (data.porcentaje <= 0) {
+                            contenido += 'MURIENDO';
+                        }
+                        $('#progress-tsc').html(contenido);
+                    }
+                });
+            }
+            function obtenerTienda() {
+                ruta = '/ciudadano/alimentacion/comida/tienda';
+                $.get(ruta, function (data, status) {
+                    console.log(data);
+                    if (data.estado === 'OK') {
+                        if (data.message.YA_SOLICITADO) {
+                            ya_solicitado = true;
+                        }
+                        rellenarEstantes(data.message.EJERCICIOS);
+                    }
+                });
+            }
+            function rellenarEstantes(productos) {
+                contador_tienda = 1;
+                contador_proceso = 1;
+                contador_terminado = 1;
+                $.each(productos, function (k, v) {
+                    contenido = '';
+                    if (v.ESTADO === 'no_solicitado') {
+                        contenido = '<span onclick="mostrarTienda(' + v.ID + ');">';
+                    }
+                    if (v.ESTADO === 'entregado') {
+                        contenido = '<span onclick="mostrarTerminado(' + v.ID + ');" class="opacidad">';
+                    }
+                    if (v.ESTADO === 'evaluado') {
+                        contenido = '<span onclick="mostrarTerminado(' + v.ID + ');">';
+                    }
+                    contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
+                    contenido += '</span>';
+                    if (v.ESTADO === 'no_solicitado') {
+                        $("#tienda-" + contador_tienda).html(contenido);
+                        contador_tienda++;
+                    }
+                    if (v.ESTADO === 'solicitado') {
+                        mostrarProceso(v.ID);
+                    }
+                    if (v.ESTADO === 'evaluado' || v.ESTADO === 'entregado') {
+                        $("#terminado-" + contador_terminado).html(contenido);
+                        contador_terminado++;
+                    }
+                });
+            }
+
+            function mostrarTienda(id) {
+                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        contenido = '';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-fecha">';
+                        contenido += '      <span class="fa fa-calendar">';
+                        contenido += '          ' + data.message.FECHA.date;
+                        contenido += '      </span>';
+                        contenido += '  </div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-enunciado">';
+                        contenido += '      ' + data.message.ENUNCIADO;
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-coste">';
+                        contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                        if (data.message.COSTE.dias !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
+                        }
+                        if (data.message.COSTE.horas !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
+                        }
+                        if (data.message.COSTE.minutos !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
+                        }
+                        if (data.message.COSTE.segundos !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
+                        }
+                        if (!data.message.COSTE.segundos &&
+                                !data.message.COSTE.minutos &&
+                                !data.message.COSTE.horas &&
+                                !data.message.COSTE.dias) {
+                            contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                        }
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12">';
+                        if (!ya_solicitado) {
+                            contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                            contenido += '          SOLICITAR';
+                            contenido += '      </button>';
+                        } else {
+                            contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
+                            contenido += '          SOLICITAR';
+                            contenido += '      </button>';
+                        }
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        $('#detalle-tienda').html(contenido);
+                    } else {
+
+                    }
+                });
+            }
+            function mostrarProceso(id) {
+                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        contenido = '';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-fecha">';
+                        contenido += '      <span class="fa fa-calendar">';
+                        contenido += '          ' + data.message.FECHA.date;
+                        contenido += '      </span>';
+                        contenido += '  </div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-enunciado">';
+                        contenido += '      ' + data.message.ENUNCIADO;
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        //contenido += '<center><i class="fa fa-spinner fa-spin" id="carga"></i></center>';
+                        //contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="entrega();" id="form-entrega" >';
+                        //contenido += '  <div class="input-group">';
+                        //contenido += '      <label class="input-group-btn">';
+                        //contenido += '          <span class="btn boton-entrega">';
+                        //contenido += '              Buscar&hellip; <input type="file" id="entrega_proceso" name="ENTREGA" id="ENTREGA" style="display: none;" required>';
+                        //contenido += '          </span>';
+                        //contenido += '      </label>';
+                        //contenido += '      <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
+                        //contenido += '  </div>';
+                        //contenido += '  <input type="hidden" name="id_ejercicio" value="' + data.message.ID + '">';
+                        //contenido += '  <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>';
+                        //contenido += '  <center><span id="error" style="color:red;"></span></center>';
+                        contenido += '  <div class="row">';
+                        contenido += '      <div class="col-md-12">';
+                        contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio('+data.message.ID+');">';
+                        //contenido += '          <button type="submit" class="btn detalle-boton">';
+                        contenido += '              ENTREGAR';
+                        contenido += '          </button>';
+                        contenido += '      </div>';
+                        contenido += '  </div>';
+                        //contenido += '</form>';
+                        $('#detalle-proceso-individual').html(contenido);
+                        $("#carga").hide();
+                    } else {
+
+                    }
+                });
+            }
+            function mostrarTerminado(id) {
+                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        contenido = '';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-fecha">';
+                        contenido += '      <span class="fa fa-calendar">';
+                        contenido += '          ' + data.message.FECHA.date;
+                        contenido += '      </span>';
+                        contenido += '  </div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-enunciado">';
+                        contenido += '      ' + data.message.ENUNCIADO;
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-coste">';
+                        contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                        if (data.message.COSTE.dias !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
+                        }
+                        if (data.message.COSTE.horas !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
+                        }
+                        if (data.message.COSTE.minutos !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
+                        }
+                        if (data.message.COSTE.segundos !== 0) {
+                            contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
+                        }
+                        if (!data.message.COSTE.segundos &&
+                                !data.message.COSTE.minutos &&
+                                !data.message.COSTE.horas &&
+                                !data.message.COSTE.dias) {
+                            contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                        }
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12">';
+                        if (!ya_solicitado) {
+                            if (data.message.ESTADO === 'entregado') {
+                                contenido += '      <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
+                                contenido += '          MODIFICAR ENTREGA';
+                            } else {
+                                contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                                contenido += '          VOLVER A SOLICITAR';
+                            }
+                            contenido += '      </button>';
+                        } else {
+                            contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
+                            contenido += '          VOLVER A SOLICITAR';
+                            contenido += '      </button>';
+                        }
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        $('#detalle-terminado').html(contenido);
+                    } else {
+
+                    }
+                });
+            }
+            $(function () {
+
+                // We can attach the `fileselect` event to all file inputs on the page
+                $(document).on('change', ':file', function () {
+                    var input = $(this),
+                            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                    input.trigger('fileselect', [numFiles, label]);
+                });
+
+                // We can watch for our custom `fileselect` event like this
+                $(document).ready(function () {
+                    $(':file').on('fileselect', function (event, numFiles, label) {
+
+                        var input = $(this).parents('.input-group').find(':text'),
+                                log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                        if (input.length) {
+                            input.val(log);
+                        } else {
+                            if (log)
+                                alert(log);
+                        }
+
+                    });
+                });
+
+            });
+            /*
+            $('#ENTREGA').bind('change', function () {
+                $("#carga").show();
+                var tamanio = this.files[0].size;
+                if (tamanio > {{ max_size }}) {
+                    puede_entregar = false;
+                    $("#error").show();
+                    $('#error').html('Se ha sobrepasado el tamaño máximo permitido: ' + tamanio + '/{{max_size}}');
+                } else {
+                    $("#error").hide();
+                }
+                $("#carga").hide();
+            });
+            $("#form-entrega").submit(function (e) {
+                if (puede_entregar) {
+                    return true;
+                }
+                return false;
+            });
+            */
+    </script>
+{% endblock %}

@@ -69,28 +69,17 @@ class Trabajo {
             $em->persist($EJERCICIO_CALIFICACION);
             $em->flush();
 
-            // Módulo para establecer tiempo sin comer
-//            switch ($SECCION){
-//                case 'comida':
-//                    $TIEMPO = 'tiempo_sin_comer';
-//                    break;
-//                case 'bebida':
-//                    $TIEMPO = 'tiempo_sin_beber';
-//                    break;
+//            $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
+//            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
+//            
+//            if($SECCION === 'comida'){
+//                $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
 //            }
-//            $TIEMPO_SIN = $doctrine->getRepository('AppBundle:Constante')->findOneByClave($TIEMPO);
-            //$DATE_TIEMPO_SIN = $FECHA->getTimestamp() + $TIEMPO_SIN->getValor();
-            $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
-            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
-            
-            if($SECCION === 'comida'){
-                $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
-            }
-            if($SECCION === 'bebida'){
-                $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
-            }
-            $em->persist($USUARIO);
-            $em->flush();
+//            if($SECCION === 'bebida'){
+//                $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+//            }
+//            $em->persist($USUARIO);
+//            $em->flush();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$EJERCICIO->getCoste(), 'Cobro - Compra comida');
 
             return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
