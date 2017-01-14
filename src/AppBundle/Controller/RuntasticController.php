@@ -316,4 +316,75 @@ class RuntasticController extends Controller {
         return new JsonResponse(['estatus' => 'ERROR', 'message' => $r->getRedirectUrl()], 200);
     }
 
+    /**
+     * 
+     * @Route("/guardian/ejercicios/deporte", name="ejerciciosDeporte")
+     */
+    public function ejerciciosDeporteAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejerciciosDeporte', true);
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS['TITULO'] = 'Deporte';
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findAll();
+        if (count($EJERCICIOS)) {
+            foreach ($EJERCICIOS as $EJERCICIO) {
+                if (Utils::estaSemana($EJERCICIO->getFecha())) {
+                    $DATOS['tipo'] = $EJERCICIO->getTipo();
+                    $DATOS['velocidad'] = $EJERCICIO->getVelocidad();
+                    $DATOS['duracion'] = Utils::formatoDuracion($EJERCICIO->getDuracion());
+                }
+            }
+        }
+        return $this->render('guardian/ejercicios/ejerciciosDeporte.twig', $DATOS);
+    }
+
+    /**
+     * 
+     * @Route("/guardian/ejercicios/deporte/publicar", name="guardianPublicarDeporte")
+     */
+    public function guardianPublicarDeporteAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/deporte/publicar', true);
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+
+        // Si se ha enviado un formulario
+        if ($request->getMethod() == 'POST') {
+            $em = $doctrine->getManager();
+            // Obtenemos todos los enunciados del formulario
+            $MODALIDAD = $request->request->get('MODALIDAD');
+            $VELOCIDAD = $request->request->get('VELOCIDAD');
+            $DURACION = $request->request->get('DURACION');
+
+            $EJERCICIO = 0;
+            $EJERCICIOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findAll();
+            if (count($EJERCICIOS)) {
+                foreach ($EJERCICIOS as $E) {
+                    if (Utils::estaSemana($E->getFecha())) {
+                        $EJERCICIO = $E;
+                    }
+                }
+            }
+            if (!$EJERCICIO) {
+                $message = 'El ejercicio semanal se ha actualizado correctamente';
+                $EJERCICIO = new \AppBundle\Entity\EjercicioRuntastic();
+            }
+            else { $message = 'Ejercicio semanal publicado correctamente'; }
+            $EJERCICIO->setDuracion($DURACION);
+            $EJERCICIO->setTipo($MODALIDAD);
+            $EJERCICIO->setVelocidad($VELOCIDAD);
+            $EJERCICIO->getFecha(new \DateTime('now'));
+            $em->persist($EJERCICIO);
+            $em->flush();
+            return new JsonResponse(array('estado' => 'OK', 'message' => $message));
+        }
+        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));
+    }
+
 }

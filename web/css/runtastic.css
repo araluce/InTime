@@ -1,0 +1,133 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 14-ene-2017, 11:57:41
+    Author     : araluce
+*/
+
+.basic-values-container .is-first {
+    margin-top: 0;
+}
+.basic-values-container, .live-cheers-container, .live-indicator {
+    background: rgba(255,255,255,.75);
+    position: relative;
+    z-index: 1000;
+}
+.value-label-list--horizontal, .value-label-list--stackable {
+    display: table;
+    width: 100%;
+}
+.value-label-list, 
+.value-label-list--stackable {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.value-label-list, 
+.value-label-list--horizontal{
+    overflow: hidden;
+}
+.value-label-list .value-label-list__two-columns {
+    display: table;
+    width: 100%;
+}
+.value-label-list--horizontal .value-label-list__item{
+    display: table-cell;
+    vertical-align: middle;
+}
+.value-label-list .value-label-list__item {
+    padding: .75em;
+}
+.media-table {
+    display: table;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    zoom: 1;
+}
+.media-table .media__object{
+    display: table-cell;
+    float: none;
+    vertical-align: middle;
+    padding-right: .75em;
+}
+.media__object {
+    margin-right: .75em;
+}
+.icon--table-header {
+    height: 30px;
+    width: 40px;
+}
+.media-table .media__body:last-child{
+    margin-right: 0;
+}
+.media-table .media__body{
+    display: table-cell;
+    float: none;
+    vertical-align: middle;
+}
+.media__body{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    zoom: 1;
+}
+.text-no-margin, .text-time-ago {
+    margin: 0;
+}
+.text-bold {
+    font-weight: 700;
+}
+.input-field input:not([type=radio]){
+    background: #f4f5f5;
+    border: 1px solid #aaacaf;
+    border-radius: 4px;
+    height: 40px;
+    margin-bottom: .5em;
+    outline: 0;
+    padding: 10px;
+    color: black;
+}
+
+.text-additional-info {
+    font-size: 16px;
+    font-size: 1.75rem;
+    font-weight: 400;
+}
+
+.rt-login-button{
+    background-color: #FFFFFF;
+    color: #000000;
+}
+.basic-values-container{
+    margin-top: 1%;
+}
+.btn13{
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2px;
+    border-right: 2px;
+}
+.btn4{
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2px;
+}
+@media (min-width: 880px){
+    .basic-values-container .value-label-list .value-label-list__item {
+        width: 200px;
+    }
+    .value-label-list .value-label-list__item {
+        border-bottom: none;
+        border-right: 1px solid #e4e4e4;
+        float: none;
+    }
+    .value-label-list .value-label-list__item:last-child {
+        border-right: 0px solid #e4e4e4;
+    }
+}
