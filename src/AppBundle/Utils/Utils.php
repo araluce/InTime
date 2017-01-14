@@ -54,7 +54,7 @@ class Utils {
             // Ejercicio ya calificado, se resta el TdV ganado con el y se le
             //ingresa el TdV por defecto.
             if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
-                $tdv = (-1) * Usuario::getcorrespondenciaNumerica($doctrine, $EJERCICIO_CALIFICACION->getIdCalificaciones());
+                $tdv = (-1) * $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaNumerica();
                 Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
             }
         }
@@ -78,6 +78,10 @@ class Utils {
         $EJERCICIO_CALIFICACION->setIdEjercicioEstado($EJERCICIO_ESTADO);
         $doctrine->getManager()->persist($EJERCICIO_CALIFICACION);
         $doctrine->getManager()->flush();
+        
+        if($SECCION === 'comida' || $SECCION === 'bebida'){
+            Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
+        }
 
         $DATOS = [];
         $DATOS['TITULO'] = 'Resultados';
@@ -427,6 +431,74 @@ class Utils {
         $aux['minutos'] = floor($segundos / 60) - ($aux['dias'] * 24 * 60) - ($aux['horas'] * 60);
         $aux['segundos'] = floor($segundos) - ($aux['dias'] * 24 * 60 * 60) - ($aux['horas'] * 60 * 60) - ($aux['minutos'] * 60);
         return $aux;
+    }
+
+    /**
+     * True si la fecha es de esta semana, false en otro caso
+     * @param type $fecha
+     * @return true|false
+     */
+    static function estaSemana($fecha) {
+        $semana = new \DateTime('now');
+        if ($semana->format("W") === $fecha->format("W") &&
+                $semana->format("m") === $fecha->format("m") &&
+                $semana->format("Y") === $fecha->format("Y")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Devuelve una duración en formato HH:MM:SS
+     * @param TimesTamp $timestamp
+     * @return string
+     */
+    static function formatoDuracion($duracion) {
+        $horas = $duracion / 60 / 60;
+        if ($horas > 0.0) {
+            $horas = floor($horas) . '';
+            $duracion -= $horas * 60 * 60;
+        } else {
+            $horas = 0;
+        }
+        $minutos = $duracion / 60;
+        if ($minutos > 0.0) {
+            $minutos = floor($minutos);
+            $duracion -= $minutos * 60;
+        } else {
+            $minutos = 0;
+        }
+        $segundos = $duracion;
+
+        if ($horas === 0) {
+            $horas = '00:';
+        } else {
+            if ($horas < 10) {
+                $horas = '0' . $horas . ':';
+            } else {
+                $horas = $horas . ':';
+            }
+        }
+
+        if ($minutos === 0) {
+            $minutos = '00:';
+        } else {
+            if ($minutos < 10) {
+                $minutos = '0' . $minutos . ':';
+            } else {
+                $minutos = $minutos . ':';
+            }
+        }
+        if ($segundos === 0) {
+            $segundos += '00';
+        } else {
+            if ($segundos < 10) {
+                $segundos = '0' . $segundos;
+            } else {
+                $segundos = '' . $segundos;
+            }
+        }
+        return $horas.$minutos.$segundos;
     }
 
 }

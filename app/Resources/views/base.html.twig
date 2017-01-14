@@ -20,7 +20,7 @@
         <link href="{{ asset('css/demo.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/component2.css')}}" rel="stylesheet" type="text/css" />
         <script src="{{ asset('js/modernizr-2.6.2.min.js') }}"></script>-->
-        
+
         <link href="{{ asset('css/inTime.css')}}" rel="stylesheet" type="text/css" />
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'/>
         <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -33,10 +33,12 @@
         <div class="modal modal-advice" id="modal-advice2" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
+                    <!--
                     <div class="modal-header panel-heading">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title"><span class="fa fa-send"></span> <span id="mensaje-titulo"></span></h4>
                     </div>
+                    -->
                     <div class="modal-body modal-advice-body">
                         <p id="mensaje-texto"></p>
                         <!--
@@ -91,9 +93,23 @@
     {% endif %}
 
     <div class="row">
-        <div id="posicion-reloj">
-            <div id="countdown-11"></div>
-        </div>
+        {% if ESTADO_USUARIO is defined %}
+            <div id="posicion-reloj">
+                {% if ESTADO_USUARIO == 'Activo' and TDV is defined %}
+                    <div id="countdown-11"></div>
+                {% endif %}
+            </div>
+            {% if ESTADO_USUARIO == 'Fallecido' %}
+                <div id="header-muerte">
+                    <center>MUERTO</center>
+                </div>
+            {% endif %}
+            {% if ESTADO_USUARIO == 'Vacaciones' %}
+                <div id="header-vacaciones">
+                    <center>VACACIONES</center>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
     <div class="header">
         {% block header %}
@@ -116,33 +132,42 @@
     <script src="{{ asset('js/weekly_schedule.js') }}"></script>
     <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
     <script>
+        function responsive_screen() {
+            if (window.matchMedia('(min-width: 1200px)').matches) {
+                return 40;
+            } else if (window.matchMedia('(min-width: 992px)').matches) {
+                return 80;
+            } else if (window.matchMedia('(min-width:760px)').matches) {
+                return 110;
+            } else {
+                return 80;
+            }
+        }
         $(document).ready(function () {
-        {% if MENSAJES is defined and MENSAJES|length > 0 %}
-                $('#modal-avisos').click();
+            var font_size = responsive_screen();
+        {% if ESTADO_USUARIO is defined %}
+            {% if ESTADO_USUARIO == 'Fallecido' %}
+                    $('header-muerte').css('font-size', responsive_screen());
+                    $('header-muerte').css('font-family', 'Kimberley');
+            {% endif %}
+            {% if ESTADO_USUARIO == 'Vacaciones' %}
+                    $('header-vacaciones').css('font-size', responsive_screen());
+                    $('header-vacaciones').css('font-family', 'Kimberley');
+            {% endif %}
         {% endif %}
-
         {% if TDV is defined %}
-                function responsive_screen() {
-                    if (window.matchMedia('(min-width: 1200px)').matches) {
-                        return 40;
-                    } else if (window.matchMedia('(min-width: 992px)').matches) {
-                        return 80;
-                    } else  if (window.matchMedia('(min-width:760px)').matches) {
-                        return 110;
-                    }
-                    else {
-                        return 80;
-                    }
-                }
                 $('#countdown-11').timeTo({
                     //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
                     timeTo: new Date(new Date('{{ TDV.date }}')),
                     displayDays: 2,
                     theme: "white",
                     displayCaptions: true,
-                    fontSize: responsive_screen(),
+                    fontSize: font_size,
                     captionSize: 0
                 });
+        {% endif %}
+        {% if MENSAJES is defined and MENSAJES|length > 0 %}
+                $('#modal-avisos').click();
         {% endif %}
             });
     </script>

@@ -133,6 +133,13 @@ class Alimentacion {
         }
         return 0;
     }
+    
+    /**
+     * Realiza la operación de ts_usuario, ts_defecto a porcentaje
+     * @param type $ts_usuario
+     * @param type $ts_defecto
+     * @return type
+     */
     static function porcetajeEnergia($ts_usuario, $ts_defecto){
         $HOY = new \DateTime('now');
         $respuesta = [];
@@ -142,5 +149,27 @@ class Alimentacion {
         $respuesta['recorrido'] = $respuesta['current'] - $respuesta['suelo'];
         $respuesta['porcentaje'] = 100 - (($respuesta['recorrido'] * 100) / $ts_defecto->getValor());
         return $respuesta;
+    }
+    
+    /**
+     * Actualiza la fecha TSC o TSB dependiendo de la sección
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $SECCION
+     */
+    static function setTSC_TSB($doctrine, $USUARIO, $SECCION){
+        $em = $doctrine->getManager();
+        $FECHA = new \DateTime('now');
+        $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
+            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
+
+        if ($SECCION === 'comida') {
+            $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+        }
+        if ($SECCION === 'bebida') {
+            $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+        }
+        $em->persist($USUARIO);
+        $em->flush();
     }
 }

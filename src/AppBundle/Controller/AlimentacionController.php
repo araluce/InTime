@@ -42,7 +42,7 @@ class AlimentacionController extends Controller {
     /**
      * @Route("/ciudadano/alimentacion/comida", name="comida")
      */
-    public function comida(Request $request, $mensaje = null) {
+    public function comidaAction(Request $request, $mensaje = null) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida');
@@ -302,6 +302,7 @@ class AlimentacionController extends Controller {
             $ENTREGA = $request->files->get('ENTREGA');
             $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento/' . $id_ejercicio);
             if (!$status) {
+                return $this->comidaAction($request, 'Acceso no autorizado');
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
             }
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
@@ -309,21 +310,24 @@ class AlimentacionController extends Controller {
                 $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
                 if ($EJERCICIO === null) {
                     Utils::setError($doctrine, 0, 'El ejercicio con id: ' . $id_ejercicio . ' no existe (entregarAlimentoAction)', $USUARIO);
+                    return $this->comidaAction($request, 'El ejercicio no existe');
                     return new JsonResponse(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe'));
                 }
                 $SECCION = $EJERCICIO->getIdEjercicioSeccion();
                 $NOTA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('nota_por_defecto');
                 if ($NOTA === null) {
                     Utils::setError($doctrine, 1, 'No hay definida una constante para nota_por_defecto en la tabla CONSTANTES', $USUARIO);
+                    return $this->comidaAction($request, 'Error inesperado entregaAlimentacion #1');
                     return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Error inesperado entregarAlimentoAction #1'));
                 }
                 $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getValor()));
+                $RESULTADOS['SECCION'] = $SECCION->getSeccion();
 
                 $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                 ]);
 
-                $ruta = 'USUARIOS/' . Usuario::getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
+                $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
                 if (!file_exists($ruta)) {
                     mkdir($ruta, 0777, true);
                 }
@@ -333,7 +337,7 @@ class AlimentacionController extends Controller {
                 $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                 ]);
-                if ($EJERCICIO_ENTREGA !== null) {
+                if ($EJERCICIO_ENTREGA === null) {
                     $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
                 }
                 $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
@@ -343,8 +347,11 @@ class AlimentacionController extends Controller {
                 $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                 $em->persist($EJERCICIO_ENTREGA);
                 $em->flush();
-                return new JsonResponse(array('estado' => 'OK', 'message' => $RESULTADOS));
+                return $this->render('ciudadano/extensiones/resumen.twig', $RESULTADOS);
             }
+            return $this->comidaAction($request, 'El archivo que intenta subir supera el tamaño máximo permitido.'
+                . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
+                . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024);
             return new JsonResponse(array('estado' => 'ERROR', 'message' =>
                 'El archivo que intenta subir supera el tamaño máximo permitido.'
                 . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024

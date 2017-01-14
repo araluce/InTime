@@ -14,12 +14,13 @@ namespace AppBundle\Utils;
  * @author araluce
  */
 class DataManager {
-    
+
     static function setDefaultData($doctrine, $TITULO, $session) {
-        $id_usuario      = $session->get('id_usuario');
-        $usuario         = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $id_usuario = $session->get('id_usuario');
+        $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $DATOS['TITULO'] = $TITULO;
-        $DATOS['TDV']    = $usuario->getIdCuenta()->getTdv();
+        $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
+        $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
 
         $mensajes_sin_ver = $doctrine->getRepository('AppBundle:MensajeXUsuario')->findBy(
                 ['idUsuario' => $usuario, 'visto' => 0]);
@@ -97,5 +98,5 @@ class DataManager {
 //        \AppBundle\Utils\Utils::pretty_print($DATOS);
         return $DATOS;
     }
-    
+
 }

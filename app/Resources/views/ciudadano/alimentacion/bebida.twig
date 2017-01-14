@@ -6,6 +6,18 @@
 
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
+    <style>
+        div.roulette_container {
+            background-color:rgb(253, 252, 253);
+            width:200px;
+            height:200px;
+            border:1px solid rgba(253, 252, 253, 0.31);
+            box-shadow:0px 0px 3px lightpink;margin:auto;
+        }
+        .roulette img{
+            height: 200px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -47,7 +59,7 @@
                 <div class="row tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="tab1">
-                            <div class="roulette" id="roulete" style="display: none"></div>
+                            <div class="roulette" id="roulete" style="display:none;"> </div>
                         </div>
                         <div class="tab-pane fade in" id="tab2">
                             <div class="row">
@@ -159,10 +171,21 @@
                 });
             }
             function rellenarEstantes(productos) {
-                contador_tienda = 1;
+                contador_tienda = 0;
                 contador_proceso = 1;
                 contador_terminado = 1;
+                var ejercicios_tienda = new Array();
                 $.each(productos, function (k, v) {
+                    var ejercicio = {
+                        'ID': v.ID,
+                        'ICONO': v.ICONO
+                    };
+                    if (v.ESTADO === 'no_solicitado') {
+                        contador_tienda++;
+                        contenido = '<img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        $(".roulette-inner").append(contenido);
+                        ejercicios_tienda.push(ejercicio);
+                    }
                     if (v.ESTADO === 'no_solicitado') {
                         contenido = '<span onclick="mostrarTienda(' + v.ID + ');">';
                     }
@@ -174,10 +197,6 @@
                     }
                     contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
                     contenido += '</span>';
-                    if (v.ESTADO === 'no_solicitado') {
-                        $("#tienda-" + contador_tienda).html(contenido);
-                        contador_tienda++;
-                    }
                     if (v.ESTADO === 'solicitado') {
                         mostrarProceso(v.ID);
                     }
@@ -186,6 +205,7 @@
                         contador_terminado++;
                     }
                 });
+                ejercicioRandom(ejercicios_tienda, contador_tienda);
             }
 
             function mostrarTienda(id) {
@@ -381,23 +401,10 @@
                 });
 
             });
-            function ejercicioRandom(){
-                return 0;
+            function ejercicioRandom(ejercicios, n_ejercicios) {
+                n_ej = parseInt(n_ejercicios);
+                random = Math.random();
+                return Math.floor(random * n_ej + 1);
             }
-            var option = {
-                speed: 10,
-                duration: 3,
-                stopImageNumber: ejercicioRandom(),
-                startCallback: function () {
-                    console.log('start');
-                },
-                slowDownCallback: function () {
-                    console.log('slowDown');
-                },
-                stopCallback: function ($stopElm) {
-                    console.log('stop');
-                }
-            };
-            $('div.roulette').roulette(option);
     </script>
 {% endblock %}

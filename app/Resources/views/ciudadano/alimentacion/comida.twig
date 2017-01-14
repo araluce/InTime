@@ -286,28 +286,31 @@
                         contenido += '      ' + data.message.ENUNCIADO;
                         contenido += '  </div>';
                         contenido += '</div>';
-                        //contenido += '<center><i class="fa fa-spinner fa-spin" id="carga"></i></center>';
-                        //contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="entrega();" id="form-entrega" >';
-                        //contenido += '  <div class="input-group">';
-                        //contenido += '      <label class="input-group-btn">';
-                        //contenido += '          <span class="btn boton-entrega">';
-                        //contenido += '              Buscar&hellip; <input type="file" id="entrega_proceso" name="ENTREGA" id="ENTREGA" style="display: none;" required>';
-                        //contenido += '          </span>';
-                        //contenido += '      </label>';
-                        //contenido += '      <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
-                        //contenido += '  </div>';
-                        //contenido += '  <input type="hidden" name="id_ejercicio" value="' + data.message.ID + '">';
-                        //contenido += '  <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>';
-                        //contenido += '  <center><span id="error" style="color:red;"></span></center>';
+                        contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data">';
+                        contenido += '  <input type="hidden" name="id_ejercicio" value="' + id + '">';
+                        contenido += '  <div class="row">';
+                        contenido += '        <div class="col-md-12" id="panel-entrega">';
+                        contenido += '            <div class="form-group">';
+                        contenido += '                <div class="input-group">';
+                        contenido += '                    <label class="input-group-btn">';
+                        contenido += '                        <span class="btn btn-primary detalle-boton" style="color: black;">';
+                        contenido += '                            Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">';
+                        contenido += '                        </span>';
+                        contenido += '                    </label>';
+                        contenido += '                    <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
+                        contenido += '                </div>';
+                        contenido += '            </div>';
+                        contenido += '        </div>';
+                        contenido += '    </div>';
                         contenido += '  <div class="row">';
                         contenido += '      <div class="col-md-12">';
-                        contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio('+data.message.ID+');">';
-                        //contenido += '          <button type="submit" class="btn detalle-boton">';
+                        //contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
+                        contenido += '          <button type="submit" class="btn detalle-boton">';
                         contenido += '              ENTREGAR';
                         contenido += '          </button>';
                         contenido += '      </div>';
                         contenido += '  </div>';
-                        //contenido += '</form>';
+                        contenido += '</form>';
                         $('#detalle-proceso-individual').html(contenido);
                         $("#carga").hide();
                     } else {
@@ -379,7 +382,6 @@
                 });
             }
             $(function () {
-
                 // We can attach the `fileselect` event to all file inputs on the page
                 $(document).on('change', ':file', function () {
                     var input = $(this),
@@ -404,27 +406,18 @@
 
                     });
                 });
-
+                $('#ENTREGA').bind('change', function () {
+                    $("#carga").show();
+                    var tamanio = this.files[0].size;
+                    if (tamanio > {{ max_size }}) {
+                        puede_entregar = false;
+                        $("#error").show();
+                        $('#error').html('Se ha sobrepasado el tamaño máximo permitido: ' + tamanio + '/{{max_size}}');
+                    } else {
+                        $("#error").hide();
+                    }
+                    $("#carga").hide();
+                });
             });
-            /*
-            $('#ENTREGA').bind('change', function () {
-                $("#carga").show();
-                var tamanio = this.files[0].size;
-                if (tamanio > {{ max_size }}) {
-                    puede_entregar = false;
-                    $("#error").show();
-                    $('#error').html('Se ha sobrepasado el tamaño máximo permitido: ' + tamanio + '/{{max_size}}');
-                } else {
-                    $("#error").hide();
-                }
-                $("#carga").hide();
-            });
-            $("#form-entrega").submit(function (e) {
-                if (puede_entregar) {
-                    return true;
-                }
-                return false;
-            });
-            */
     </script>
 {% endblock %}

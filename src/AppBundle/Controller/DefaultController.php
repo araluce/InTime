@@ -19,7 +19,7 @@ class DefaultController extends Controller {
      * @Route("/", name="homepage")
      */
     public function indexAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         if ($session->get('id_usuario') !== null) {
@@ -39,7 +39,7 @@ class DefaultController extends Controller {
             $DNI = strtoupper($request->request->get('DNI'));
             $KEY = $request->request->get('KEY');
 
-            
+
             $doctrine = $this->getDoctrine();
             $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
 
@@ -68,7 +68,7 @@ class DefaultController extends Controller {
      * @Route("/logout", name="salir")
      */
     public function salirAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         Usuario::compruebaUsuario($doctrine, $session, '/logout');
@@ -80,7 +80,6 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo/jornada_laboral", name="twitter")
      */
     public function twitter(Request $request, $msg = null) {
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral');
@@ -106,7 +105,7 @@ class DefaultController extends Controller {
             $string = [];
             $string = Twitter::twitter($usuario, $usuario_twitter, $count, $doctrine);
         }
-        
+
         // Recargamos la lista de usuarios de twitter a la que sigue el jugador
         $tuiteros = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($usuario);
 
@@ -133,7 +132,7 @@ class DefaultController extends Controller {
             $DATOS['info']['type'] = $msg['type'];
         }
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-        
+
         return $this->render('ciudadano/trabajo/twitter.html.twig', $DATOS);
     }
 
@@ -171,9 +170,7 @@ class DefaultController extends Controller {
      */
     public function showTweet($id_mochila) {
         $doctrine = $this->getDoctrine();
-
         $respuesta = Twitter::getTweetByIdMochila($id_mochila, $doctrine);
-
         return new JsonResponse($respuesta, 200);
     }
 
@@ -181,7 +178,6 @@ class DefaultController extends Controller {
      * @Route("compartir", name="compartir")
      */
     public function compartir(Request $request) {
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/compartir');
@@ -200,7 +196,6 @@ class DefaultController extends Controller {
                     $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, 4, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
                 }
             }
-            
         }
 
         return new RedirectResponse('/ciudadano/trabajo/jornada_laboral');
@@ -210,8 +205,6 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo", name="trabajo")
      */
     public function trabajo_ciudadanoAction(Request $request) {
-        
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo');
@@ -227,8 +220,6 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo/inspeccion", name="inspeccion")
      */
     public function inspeccion_trabajoAction(Request $request) {
-        
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/inspeccion');
@@ -242,7 +233,7 @@ class DefaultController extends Controller {
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($EJERCICIO_SECCION);
         $DATOS['SECCION'] = $EJERCICIO_SECCION->getSeccion();
         $DATOS['EJERCICIOS'] = [];
-        
+
         $ids_ejercicios = [];
 
         if (count($EJERCICIO_X_GRUPO)) {
@@ -271,8 +262,6 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/trabajo/paga_extra", name="paga_extra")
      */
     public function paga_extraAction(Request $request, $mensaje = null) {
-        
-        
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/paga_extra');
@@ -406,12 +395,10 @@ class DefaultController extends Controller {
                 ]);
                 $ENTREGA = $request->files->get('ENTREGA');
                 if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                    $ruta = 'USUARIOS/' . Usuario::getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
+                    $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
-                    // generate a random name for the file but keep the extension
-                    //                $nombre_foto = uniqid() . "." . $file->getClientOriginalExtension();
                     $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
                             . $ENTREGA->getClientOriginalName();
                     $UPLOAD = $ENTREGA->move($ruta, $nombre_entrega);
@@ -424,7 +411,10 @@ class DefaultController extends Controller {
                         switch ($SECCION->getSeccion()) {
                             case 'paga_extra':
                                 return $this->paga_extraAction($request, $MENSAJE);
-                                break;
+                            case 'comida':
+                                return $this->paga_extraAction($request, $MENSAJE);
+                            case 'bebida':
+                                return $this->paga_extraAction($request, $MENSAJE);
                         }
                     }
                     $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
@@ -452,18 +442,18 @@ class DefaultController extends Controller {
                         case 'paga_extra':
                             return $this->paga_extraAction($request, $MENSAJE);
                         case 'comida':
-                            return $this->comida($request, $MENSAJE);
+                            return $this->paga_extraAction($request, $MENSAJE);
                         case 'bebida':
-                        //return $this->
+                            return $this->paga_extraAction($request, $MENSAJE);
                     }
                 }
                 switch ($SECCION->getSeccion()) {
                     case 'paga_extra':
                         return $this->paga_extraAction($request);
                     case 'comida':
-                        return $this->comida($request);
+                        return $this->paga_extraAction($request);
                     case 'bebida':
-                    //return $this->
+                        return $this->paga_extraAction($request);
                 }
             }
             //Utils::pretty_print($DATOS);
@@ -489,7 +479,9 @@ class DefaultController extends Controller {
         switch ($SECCION) {
             case 'paga_extra':
                 return Trabajo::solicitar_paga($doctrine, $USUARIO, $EJERCICIO);
-            case 'comida';
+            case 'comida':
+                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
+            case 'bebida':
                 return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
         }
     }
@@ -498,8 +490,8 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio", name="ocio")
      */
     public function ocio_ciudadanoAction(Request $request) {
-        
-        
+
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio');
@@ -514,8 +506,8 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio/amigos", name="amigos")
      */
     public function amigos_ciudadanoAction(Request $request) {
-        
-        
+
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/coidadano/ocio/amigos');
@@ -530,8 +522,8 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/prestamos", name="prestamos")
      */
     public function prestamos_ciudadanoAction(Request $request) {
-        
-        
+
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/prestamos');
@@ -546,7 +538,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/registro", name="registro")
      */
     public function registroAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/censo/registro', true);
@@ -600,7 +592,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/ciudadanos", name="ciudadanos")
      */
     public function ciudadanosAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
@@ -622,7 +614,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/obtenerCiudadanosDistrito/{idDistrito}", name="obtenerCiudadanosDistrito")
      */
     public function obtenerCiudadanosDistritoAction(Request $request, $idDistrito) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
@@ -673,7 +665,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/obtenerCiudadanosSinDistrito", name="obtenerCiudadanosSinDistrito")
      */
     public function obtenerCiudadanosSinDistritoAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
@@ -720,7 +712,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/aniadeCiudadanoADistrito/{idCiudadano}/{idDistrito}", name="aniadeCiudadanoADistrito")
      */
     public function aniadeCiudadanoADistritoAction(Request $request, $idCiudadano, $idDistrito) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
@@ -756,7 +748,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/distritos", name="distritos")
      */
     public function distritosAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $DATOS = [];
@@ -779,7 +771,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/censo/creardistrito", name="crearDistrito")
      */
     public function crearDistritoAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
@@ -808,7 +800,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/ejercicios_entregas", name="ejerciciosYentregas")
      */
     public function ejercicios_entregas(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
@@ -1009,7 +1001,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/proponer", name="proponerApuesta")
      */
     public function proponerApuestaAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
@@ -1049,7 +1041,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/gestion", name="gestionarApuestas")
      */
     public function gestionarApuestasAction(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/gestion', true);
@@ -1122,7 +1114,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/terminarApuesta/{id_apuesta_posibilidad}", name="terminarApuesta")
      */
     public function terminarApuestaAction(Request $request, $id_apuesta_posibilidad) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
@@ -1176,7 +1168,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/apuestas/pararApuesta/{id_apuesta}/{desactivar}", name="pararApuesta")
      */
     public function pararApuestaAction(Request $request, $id_apuesta, $desactivar) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $em = $doctrine->getManager();
@@ -1205,7 +1197,7 @@ class DefaultController extends Controller {
      * @Route("/guardian/mensajeria", name="mensajeria")
      */
     public function mensajeria(Request $request) {
-        
+
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/mensajeria', true);
@@ -1279,7 +1271,7 @@ class DefaultController extends Controller {
     }
 
     public function inicio_ciudadano($usuario, $session) {
-        
+
         $doctrine = $this->getDoctrine();
         $DATOS = [];
 

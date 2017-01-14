@@ -3,6 +3,13 @@
 {% block header %}
     {% include "ciudadano/header.html.twig" %}
     <style>
+        .bordes{
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-style: solid;
+            border-color: #000000;
+            color: #000000;
+        }
         .single-portfolio {
             margin: 0;
             padding: 0;
@@ -29,8 +36,8 @@
         .portfolio-item img {
             margin: 0;
             padding: 5%;
-            width: 100%;
-            height: 100%;
+            /*width: 100%;*/
+            height: 300px;
         }
         .single-portfolio:hover .details-social,
         .single-portfolio:hover .details-author
@@ -54,7 +61,7 @@
             display: none;
         }
         .portfolio-details h4 {
-            font-size: 13px;
+            font-size: 20px;
             color: #fff;
             font-weight: 800;
             margin-top: 2%;
@@ -62,7 +69,7 @@
         }
         .portfolio-details span,
         .portfolio-details p {
-            font-size: 13px;
+            font-size: 20px;
             color: #fff;
             padding: 10px 20px;
         }
@@ -278,58 +285,12 @@
 
 {% block body %}
     <div class="container">
-        <div class="row">
-            <div class="col-md-12 jumbotron">
-                <div class="row" style="margin-top:-4%;">
-                    <div class="col-md-12">
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="/">
-                                    <i class="fa fa-home"></i>
-                                    HOME
-                                </a>
-                                <span class="divider">/</span>
-                            </li>
-                            <li>
-                                <a href="/ciudadano">
-                                    <i class="fa fa-child"></i>
-                                    CIUDADANO
-                                </a> 
-                                <span class="divider">/</span>
-                            </li>
-                            <li>
-                                <a href="/ciudadano/ocio">
-                                    <i class="fa fa-comments-o"></i>
-                                    OCIO
-                                </a> 
-                                <span class="divider">/</span>
-                            </li>
-                            <li>
-                                <a href="/ciudadano/ocio/amigos">
-                                    <i class="fa fa-group"></i>
-                                    AMIGOS
-                                </a> 
-                                <span class="divider">/</span>
-                            </li>
-                            <li class="active">
-                                <span class="glyphicon glyphicon-picture"></span> FOTOS
-                            </li>
-                            <li style="float:right;">
-                                <a href="/logout">
-                                    <i class="fa fa-sign-out"></i>
-                                    SALIR
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+        <div class="row bordes">
+            <div class="col-md-12">
                 <div class="row" style="margin-bottom: 2%;">
                     <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
                 </div>
-                <div class="row" id="photo-grid">
-                    <div class="col-xs-6" id="columna1"></div>
-                    <div class="col-xs-6" id="columna2"></div>
-                </div>
+                <div class="row" id="photo-grid"></div>
             </div>
         </div>
     </div>
@@ -337,87 +298,65 @@
 
 {% block javascripts %}
     <script>
+        function getPhotos() {
+            ruta = '/ciudadano/obtenerFotos';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    count = 1;
+                    $.each(data.fotos, function (k, v) {
+                        var contenido = '';
+                        contenido += '<div class="col-md-6" style="margin-bottom:1%;">';
+                        contenido += '<div class="single-portfolio">';
+                        contenido += '  <figure class="portfolio-item">';
+                        contenido += '      <figcaption class="portfolio-details details-author">';
+                        if (v.usuario.alias !== null) {
+                            contenido += '      <h4>@' + v.usuario.alias + '</h4>';
+                        } else {
+                            contenido += '      <h4>ANONIMO</h4>';
+                        }
+                        contenido += '      </figcaption>';
+                        contenido += '      <center>';
+                        contenido += '      <img class="img-responsive" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
+                        contenido += '      </center>';
+                        contenido += '      <figcaption class="portfolio-details details-social">';
+                        contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', "1");">' + v.likes + '</span>';
+                        contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', "0");">' + v.dislikes + '</span>';
+                        contenido += '      </figcaption>';
+                        contenido += '  </figure>';
+                        contenido += '</div>';
+                        contenido += '</div>';
+                        $('#photo-grid').append(contenido);
 
+                    });
+                }
+            });
+        }
+        $("#input-711").fileinput({
+            uploadUrl: "/ciudadano/subirImagenAlbum",
+            uploadAsync: true,
+            maxFileCount: 2,
+            showBrowse: false,
+            browseOnZoneClick: true,
+            allowedFileExtensions: ['jpg', 'png', 'gif'],
+            allowedFileTypes: ['image'],
+            maxFileSize: 2000
+        });
+        $('.file-caption-name').height($('.fileinput-remove').height());
+        function reaccion(foto_id, like) {
+            var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
+            $.get(url, function (data) {
+                console.log(data);
+                if (data.estado === 'OK') {
+                    location.reload();
+                }
+            });
+        }
         $(document).ready(function () {
             getPhotos();
         {% if info.message is defined or info.type is defined%}
                 $('#box_modal_result').click();
         {% endif %}
             });
-            function getPhotos() {
-                ruta = '/ciudadano/obtenerFotos';
-                $.get(ruta, function (data, status) {
-                    console.log(data);
-                    if (data.estado === 'OK') {
-                        var contenido = '';
-                        $.each(data.fotos, function (k, v) {
-                            contenido = '<div class="single-portfolio">';
-                            contenido += '  <figure class="portfolio-item">';
-                            contenido += '      <figcaption class="portfolio-details details-author">';
-                            if (v.usuario.alias !== null) {
-                                contenido += '      <h4>@' + v.usuario.alias + '</h4>';
-                            } else {
-                                contenido += '      <h4>ANONIMO</h4>';
-                            }
-                            contenido += '      </figcaption>';
-                            contenido += '      <img class="img-responsive" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
-                            contenido += '      <figcaption class="portfolio-details details-social">';
-                            contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', "1");">' + v.likes + '</span>';
-                            contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', "0");">' + v.dislikes + '</span>';
-                            contenido += '      </figcaption>';
-                            contenido += '  </figure>';
-                            contenido += '</div>';
-                            var loaded = false;
-                            var img = document.createElement('img');
-                            width_img = 0;
-                            height_img = 0;
-
-                            img.onload = function () {
-                                loaded = true;
-                            };
-                            img.src = "{{ asset('images/users/') }}" + v.usuario.dni + "/galeria/" + v.imagen;
-
-                            var wait = setInterval(function () {
-                                if (loaded) {
-                                    clearInterval(wait);
-                                } else {
-                                    console.log(img.naturalWidth, img.naturalHeight);
-                                    width_img = img.naturalWidth;
-                                    height_img = img.naturalHeight;
-                                    /*
-                                     alert('Imagen (' + img.src + '): ' + width_img + 'px x' + height_img + 'px');
-                                     alert('columna1: ' + $('#columna1').height() + img.naturalHeight + 'px columna2: ' + $('#columna2').height() + img.naturalHeight + 'px');*/
-                                }
-                            }, 0);
-                            if ($('#columna1').height() + height_img >= $('#columna2').height() + height_img) {
-                                $('#columna2').append(contenido);
-                            } else {
-                                $('#columna1').append(contenido);
-                            }
-
-                        });
-                    }
-                });
-            }
-            $("#input-711").fileinput({
-                uploadUrl: "/ciudadano/subirImagenAlbum",
-                uploadAsync: true,
-                maxFileCount: 2,
-                showBrowse: false,
-                browseOnZoneClick: true,
-                allowedFileExtensions: ['jpg', 'png', 'gif'],
-                allowedFileTypes: ['image'],
-                maxFileSize: 2000
-            });
-            function reaccion(foto_id, like) {
-                var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
-                $.get(url, function (data) {
-                    console.log(data);
-                    if (data.estado === 'OK') {
-                        location.reload();
-                    }
-                });
-            }
     </script>
     <!--<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>-->
 {% endblock %}
