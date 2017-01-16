@@ -36,7 +36,7 @@ class Usuario {
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
     }
-    
+
     /**
      * Encripta con sha1 y un salt
      * @param type $usuario
@@ -90,7 +90,7 @@ class Usuario {
      * @return TdV|null
      */
     static function getTimesTampCalificacion($doctrine, $CALIFICACION) {
-        if(!$CALIFICACION === null){
+        if (!$CALIFICACION === null) {
             return null;
         }
         $correspondencia_numerica = $CALIFICACION->getCorrespondenciaNumerica();
@@ -319,7 +319,7 @@ class Usuario {
         $RESPUESTA['PUESTO'] = $puesto;
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
-    
+
     /**
      * Retorna el alias de un usuario dado su id
      * @param type $usuario_share
@@ -333,7 +333,7 @@ class Usuario {
         }
         return $id_usuario;
     }
-    
+
     /**
      * Registra un conjunto de usuarios dada una lista de DNIs
      * @param type $doctrine
@@ -367,7 +367,7 @@ class Usuario {
         }
         return $DNIs_formato;
     }
-    
+
     /**
      * Registra un usuario dado un DNI
      * @param type $doctrine
@@ -408,6 +408,68 @@ class Usuario {
 
         // No se han producido errores en el proceso
         return 1;
+    }
+
+    /**
+     * Devuelve qué información le falta al usuario por medio de códigos
+     * (-1) Falta alias
+     * (-2) Falta nombre
+     * (-3) Falta apellidos
+     * (-4) Falta email
+     * ( 0) Todo OK
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarInformacionPersonal($USUARIO) {
+        if ($USUARIO->getSeudonimo() === null) {
+            return -1;
+        }
+        if ($USUARIO->getNombre() === null) {
+            return -2;
+        }
+        if ($USUARIO->getApellidos() === null) {
+            return -3;
+        }
+        if ($USUARIO->getEmail() === null) {
+            return -4;
+        }
+        return 1;
+    }
+
+    /**
+     * Devuelve qué información le falta al usuario en formato JSON por mensajes
+     * personalizados
+     * @param type $USUARIO
+     * @return JsonResponse
+     */
+    static function comprobarInformacionPersonalJSON($USUARIO) {
+        $codigo = Usuario::comprobarInformacionPersonal($USUARIO);
+        if ($codigo === -1) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Ciudadano! ¿Cuál es tu nombre de pila?'), 200);
+        }
+        if ($codigo === -2) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Detente! ¿Necesito saber cómo te llamas?'), 200);
+        }
+        if ($codigo === -3) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Ciudadano! ¿Cuál es tu apellido?'), 200);
+        }
+        if ($codigo === -4) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Ciudadano! Si necesito contactarte sería bueno tener tu correo personal'), 200);
+        }
+        return new JsonResponse(array('estado' => 'OK', 'message' => 'Hola @' . $USUARIO->getSeudonimo() . '! Adelante'), 200);
+    }
+
+    /**
+     * Devuelve el alias del ciudadano. Si no tiene devuelve "desconocido"
+     * @param type $USUARIO
+     * @return string
+     */
+    static function aliasODesconocido($USUARIO) {
+        $alias = $USUARIO->getSeudonimo();
+        if ($alias === null) {
+            $alias = 'desconocido';
+        }
+        return $alias;
     }
 
 }

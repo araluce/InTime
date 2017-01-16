@@ -520,22 +520,6 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/prestamos", name="prestamos")
-     */
-    public function prestamos_ciudadanoAction(Request $request) {
-
-
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/prestamos');
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $DATOS = DataManager::setDefaultData($doctrine, 'Préstamos', $session);
-        return $this->render('ciudadano/extensiones/prestamos.html.twig', $DATOS);
-    }
-
-    /**
      * @Route("/guardian/censo/registro", name="registro")
      */
     public function registroAction(Request $request) {
@@ -1252,6 +1236,18 @@ class DefaultController extends Controller {
         return $this->render('guardian/mensajeria.twig', $DATOS);
     }
 
+    /**
+     * 
+     * @Route("/comprobarInformacionPersonal")
+     */
+    public function comprobarInformacionAction(Request $request){
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        return Usuario::comprobarInformacionPersonalJSON($USUARIO);
+    }
+    
     public function inicio_usuario($usuario, $session) {
         $rol_usu = $usuario->getIdRol()->getIdRol();
 

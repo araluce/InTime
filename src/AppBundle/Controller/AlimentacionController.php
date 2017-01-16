@@ -357,7 +357,7 @@ class AlimentacionController extends Controller {
                 . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
                 . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024));
         }
-        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No hay nada que entregar'));
+        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato'));
     }
 
     /**

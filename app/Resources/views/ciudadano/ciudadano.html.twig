@@ -64,18 +64,13 @@
         </div>
         <div class="row" id="ali-pre">
             <div class="menu" id="menu-prestamo">
-                <a href="/ciudadano/prestamos"><img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  /></a>
+                <a href="/ciudadano/prestamos">
+                    <img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  />
+                </a>
             </div>
-            <div class="menu contenedor-badge" id="menu-alimentacion" style="float:right;">
+            <div class="menu" id="menu-alimentacion" style="float:right;">
                 <a href="/ciudadano/alimentacion">
                     <img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  />
-                    {% if MENSAJES_COMIDA is defined and MENSAJES_BEBIDA is defined %}
-                        {% if MENSAJES_COMIDA|length > 0 or MENSAJES_BEBIDA|length > 0%}
-                            <span class="badge badge-aviso">
-                                {{ MENSAJES_COMIDA|length + MENSAJES_BEBIDA|length}}
-                            </span>
-                        {% endif %}
-                    {% endif %}
                 </a>
             </div>
         </div>
@@ -95,6 +90,53 @@
 
 {% block javascripts %}
     <script>
+        function comprobarInformacion(redireccion) {
+            var ruta = '/comprobarInformacionPersonal';
+            $.get(ruta, function (data, status) {
+                $("#modal-avisos2").click();
+                mostrarCarga('Recuperando datos personales...');
+                if (data.respuesta === 'OK') {
+                    window.location.href = redireccion;
+                } else {
+                    mostrarResultadoOperacion(data.message, 'info');
+                }
+            });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+
+        function mostrarResultadoOperacion(resultado, redireccion) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            if (redireccion === null) {
+                contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            } else {
+                console.log(redireccion);
+                contenido += '      <button class="btn btn-block" id="redirect-info"> IR A INFORMACION </button>';
+            }
+            contenido += '  </div>';
+            contenido += '</div>';
+            //$("#modal-button-aceptar").show();
+            $("#mensaje-texto").append(contenido);
+        }
+        $('#redirect-info').click(function () {
+            window.location.replace('/ciudadano/info');
+        });
         $(document).ready(function () {
         {% if info.message is defined or info.type is defined%}
                 $('#box_modal_result').click();

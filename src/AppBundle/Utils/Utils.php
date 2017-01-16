@@ -9,6 +9,7 @@
 namespace AppBundle\Utils;
 
 use AppBundle\Utils\Usuario;
+use AppBundle\Utils\Utils;
 
 /**
  * Description of Utils
@@ -380,12 +381,12 @@ class Utils {
         if ($C !== null) {
             $VALOR = $C->getValor();
             if ($VALOR === 0) {
-                \AppBundle\Utils\Utils::setError($doctrine, 0, 'Constante ' . $constante . ' tiene valor 0');
+                Utils::setError($doctrine, 0, 'Constante ' . $constante . ' tiene valor 0');
                 return "0";
             }
             return $VALOR;
         }
-        \AppBundle\Utils\Utils::setError($doctrine, 1, 'No se encuentra la constante ' . $constante);
+        Utils::setError($doctrine, 1, 'No se encuentra la constante ' . $constante);
         return 0;
     }
 
