@@ -244,11 +244,17 @@ and open the template in the editor.
     .detalle-boton{
         font-size: 35px;
     }
+    .bonificadores img{
+        height: 40px;
+    }
 }
 @media (min-width: 992px){
 
 }
 @media (min-width: 1200px){
+    .bonificadores img{
+        height: 40px;
+    }
     .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
     .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
     .tarjeta-ejercicio .tarjeta-ejercicio-tipo,

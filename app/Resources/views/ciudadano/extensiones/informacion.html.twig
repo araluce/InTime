@@ -262,6 +262,13 @@
             .card.hovercard .card-info .card-title {
                 font-size: 30px;
             }
+            .clasificacion h3,
+            .clasificacion i{
+               font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
         }
         @media (min-width: 760px){
             legend{
@@ -298,9 +305,22 @@
             .card.hovercard .card-info .card-title {
                 font-size: 45px;
             }
+            .clasificacion h3,
+            .clasificacion i{
+               font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
         }
         @media (min-width: 992px){
-
+            .clasificacion h3,
+            .clasificacion i{
+               font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
         }
         @media (min-width: 1200px){
             legend{
@@ -347,6 +367,16 @@
             }
             .card.hovercard .card-info .card-title {
                 font-size: 20px;
+            }
+            .clasificacion h3,
+            .clasificacion i{
+               font-size: 30px; 
+            }
+            .clasificacion span{
+                font-size: 60px;
+            }
+            #clasificacion-distritos{
+                font-size: 25px;
             }
         }
     </style>
@@ -498,7 +528,34 @@
                                 <h3>This is tab 2</h3>
                             </div>
                             <div class="tab-pane fade in" id="tab3">
-                                <h3>This is tab 3</h3>
+                                <div class="row">
+                                    <div class="col-lg-6 col-lg-offset-3" style="padding: 2%;">
+                                        <div class="clasificacion bordes">
+                                            <center>
+                                                <h3><i class="fa fa-university" aria-hidden="true"></i> DISTRITOS</h3>
+                                                <div id="clasificacion-distritos"></div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6" style="padding: 2%;">
+                                        <div class="clasificacion bordes">
+                                            <center>
+                                                <h3><i class="fa fa-globe" aria-hidden="true"></i> GLOBAL</h3>
+                                                <span id="puesto-global"></span>
+                                            </center>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="padding: 2%;">
+                                        <div class="clasificacion bordes" >
+                                            <center>
+                                                <h3><i class="fa fa-users" aria-hidden="true"></i> DISTRITO</h3>
+                                                <span id="puesto-distrito"></span>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane fade in" id="tab4">
                                 <h3>This is tab 4</h3>
@@ -547,6 +604,9 @@
         var todoOk = true;
         $(document).ready(function () {
             actualizarMovimientos();
+            getClasificacionGlobal();
+            getClasificacionDistrito();
+            getClasificacionDistritos();
             $('#info-form').submit(function (event) {
                 todoOk = true;
                 contenido = '';
@@ -729,7 +789,6 @@
                 ruta = '/ciudadano/info/actualizarMovimientos';
                 $.get(ruta, function (data, status) {
                     if (data.estado === 'OK') {
-                        console.log(data);
                         $.each(data.message, function (k, v) {
                             contenido += '<tr class="even" role="row">';
                             contenido += '  <td>';
@@ -765,6 +824,67 @@
                         });
                         $('#tabla-movimientos').append(contenido);
                     } else {
+                        console.log(data);
+                    }
+                });
+            }
+            function getClasificacionGlobal() {
+                ruta = '/ciudadano/info/getClasificacionGlobal';
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        $("#puesto-global").html(data.message.PUESTO);
+                    } else {
+                        console.log(data);
+                    }
+                });
+            }
+
+            function getClasificacionDistrito() {
+                ruta = '/ciudadano/info/getClasificacionDistrito';
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        $("#puesto-distrito").html(data.message.PUESTO);
+                    } else {
+                        console.log(data);
+                    }
+                });
+            }
+            function getClasificacionDistritos() {
+                ruta = '/ciudadano/info/getClasificacionDistritos';
+                $.get(ruta, function (data, status) {
+                    if (data.estado === 'OK') {
+                        $.each(data.message, function (k, v) {
+                            contenido = '<div style="float: left;">'; 
+                            contenido += '' + v.DISTRITO;
+                            contenido += '</div>'; 
+                            contenido += '<div style="float: right;">';
+                            if(v.CANTIDAD.dias === 0){
+                                contenido += '00d ';
+                            } else if (v.CANTIDAD.dias < 10){
+                                contenido +=  '0' + v.CANTIDAD.dias + 'd ';
+                            } else{
+                                contenido +=  v.CANTIDAD.dias + 'd ';
+                            }
+                            if(v.CANTIDAD.horas === 0){
+                                contenido += '00d ';
+                            } else if (v.CANTIDAD.horas < 10){
+                                contenido +=  '0' + v.CANTIDAD.horas + 'h ';
+                            } else{
+                                contenido +=  v.CANTIDAD.horas + 'h ';
+                            }
+                            if(v.CANTIDAD.segundos === 0){
+                                contenido += '00d ';
+                            } else if (v.CANTIDAD.segundos < 10){
+                                contenido +=  '0' + v.CANTIDAD.segundos + 's ';
+                            } else{
+                                contenido +=  v.CANTIDAD.segundos + 's ';
+                            }                          
+                            contenido += '</div>';
+                            contenido += '<br/>';
+                            $("#clasificacion-distritos").append(contenido);
+                        });
+                    } else {
+                        console.log(data);
                     }
                 });
             }

@@ -12,6 +12,7 @@ use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Twitter;
 use AppBundle\Utils\Trabajo;
+use AppBundle\Utils\Ejercicio;
 
 class DefaultController extends Controller {
 
@@ -39,18 +40,17 @@ class DefaultController extends Controller {
             $DNI = strtoupper($request->request->get('DNI'));
             $KEY = $request->request->get('KEY');
 
-
             $doctrine = $this->getDoctrine();
             $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
 
-            if ($usuario !== null && $usuario->getClave() === $this->encriptar($usuario, $KEY)) {
-
+            if ($usuario !== null && $usuario->getClave() === Usuario::encriptar($usuario, $KEY)) {
                 //Crear sesión para el usuario logueado
                 $session = $request->getSession();
                 $session->set('id_usuario', $usuario->getIdUsuario());
 
                 Usuario::activar_usuario($doctrine, $usuario);
                 Usuario::compruebaUsuario($doctrine, $session, '/login');
+                Ejercicio::actualizarEjercicioXUsuario($doctrine, $usuario);
 
                 //Cargar el menu del usuario según rol
                 return $this->inicio_usuario($usuario, $session);
@@ -121,8 +121,7 @@ class DefaultController extends Controller {
                 $alias[] = $res;
             }
         }
-        $DATOS = [];
-        $DATOS['TITULO'] = 'Jornada Laboral';
+        $DATOS = DataManager::setDefaultData($doctrine, 'Jornada Laboral', $session);
         $DATOS['string'] = $string;
         $DATOS['twiteers'] = $tuiteros;
         $DATOS['ALIAS'] = $alias;
@@ -132,7 +131,7 @@ class DefaultController extends Controller {
             $DATOS['info']['type'] = $msg['type'];
         }
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-
+//        Utils::pretty_print($DATOS['string']);
         return $this->render('ciudadano/trabajo/twitter.html.twig', $DATOS);
     }
 
@@ -153,7 +152,7 @@ class DefaultController extends Controller {
         $id_usuario = $this->get('session')->get('id_usuario');
         $id_usuario_destino = $usuario_share;
         if ($usuario_share !== 'null') {
-            $id_usuario_destino = $this->aliasToId($usuario_share, $doctrine);
+            $id_usuario_destino = Usuario::aliasToId($usuario_share, $doctrine);
         } else {
             $id_usuario_destino = null;
         }
@@ -228,6 +227,7 @@ class DefaultController extends Controller {
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Inspección de trabajo', $session);
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+        Ejercicio::actualizarEjercicioXUsuario($doctrine, $USUARIO);
         $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneByIdEjercicioSeccion(1);
         $EJERCICIO_X_GRUPO = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findAll();
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($EJERCICIO_SECCION);
@@ -273,6 +273,7 @@ class DefaultController extends Controller {
             $DATOS['info'] = $mensaje['info'];
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+        Ejercicio::actualizarEjercicioXUsuario($doctrine, $USUARIO);
         $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneByIdEjercicioSeccion(2);
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($EJERCICIO_SECCION);
         $DATOS['SECCION'] = $EJERCICIO_SECCION->getSeccion();
@@ -552,7 +553,7 @@ class DefaultController extends Controller {
             // Recuperamos las horas y minutos marcados y añadimos los segundos 00
             $TDV = str_replace("T", " ", $request->request->get('TDV')) . ":00";
 
-            $resultado = $this->registrar_multiple($DNIs, $TDV);
+            $resultado = Usuario::registrar_multiple($doctrine, $DNIs, $TDV);
 
             $DATOS['TITULO'] = 'Registro';
             $DATOS['info'] = [];
@@ -800,7 +801,6 @@ class DefaultController extends Controller {
      * @Route("/guardian/ejercicios_entregas", name="ejerciciosYentregas")
      */
     public function ejercicios_entregas(Request $request) {
-
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
@@ -1283,85 +1283,4 @@ class DefaultController extends Controller {
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
     }
-
-    public function registrar_multiple($DNIs, $TDV) {
-        $DNIs_formato = [];
-        $DNIs_formato['error'] = 0;
-        $DNIs_formato['repetidos'] = [];
-        $DNIs_formato['correctos'] = [];
-        $DNIs_formato['incorrectos'] = [];
-
-        $patron_dni = "/[0-9]{8}[A-Z]/";
-        $patron_nie = "/[X,Y,Z][0-9]{7}[A-Z]/";
-
-//        Eliminamos espacios y separamos formatos de DNI/NIE 
-//        correctos de los incorrectos
-        foreach ($DNIs as $DNI) {
-            if (preg_match($patron_dni, $DNI, $coincidencia, PREG_OFFSET_CAPTURE) || preg_match($patron_nie, $DNI, $coincidencia, PREG_OFFSET_CAPTURE)) {
-                if (!$this->registrar($coincidencia[0][0], $TDV)) {
-                    $DNIs_formato['repetidos'][] = $coincidencia[0][0];
-                } else {
-                    $DNIs_formato['correctos'][] = $coincidencia[0][0];
-                }
-            } else {
-                $DNIs_formato['error'] = 1;
-                $DNIs_formato['incorrectos'][] = $DNI;
-            }
-        }
-        return $DNIs_formato;
-    }
-
-    public function registrar($DNI, $TDV) {
-        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
-
-//        Si el usuario ya está en la base de datos volvemos
-        if ($usuario) {
-            return 0;
-        }
-        $em = $this->getDoctrine()->getManager();
-
-        $cuenta = new \AppBundle\Entity\UsuarioCuenta();
-//        $TDV_formato = date('Y-m-d H:i:s',strtotime($TDV));
-        $TDV_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV);
-        $fin_bloqueo = null;
-//        $cuenta->setTdv($TDV_formato);
-        $cuenta->setTdv($TDV_formato);
-//        $cuenta->setFinbloqueo($fin_bloqueo);
-        $em->persist($cuenta);
-        $em->flush();
-//        $fecha_inicio = new \DateTime('now');
-//        \AppBundle\Utils\Utils::pretty_print($fecha_inicio);
-
-        $usuario = new \AppBundle\Entity\Usuario();
-        $usuario->setDni($DNI);
-        $usuario->setIdRol($this->getDoctrine()->getRepository('AppBundle:Rol')->findOneByNombre('Jugador'));
-        $usuario->setCertificado('');
-        $usuario->setIdEstado($this->getDoctrine()->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Inactivo'));
-        $usuario->setIdCuenta($cuenta);
-        $em->persist($usuario);
-        $em->flush();
-
-//        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
-//        Contraseña por defecto
-        $usuario->setClave($this->encriptar($usuario, $DNI));
-        $em->persist($usuario);
-        $em->flush();
-
-        // No se han producido errores en el proceso
-        return 1;
-    }
-
-    public function aliasToId($usuario_share, $doctrine) {
-        $id_usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($usuario_share);
-        if ($id_usuario === null) {
-            return 0;
-        }
-        return $id_usuario;
-    }
-
-    public function encriptar($usuario, $password) {
-        $salt = $usuario->getIdUsuario();
-        return sha1($salt . $password);
-    }
-
 }

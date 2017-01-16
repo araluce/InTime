@@ -14,11 +14,33 @@
             </div>
         </div>
         <div class="row" style="margin-top: 5%">
-            <div class="col-xs-6 menu">
-                <center><a href="/ciudadano/alimentacion/comida"><img alt="Logo" src="{{ asset('images/iconos/Comida.png') }}" /></a></center>
+            <div class="col-xs-6 menu contenedor-badge">
+                <center>
+                    <a href="/ciudadano/alimentacion/comida">
+                        <img alt="Logo" src="{{ asset('images/iconos/Comida.png') }}" />
+                        {% if MENSAJES_COMIDA is defined %}
+                            {% if MENSAJES_COMIDA|length > 0%}
+                                <span class="badge badge-alimentacion">
+                                    {{ MENSAJES_COMIDA|length}}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </center>
             </div>
-            <div class="col-xs-6 menu">
-                <center><a href="/ciudadano/alimentacion/bebida"><img alt="Logo" src="{{ asset('images/iconos/Bebida.png') }}" /></a></center>
+            <div class="col-xs-6 menu contenedor-badge">
+                <center>
+                    <a href="/ciudadano/alimentacion/bebida">
+                        <img alt="Logo" src="{{ asset('images/iconos/Bebida.png') }}" />
+                        {% if MENSAJES_BEBIDA is defined %}
+                            {% if MENSAJES_BEBIDA|length > 0%}
+                                <span class="badge badge-alimentacion">
+                                    {{ MENSAJES_BEBIDA|length}}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </center>
             </div>
         </div>
     </div>

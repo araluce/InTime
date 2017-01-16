@@ -350,8 +350,8 @@ class AlimentacionController extends Controller {
                 return $this->render('ciudadano/extensiones/resumen.twig', $RESULTADOS);
             }
             return $this->comidaAction($request, 'El archivo que intenta subir supera el tamaño máximo permitido.'
-                . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
-                . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024);
+                            . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
+                            . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024);
             return new JsonResponse(array('estado' => 'ERROR', 'message' =>
                 'El archivo que intenta subir supera el tamaño máximo permitido.'
                 . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
@@ -376,9 +376,11 @@ class AlimentacionController extends Controller {
         $SECCION_COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
         $SECCION_BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
         if ($SECCION_COMIDA !== null) {
+            $DATOS['ULT_CAL_C'] = Utils::getUltimasCalificacionesSeccion($doctrine, 'comida');
             $DATOS['ICONOS_COMIDA'] = $doctrine->getRepository('AppBundle:EjercicioIcono')->findBySeccion($SECCION_COMIDA);
         }
         if ($SECCION_BEBIDA !== null) {
+            $DATOS['ULT_CAL_B'] = Utils::getUltimasCalificacionesSeccion($doctrine, 'bebida');
             $DATOS['ICONOS_BEBIDA'] = $doctrine->getRepository('AppBundle:EjercicioIcono')->findBySeccion($SECCION_BEBIDA);
         }
         return $this->render('guardian/ejercicios/ejerciciosAlimentacion.twig', $DATOS);
@@ -427,17 +429,26 @@ class AlimentacionController extends Controller {
             // Si el ejercicio no existe se crea uno nuevo
             if ($EJERCICIO === null) {
                 $EJERCICIO = new \AppBundle\Entity\Ejercicio();
-                $EJERCICIO->setIdTipoEjercicio($EJERCICIO_TIPO);
-                $EJERCICIO->setIdEjercicioSeccion($EJERCICIO_SECCION);
-                $EJERCICIO->setEnunciado($ENUNCIADO);
-                $EJERCICIO->setFecha(new \DateTime('now'));
-                $EJERCICIO->setIcono($ICONO);
-                $EJERCICIO->setCoste($COSTE);
-                $em->persist($EJERCICIO);
-                $em->flush();
-            } else {
-                
             }
+            $EJERCICIO->setIdTipoEjercicio($EJERCICIO_TIPO);
+            $EJERCICIO->setIdEjercicioSeccion($EJERCICIO_SECCION);
+            $EJERCICIO->setEnunciado($ENUNCIADO);
+            $EJERCICIO->setFecha(new \DateTime('now'));
+            $EJERCICIO->setIcono($ICONO);
+            $EJERCICIO->setCoste($COSTE);
+            $em->persist($EJERCICIO);
+            $em->flush();
+            
+            $CALIFICACIONES = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                $b = $request->request->get('BONIFICACION_' . $CALIFICACION->getIdCalificaciones());
+                $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
+                $BONIFICACION->setIdEjercicio($EJERCICIO);
+                $BONIFICACION->setIdCalificacion($CALIFICACION);
+                $BONIFICACION->setBonificacion($b);
+                $em->persist($BONIFICACION);
+            }
+            $em->flush();
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));

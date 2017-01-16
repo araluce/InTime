@@ -37,7 +37,7 @@ class Twitter {
                         ->performRequest(), $assoc = TRUE);
 
         $twiteer = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findOneBy(['idUsuario' => $USUARIO, 'idTuitero' => $user]);
-        if (!isset($string['error']) && null === $twiteer) {
+        if (!isset($string['errors']) && !isset($string['error']) && null === $twiteer) {
             $em = $doctrine->getManager();
             $twiteer = new \AppBundle\Entity\UsuarioXTuitero();
             $twiteer->setIdUsuario($USUARIO);

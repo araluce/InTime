@@ -239,12 +239,13 @@ class JugadorController extends Controller {
                     $query->select('SUM(um.cantidad)');
                     $query->where('um.idUsuario = :ID_USUARIO');
                     $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
-                    $aux['CANTIDAD'] = $query->getQuery()->getSingleScalarResult();
-                    if($aux['CANTIDAD'] === null){
-                        $aux['CANTIDAD'] = 0;
+                    $cant = $query->getQuery()->getSingleScalarResult();
+                    if($cant !== null){
+                        $aux['CANTIDAD'] += $cant;
                     }
                 }
             }
+            $aux['CANTIDAD'] = Utils::segundosToDias($aux['CANTIDAD']);
             $RESPUESTA[] = $aux;
         }
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));

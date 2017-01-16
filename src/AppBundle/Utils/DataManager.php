@@ -58,6 +58,8 @@ class DataManager {
         if (count($EJERCICIOS_X_USUARIO)) {
             $DATOS['MENSAJES_INSPECCION'] = [];
             $DATOS['MENSAJES_PAGA'] = [];
+            $DATOS['MENSAJES_COMIDA'] = [];
+            $DATOS['MENSAJES_BEBIDA'] = [];
             $ids_grupos = [];
             foreach ($EJERCICIOS_X_USUARIO as $ejercicio) {
                 $aux = [];
@@ -89,6 +91,12 @@ class DataManager {
                                 break;
                             case 2:
                                 $DATOS['MENSAJES_PAGA'][] = $aux;
+                                break;
+                            case 3:
+                                $DATOS['MENSAJES_COMIDA'][] = $aux;
+                                break;
+                            case 4:
+                                $DATOS['MENSAJES_BEBIDA'][] = $aux;
                                 break;
                         }
                     }

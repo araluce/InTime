@@ -66,8 +66,17 @@
             <div class="menu" id="menu-prestamo">
                 <a href="/ciudadano/prestamos"><img alt="Logo" src="{{ asset('images/iconos/Prestamos.png') }}"  /></a>
             </div>
-            <div class="menu" id="menu-alimentacion" style="float:right;">
-                <a href="/ciudadano/alimentacion"><img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  /></a>
+            <div class="menu contenedor-badge" id="menu-alimentacion" style="float:right;">
+                <a href="/ciudadano/alimentacion">
+                    <img alt="Logo" src="{{ asset('images/iconos/Alimentacion.png') }}"  />
+                    {% if MENSAJES_COMIDA is defined and MENSAJES_BEBIDA is defined %}
+                        {% if MENSAJES_COMIDA|length > 0 or MENSAJES_BEBIDA|length > 0%}
+                            <span class="badge badge-aviso">
+                                {{ MENSAJES_COMIDA|length + MENSAJES_BEBIDA|length}}
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                </a>
             </div>
         </div>
         <div class="row" id="log-sal">

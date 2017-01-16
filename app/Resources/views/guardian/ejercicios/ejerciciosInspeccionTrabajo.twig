@@ -1,0 +1,257 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-control{
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="proponer" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-shopping-cart" aria-hidden="true"></span>
+                        <div class="hidden-xs">PROPONER</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="resultados" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                        <span class="fa fa-refresh" aria-hidden="true"></span>
+                        <div class="hidden-xs">RESULTADOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRAS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row bordes bonificadores" style="margin-top: 1%;">
+                            <legend>Bonificación por calificación</legend>
+                            {% for c in ULT_CAL %}
+                                <img src="{{ asset('images/badges/' ~ c.CALIFICACION.getCorrespondenciaIcono())}}" />
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.dias}}" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.horas}}" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.minutos}}" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.segundos}}" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row bordes" style="margin-top: 1%;">
+                            <legend>Proponer una inspección</legend>
+
+                            <label for="enunciado_comida">Enunciado de la entrega</label>
+                            <textarea class="form-control" id="enunciado" rows="3"></textarea>
+
+                            <legend style="margin-top: 1%;">Posibles respuestas</legend>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" name="checkbox1">
+                                                </span>
+                                                <input type="text" class="form-control" id="resp1" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" name="checkbox2">
+                                                </span>
+                                                <input type="text" class="form-control" id="resp2" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" name="checkbox3">
+                                                </span>
+                                                <input type="text" class="form-control" id="resp3" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" name="checkbox4">
+                                                </span>
+                                                <input type="text" class="form-control" id="resp4" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="caja_coste" style="margin-top: 1%;">Coste</label>
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />
+                                            <span class="input-group-addon">d</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />
+                                            <span class="input-group-addon">h</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">s</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="publicarInspeccion();">PUBLICAR</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        function publicarInspeccion() {
+            var enunciado = $("#enunciado").val();
+            var resp1 = $("#resp1").val();
+            var resp2 = $("#resp2").val();
+            var resp3 = $("#resp3").val();
+            var resp4 = $("#resp4").val();
+            respuestas = [resp1, resp2, resp3, resp4];
+            var check1 = $('input[name="checkbox1"]:checked').val();
+            if(check1 !== 'on'){check1 = 'off';}
+            var check2 = $('input[name="checkbox2"]:checked').val();
+            if(check2 !== 'on'){check2 = 'off';}
+            var check3 = $('input[name="checkbox3"]:checked').val();
+            if(check3 !== 'on'){check3 = 'off';}
+            var check4 = $('input[name="checkbox4"]:checked').val();
+            if(check4 !== 'on'){check4 = 'off';}
+            checks = [check1, check2, check3, check4];
+            var dias = parseInt($("#dias").val());
+            var horas = parseInt($("#horas").val());
+            var minutos = parseInt($("#minutos").val());
+            var segundos = parseInt($("#segundos").val());
+            var bonificadores = obtenerBonificadores();
+            tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+            if ($.trim(enunciado) === '') {
+                alert('Debe insertar un enunciado');
+            } else if (tiempo < 0) {
+                alert('Debes insertar un coste válido');
+            } else {
+                ruta = '/guardian/ejercicios/inspeccion/publicar';
+                tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                datos = {
+                    'ENUNCIADO': enunciado,
+                    'COSTE': tiempo,
+                    'RESPUESTAS': respuestas,
+                    'RESPUESTAS_CHECK': checks
+                };
+                $.each(bonificadores, function (k, v) {
+                    $.each(v, function (kk, vv) {
+                        datos[kk] = vv;
+                    });
+                });
+                console.log(datos);
+                $.post(ruta, datos, function (data, status) {
+                    alert(data.message);
+                    location.reload();
+                });
+                
+            }
+        }
+
+        function obtenerBonificadores() {
+            var respuesta = [];
+        {% for c in ULT_CAL %}
+            {% set id = c.CALIFICACION.getIdCalificaciones() %}
+                    var dias = parseInt($("#dias{{ id }}").val());
+                    var horas = parseInt($("#horas{{ id }}").val());
+                    var minutos = parseInt($("#minutos{{ id }}").val());
+                    var segundos = parseInt($("#segundos{{ id }}").val());
+                    var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                    var aux = {'BONIFICACION_{{ id }}': tiempo};
+                    respuesta.push(aux);
+        {% endfor %}
+                return respuesta;
+            }
+
+            $(document).ready(function () {
+                $(".btn-pref .btn").click(function () {
+                    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                    $(this).removeClass("btn-default").addClass("btn-primary");
+                });
+        {% if info.message is defined or info.type is defined%}
+                $('#box_modal_result').click();
+        {% endif %}
+            });
+    </script>
+{% endblock %}

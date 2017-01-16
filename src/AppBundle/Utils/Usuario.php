@@ -3,6 +3,7 @@
 namespace AppBundle\Utils;
 
 use \Symfony\Component\HttpFoundation\JsonResponse;
+use AppBundle\Utils\Usuario;
 
 class Usuario {
 
@@ -35,68 +36,14 @@ class Usuario {
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
     }
-
-    public function registrar_multiple($DNIs) {
-        $DNIs_formato = [];
-        $DNIs_formato['error'] = 0;
-        $DNIs_formato['repetidos'] = [];
-        $DNIs_formato['correctos'] = [];
-        $DNIs_formato['incorrectos'] = [];
-
-        $patron_dni = "/[0-9]{8}[A-Z]/";
-        $patron_nie = "/[X,Y,Z][0-9]{7}[A-Z]/";
-
-        // Eliminamos espacios y separamos formatos de DNI/NIE 
-        // correctos de los incorrectos
-        foreach ($DNIs as $DNI) {
-            if (preg_match($patron_dni, $DNI, $coincidencia, PREG_OFFSET_CAPTURE) || preg_match($patron_nie, $DNI, $coincidencia, PREG_OFFSET_CAPTURE)) {
-                // var_dump($coincidencia[0]);
-                if (!$this->registrar($coincidencia[0][0])) {
-                    $DNIs_formato['repetidos'][] = $coincidencia[0][0];
-                } else {
-                    $DNIs_formato['correctos'][] = $coincidencia[0][0];
-                }
-            } else {
-                $DNIs_formato['error'] = 1;
-                $DNIs_formato['incorrectos'][] = $DNI;
-            }
-        }
-        return $DNIs_formato;
-    }
-
-    public function registrar($DNI) {
-        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
-
-        if ($usuario) {
-            return 0;
-        }
-        $em = $this->getDoctrine()->getManager();
-
-        $usuario = new \AppBundle\Entity\Usuario();
-        $usuario->setDni($DNI);
-        $usuario->setIdRol($this->getDoctrine()->getRepository('AppBundle:Rol')->findOneByNombre('Jugador'));
-        $usuario->setCertificado('');
-        $usuario->setIdEstado($this->getDoctrine()->getRepository('AppBundle:Estado')->findOneByNombre('Inactivo'));
-
-        $em->persist($usuario);
-        $em->flush();
-
-        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
-        //Contraseña por defecto
-
-        $usuario->setClave(\AppBundle\Controller\Usuario::encriptar($usuario, $DNI));
-        $em->persist($usuario);
-        $em->flush();
-
-        $cuenta = new \AppBundle\Entity\Cuenta();
-        $fecha_inicio = new \DateTime('now');
-        var_dump($fecha_inicio);
-
-        // No se han producido errores en el proceso
-        return 1;
-    }
-
-    public function encriptar($usuario, $password) {
+    
+    /**
+     * Encripta con sha1 y un salt
+     * @param type $usuario
+     * @param type $password
+     * @return string
+     */
+    static function encriptar($usuario, $password) {
         $salt = $usuario->getIdUsuario();
         return sha1($salt . $password);
     }
@@ -297,6 +244,13 @@ class Usuario {
         }
     }
 
+    /**
+     * Determina si un alias está ocupado por otro ciudadano
+     * @param type $doctrine
+     * @param type $session
+     * @param type $alias
+     * @return true|false
+     */
     static function aliasDisponible($doctrine, $session, $alias) {
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
@@ -317,6 +271,14 @@ class Usuario {
         return 1;
     }
 
+    /**
+     * Devuelve el puesto que tiene un usuario dentro de un conjunto de usuarios
+     * por su TdV
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $USUARIOS
+     * @return JsonResponse
+     */
     static function getClasificacion($doctrine, $USUARIO, $USUARIOS) {
         if ($USUARIO->getSeudonimo() === null) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Debes tener un alias para participar'
@@ -356,6 +318,96 @@ class Usuario {
         $RESPUESTA['CANTIDAD'] = $cantidad;
         $RESPUESTA['PUESTO'] = $puesto;
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
+    }
+    
+    /**
+     * Retorna el alias de un usuario dado su id
+     * @param type $usuario_share
+     * @param type $doctrine
+     * @return string|0 
+     */
+    static function aliasToId($usuario_share, $doctrine) {
+        $id_usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($usuario_share);
+        if ($id_usuario === null) {
+            return 0;
+        }
+        return $id_usuario;
+    }
+    
+    /**
+     * Registra un conjunto de usuarios dada una lista de DNIs
+     * @param type $doctrine
+     * @param type $DNIs
+     * @param type $TDV
+     * @return type
+     */
+    static function registrarMultiple($doctrine, $DNIs, $TDV) {
+        $DNIs_formato = [];
+        $DNIs_formato['error'] = 0;
+        $DNIs_formato['repetidos'] = [];
+        $DNIs_formato['correctos'] = [];
+        $DNIs_formato['incorrectos'] = [];
+
+        $patron_dni = "/[0-9]{8}[A-Z]/";
+        $patron_nie = "/[X,Y,Z][0-9]{7}[A-Z]/";
+
+        // Eliminamos espacios y separamos formatos de DNI/NIE 
+        // correctos de los incorrectos
+        foreach ($DNIs as $DNI) {
+            if (preg_match($patron_dni, $DNI, $coincidencia, PREG_OFFSET_CAPTURE) || preg_match($patron_nie, $DNI, $coincidencia, PREG_OFFSET_CAPTURE)) {
+                if (!Usuario::registrar($doctrine, $coincidencia[0][0], $TDV)) {
+                    $DNIs_formato['repetidos'][] = $coincidencia[0][0];
+                } else {
+                    $DNIs_formato['correctos'][] = $coincidencia[0][0];
+                }
+            } else {
+                $DNIs_formato['error'] = 1;
+                $DNIs_formato['incorrectos'][] = $DNI;
+            }
+        }
+        return $DNIs_formato;
+    }
+    
+    /**
+     * Registra un usuario dado un DNI
+     * @param type $doctrine
+     * @param type $DNI
+     * @param type $TDV
+     * @return true|false
+     */
+    static function registrar($doctrine, $DNI, $TDV) {
+        $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
+        if ($usuario) {
+            return 0;
+        }
+        $em = $doctrine->getManager();
+        $FECHA = new \DateTime('now');
+
+        $cuenta = new \AppBundle\Entity\UsuarioCuenta();
+        $TDV_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV);
+        $cuenta->setTdv($TDV_formato);
+        $em->persist($cuenta);
+        $em->flush();
+
+        $usuario = new \AppBundle\Entity\Usuario();
+        $usuario->setDni($DNI);
+        $usuario->setIdRol($doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador'));
+        $usuario->setCertificado('');
+        $usuario->setIdEstado($doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Inactivo'));
+        $usuario->setIdCuenta($cuenta);
+        $usuario->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
+        $usuario->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
+        $em->persist($usuario);
+        $em->flush();
+
+//        $usuario = $this->getDoctrine()->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
+//        Contraseña por defecto
+        $usuario->setClave(Usuario::encriptar($usuario, $DNI));
+        $em->persist($usuario);
+        $em->flush();
+
+        // No se han producido errores en el proceso
+        return 1;
     }
 
 }

@@ -10,6 +10,7 @@ namespace AppBundle\Utils;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
+use AppBundle\Utils\Utils;
 
 /**
  * Description of Trabajo
@@ -19,7 +20,6 @@ use AppBundle\Utils\Usuario;
 class Trabajo {
 
     static function solicitar_paga($doctrine, $USUARIO, $EJERCICIO) {
-        $UTILS = new \AppBundle\Utils\Utils();
         $FECHA = new \DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -51,7 +51,6 @@ class Trabajo {
     }
 
     static function solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION) {
-        $UTILS = new \AppBundle\Utils\Utils();
         $FECHA = new \DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -68,18 +67,6 @@ class Trabajo {
             $EJERCICIO_CALIFICACION->setFecha($FECHA);
             $em->persist($EJERCICIO_CALIFICACION);
             $em->flush();
-
-//            $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
-//            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
-//            
-//            if($SECCION === 'comida'){
-//                $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
-//            }
-//            if($SECCION === 'bebida'){
-//                $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
-//            }
-//            $em->persist($USUARIO);
-//            $em->flush();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$EJERCICIO->getCoste(), 'Cobro - Compra comida');
 
             return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
@@ -89,6 +76,26 @@ class Trabajo {
         }
 
         return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => 'Ejercicio solicitado correctamente'), 200);
+    }
+    
+    /**
+     * Comprueba que el usuario ha compartido el número de tweets diarios
+     * 
+     * @param type $doctrine
+     * @param Entity:USUARIO $USUARIO
+     * @return true|false
+     */
+    static function comprobarJornadaLaboral($doctrine, $USUARIO){
+        $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
+        $query->select('COUNT(a)');
+        $query->where('DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO');
+        $query->setParameters(['USUARIO' => $USUARIO]);
+        $N_TUITS = $query->getQuery()->getSingleScalarResult();
+        $TWEETS_X_DIA = Utils::getConstante($doctrine, 'jornada_laboral_tweets');
+        if($N_TUITS >= $TWEETS_X_DIA){
+            return 1;
+        }
+        return 0;
     }
 
 }

@@ -324,7 +324,7 @@ class RuntasticController extends Controller {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         // Comprobamos que el usuario es admin, si no, redireccionamos a /
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejerciciosDeporte', true);
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/deporte', true);
         if (!$status) {
             return new RedirectResponse('/');
         }

@@ -1,4 +1,18 @@
-
+.button-tweet-folders-comp{
+    cursor: pointer;
+}
+.button-tweet-folders,
+.button-tweet-panel{
+    display:inline-block;
+    cursor: pointer;
+}
+.bordes{
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-style: solid;
+    border-color: #000000;
+    color: #000000;
+}
 .ventana-tweets{
     background-color: rgba(255,255,255,0.2); 
     color: black; 
@@ -178,10 +192,10 @@ table{
 
 .input-group-addon {
     line-height: 1;
-    color: #555;
+    color: #000000;
     text-align: center;
-    background-color: #eee;
-    border: 1px solid #ccc;
+    background-color: #FFFFFF;
+    border: 2px solid #000000;
     border-radius: 4px;
 }
 
@@ -304,7 +318,7 @@ legend{
 .contenedor-badge{
     position: relative;
 }
-
+.badge-alimentacion,
 .badge-aviso{
     position: absolute;
     background-color: #E0B831;
@@ -670,7 +684,6 @@ svg:not(:root) {
     }
     .badge-aviso{
         top: 0px;
-        left: 0px;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -705,7 +718,7 @@ svg:not(:root) {
     }
 
     .badge-aviso{
-        font-size: 14px;
+        font-size: 20px;
     }
     .breadcrumb{
         font-size: 30px;
@@ -746,6 +759,9 @@ svg:not(:root) {
     }
     footer{
         font-size: 20px;
+    }
+    .button-tweet-panel img{
+        height: 100px;
     }
 }
 @media (min-width: 760px){
@@ -823,7 +839,10 @@ svg:not(:root) {
     }
     .badge-aviso{
         top: 0px;
-        left: 0px;
+    }
+    .badge-alimentacion,
+    .badge-aviso{
+        font-size: 40px;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -834,7 +853,7 @@ svg:not(:root) {
         height: 85px;
         padding: 9px 15px;
     }
-    
+
     .fileinput-upload i,
     .fileinput-remove-button i{
         font-size: 20px;
@@ -850,10 +869,6 @@ svg:not(:root) {
     }
     .container{
         width: 95%;
-    }
-
-    .badge-aviso{
-        font-size: 14px;
     }
     .breadcrumb{
         font-size: 30px;
@@ -894,6 +909,9 @@ svg:not(:root) {
     }
     footer{
         font-size: 35px;
+    }
+    .button-tweet-panel img{
+        height: 100px;
     }
 }
 @media (min-width: 992px){
@@ -958,7 +976,6 @@ svg:not(:root) {
     }
     .badge-aviso{
         top: 0px;
-        left: 0px;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -993,7 +1010,7 @@ svg:not(:root) {
     }
 
     .badge-aviso{
-        font-size: 14px;
+        font-size: 20px;
     }
     .breadcrumb{
         font-size: 30px;
@@ -1084,7 +1101,6 @@ svg:not(:root) {
     }
     .badge-aviso{
         top: 0px;
-        left: 0px;
         font-size: 14px;
     }
     .contenedor-badge .badge{
@@ -1293,5 +1309,8 @@ svg:not(:root) {
     }
     #fondo-principal img{
         height: 190px;
+    }
+    .button-tweet-panel img{
+        height: 50px;
     }
 }

@@ -8,19 +8,10 @@
 {% endblock %}
 
 {% block stylesheets %}
+    <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
     <style>
-        .bordes{
-            background-color: #FFFFFF;
-            padding: 20px;
-            border-style: solid;
-            border-color: #000000;
-            color: #000000;
-        }
         .form-control{
             font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        }
-        legend{
-            color: #000000;
         }
     </style>
 {% endblock %}
@@ -53,109 +44,148 @@
             <div class="col-md-12">
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="tab1">
-                        <legend>Proponer una entrega en comida</legend>
-                        <label for="icono_comida">Icono</label>
-                        <select class="custom-select" id="icono_comida">
-                            <option selected value="0">Seleccione un icono identificativo</option>
-                            {% if ICONOS_COMIDA is defined %}
-                                {% for ICONO in ICONOS_COMIDA %}
-                                    <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
-                                {% endfor %}
-                            {% endif %}
-                        </select>
-                        <label for="enunciado_comida">Enunciado de la entrega</label>
-                        <textarea class="form-control" id="enunciado_comida" rows="3"></textarea>
-                        <label for="caja_coste">Coste</label>
-                        <div class="row" style="margin-left: 15px; margin-right: 15px;">
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="dias_comida" class="form-control input-number" value="0" min="0" max="100" />
-                                        <span class="input-group-addon">d</span>
+                        <div class="row bordes" style="margin-top:1%;">
+                            <legend>Proponer una entrega en comida</legend>
+                            <label for="icono_comida">Icono</label>
+                            <select class="custom-select" id="icono_comida">
+                                <option selected value="0">Seleccione un icono identificativo</option>
+                                {% if ICONOS_COMIDA is defined %}
+                                    {% for ICONO in ICONOS_COMIDA %}
+                                        <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <label for="enunciado_comida" style="margin-top:1%;">Enunciado de la entrega</label>
+                            <textarea class="form-control" id="enunciado_comida" rows="3"></textarea>
+                            <label for="caja_coste" style="margin-top:1%;">Coste</label>
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="dias_comida" class="form-control input-number" value="0" min="0" max="100" />
+                                            <span class="input-group-addon">d</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="horas_comida" class="form-control input-number" value="0" min="0" max="24" />
+                                            <span class="input-group-addon">h</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="minutos_comida" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="segundos_comida" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">s</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="horas_comida" class="form-control input-number" value="0" min="0" max="24" />
-                                        <span class="input-group-addon">h</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="minutos_comida" class="form-control input-number" value="0" min="0" max="60" />
-                                        <span class="input-group-addon">m</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="segundos_comida" class="form-control input-number" value="0" min="0" max="60" />
-                                        <span class="input-group-addon">s</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarComida();">PUBLICAR</button>
                         </div>
-
-                        <button class="btn btn-block btn-default" onclick="publicarComida();">PUBLICAR</button>
                     </div>
                     <div class="tab-pane fade in" id="tab2">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <legend>Proponer una entrega en bebida</legend>
-                                <label for="icono_bebida">Icono</label>
-                                <select class="custom-select" id="icono_bebida">
-                                    <option selected value="0">Seleccione un icono identificativo</option>
-                                    {% if ICONOS_BEBIDA is defined %}
-                                        {% for ICONO in ICONOS_BEBIDA %}
-                                            <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
-                                        {% endfor %}
-                                    {% endif %}
-                                </select>
-                                <label for="enunciado_bebida">Enunciado de la entrega</label>
-                                <textarea class="form-control" id="enunciado_bebida" rows="3"></textarea>
-                                <label for="caja_coste">Coste</label>
+                        <div class="row bordes" style="margin-top: 1%;">
+                            <legend>Proponer una entrega en bebida</legend>
+                            <label for="icono_bebida">Icono</label>
+                            <select class="custom-select" id="icono_bebida">
+                                <option selected value="0">Seleccione un icono identificativo</option>
+                                {% if ICONOS_BEBIDA is defined %}
+                                    {% for ICONO in ICONOS_BEBIDA %}
+                                        <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <label for="enunciado_bebida" style="margin-top: 1%;">Enunciado de la entrega</label>
+                            <textarea class="form-control" id="enunciado_bebida" rows="3"></textarea>
+                            <label for="caja_coste" style="margin-top: 1%;">Coste</label>
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="dias_bebida" class="form-control input-number" value="0" min="0" max="100" />
+                                            <span class="input-group-addon">d</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="horas_bebida" class="form-control input-number" value="0" min="0" max="24" />
+                                            <span class="input-group-addon">h</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="minutos_bebida" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="segundos_bebida" class="form-control input-number" value="0" min="0" max="60" />
+                                            <span class="input-group-addon">s</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <button class="btn btn-block btn-default" onclick="publicarBebida();" style="margin-top: 1%;">PUBLICAR</button>
                         </div>
-                        <div class="row" style="margin-left: 15px; margin-right: 15px;">
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="dias_bebida" class="form-control input-number" value="0" min="0" max="100" />
-                                        <span class="input-group-addon">d</span>
+                    </div>
+                    <div class="row bordes bonificadores" style="margin-top: 1%;">
+                        <legend>Bonificación por calificación</legend>
+                        {% for c in ULT_CAL_C %}
+                            <img src="{{ asset('images/badges/' ~ c.CALIFICACION.getCorrespondenciaIcono())}}" />
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="dias{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.dias}}" min="0" max="100" />
+                                            <span class="input-group-addon">d</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="horas{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.horas}}" min="0" max="24" />
+                                            <span class="input-group-addon">h</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="minutos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.minutos}}" min="0" max="60" />
+                                            <span class="input-group-addon">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input type="number" id="segundos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.segundos}}" min="0" max="60" />
+                                            <span class="input-group-addon">s</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="horas_bebida" class="form-control input-number" value="0" min="0" max="24" />
-                                        <span class="input-group-addon">h</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="minutos_bebida" class="form-control input-number" value="0" min="0" max="60" />
-                                        <span class="input-group-addon">m</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-3">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <input type="number" id="segundos_bebida" class="form-control input-number" value="0" min="0" max="60" />
-                                        <span class="input-group-addon">s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-block btn-default" onclick="publicarBebida();">PUBLICAR</button>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -173,6 +203,7 @@
             var horas = parseInt($("#horas_comida").val());
             var minutos = parseInt($("#minutos_comida").val());
             var segundos = parseInt($("#segundos_comida").val());
+            var bonificadores = obtenerBonificadores();
             tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
             if (icono === '0') {
                 alert('Debe seleccionar un icono');
@@ -189,6 +220,12 @@
                     'ICONO': icono,
                     'COSTE': tiempo
                 };
+                $.each(bonificadores, function (k, v) {
+                    $.each(v, function (kk, vv) {
+                        datos[kk] = vv;
+                    });
+                });
+                console.log(datos);
                 $.post(ruta, datos, function (data, status) {
                     alert(data.message);
                     location.reload();
@@ -232,5 +269,19 @@
                 $('#box_modal_result').click();
         {% endif %}
             });
+            function obtenerBonificadores() {
+                var respuesta = [];
+        {% for c in ULT_CAL_C %}
+            {% set id = c.CALIFICACION.getIdCalificaciones() %}
+                    var dias = parseInt($("#dias{{ id }}").val());
+                    var horas = parseInt($("#horas{{ id }}").val());
+                    var minutos = parseInt($("#minutos{{ id }}").val());
+                    var segundos = parseInt($("#segundos{{ id }}").val());
+                    var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                    var aux = {'BONIFICACION_{{ id }}': tiempo};
+                    respuesta.push(aux);
+        {% endfor %}
+                return respuesta;
+            }
     </script>
 {% endblock %}

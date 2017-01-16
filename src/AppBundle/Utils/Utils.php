@@ -78,8 +78,8 @@ class Utils {
         $EJERCICIO_CALIFICACION->setIdEjercicioEstado($EJERCICIO_ESTADO);
         $doctrine->getManager()->persist($EJERCICIO_CALIFICACION);
         $doctrine->getManager()->flush();
-        
-        if($SECCION === 'comida' || $SECCION === 'bebida'){
+
+        if ($SECCION === 'comida' || $SECCION === 'bebida') {
             Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
         }
 
@@ -180,7 +180,6 @@ class Utils {
     }
 
     static function getDatosInspeccion($doctrine, $USUARIO, $ejercicio, $grupo) {
-        $UTILS = new \AppBundle\Utils\Utils();
         $aux = [];
         if ($grupo !== null) {
             $ejercicio = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findOneByIdGrupoEjercicios($grupo)->getIdEjercicio();
@@ -393,7 +392,7 @@ class Utils {
     /**
      * Registra el mal funcionamiento en la base de datos
      * @param type $doctrine
-     * @param int $nivel 0 para Warning, 1 para Error
+     * @param int $nivel 0 = Warning, 1 = Error, 2 = Cron
      * @param string $accion La acción que ha producido el error
      * @param Entity $usuario Usuario involucrado si lo hubiera
      */
@@ -406,6 +405,9 @@ class Utils {
                 break;
             case '1':
                 $REPORT->setNivel('Error');
+                break;
+            case '3':
+                $REPORT->setNivel('Cron');
         }
         if ($usuario !== null) {
             $REPORT->setIdUsuario($usuario);
@@ -498,7 +500,42 @@ class Utils {
                 $segundos = '' . $segundos;
             }
         }
-        return $horas.$minutos.$segundos;
+        return $horas . $minutos . $segundos;
+    }
+
+    /**
+     * Obtener la última bonificación por calificación propuesta por
+     * el GdT en una sección determinada
+     * @param type $doctrine
+     * @param string $nombre_seccion el nombre de la sección
+     */
+    static function getUltimasCalificacionesSeccion($doctrine, $nombre_seccion) {
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
+        $RESPUESTA = [];
+        if (count($CALIFICACIONES)) {
+            $SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion($nombre_seccion);
+            $query = $doctrine->getRepository('AppBundle:Ejercicio')->createQueryBuilder('a');
+            $query->select('a');
+            $query->where('a.idEjercicioSeccion = :SECCION');
+            $query->orderBy('a.fecha', 'DESC');
+            $query->setParameters(['SECCION' => $SECCION]);
+            $EJERCICIO = $query->getQuery()->getResult();
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                $aux['CALIFICACION'] = $CALIFICACION;
+                $aux['BONIFICACION'] = Utils::segundosToDias(0);
+                if (count($EJERCICIO) && $EJERCICIO[0] !== null) {
+                    $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                        'idEjercicio' => $EJERCICIO[0], 'idCalificacion' => $CALIFICACION
+                    ]);
+                    if($BONIFICACION !== null){
+                        $aux['BONIFICACION'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
+                    }
+                }
+                $RESPUESTA[] = $aux;
+            }
+            return $RESPUESTA;
+        }
+        return 0;
     }
 
 }

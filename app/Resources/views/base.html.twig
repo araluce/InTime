@@ -70,7 +70,7 @@
                             <div class="row" style="margin: 20px 0px;">
                                 <div class="col-xs-3">
                                     <img id="image"
-                                         src="{{ asset('images/generic/GdTII.png' ) }}" />
+                                         src="{{ asset('images/generic/personajes/GdT.jpg' ) }}" />
                                 </div>
                                 <div class="col-xs-9">
                                     <p id="mensaje-texto" style="margin-top: 7%;">
@@ -91,9 +91,8 @@
             </div>
         </div>
     {% endif %}
-
-    <div class="row">
-        {% if ESTADO_USUARIO is defined %}
+    {% if ESTADO_USUARIO is defined %}
+        <div class="row" style="margin-bottom:3%;">
             <div id="posicion-reloj">
                 {% if ESTADO_USUARIO == 'Activo' and TDV is defined %}
                     <div id="countdown-11"></div>
@@ -109,8 +108,9 @@
                     <center>VACACIONES</center>
                 </div>
             {% endif %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
+
     <div class="header">
         {% block header %}
             {% include "extension/header.html.twig" %}
