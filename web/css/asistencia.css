@@ -1,0 +1,38 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 17-ene-2017, 19:21:41
+    Author     : araluce
+*/
+#day-schedule{
+    margin: 0 10%;
+}
+.schedule-header th{
+    text-align: center;
+}
+.schedule-rows td {
+    width: 80px;
+    height: 30px;
+    margin: 3px;
+    padding: 5px;
+    background-color: #DFDFDF;
+    border: 2px #FFFFFF solid;
+    cursor: pointer;
+}
+
+.schedule-rows td:first-child {
+    background-color: transparent;
+    text-align: right;
+    position: relative;
+}
+
+.schedule-rows td[data-selected],
+.schedule-rows td[data-selecting] { background-color: #337ab7; }
+
+.schedule-rows td[data-disabled] { opacity: 0.55; }
+.schedule-rows td[data-occupied] { background-color: #c9302c; }
+
+

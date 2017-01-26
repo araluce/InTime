@@ -264,11 +264,12 @@
             }
             .clasificacion h3,
             .clasificacion i{
-               font-size: 60px; 
+                font-size: 60px; 
             }
             .clasificacion span{
                 font-size: 120px;
             }
+            
         }
         @media (min-width: 760px){
             legend{
@@ -291,7 +292,7 @@
             #badges img,
             #movimientos img,
             #modificar img{
-                height: 120px;
+                height: 100px;
             }
             .card.hovercard .card-background {
                 height: 230px;
@@ -307,22 +308,32 @@
             }
             .clasificacion h3,
             .clasificacion i{
-               font-size: 60px; 
+                font-size: 60px; 
             }
             .clasificacion span{
                 font-size: 120px;
+            }
+            .info-button{
+                font-size: 65px;
+                border-radius: 15px;
+            }
+            .hidden-xs{
+                
             }
         }
         @media (min-width: 992px){
             .clasificacion h3,
             .clasificacion i{
-               font-size: 60px; 
+                font-size: 60px; 
             }
             .clasificacion span{
                 font-size: 120px;
             }
         }
         @media (min-width: 1200px){
+            .info-button{
+                font-size: 20px;
+            }
             legend{
                 font-size: 17px;
             }
@@ -370,7 +381,7 @@
             }
             .clasificacion h3,
             .clasificacion i{
-               font-size: 30px; 
+                font-size: 30px; 
             }
             .clasificacion span{
                 font-size: 60px;
@@ -410,27 +421,28 @@
                     <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
                         <div class="btn-group" role="group">
                             <button type="button" id="modificar" class="btn btn-primary" href="#tab1" data-toggle="tab">
-                                <img src="{{ asset('images/iconos/Datos_personales.png') }}" />
+                                <img src="{{ asset('images/iconos/Jugador/Datos_personales.png') }}" />
                             </button>
                         </div>
                         <div class="btn-group" role="group">
                             <button type="button" id="nivel" class="btn btn-default" href="#tab2" data-toggle="tab">
-                                <img src="{{ asset('images/iconos/Nivel_y_privilegios.png') }}" />
+                                <img src="{{ asset('images/iconos/Jugador/Nivel_y_privilegios.png') }}" />
                             </button>
                         </div>
                         <div class="btn-group" role="group">
                             <button type="button" id="clasificaciones" class="btn btn-default" href="#tab3" data-toggle="tab">
-                                <img src="{{ asset('images/iconos/Clasificaciones.png') }}" />
+                                <img src="{{ asset('images/iconos/Jugador/Clasificaciones.png') }}" />
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="badges" class="btn btn-default" href="#tab4" data-toggle="tab">
-                                <img src="{{ asset('images/iconos/Badges.png') }}" />
+                            <button type="button" id="movimientos" class="btn btn-default" href="#tab4" data-toggle="tab">
+                                <img src="{{ asset('images/iconos/Jugador/Consultar_movimientos.png') }}" />
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="movimientos" class="btn btn-default" href="#tab5" data-toggle="tab">
-                                <img src="{{ asset('images/iconos/Consultar_movimientos.png') }}" />
+                            <button type="button" id="exit" class="btn btn-default" onclick="window.history.back();" >
+                                <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                                <div class="hidden-xs">ATRÁS</div>
                             </button>
                         </div>
                         <!--
@@ -519,9 +531,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-default btn-block">
-                                        Cambiar
-                                    </button>
+                                    <div class="row">
+                                        <div class="col-xs-5 col-xs-offset-4">
+                                            <button type="submit" class="btn btn-primary btn-default btn-block info-button">
+                                                Cambiar
+                                            </button>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                             <div class="tab-pane fade in" id="tab2">
@@ -558,9 +574,6 @@
                                 </div>
                             </div>
                             <div class="tab-pane fade in" id="tab4">
-                                <h3>This is tab 4</h3>
-                            </div>
-                            <div class="tab-pane fade in" id="tab5">
                                 <div class="datatable">
                                     <div id="movimientosC_wrapper" class="dataTables_wrapper no-footer">
                                         <table id="movimientosC" class="display contentInfo dataTable no-footer dtr-inline" cellspacing="0" cellpadding="1" width="100%" role="grid" style="width: 100%;">
@@ -854,31 +867,31 @@
                 $.get(ruta, function (data, status) {
                     if (data.estado === 'OK') {
                         $.each(data.message, function (k, v) {
-                            contenido = '<div style="float: left;">'; 
+                            contenido = '<div style="float: left;">';
                             contenido += '' + v.DISTRITO;
-                            contenido += '</div>'; 
+                            contenido += '</div>';
                             contenido += '<div style="float: right;">';
-                            if(v.CANTIDAD.dias === 0){
+                            if (v.CANTIDAD.dias === 0) {
                                 contenido += '00d ';
-                            } else if (v.CANTIDAD.dias < 10){
-                                contenido +=  '0' + v.CANTIDAD.dias + 'd ';
-                            } else{
-                                contenido +=  v.CANTIDAD.dias + 'd ';
+                            } else if (v.CANTIDAD.dias < 10) {
+                                contenido += '0' + v.CANTIDAD.dias + 'd ';
+                            } else {
+                                contenido += v.CANTIDAD.dias + 'd ';
                             }
-                            if(v.CANTIDAD.horas === 0){
+                            if (v.CANTIDAD.horas === 0) {
                                 contenido += '00d ';
-                            } else if (v.CANTIDAD.horas < 10){
-                                contenido +=  '0' + v.CANTIDAD.horas + 'h ';
-                            } else{
-                                contenido +=  v.CANTIDAD.horas + 'h ';
+                            } else if (v.CANTIDAD.horas < 10) {
+                                contenido += '0' + v.CANTIDAD.horas + 'h ';
+                            } else {
+                                contenido += v.CANTIDAD.horas + 'h ';
                             }
-                            if(v.CANTIDAD.segundos === 0){
+                            if (v.CANTIDAD.segundos === 0) {
                                 contenido += '00d ';
-                            } else if (v.CANTIDAD.segundos < 10){
-                                contenido +=  '0' + v.CANTIDAD.segundos + 's ';
-                            } else{
-                                contenido +=  v.CANTIDAD.segundos + 's ';
-                            }                          
+                            } else if (v.CANTIDAD.segundos < 10) {
+                                contenido += '0' + v.CANTIDAD.segundos + 's ';
+                            } else {
+                                contenido += v.CANTIDAD.segundos + 's ';
+                            }
                             contenido += '</div>';
                             contenido += '<br/>';
                             $("#clasificacion-distritos").append(contenido);

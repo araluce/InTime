@@ -45,7 +45,7 @@
                 <div class="btn-group" role="group">
                     <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
-                        <div class="hidden-xs">ATRAS</div>
+                        <div class="hidden-xs">ATRÁS</div>
                     </button>
                 </div>
             </div>
@@ -153,7 +153,7 @@
                             contenido += data.porcentaje.toFixed(2) + '%';
                         }
                         if (data.porcentaje <= 0) {
-                            contenido += 'MURIENDO';
+                            contenido += 'FALLECIDO POR DESIDRATACION';
                         }
                         $('#progress-tsc').html(contenido);
                     }

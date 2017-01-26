@@ -1,3 +1,8 @@
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 (function ($) {
   'use strict';
 
@@ -6,9 +11,7 @@
     this.options = $.extend({}, DayScheduleSelector.DEFAULTS, options);
     this.render();
     this.attachEvents();
-    this.$selectedStart = null;
-    this.$someSelected = false;
-
+    this.$selectingStart = null;
   };
 
   DayScheduleSelector.DEFAULTS = {
@@ -16,7 +19,7 @@
     startTime   : '08:00',                // HH:mm format
     endTime     : '20:00',                // HH:mm format
     interval    : 30,                     // minutes
-    stringDays  : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    stringDays  : ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
     template    : '<div class="day-schedule-selector">'         +
                     '<table class="schedule-table">'            +
                       '<thead class="schedule-header"></thead>' +
@@ -61,7 +64,7 @@
 
     $.each(generateDates(start, end, interval), function (i, d) {
       var daysInARow = $.map(new Array(days.length), function (_, i) {
-        return '<td class="time-slot" data-date="' + today_date(i) + '" data-time="' + hhmm(d) + '" data-day="' + days[i] + '"></td>'
+        return '<td class="time-slot" data-time="' + hhmm(d) + '" data-day="' + days[i] + '"></td>'
       }).join();
 
       $el.append('<tr><td class="time-label">' + hmmAmPm(d) + '</td>' + daysInARow + '</tr>');
@@ -69,35 +72,47 @@
   };
 
   /**
-   * Is the day schedule selector in selected mode?
+   * Is the day schedule selector in selecting mode?
    * @public
    */
-    DayScheduleSelector.prototype.isSelected = function () {
-      return !!this.$selectedStart;
-    };
-
-  DayScheduleSelector.prototype.isSomeSelected = function () {
-      return this.$someSelected;
-    };
-  DayScheduleSelector.prototype.deselect = function ($slot) {
-    $slot.attr('data-status', 'available');
-    this.$someSelected = false;
-    $('#id_fecha').val('');
-    $('#id_hora').val('');
+  DayScheduleSelector.prototype.isSelecting = function () {
+    return !!this.$selectingStart;
   };
-  DayScheduleSelector.prototype.select = function ($slot) {
-    $slot.attr('data-status', 'selected');
-    this.$someSelected = true;
-    $('#id_fecha').val($slot.attr('data-date'));
-    $('#id_hora').val($slot.attr('data-time'));
-    $('.active_modal').click();
+
+  DayScheduleSelector.prototype.select   = function ($slot) { 
+      $slot.attr('data-selected', 'selected');
   };
-  DayScheduleSelector.prototype.occupied = function ($slot) {  $slot.attr('data-status', 'occupied'); };
+  DayScheduleSelector.prototype.deselect = function ($slot) { 
+      $slot.removeAttr('data-selected');
+  };
+  DayScheduleSelector.prototype.occupied   = function ($slot) { 
+      $slot.attr('data-occupied', 'occupied');
+  };
 
-  function isSlotAvailable($slot) { return $slot.attr('data-status') == 'available'; }
-  function isSlotSelected($slot) { return $slot.attr('data-status') == 'selected'; }
-  function isSlotOccupied($slot) { return $slot.attr('data-status') == 'occupied'; }
+  function isSlotSelected($slot) { 
+      return $slot.is('[data-selected]'); 
+  }
+  function isSlotSelecting($slot) { 
+      return $slot.is('[data-selecting]'); 
+  }
+  function isSlotOccupied($slot){
+      return $slot.is('[data-occupied]'); 
+  }
 
+  /**
+   * Get the selected time slots given a starting and a ending slot
+   * @private
+   * @returns {Array} An array of selected time slots
+   */
+  function getSelection(plugin, $a, $b) {
+    var $slots, small, large, temp;
+    if (!$a.hasClass('time-slot') || !$b.hasClass('time-slot') ||
+        ($a.data('day') !== $b.data('day'))) { return []; }
+    $slots = plugin.$el.find('.time-slot[data-day="' + $a.data('day') + '"]');
+    small = $slots.index($a); large = $slots.index($b);
+    if (small > large) { temp = small; small = large; large = temp; }
+    return $slots.slice(small, large + 1);
+  }
 
   DayScheduleSelector.prototype.attachEvents = function () {
     var plugin = this
@@ -106,16 +121,40 @@
 
     this.$el.on('click', '.time-slot', function () {
       var day = $(this).data('day');
-      if (!isSlotSelected($(this))) {  // if we are not in selected mode
-        if (isSlotAvailable($(this)) && !plugin.isSomeSelected()) {
-          plugin.select($(this));
-          }
-      } else {  // if we are in selected mode
-        plugin.deselect($(this));
-
+      if (!plugin.isSelecting() && !isSlotOccupied($(this))) {  // if we are not in selecting mode
+        if (isSlotSelected($(this)) ) { plugin.deselect($(this)); }
+        else {  // then start selecting
+          plugin.$selectingStart = $(this);
+          $(this).attr('data-selecting', 'selecting');
+          plugin.$el.find('.time-slot').attr('data-disabled', 'disabled');
+          plugin.$el.find('.time-slot[data-day="' + day + '"]').removeAttr('data-disabled');
+        }
+      } else {  // if we are in selecting mode
+        if (day === plugin.$selectingStart.data('day') && !isSlotOccupied($(this))) {  // if clicking on the same day column
+          // then end of selection
+          plugin.$el.find('.time-slot[data-day="' + day + '"]').filter('[data-selecting]')
+            .attr('data-selected', 'selected').removeAttr('data-selecting');
+          plugin.$el.find('.time-slot').removeAttr('data-disabled');
+          plugin.$el.trigger('selected.artsy.dayScheduleSelector', [getSelection(plugin, plugin.$selectingStart, $(this))]);
+          //$('#resultado-op').append(getSelection(plugin, plugin.$selectingStart, $(this)));
+          plugin.$selectingStart = null;
+        }
       }
     });
 
+    this.$el.on('mouseover', '.time-slot', function () {
+      var $slots, day, start, end, temp;
+      if (plugin.isSelecting()) {  // if we are in selecting mode
+        day = plugin.$selectingStart.data('day');
+        $slots = plugin.$el.find('.time-slot[data-day="' + day + '"]');
+        $slots.filter('[data-selecting]').removeAttr('data-selecting');
+        start = $slots.index(plugin.$selectingStart);
+        end = $slots.index(this);
+        if (end < 0) return;  // not hovering on the same column
+        if (start > end) { temp = start; start = end; end = temp; }
+        $slots.slice(start, end + 1).attr('data-selecting', 'selecting');
+      }
+    });
   };
 
   /**
@@ -140,24 +179,24 @@
       start = end = false; selections[v] = [];
       plugin.$el.find(".time-slot[data-day='" + v + "']").each(function () {
         // Start of selection
-        if (isSlotAvailable($(this)) && !start) {
+        if (isSlotSelected($(this)) && !start) {
           start = $(this).data('time');
         }
 
-        // End of selection (I am not available, so select until my previous one.)
-        if (!isSlotAvailable($(this)) && !!start) {
+        // End of selection (I am not selected, so select until my previous one.)
+        if (!isSlotSelected($(this)) && !!start) {
           end = $(this).data('time');
         }
 
         // End of selection (I am the last one :) .)
-        if (isSlotAvailable($(this)) && !!start && $(this).is(".time-slot[data-day='" + v + "']:last")) {
+        if (isSlotSelected($(this)) && !!start && $(this).is(".time-slot[data-day='" + v + "']:last")) {
           end = secondsSinceMidnightToHhmm(
             hhmmToSecondsSinceMidnight($(this).data('time')) + plugin.options.interval * 60);
         }
 
         if (!!end) { selections[v].push([start, end]); start = end = false; }
       });
-    })
+    });
     return selections;
   };
 
@@ -178,25 +217,25 @@
     var plugin = this, i;
     $.each(schedule, function(d, ds) {
       var $slots = plugin.$el.find('.time-slot[data-day="' + d + '"]');
-      $.each(ds, function(p, f) {
+      $.each(ds, function(_, s) {
         for (i = 0; i < $slots.length; i++) {
-          if ($slots.eq(i).data('time') >= f) { break; }
-          if ($slots.eq(i).data('time') >= p) { plugin.deselect($slots.eq(i)); }
+          if ($slots.eq(i).data('time') >= s[1]) { break; }
+          if ($slots.eq(i).data('time') >= s[0]) { plugin.select($slots.eq(i)); }
         }
-      })
+      });
     });
   };
-
+  
   DayScheduleSelector.prototype.deserializeOccupied = function (schedule) {
     var plugin = this, i;
     $.each(schedule, function(d, ds) {
       var $slots = plugin.$el.find('.time-slot[data-day="' + d + '"]');
-      $.each(ds, function(p, f) {
+      $.each(ds, function(_, s) {
         for (i = 0; i < $slots.length; i++) {
-          if ($slots.eq(i).data('time') >= f) { break; }
-          if ($slots.eq(i).data('time') >= p) { plugin.occupied($slots.eq(i)); }
+          if ($slots.eq(i).data('time') >= s[1]) { break; }
+          if ($slots.eq(i).data('time') >= s[0]) { plugin.occupied($slots.eq(i)); }
         }
-      })
+      });
     });
   };
 
@@ -207,12 +246,12 @@
     return this.each(function (){
       var $this   = $(this)
         , data    = $this.data('artsy.dayScheduleSelector')
-        , options = typeof option == 'object' && option;
+        , options = typeof option === 'object' && option;
 
       if (!data) {
         $this.data('artsy.dayScheduleSelector', (data = new DayScheduleSelector(this, options)));
       }
-    })
+    });
   }
 
   $.fn.dayScheduleSelector = Plugin;
@@ -242,9 +281,10 @@
     return (new Date(2000, 0, 1, end.split(':')[0], end.split(':')[1]).getTime() -
             new Date(2000, 0, 1, start.split(':')[0], start.split(':')[1]).getTime()) / 60000;
   }
-
+  
   /**
    * Return the actual day
+   * @param qs
    * */
       function getQueryParams(qs) {
         qs = qs.split("+").join(" ");
@@ -252,7 +292,7 @@
             tokens,
             re = /[?&]?([^=]+)=([^&]*)/g;
 
-        while (tokens = re.exec(qs)) {
+        while (tokens === re.exec(qs)) {
             params[decodeURIComponent(tokens[1])]
                 = decodeURIComponent(tokens[2]);
         }
@@ -264,8 +304,8 @@
         var $_GET = getQueryParams(document.location.search);
         var week = $_GET['week'];
 
-        if (week != undefined){
-          if(week > 50){week=50}else if (week < -50){week=-50}
+        if (week !== undefined){
+          if(week > 50){week=50;}else if (week < -50){week=-50;}
           i = (week*7) + i;
         }
 
@@ -279,7 +319,7 @@
 
       return (day_l<10 ? '0' : '') +  day_l + '/' +
                     (month_l<10 ? '0' : '') + month_l + '/' +
-                    year_l
+                    year_l;
     }
 
   /**
@@ -328,3 +368,5 @@
   };
 
 })(jQuery);
+
+

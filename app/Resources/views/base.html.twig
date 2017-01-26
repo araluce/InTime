@@ -92,7 +92,7 @@
         </div>
     {% endif %}
     {% if ESTADO_USUARIO is defined %}
-        <div class="row" style="margin-bottom:3%;">
+        <div class="row" style="margin-bottom:1%;">
             <div id="posicion-reloj">
                 {% if ESTADO_USUARIO == 'Activo' and TDV is defined %}
                     <div id="countdown-11"></div>
@@ -129,7 +129,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <!--<script src="{{ asset('js/bootstrap.min.js') }}"></script>-->
     <script src="{{ asset('js/clockpicker.js') }}"></script>
-    <script src="{{ asset('js/weekly_schedule.js') }}"></script>
     <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
     <script>
         function responsive_screen() {
@@ -171,12 +170,13 @@
         {% endif %}
             });
     </script>
-{% block javascripts %}{% endblock %}
+    {% block javascripts %}
+    {% endblock %}
 
-<!--
-<script src="{{ asset('js/polyfills.js') }}"></script>
-<script src="{{ asset('js/menu.js') }}"></script>-->
-<!--<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>-->
+    <!--
+    <script src="{{ asset('js/polyfills.js') }}"></script>
+    <script src="{{ asset('js/menu.js') }}"></script>-->
+    <!--<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>-->
 
 </body>
 </html>

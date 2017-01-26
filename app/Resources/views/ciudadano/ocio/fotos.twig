@@ -2,14 +2,10 @@
 
 {% block header %}
     {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
     <style>
-        .bordes{
-            background-color: #FFFFFF;
-            padding: 20px;
-            border-style: solid;
-            border-color: #000000;
-            color: #000000;
-        }
         .single-portfolio {
             margin: 0;
             padding: 0;
@@ -36,8 +32,8 @@
         .portfolio-item img {
             margin: 0;
             padding: 5%;
-            /*width: 100%;*/
-            height: 300px;
+            width: 100%;
+            /*height: 300px;*/
         }
         .single-portfolio:hover .details-social,
         .single-portfolio:hover .details-author
@@ -270,6 +266,20 @@
         #mosaico-fotos{
             width: 100%;
         }
+        .swipe {
+            overflow: hidden;
+            visibility: hidden;
+            position: relative;
+        }
+        .swipe-wrap {
+            overflow: hidden;
+            position: relative;
+        }
+        .swipe-wrap > div {
+            float:left;
+            width:100%;
+            position: relative;
+        }
         @media (max-width: 1068px) {
             .portfolio-details h4 {
                 font-size: 35px;
@@ -285,7 +295,29 @@
 
 {% block body %}
     <div class="container">
-        <div class="row bordes">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-photo" aria-hidden="true"></span>
+                        <div class="hidden-xs">GALERIA</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn13" onclick="location.reload();">
+                        <span class="fa fa-refresh" aria-hidden="true"></span>
+                        <div class="hidden-xs">ACTUALIZAR</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row bordes" style="margin-top: 1%;">
             <div class="col-md-12">
                 <div class="row" style="margin-bottom: 2%;">
                     <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
@@ -297,6 +329,10 @@
 {% endblock %}
 
 {% block javascripts %}
+    <!--
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js">
+    </script>
+    -->
     <script>
         function getPhotos() {
             ruta = '/ciudadano/obtenerFotos';
@@ -312,7 +348,7 @@
                         if (v.usuario.alias !== null) {
                             contenido += '      <h4>@' + v.usuario.alias + '</h4>';
                         } else {
-                            contenido += '      <h4>ANONIMO</h4>';
+                            contenido += '      <h4>ANÓNIMO</h4>';
                         }
                         contenido += '      </figcaption>';
                         contenido += '      <center>';
@@ -326,11 +362,13 @@
                         contenido += '</div>';
                         contenido += '</div>';
                         $('#photo-grid').append(contenido);
-
                     });
                 }
             });
         }
+        $('#actualizar').click(function () {
+            descargarInformacionSesiones();
+        });
         $("#input-711").fileinput({
             uploadUrl: "/ciudadano/subirImagenAlbum",
             uploadAsync: true,
@@ -353,10 +391,8 @@
         }
         $(document).ready(function () {
             getPhotos();
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
-            });
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        });
     </script>
     <!--<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>-->
 {% endblock %}

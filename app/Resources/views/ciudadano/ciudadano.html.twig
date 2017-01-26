@@ -28,13 +28,6 @@
             </div>
         </div>
         -->
-
-        <div class="menu" id="menu-jugador">
-            <a href="/ciudadano/info">
-                <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
-            </a>
-        </div>
-
         <div class="row" id="fel-tra">            
             <div class="menu" id="menu-felicidad">
                 <a href="/ciudadano/felicidad"><img alt="Logo" src="{{ asset('images/iconos/Felicidad.png') }}"  /></a>
@@ -54,7 +47,12 @@
         </div>
         <div class="row" id="oci-asi">
             <div class="menu" id="menu-asistencia">
-                <a href="/ciudadano/asistencia_medica"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
+                <a href="/ciudadano/asistencia"><img alt="Logo" src="{{ asset('images/iconos/Asistencia_medica.png') }}"  /></a>
+            </div>
+            <div class="menu" id="menu-jugador">
+                <a href="/ciudadano/info">
+                    <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
+                </a>
             </div>
             <div class="menu" id="menu-ocio" style="float:right;">
                 <a href="/ciudadano/ocio">
@@ -82,9 +80,11 @@
                 <a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" /></a>
             </div>
         </div>
+        <!--
         <div id="fondo-principal">
             <img alt="Logo" src="{{ asset('fondo-principal.png') }}"  />
         </div>
+        -->
     </div>
 {% endblock %}
 

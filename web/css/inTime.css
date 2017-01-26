@@ -1,3 +1,41 @@
+@font-face {
+    font-family: "Kimberley";
+    src: url("../font/digital-7.ttf");
+}
+@font-face {
+    font-family: "Isocpeur";
+    src: url("../font/ISOCPEUR.ttf");
+}
+@font-face {
+    font-family: "Isocteur";
+    src: url("../font/ISOCTEUR.ttf");
+}
+.border-radius,
+.btn-menu-first,
+.btn-menu,
+.btn-menu-last{
+    border-style: solid;
+    border-color: #000000;
+}
+.btn-menu,
+.btn-menu-first{
+    border-width: 2px;
+    border-right: 0px;
+}
+.btn-menu-last{
+    border-width: 2px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+.btn-menu-first{
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+.border-radius{
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    padding: 20px;
+}
 .button-tweet-folders-comp{
     cursor: pointer;
 }
@@ -35,9 +73,11 @@ footer{
 }
 
 body{
+    font-family: "Isocpeur";
+    /*font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;*/
     background-color: #F7F7F7;
     /*    background: url(../fondo.png) center fixed no-repeat;
-        background-size: auto 100vh;*/
+        background-size: 8% 33vh;*/
 }
 
 .input-group-btn > .btn {
@@ -202,7 +242,7 @@ table{
 /*FIN Alineamiento de iconos dentro de imputs*/
 
 .form-control{
-    font-family: 'Kimberley';
+    /*font-family: 'Isocpeur';*/
     color: black;
     font-weight: bold;
     border: 2px solid #000000;
@@ -573,9 +613,12 @@ svg:not(:root) {
 #log-sal div{
     display: inline-block;
 }
-#menu-logo img,
-#menu-salir img{
+#menu-logo img{
     height: 80px;
+}
+#menu-salir img{
+    margin-top: 50%;
+    height: 120px;
 }
 #fondo-principal{
     position: absolute;
@@ -589,15 +632,19 @@ svg:not(:root) {
 }
 #modal-advice2 .modal-body,
 #modal-advice2 .modal-header{
-    font-family: "Kimberley";
+    font-family: "Isocpeur";
     background-color: #F7F7F7;
     color: black;
 }
 #modal-advice2 .modal-header{
-    font-family: "Kimberley";
+    font-family: "Isocteur";
 }
 #modal-advice2 .modal-body{
-    font-family: 'Oregano', cursive;
+    /*    font-family: 'Oregano', cursive;*/
+    font-family: 'Isocpeur';
+    text-align: justify;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 #modal-advice2 .modal-header {
     border-bottom: 2px solid #000000;
@@ -691,7 +738,7 @@ svg:not(:root) {
     .form-control {
         display: block;
         width: 100%;
-        height: 55px;
+        height: 45px;
         padding: 9px 15px;
     }
     .file-caption-name,
@@ -763,6 +810,9 @@ svg:not(:root) {
     .button-tweet-panel img{
         height: 100px;
     }
+    #modal-advice2 .modal-body{
+        font-size: 45px;
+    }
 }
 @media (min-width: 760px){
     body{
@@ -777,29 +827,32 @@ svg:not(:root) {
         margin-left: 3%;
     }
     .menu img{
-        height: 295px;
+        height: 300px;
         width: auto;
     }
     .menu-principal img{
         height: 195px;
     }
-    #menu-jugador{
-        margin-left: 37vw;
-    }
     #fel-tra{
-        margin-top: -50%;
-        margin-left:10vw;
-        width: 70vw;
+        /*margin-top: -50%;*/
+        margin-top: 15%;
+        margin-left:17vw;
+        width: 60vw;
     }
     #oci-asi{
         margin-left:0vw;
-        width: 90vw;
+        width: 100vw;
+    }
+    #menu-jugador{
+/*        margin-left: 37vw;*/
+        margin-left: 7vw;
     }
     #ali-pre{
         margin-left:15vw;
         width: 65vw;
     }
     #log-sal{
+        margin-top: 15%;
         margin-left:25vw;
     }
     #fondo-principal{
@@ -811,11 +864,11 @@ svg:not(:root) {
         height: 220px;
     }
     #fondo-principal{
-        top: 35vh;
-        left:43vw;
+        top: 42vh;
+        left:48vw;
     }
     #fondo-principal img{
-        height: 280px;
+        height: 115px;
     }
     .modal-advice .modal-dialog{
         width: 85%;
@@ -847,13 +900,6 @@ svg:not(:root) {
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 85px;
-        padding: 9px 15px;
-    }
-
     .fileinput-upload i,
     .fileinput-remove-button i{
         font-size: 20px;
@@ -883,7 +929,17 @@ svg:not(:root) {
     select,
     .btn,
     .login-form h4{
-        font-size: 35px;
+        font-size: 45px;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 85px;
+        padding: 9px 15px;
+    }
+    .input-group-addon,
+    .input-group-btn span{
+        font-size: 40px;
     }
     .fileinput-upload i,
     .fileinput-remove-button i{
@@ -899,11 +955,6 @@ svg:not(:root) {
     .item-carousel{
         font-size: 95px;
     }
-    .input-group-addon i,
-    input-group-addon span,
-    .input-group-btn span{
-        font-size: 50px;
-    }
     table{
         font-size: 30px;
     }
@@ -913,25 +964,37 @@ svg:not(:root) {
     .button-tweet-panel img{
         height: 100px;
     }
+    #modal-advice2 .modal-body{
+        font-size: 45px;
+    }
+    .hidden-xs{
+        font-size: 25px;
+    }
 }
 @media (min-width: 992px){
     #posicion-reloj{
         margin: 0 15%;
     }
     .menu img{
-        height: 195px;
+        height: 170px;
         width: auto;
     }
     .menu-principal img{
-        height: 195px;
-    }
-    #menu-jugador{
-        margin-left: 37vw;
+        height: 220px;
     }
     #fel-tra{
+        /*        
         margin-top: -50%;
         margin-left:10vw;
         width: 70vw;
+        */
+        margin-top: 3%;
+        margin-left:10vw;
+        width: 70vw;
+    }
+    #menu-jugador{
+        /*margin-left: 37vw;*/
+        margin-left: 7vw;
     }
     #oci-asi{
         margin-left:0vw;
@@ -942,6 +1005,7 @@ svg:not(:root) {
         width: 65vw;
     }
     #log-sal{
+        margin-top: 0;
         margin-left:25vw;
     }
     #menu-logo img{
@@ -949,10 +1013,10 @@ svg:not(:root) {
     }
     #fondo-principal{
         top: 75vh;
-        left:38vw;
+        left:43vw;
     }
     #fondo-principal img{
-        height: 280px;
+        height: 140px;
     }
     .modal-advice .modal-dialog{
         width: 85%;
@@ -985,6 +1049,19 @@ svg:not(:root) {
         width: 100%;
         height: 85px;
         padding: 9px 15px;
+    }
+    .form-control,
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a,
+    .file-drop-zone-title,
+    select,
+    .btn,
+    .login-form h4{
+        font-size: 20px;
+    }
+    .input-group-addon,
+    .input-group-btn span{
+        font-size: 20px;
     }
     .file-caption-name,
     .file-input .input-group-btn button,
@@ -1018,15 +1095,6 @@ svg:not(:root) {
     .modal_tweet #modal_tweet_descripcion{
         font-size: 26px;
     }
-    .form-control,
-    .file-input .input-group-btn button,
-    .file-input .input-group-btn a,
-    .file-drop-zone-title,
-    select,
-    .btn,
-    .login-form h4{
-        font-size: 35px;
-    }
     .fileinput-upload i,
     .fileinput-remove-button i{
         font-size: 20px;
@@ -1041,16 +1109,17 @@ svg:not(:root) {
     .item-carousel{
         font-size: 95px;
     }
-    .input-group-addon i,
-    input-group-addon span,
-    .input-group-btn span{
-        font-size: 50px;
-    }
     table{
         font-size: 30px;
     }
     footer{
         font-size: 35px;
+    }
+    #modal-advice2 .modal-body{
+        font-size: 20px;
+    }
+    .hidden-xs{
+        font-size: 20px;
     }
 }
 @media (min-width: 1200px){
@@ -1276,39 +1345,57 @@ svg:not(:root) {
         margin-top: 0vh;
         margin-left: 38vw;
     }
-    #menu-jugador{
-        margin-top: 1%;
-        margin-left: 44vw;
-    }
     #menu-clasificaciones{
         margin-left:30vw;
     }
     #fel-tra{
+        /*
         margin-top: -50%;
-        margin-left:30vw;
         width: 34vw;
+        */
+        margin-top: 2%;
+        margin-left:37vw;
+        width: 20vw;
+    }
+    #menu-jugador{
+        /*
+        margin-top: 1%;
+        margin-left: 44vw;
+        */
+        margin-left: 7vw;
     }
     #oci-asi{
+        /*
         margin-left:23vw;
         width: 47vw;
+        */
+        margin-left:27vw;
+        width: 40vw;
     }
     #ali-pre{
+        /*        
         margin-left:30vw;
         width: 34vw;
+        */
+        margin-left:37vw;
+        width: 20vw;
     }
     #log-sal{
         margin-left:42vw;
     }
-    #menu-logo img,
-    #menu-salir img{
+    #menu-logo img{
         height: 80px;
     }
+    #menu-salir img{
+        margin-top: 25%;
+        height: 60px;
+    }
     #fondo-principal{
-        top: 42vh;
-        left:45vw;
+        top: 50vh;
+        left:47vw;
     }
     #fondo-principal img{
-        height: 190px;
+        height: 95px;
     }
     .button-tweet-panel img{
         height: 50px;

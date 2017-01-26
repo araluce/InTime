@@ -34,6 +34,13 @@ class UsuarioPrestamo
     private $restante;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="interes", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $interes;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
@@ -128,6 +135,29 @@ class UsuarioPrestamo
     public function getRestante()
     {
         return $this->restante;
+    }
+
+    /**
+     * Set interes
+     *
+     * @param float $interes
+     * @return UsuarioPrestamo
+     */
+    public function setInteres($interes)
+    {
+        $this->interes = $interes;
+
+        return $this;
+    }
+
+    /**
+     * Get interes
+     *
+     * @return float 
+     */
+    public function getInteres()
+    {
+        return $this->interes;
     }
 
     /**

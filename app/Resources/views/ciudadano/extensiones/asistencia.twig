@@ -1,0 +1,384 @@
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/asistencia.css')}}" rel="stylesheet" type="text/css" />
+    <style>
+        .cita{
+            margin-top: 1%;
+            font-size: 41px;
+        }
+        legend{
+            font-size: 35px;
+        }
+        @media (min-width: 1200px){
+            legend{
+                font-size: 14px;
+            }
+            .cita{
+                font-size: 14px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row" style="margin-top: 1%;">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn btn-primary btn-menu-first" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-medkit" aria-hidden="true"></span>
+                        <div class="hidden-xs">CALENDARIO</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="proceso" class="btn btn-default btn-menu" href="#tab2" data-toggle="tab" onclick="misCitas();">
+                        <span class="fa fa-ticket" aria-hidden="true"></span>
+                        <div class="hidden-xs">MIS CITAS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn-menu-last" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="tab-content">
+
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row border-radius" style="margin-top: 1%;">
+                            <div class="col-lg-6">
+                                <div id="day-schedule"></div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" style="margin-top: 3%;">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" class="form-control" id="dia" placeholder="Día" disabled/>
+                                        </div>
+                                        <div class="input-group" style="margin-top: 1%;">
+                                            <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                                            <input type="text" class="form-control" id="coste" placeholder="Coste" disabled/>
+                                        </div>
+                                        <textarea class="form-control" style="margin-top: 1%;" id="horas" NAME="horas" rows="1" placeholder="Horas" disabled></textarea>
+                                        <textarea class="form-control" style="margin-top: 1%;" id="motivo" rows="3" placeholder="Escriba el motivo de la cita"></textarea>
+                                    </div>
+                                    <div class="row" style="margin-top: 3%;">
+                                        <div class="col-xs-4 col-xs-offset-4">
+                                            <button  class="btn btn-primary btn-default btn-block info-button" id="solicitar">
+                                                Solicitar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade in" id="tab2">
+                        <div id="mis-solicitudes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/calendario.js') }}">
+    </script>
+    <script>
+        var dia = -1;
+        var horas = [];
+        var resultados = [];
+        $("#day-schedule").dayScheduleSelector({
+            days: [0, 1, 2, 3, 4],
+            interval: 15,
+            startTime: '11:00',
+            endTime: '13:30'
+
+        });
+        $("#day-schedule").on('selected.artsy.dayScheduleSelector', function (e, selected) {
+            $.each(selected, function (k, v) {
+                aux = {};
+                aux['hora'] = v.getAttribute("data-time");
+                aux['dia'] = v.getAttribute("data-day");
+
+                if (dia !== aux['dia']) {
+                    dia = aux['dia'];
+                    resultados = [];
+                    horas = [];
+                    $('#dia').val('');
+                }
+                horas.push(v.getAttribute("data-time"));
+                resultados.push(aux);
+            });
+            imprimirResultados();
+        });
+        $(".time-slot").on('click', function () {
+            var hora = $(this)[0].attributes[1].value;
+            var dia_slot = $(this)[0].attributes[2].value;
+            var index = 0;
+            var dia_seleccionado = $(this)[0].attributes[2].value;
+            if (dia !== dia_seleccionado) {
+                $('td[data-selected="selected"]').each(function () {
+                    $(this).removeAttr('data-selected');
+                });
+            }
+            $.each(resultados, function (k, v) {
+                if (typeof v !== 'undefined') {
+                    if (v.hora === hora && v.dia === dia_slot) {
+                        delete resultados[index];
+                    }
+                }
+                index++;
+            });
+            index = 0;
+            if (horas.length) {
+                $.each(horas, function (k, v) {
+                    if (v === hora) {
+                        delete horas[index];
+                    }
+                    index++;
+                });
+            }
+            imprimirResultados();
+        });
+        function imprimirResultados() {
+            $('#dia').val(diaToString(dia));
+            $('#dia_id').val(dia);
+            var contador = 0;
+            $.each(horas, function (k, v) {
+                if (typeof v !== 'undefined') {
+                    contador++;
+                }
+            });
+            if (contador === 0) {
+                $('#coste').val('');
+                $('#dia').val('');
+            } else {
+                $('#coste').val(contador * 15 + 'minutos');
+            }
+            t = '';
+            $.each(resultados, function (k, v) {
+                if (typeof v !== 'undefined') {
+                    t += v.hora + ' ';
+                }
+            });
+            $('#horas').html(t);
+        }
+        function diaToString(id) {
+            switch (id) {
+                case '0':
+                    return 'Lunes';
+                case '1':
+                    return 'Martes';
+                case '2':
+                    return 'Miercoles';
+                case '3':
+                    return 'Jueves';
+                case '4':
+                    return 'Viernes';
+                case '5':
+                    return 'Sabado';
+                case '6':
+                    return 'Domingo';
+                default:
+                    return '';
+            }
+        }
+        $("#solicitar").on('click', function () {
+            var dia_post = diaToString(dia);
+            var horas_post = horas;
+            var motivo = $("#motivo").val();
+            $('#modal-avisos2').click();
+            mostrarCarga('Estudiando solicitud...');
+            if (dia_post === '' || !horas_post.length) {
+                mostrarResultadoOperacion('Debes elegir un día en el horario.');
+            } else if ($.trim(motivo) === '') {
+                mostrarResultadoOperacion('Especifica el motivo de la asistencia.');
+            } else {
+                mostrarCarga('Verificando disponibilidad de la asistencia...');
+                ruta = '/ciudadano/asistencia/solicitar';
+                datos = {'dia': dia_post, 'horas': horas_post, 'motivo': motivo};
+                $.post(ruta, datos, function (data, status) {
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+        });
+        function obtenerCitas() {
+            ruta = '/ciudadano/asistencia/obtenerOcupados';
+            $.get(ruta, function (data, status) {
+                horario = data.message;
+                console.log(data.message);
+                $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
+            });
+        }
+        function misCitas() {
+            mostrarCarga('Descargando citas');
+            $('#modal-avisos2').click();
+            ruta = '/ciudadano/asistencia/obtenerMisCitas';
+            $.get(ruta, function (data, status) {
+                cerrarModal();
+                var datos = jQuery.parseJSON(data.message);
+                contenido = '';
+                $.each(datos, function (k, v) {
+                    switch (v.ESTADO) {
+                        case 0:
+                            contenido += '<div class="col-lg-12 bordes border-radius cita">';
+                            contenido += '  <legend class="cita-detalle">ID #' + v.ID + '<i style="float: right;"> ' + v.FECHA_SOLICITUD.date + '</i></legend>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <p>Estado: La cita está pendiente de ser aceptada por el GdT.</p>';
+                            contenido += '      <p>Importe: ' + v.COSTE + 'm. Se cobrará cuando el GdT acepte la cita</p>';
+                            contenido += '      <p>Día: ' + v.DIA + '</p>';
+                            contenido += '      <p>Hora: ' + v.HORA + '</p>';
+                            contenido += '      <p>Motivo: ' + v.MOTIVO + '</p>';
+                            contenido += '  </div>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <div class="row">';
+                            contenido += '          <div class="col-xs-6 col-xs-offset-3">';
+                            contenido += '              <button class="btn btn-block btn-primary" onclick="modalAnularCita(' + v.ID + ');">';
+                            contenido += '                  ANULAR CITA';
+                            contenido += '              </button>';
+                            contenido += '          </div>';
+                            contenido += '      </div>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+
+                            break;
+                        case 1:
+                            contenido += '<div class="col-lg-12 bordes border-radius cita" style="border-color: green;">';
+                            contenido += '  <legend class="cita-detalle">ID #' + v.ID + '<i style="float: right;"> ' + v.FECHA_SOLICITUD.date + '</i></legend>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <p>Estado: La cita ha sido aceptada</p>';
+                            contenido += '      <p>Importe cobrado: ' + v.COSTE + 'm.</p>';
+                            contenido += '      <p>Día: ' + v.DIA + '</p>';
+                            contenido += '      <p>Hora: ' + v.HORA + '</p>';
+                            contenido += '      <p>Motivo: ' + v.MOTIVO + '</p>';
+                            contenido += '  </div>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <div class="row">';
+                            contenido += '          <div class="col-xs-6 col-xs-offset-3">';
+                            contenido += '              <button class="btn btn-block btn-primary" onclick="modalAnularCita(' + v.ID + ');">';
+                            contenido += '                  ANULAR CITA';
+                            contenido += '              </button>';
+                            contenido += '          </div>';
+                            contenido += '      </div>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                            contenido += '</div>';
+                            break;
+                        case 2:
+                            contenido += '<div class="col-lg-12 bordes border-radius cita" style="border-color: red;">';
+                            contenido += '  <legend class="cita-detalle">ID #' + v.ID + '<span style="margin-left: 3%; color: red;">Cita anulada</span><i style="float: right;"> ' + v.FECHA_SOLICITUD.date + '</i></legend>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <p>Estado: Cita anulada por usted.</p>';
+                            contenido += '      <p>Motivo de la cancelación: ' + v.MOTIVO + '</p>';
+                            contenido += '      <p>Importe cobrado: ' + v.COSTE + 'm.</p>';
+                            contenido += '      <p>Día: ' + v.DIA + '</p>';
+                            contenido += '      <p>Hora: ' + v.HORA + '</p>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                            break;
+                        case 3:
+                            contenido += '<div class="col-lg-12 bordes border-radius cita" style="border-color: red;">';
+                            contenido += '  <legend class="cita-detalle">ID #' + v.ID + '<span style="margin-left: 3%; color: red;">Cita anulada</span><i style="float: right;"> ' + v.FECHA_SOLICITUD.date + '</i></legend>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <p>Estado: Cita anulada por el Gdt</p>';
+                            contenido += '      <p>Motivo de la cancelación: ' + v.MOTIVO + '</p>';
+                            contenido += '      <p>Día: ' + v.DIA + '</p>';
+                            contenido += '      <p>Hora: ' + v.HORA + '</p>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                            break;
+                        case 4:
+                            contenido += '<div class="col-lg-12 bordes border-radius cita" style="border-color: red;">';
+                            contenido += '  <legend class="cita-detalle">ID #' + v.ID + '<span style="margin-left: 3%; color: red;">Cita fuera de plazo</span><i style="float: right;"> ' + v.FECHA_SOLICITUD.date + '</i></legend>';
+                            contenido += '  <div class="col-lg-6">';
+                            contenido += '      <p>Estado: Cita anulada por el sistema.</p>';
+                            contenido += '      <p>Motivo de la cancelación: No se ha obtenido respuesta</p>';
+                            contenido += '      <p><del>Importe: ' + v.COSTE + 'm.</del></p>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                            break;
+                    }
+                });
+                $('#mis-solicitudes').html(contenido);
+                console.log(datos);
+            });
+        }
+        function modalAnularCita(idCita) {
+            $('#modal-avisos2').click();
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <textarea class="form-control" style="margin-top: 1%;" id="motivo-cancelacion" rows="3" placeholder="Escriba el motivo de la cancelación"></textarea>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3 col-xs-offset-1">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="cancelarCita(' + idCita + ')"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '  <div class="col-xs-3 col-xs-offset-4">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="cerrarModal();"> CANCELAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").html(contenido);
+        }
+        function cancelarCita(idCita) {
+            var motivo = $('#motivo-cancelacion').val();
+            if ($.trim(motivo) === '') {
+                mostrarResultadoOperacion('Debe escribir el motivo de la cancelación');
+            } else {
+                mostrarCarga('Anulando la cita');
+                ruta = '/ciudadano/asistencia/cancelarCita';
+                datos = {'idCita': idCita, 'motivo': motivo};
+                $.post(ruta, datos, function (data, status) {
+                    var datos = jQuery.parseJSON(data);
+                    mostrarResultadoOperacion(datos.message);
+                });
+            }
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '      ' + resultado;
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3 col-xs-offset-4">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function cerrarModal() {
+            $('#modal-advice2').modal('toggle');
+        }
+        $(document).ready(function () {
+            obtenerCitas();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        });
+    </script>
+
+{% endblock %}

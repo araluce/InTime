@@ -22,9 +22,10 @@ and open the template in the editor.
 }
 .titulo-proceso,
 .tablon-progreso h5,
-.detalle-enunciado,
-.descripcion{
-    font-family: 'Oregano', cursive;
+.detalle-enunciado{
+    /*font-family: 'Oregano', cursive;*/
+    font-family: "Isocpeur";
+    text-align: justify;
 }
 .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
 .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
@@ -135,7 +136,8 @@ and open the template in the editor.
 }
 .detalle-enunciado{
     min-height: 150px;
-    margin: 1%;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 .detalle-coste{
     text-align: right;
@@ -239,7 +241,8 @@ and open the template in the editor.
     }
     .detalle-enunciado{
         min-height: 200px;
-        margin: 1%;
+        padding-left: 30px;
+        padding-right: 30px;
     }
     .detalle-boton{
         font-size: 35px;

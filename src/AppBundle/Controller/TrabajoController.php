@@ -56,7 +56,7 @@ class TrabajoController extends Controller {
             $em = $doctrine->getManager();
             $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('inspeccion_trabajo');
             if ($EJERCICIO_SECCION === null) {
-                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Seccion no existe'));
+                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Sección no existe'));
             }
             $EJERCICIO_TIPO = $doctrine->getRepository('AppBundle:EjercicioTipo')->findOneByTipo('test');
             if ($EJERCICIO_TIPO === null) {

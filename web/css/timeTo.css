@@ -7,13 +7,13 @@ figure, figcaption {
 	display: block;
 }
 
-.transition {
+/*.transition {
     -webkit-transition: top 400ms linear;
     -moz-transition: top 400ms linear;
     -ms-transition: top 400ms linear;
     -o-transition: top 400ms linear;
     transition: top 400ms linear;
-}
+}*/
 
 .timeTo {
 	font-family: Tahoma, Verdana, Aial, sans-serif;

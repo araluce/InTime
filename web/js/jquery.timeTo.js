@@ -108,7 +108,7 @@
         var method, options = {};
 
         for(var i = 0, arg; arg = arguments[i]; ++i) {
-            if(i == 0 && typeof arg === 'string') {
+            if(i === 0 && typeof arg === 'string') {
                 method = arg;
             }
             else {
@@ -199,7 +199,7 @@
                 data = $.extend(defaults, options);
                 data.options = options;
 
-                data.height = Math.round(data.fontSize * 100 / 93);
+                data.height = Math.round(data.fontSize * 100 / 83);
                 data.width = Math.round(data.fontSize * .8 + data.height * .13);
                 data.displayHours = !!(data.displayDays || data.displayHours);
 
@@ -331,7 +331,7 @@
         var $digits = this.find('ul'),
             data = this.data();
 
-        if(!data.vals || $digits.length == 0) {
+        if(!data.vals || $digits.length === 0) {
             if(data.intervalId) {
                 clearTimeout(data.intervalId);
                 this.data('intervalId', null);
@@ -342,7 +342,7 @@
 
             return;
         }
-        if(digit == undefined) {
+        if(digit === undefined) {
             digit = data.iSec;
         }
 
@@ -354,7 +354,7 @@
         $li.eq(1).html(n);
         n += step;
 
-        if(digit == data.iSec) {
+        if(digit === data.iSec) {
             var tickTimeout = data.tickTimeout,
                 timeDiff = (new Date()).getTime() - data.ttStartTime;
 
@@ -368,7 +368,7 @@
         if(n < 0 || n > data.limits[digit]) {
             if(n < 0) {
                 n = data.limits[digit];
-                if(digit == data.iHour && data.displayDays > 0 && digit > 0 && data.vals[digit-1] == 0) // fix for hours when day changing
+                if(digit === data.iHour && data.displayDays > 0 && digit > 0 && data.vals[digit-1] === 0) // fix for hours when day changing
                     n = 3;
             }
             else {
@@ -387,18 +387,18 @@
         
         if($.support.transition) {
             //$ul.addClass('transition');
-            $ul.css({top:0});
+//            $ul.css({top:0});
 
             setTimeout(function() {
                 //$ul.removeClass('transition');
                 $li.eq(1).html(n);
                 $ul.css({top:"-"+ data.height +"px"});
 
-                if(step > 0 || digit != data.iSec) {
+                if(step > 0 || digit !== data.iSec) {
                     return;
                 }
 
-                if(data.sec == data.countdownAlertLimit) {
+                if(data.sec === data.countdownAlertLimit) {
                     $digits.parent().addClass('timeTo-alert');
                 }
 
@@ -417,17 +417,17 @@
             }, 410);
         }
         else {
-            $ul.stop().animate({top:0}, 400, digit != data.iSec ? null : function() {
+            $ul.stop().animate({top:0}, 400, digit !== data.iSec ? null : function() {
                 $li.eq(1).html(n);
                 $ul.css({top:"-"+ data.height +"px"});
-                if(step > 0 || digit != data.iSec) {
+                if(step > 0 || digit !== data.iSec) {
                     return;
                 }
 
-                if(data.sec == data.countdownAlertLimit) {
+                if(data.sec === data.countdownAlertLimit) {
                     $digits.parent().addClass('timeTo-alert');
                 }
-                else if(data.sec == 0) {
+                else if(data.sec === 0) {
                     $digits.parent().removeClass('timeTo-alert');
 
                     if(data.intervalId) {

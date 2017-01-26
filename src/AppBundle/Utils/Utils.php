@@ -538,5 +538,23 @@ class Utils {
         }
         return 0;
     }
-
+    
+    static function tutoriaDiaToInt($dia){
+        switch ($dia){
+            case 'Lunes':
+                return '0';
+            case 'Martes':
+                return '1';
+            case 'Miercoles':
+                return '2';
+            case 'Jueves':
+                return '3';
+            case 'Viernes':
+                return '4';
+            case 'Sabado':
+                return '5';
+            case 'Domingo':
+                return '6';
+        }
+    }
 }

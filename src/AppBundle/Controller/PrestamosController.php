@@ -52,6 +52,7 @@ class PrestamosController extends Controller {
                 $aux['ID'] = $DEUDA->getIdUsuarioPrestamo();
                 $aux['CANTIDAD'] = Utils::segundosToDias($DEUDA->getCantidad());
                 $aux['RESTANTE'] = Utils::segundosToDias($DEUDA->getRestante());
+                $aux['INTERES'] = $DEUDA->getInteres();
                 $aux['FECHA'] = $DEUDA->getFecha();
                 $aux['ESTADO'] = $DEUDA->getRestante() > 0;
                 $DATOS['DEUDAS'][] = $aux;
@@ -82,16 +83,17 @@ class PrestamosController extends Controller {
             }
             
             $tiempo = $request->request->get('tiempo');
-            $DEUDA = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findOneBy([
+            $DEUDAS = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([
                 'idUsuario' => $USUARIO,
                 'motivo' => 'prestamo'
             ]);
-            $crear = false;
-            if ($DEUDA === null) {
-                $crear = true;
-            } else {
-                if ($DEUDA->getRestante() === 0) {
-                    $crear = true;
+            $crear = true;
+            if (count($DEUDAS)) {
+                foreach ($DEUDAS as $DEUDA){
+                    if($DEUDA->getRestante() > 0){
+                        $crear = false;
+                        $restante = $DEUDA->getRestante();
+                    }
                 }
             }
             if ($crear) {
@@ -102,6 +104,7 @@ class PrestamosController extends Controller {
                 $INTERES = Utils::getConstante($doctrine, 'interes_prestamo');
                 $PENDIENTE = $tiempo + ($tiempo * $INTERES);
                 $PRESTAMO->setRestante($PENDIENTE);
+                $PRESTAMO->setInteres($INTERES);
                 $PRESTAMO->setFecha(new \DateTime('now'));
                 $em->persist($PRESTAMO);
                 $em->flush();
@@ -109,12 +112,11 @@ class PrestamosController extends Controller {
                 Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Préstamo solicitado');
                 return new JsonResponse(array(
                     'estado' => 'OK',
-                    'message' => 'Muy bien @' . $alias . '... ahora eres mío. '
-                    . 'Iré cobrándote mi parte diariamente hasta que... bueno, '
-                    . 'hasta que tenga lo que me corresponde.'
+                    'message' => 'Tu solicitud ha sido aceptada. La cantidad adeudada se te cobrará'
+                    . ' en 4 cuotas semanales durante el próximo mes de vida.'
                         ), 200);
             } else {
-                $DEUDA_FORMATO = Utils::segundosToDias($DEUDA->getRestante());
+                $DEUDA_FORMATO = Utils::segundosToDias($restante);
                 return new JsonResponse(array(
                     'estado' => 'ERROR',
                     'message' => 'Aún tienes una deuda conmigo... '
@@ -151,7 +153,6 @@ class PrestamosController extends Controller {
             if ($DEUDA === null) {
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Creo que esta deuda no te corresponde. Otra vez será'), 200);
             }
-            $alias = Usuario::aliasODesconocido($USUARIO);
             if (Usuario::puedoRealizarTransaccion($doctrine, $session, $DEUDA->getRestante())) {
                 Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$DEUDA->getRestante(), 'Cobro - Liquidación total de deuda', true);
                 $DEUDA->setRestante(0);
@@ -160,12 +161,12 @@ class PrestamosController extends Controller {
                 
                 return new JsonResponse(array(
                     'estado' => 'OK',
-                    'message' => 'Tu deuda ha quedado saldada @' .$alias. '.'
+                    'message' => 'Tu deuda ha quedado saldada.'
                         ), 200);
             }
             return new JsonResponse(array(
                     'estado' => 'ERROR',
-                    'message' => 'No tienes suficiente @' .$alias. '...'
+                    'message' => 'No tienes suficiente TdV.'
                         ), 200);
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato'), 200);
