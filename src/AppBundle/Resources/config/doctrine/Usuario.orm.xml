@@ -21,7 +21,9 @@
     <field name="certificado" type="string" column="certificado" length="40" nullable="false"/>
     <field name="imagen" type="string" column="imagen" length="1000" nullable="true"/>
     <field name="tiempoSinComer" type="datetime" column="tiempo_sin_comer" nullable="true"/>
+    <field name="tiempoSinComerDistrito" type="datetime" column="tiempo_sin_comer_distrito" nullable="true"/>
     <field name="tiempoSinBeber" type="datetime" column="tiempo_sin_beber" nullable="true"/>
+    <field name="tiempoSinBeberDistrito" type="datetime" column="tiempo_sin_beber_distrito" nullable="true"/>
     <many-to-one field="idDistrito" target-entity="UsuarioDistrito">
       <join-columns>
         <join-column name="id_distrito" referenced-column-name="id_usuario_distrito"/>

@@ -8,24 +8,15 @@ and open the template in the editor.
     Author     : araluce
 */
 
-@font-face {
-    font-family: "Kimberley";
-    src: url("{{ asset('font/digital-7.ttf') }}");
-}
-.detalle-fecha,
+.tablon-progreso h5,
 .detalle-coste,
 .tablon-progreso,
-.btn-pref .hidden-xs,
 .btn,
 .detalle-boton{
     font-family: 'Kimberley';
 }
-.titulo-proceso,
-.tablon-progreso h5,
-.detalle-enunciado{
-    /*font-family: 'Oregano', cursive;*/
-    font-family: "Isocpeur";
-    text-align: justify;
+.btn-pref .hidden-xs{
+    text-align: center;
 }
 .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
 .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
@@ -57,16 +48,29 @@ and open the template in the editor.
     font-size: 24px;
     line-height: 35px;
 }
+.fila-producto{
+    height: 20vw;
+}
 .slot{
+    text-align: center;
     border-style: solid;
     border-color: #000000;
     border-width: 2px;
-    height: 80px;
-    padding:10px;
+    /*height: 80px;*/
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-left: 0px;
+    width:  15vw;
+    height: 15vw;
+    float: left;
+    display: inline-block;
 }
 .slot img{
-    height: 60px;
+    height: 13vw;
     cursor: pointer;
+}
+.slot-fila{
+    display: inline-block;
 }
 .fila{
     border-right: 0px;
@@ -102,13 +106,10 @@ and open the template in the editor.
 }
 .tablon-progreso,
 .tablon-contenido{
-    background-color: #FFFFFF;
     padding: 20px;
-    border-style: solid;
-    border-color: #000000;
 }
 .tablon-progreso{
-    border-top: 2px;
+    margin-top: 1%;
 }
 .tablon-progreso h5{
     margin-top: 0px;
@@ -119,13 +120,13 @@ and open the template in the editor.
     font-size: 25px;
 }
 .tablon-contenido{
-    border-top: 2px;
+    margin-top: 1%;
 }
 #detalle-terminado,
-#detalle-proceso-individual,
-#detalle-proceso-distrito,
+#detalle-proceso,
 #detalle-tienda{
     color: black;
+    padding: 15px;
     border: 2px solid #000000;
     min-height: 250px;
 }
@@ -138,6 +139,7 @@ and open the template in the editor.
     min-height: 150px;
     padding-left: 30px;
     padding-right: 30px;
+    text-align: justify;
 }
 .detalle-coste{
     text-align: right;
@@ -169,10 +171,15 @@ and open the template in the editor.
         font-size: 20px;
     }
     .slot img{
-        height: 40px;
+        /*height: 40px;*/
     }
     .slot{
-        height: 60px;
+        /*height: 60px;*/
+    }
+    .estanteria-terminado-sup{
+        clear: both;
+        padding: 1em 3em;
+        margin: 1em 25%;
     }
 }
 @media (min-width: 760px){
@@ -207,15 +214,30 @@ and open the template in the editor.
         font-size: 50px;
         line-height: 90px;
     }
+    .fila-producto{
+        height: 12vW;
+    }
+    .fila-producto-tienda-sup{
+        width: 36vw;
+        margin: 1em 31%;
+    }
+    .fila-producto-tienda-inf{
+        width: 96vw;
+        margin: 1em 4%;
+    }
+    .fila-producto-terminado{
+        width: 60vw;
+        margin: 1em 15%;
+    }
     .slot{
-        height: 80px;
+        width:  12vw;
+        height: 12vw;
     }
     .slot img{
-        height: 60px;
+        height: 10vw;
     }
     #detalle-terminado,
-    #detalle-proceso-individual,
-    #detalle-proceso-distrito,
+    #detalle-proceso,
     #detalle-tienda{
         min-height: 400px;
     }
@@ -279,15 +301,30 @@ and open the template in the editor.
         font-size: 24px;
         line-height: 35px;
     }
+    .fila-producto{
+        height: 6vw;
+    }
+    .fila-producto-tienda-sup{
+        width: 18vw;
+        margin: 1em 40%;
+    }
+    .fila-producto-tienda-inf{
+        width: 48vw;
+        margin: 1em 27%;
+    }
+    .fila-producto-terminado{
+        width: 30vw;
+        margin: 1em 34%;
+    }
     .slot{
-        height: 80px;
+        width:  6vw;
+        height: 6vw;
     }
     .slot img{
-        height: 60px;
+        height: 4vw;
     }
     #detalle-terminado,
-    #detalle-proceso-individual,
-    #detalle-proceso-distrito,
+    #detalle-proceso,
     #detalle-tienda{
         min-height: 250px;
     }

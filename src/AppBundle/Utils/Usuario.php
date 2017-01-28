@@ -4,6 +4,7 @@ namespace AppBundle\Utils;
 
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
+use AppBundle\Utils\Utils;
 
 class Usuario {
 
@@ -377,7 +378,7 @@ class Usuario {
      */
     static function registrar($doctrine, $DNI, $TDV) {
         $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
-        if ($usuario) {
+        if ($usuario !== null) {
             return 0;
         }
         $em = $doctrine->getManager();
@@ -396,7 +397,9 @@ class Usuario {
         $usuario->setIdEstado($doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Inactivo'));
         $usuario->setIdCuenta($cuenta);
         $usuario->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
+        $usuario->setTiempoSinComerDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
         $usuario->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
+        $usuario->setTiempoSinBeberDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
         $em->persist($usuario);
         $em->flush();
 
@@ -470,6 +473,27 @@ class Usuario {
             $alias = 'desconocido';
         }
         return $alias;
+    }
+
+    /**
+     * Establece el estado Fallecido para un ciudadano específico
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int 1|0
+     */
+    static function setDefuncion($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        $estadoFallecido = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Fallecido');
+        if ($estadoFallecido === null) {
+            Utils::setError($doctrine, 1, 'No se encuentra en la tabla USUARIO_ESTADO el estado con nombre Fallecido');
+            return 0;
+        }
+        if ($USUARIO->getIdEstado() !== $estadoFallecido) {
+            $USUARIO->setIdEstado($estadoFallecido);
+            $em->persist($USUARIO);
+            $em->flush();
+        }
+        return 1;
     }
 
 }

@@ -46,15 +46,31 @@
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row bordes" style="margin-top:1%;">
                             <legend>Proponer una entrega en comida</legend>
-                            <label for="icono_comida">Icono</label>
-                            <select class="custom-select" id="icono_comida">
-                                <option selected value="0">Seleccione un icono identificativo</option>
-                                {% if ICONOS_COMIDA is defined %}
-                                    {% for ICONO in ICONOS_COMIDA %}
-                                        <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
-                                    {% endfor %}
-                                {% endif %}
-                            </select>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="icono_comida">Icono</label>
+                                    <select class="custom-select" id="icono_comida">
+                                        <option selected value="0">Seleccione un icono identificativo</option>
+                                        {% if ICONOS_COMIDA is defined %}
+                                            {% for ICONO in ICONOS_COMIDA %}
+                                                <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="ejercicio-distrito-comida">Ejercicio de distrito</label>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            ¿Quiere marcar este ejercicio como ejercicio de distrito?
+                                            <div class="material-switch pull-right">
+                                                <input id="ejercicio-distrito-comida" type="checkbox"/>
+                                                <label for="ejercicio-distrito-comida" class="label-primary"></label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <label for="enunciado_comida" style="margin-top:1%;">Enunciado de la entrega</label>
                             <textarea class="form-control" id="enunciado_comida" rows="3"></textarea>
                             <label for="caja_coste" style="margin-top:1%;">Coste</label>
@@ -98,15 +114,31 @@
                     <div class="tab-pane fade in" id="tab2">
                         <div class="row bordes" style="margin-top: 1%;">
                             <legend>Proponer una entrega en bebida</legend>
-                            <label for="icono_bebida">Icono</label>
-                            <select class="custom-select" id="icono_bebida">
-                                <option selected value="0">Seleccione un icono identificativo</option>
-                                {% if ICONOS_BEBIDA is defined %}
-                                    {% for ICONO in ICONOS_BEBIDA %}
-                                        <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
-                                    {% endfor %}
-                                {% endif %}
-                            </select>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="icono_bebida">Icono</label>
+                                    <select class="custom-select" id="icono_bebida">
+                                        <option selected value="0">Seleccione un icono identificativo</option>
+                                        {% if ICONOS_BEBIDA is defined %}
+                                            {% for ICONO in ICONOS_BEBIDA %}
+                                                <option value="{{ ICONO.getIdEjercicioIcono() }}">{{ ICONO.getNombre() }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="ejercicio-distrito-bebida">Ejercicio de distrito</label>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            ¿Quiere marcar este ejercicio como ejercicio de distrito?
+                                            <div class="material-switch pull-right">
+                                                <input id="ejercicio-distrito-bebida" type="checkbox"/>
+                                                <label for="ejercicio-distrito-bebida" class="label-primary"></label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <label for="enunciado_bebida" style="margin-top: 1%;">Enunciado de la entrega</label>
                             <textarea class="form-control" id="enunciado_bebida" rows="3"></textarea>
                             <label for="caja_coste" style="margin-top: 1%;">Coste</label>
@@ -204,6 +236,7 @@
             var minutos = parseInt($("#minutos_comida").val());
             var segundos = parseInt($("#segundos_comida").val());
             var bonificadores = obtenerBonificadores();
+            var distrito = $("#ejercicio-distrito-comida:checked").length;
             tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
             if (icono === '0') {
                 alert('Debe seleccionar un icono');
@@ -218,7 +251,8 @@
                     'SECCION': 'comida',
                     'ENUNCIADO': enunciado,
                     'ICONO': icono,
-                    'COSTE': tiempo
+                    'COSTE': tiempo,
+                    'DISTRITO': distrito
                 };
                 $.each(bonificadores, function (k, v) {
                     $.each(v, function (kk, vv) {
@@ -239,6 +273,7 @@
             var horas = parseInt($("#horas_bebida").val());
             var minutos = parseInt($("#minutos_bebida").val());
             var segundos = parseInt($("#segundos_bebida").val());
+            var distrito = $("#ejercicio-distrito-bebida:checked").length;
             tiempo = ((((dias * 24) + horas) * 60) + minutos) * 60 + segundos;
             if (icono === '0') {
                 alert('Debe seleccionar un icono');
@@ -252,7 +287,8 @@
                     'SECCION': 'bebida',
                     'ENUNCIADO': enunciado,
                     'ICONO': icono,
-                    'COSTE': tiempo
+                    'COSTE': tiempo,
+                    'DISTRITO': distrito
                 };
                 $.post(ruta, datos, function (data, status) {
                     alert(data.message);

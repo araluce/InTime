@@ -45,5 +45,18 @@ class Ejercicio {
         }
         $em->flush();
     }
+    
+    /**
+     * Comprueba si un ejercicio es de distrito o no
+     * @param type $doctrine
+     * @param type $EJERCICIO
+     * @return true|false
+     */
+    static function esEjercicioDistrito($doctrine, $EJERCICIO){
+        $val = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
+        if($val === null)
+            return false;
+        return true;
+    }
 
 }

@@ -59,7 +59,7 @@ class Trabajo {
         $em = $doctrine->getManager();
 
         if ($EJERCICIO_CALIFICACION === null) {
-            $resp = $UTILS->setVisto($doctrine, $USUARIO, $EJERCICIO, null);
+            $resp = Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
             $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
             $EJERCICIO_CALIFICACION->setIdEjercicio($EJERCICIO);

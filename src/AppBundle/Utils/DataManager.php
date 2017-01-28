@@ -7,6 +7,7 @@
  */
 
 namespace AppBundle\Utils;
+use AppBundle\Utils\Usuario;
 
 /**
  * Description of DataManager
@@ -20,6 +21,10 @@ class DataManager {
         $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $DATOS['TITULO'] = $TITULO;
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
+        $FECHA = new \DateTime('now');
+        if($DATOS['TDV'] < $FECHA){
+            Usuario::setDefuncion($doctrine, $usuario);
+        }
         $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
 
         $mensajes_sin_ver = $doctrine->getRepository('AppBundle:MensajeXUsuario')->findBy(

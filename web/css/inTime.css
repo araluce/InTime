@@ -263,11 +263,27 @@ table{
     padding: 0 0;
 }
 .breadcrumb > .active{
-    color: white;
+    color: black;
 }
+.nav-tabs a,
+.breadcrumb a{
+    color: #8F8F8F;
+}
+.nav-tabs {
+    border-bottom: 2px solid #000000;
+}
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:focus, 
+.nav-tabs>li.active>a:hover {
+    border: 2px solid #000000;
+    border-bottom-color: transparent;
+}
+
 legend{
     font-weight: bold;
     font-size: 17px;
+    color: #8F8F8F;
+    border-bottom: 2px solid #000000;
 }
 .list-group-item {
     position: relative;
@@ -291,60 +307,11 @@ legend{
     background-color: transparent;
     border-radius: 10px;
 }
-
-.modal-header {
-    min-height: 16.428571429px;
-    /*padding: 10px 15px 0px 15px;;*/ 
-}
-
-.modal-content{
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
 .modal-advice-body img {
     width: 100%;
     height: auto;
 }
 
-.modal-advice .modal-content {
-    /*background-color: rgb(255, 255, 255);*/
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid #999999;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-    position: relative;
-}
-
-.modal-advice .modal-header{
-    background-color: rgba(0, 0, 0, 0.2);
-    color:white;
-}
-.modal-advice .modal-body{
-    background-color: rgba(0, 0, 0, 0.2);
-    color:white;
-}
-
-.modal-advice-button{
-    position: absolute;
-    bottom: -10%;
-    left: 40%;
-}
-
-.modal-advice-button button{
-    height: 40px;
-    border-left: 3px solid #E0B831;
-    border-right: 3px solid #E0B831;
-    border-top: 2px solid #FFFFFF;
-}
-
-.modal-advice .modal-title,
-.modal-advice-body{
-    /*font-size: 12px;*/
-    /*font-weight: 700;*/
-    /*text-transform: uppercase;*/
-
-}
 .radio-inline input[type=radio] {
     margin-top: 10px;
 }
@@ -663,6 +630,18 @@ svg:not(:root) {
     background-color:#000000;
 }
 
+.hidden-xs{
+    font-family: 'Isocpeur';
+    font-size: 35px;
+}
+
+.header-muerte,
+.header-vacaciones{
+    font-family: 'Kimberley';
+    text-align: center;
+    font-size: 110px;
+}
+
 /** MEDIA **/
 @media (max-width: 760px){
     #posicion-reloj{
@@ -844,7 +823,7 @@ svg:not(:root) {
         width: 100vw;
     }
     #menu-jugador{
-/*        margin-left: 37vw;*/
+        /*        margin-left: 37vw;*/
         margin-left: 7vw;
     }
     #ali-pre{
@@ -966,9 +945,6 @@ svg:not(:root) {
     }
     #modal-advice2 .modal-body{
         font-size: 45px;
-    }
-    .hidden-xs{
-        font-size: 25px;
     }
 }
 @media (min-width: 992px){
@@ -1120,6 +1096,10 @@ svg:not(:root) {
     }
     .hidden-xs{
         font-size: 20px;
+    }
+    .header-muerte,
+    .header-vacaciones{
+        font-size: 80px;
     }
 }
 @media (min-width: 1200px){
@@ -1399,5 +1379,9 @@ svg:not(:root) {
     }
     .button-tweet-panel img{
         height: 50px;
+    }
+    .header-muerte,
+    .header-vacaciones{
+        font-size: 40px;
     }
 }

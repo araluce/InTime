@@ -10,6 +10,11 @@
         #tabla_wrapper{
             font-size: 12px;
         }
+        .desplegable{
+            border: 2px #000000 solid;
+            border-radius: 5px;
+            min-height: 69px;
+        }
     </style>
 {% endblock %}
 
@@ -18,10 +23,10 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="container">
-            <div class="col-md-12 jumbotron">
-                <div class="row" style="margin-top:-4%;">
+    <div class="container">
+        <div class="row bordes" style="margin-top: 1%;">
+            <div class="col-md-12">
+                <div class="row">
                     <div class="col-md-12">
                         <ul class="breadcrumb">
                             <li>
@@ -66,11 +71,11 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <legend style="font-weight: bold; color:white;">Registro de usuarios</legend>
+                                    <legend>Registro de usuarios</legend>
                                 </div>
                             </div>
                             <div class="row">
-                                <dl class="dl-horizontal" style="color:black; font-size: 15px;">
+                                <dl class="dl-horizontal">
                                     <dt>
                                         Instrucciones
                                     </dt>
@@ -100,18 +105,18 @@
                                 <form id="form" method="post" action="/guardian/censo/registro" >
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <legend style="font-weight: bold; color:white;"><i class="fa fa-heartbeat"></i> Tiempo de vida</leyend>
+                                            <legend><i class="fa fa-heartbeat"></i> Tiempo de vida</leyend>
                                                 <div class="left-inner-addon ">
-                                                    <i class="fa fa-calendar" style="color:black;"></i>
+                                                    <i class="fa fa-calendar"></i>
                                                     <input class="form-control" type="datetime-local" name="TDV">
                                                 </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12" style="display:inline-block; position:relative;">
-                                            <legend style="font-weight: bold; color:white;"><i class="fa fa-id-card"></i> Entrada de DNI/NIE</leyend>
+                                            <legend><i class="fa fa-id-card"></i> Entrada de DNI/NIE</leyend>
                                                 <textarea class="form-control" name="DATOS_REGISTRO" rows="5" style="resize:none; width:100%;"></textarea>
-                                                <i class="fa fa-users" style="color:black; position:absolute; bottom:37px; right:85px;"></i>
+                                                <i class="fa fa-users" style="position:absolute; bottom:37px; right:85px;"></i>
                                                 <button class="btn btn-default" style="position:absolute; bottom:30px; right:25px;" type="submit">Alta</button>                                
                                         </div>
                                     </div>
@@ -181,7 +186,7 @@
 
                             </div>
                             <div class="col-md-2">
-                                <button type="submit" class="btn btn-default btn-block">
+                                <button type="submit" class="btn btn-primary btn-block">
                                     Crear
                                 </button>
                             </div>

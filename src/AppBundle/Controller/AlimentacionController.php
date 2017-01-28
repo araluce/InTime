@@ -22,13 +22,14 @@ use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Alimentacion;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Ejercicio;
 
 class AlimentacionController extends Controller {
 
     /**
      * @Route("/ciudadano/alimentacion", name="alimentacion")
      */
-    public function alimentacion_ciudadanoAction(Request $request) {
+    public function alimentacion_ciudadanoAction(Request $request, $mensaje = null) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion');
@@ -36,6 +37,9 @@ class AlimentacionController extends Controller {
             return new RedirectResponse('/');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Alimentación', $session);
+        if ($mensaje !== null) {
+            $DATOS['info'] = $mensaje['info'];
+        }
         return $this->render('ciudadano/extensiones/alimentacion.html.twig', $DATOS);
     }
 
@@ -51,7 +55,7 @@ class AlimentacionController extends Controller {
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Comida', $session);
         if ($mensaje !== null) {
-            $DATOS['info'] = $mensaje['info'];
+            $DATOS['info']['message'] = $mensaje['info'];
         }
         $DATOS['max_size'] = $this->return_bytes(ini_get('upload_max_filesize'));
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
@@ -88,16 +92,38 @@ class AlimentacionController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         if ($USUARIO === null) {
-            return new JsonResponse(array('error' => 'El usuario no está logueado'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
 
         $tsc = $USUARIO->getTiempoSinComer();
         if ($tsc === null) {
-            return new JsonResponse(array('porcentaje' => 'null'), 200);
+            return new JsonResponse(json_encode(array('porcentaje' => 'null')), 200);
         }
         $TSC_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_comer');
         $respuesta = Alimentacion::porcetajeEnergia($tsc, $TSC_DEFECTO);
-        return new JsonResponse($respuesta, 200);
+        return new JsonResponse(json_encode($respuesta), 200);
+    }
+
+    /**
+     * 
+     * @Route("/getTiempoSinComerDistrito", name="tiempoSinComerDistrito")
+     */
+    public function getTiempoSinComerDistritoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        if ($USUARIO === null) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+
+        $tsc = $USUARIO->getTiempoSinComerDistrito();
+        if ($tsc === null) {
+            return new JsonResponse(json_encode(array('porcentaje' => 'null')), 200);
+        }
+        $TSC_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_comer');
+        $respuesta = Alimentacion::porcetajeEnergia($tsc, $TSC_DEFECTO);
+        return new JsonResponse(json_encode($respuesta), 200);
     }
 
     /**
@@ -129,7 +155,7 @@ class AlimentacionController extends Controller {
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/tienda');
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
 
@@ -145,7 +171,8 @@ class AlimentacionController extends Controller {
         $EJERCICIOS_CONSUMIDOS = [];
         // Si el usuario tiene ejercicios...
         if ($DATOS['NUMERO_EJERCICIOS']) {
-            $DATOS['YA_SOLICITADO'] = Alimentacion::getSolicitadosComida($doctrine, $USUARIO);
+            $DATOS['YA_SOLICITADO_INDIVIDUAL'] = Alimentacion::getSolicitadosComida($doctrine, $USUARIO);
+            $DATOS['YA_SOLICITADO_DISTRITO'] = Alimentacion::getSolicitadosComida($doctrine, $USUARIO, true);
             foreach ($EJERCICIOS_COMIDA_DEL_USUARIO as $EJERCICIO_USUARIO) {
                 $EJERCICIO = $EJERCICIO_USUARIO->getIdEjercicio();
                 $EJERCICIOS_CONSUMIDOS[] = $EJERCICIO;
@@ -157,7 +184,7 @@ class AlimentacionController extends Controller {
                     $aux['ICONO'] = $EJERCICIO->getIcono()->getNombreImg();
                 }
                 $aux['ESTADO'] = 'no_solicitado';
-
+                $aux['ES_DISTRITO'] = Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO);
                 $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                 ]);
@@ -186,7 +213,7 @@ class AlimentacionController extends Controller {
                 }
             }
         }
-        return new JsonResponse(array('estado' => 'OK', 'message' => $DATOS));
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
     /**
@@ -265,17 +292,18 @@ class AlimentacionController extends Controller {
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/obtenerDetalle/' . $id);
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
         $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id);
         if ($EJERCICIO === null) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe'));
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe')), 200);
         }
         $resp = [];
         $resp['ID'] = $EJERCICIO->getIdEjercicio();
         $resp['FECHA'] = $EJERCICIO->getFecha();
         $resp['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+        $resp['ES_DISTRITO'] = Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO);
         $resp['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
         $resp['ICONO'] = null;
         if ($EJERCICIO->getIcono() !== null) {
@@ -287,7 +315,7 @@ class AlimentacionController extends Controller {
         if ($CALIFICACION !== null) {
             $resp['ESTADO'] = $CALIFICACION->getIdEjercicioEstado()->getEstado();
         }
-        return new JsonResponse(array('estado' => 'OK', 'message' => $resp));
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $resp)), 200);
     }
 
     /**
@@ -302,25 +330,31 @@ class AlimentacionController extends Controller {
             $ENTREGA = $request->files->get('ENTREGA');
             $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento/' . $id_ejercicio);
             if (!$status) {
-                return $this->comidaAction($request, 'Acceso no autorizado');
-                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+                return $this->comidaAction($request, array('info' => 'Acceso no autorizado'));
             }
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
             if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
                 $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
                 if ($EJERCICIO === null) {
                     Utils::setError($doctrine, 0, 'El ejercicio con id: ' . $id_ejercicio . ' no existe (entregarAlimentoAction)', $USUARIO);
-                    return $this->comidaAction($request, 'El ejercicio no existe');
-                    return new JsonResponse(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe'));
+                    return $this->comidaAction($request, array('info' => 'El ejercicio no existe'));
                 }
                 $SECCION = $EJERCICIO->getIdEjercicioSeccion();
-                $NOTA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('nota_por_defecto');
+                $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                    'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
+                ]);
                 if ($NOTA === null) {
                     Utils::setError($doctrine, 1, 'No hay definida una constante para nota_por_defecto en la tabla CONSTANTES', $USUARIO);
-                    return $this->comidaAction($request, 'Error inesperado entregaAlimentacion #1');
-                    return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Error inesperado entregarAlimentoAction #1'));
+                    $RESULTADOS = [];
+                    $RESULTADOS['info'] = 'Error inesperado entregaAlimentacion #1';
+                    if ($SECCION->getSeccion() === 'comida') {
+                        return $this->comidaAction($request, $RESULTADOS);
+                    } else {
+                        return $this->bebidaAction($request, $RESULTADOS);
+                    }
                 }
-                $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getValor()));
+                $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getBonificacion()));
                 $RESULTADOS['SECCION'] = $SECCION->getSeccion();
 
                 $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -347,15 +381,16 @@ class AlimentacionController extends Controller {
                 $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                 $em->persist($EJERCICIO_ENTREGA);
                 $em->flush();
-                return $this->render('ciudadano/extensiones/resumen.twig', $RESULTADOS);
+                return new RedirectResponse('/ciudadano/alimentacion');
             }
-            return $this->comidaAction($request, 'El archivo que intenta subir supera el tamaño máximo permitido.'
-                            . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
-                            . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024);
-            return new JsonResponse(array('estado' => 'ERROR', 'message' =>
-                'El archivo que intenta subir supera el tamaño máximo permitido.'
-                . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
-                . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024));
+            $RESULTADOS['info'] = 'El archivo que intenta subir supera el tamaño máximo permitido.'
+                    . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
+                    . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024;
+            if ($SECCION->getSeccion() === 'comida') {
+                return $this->comidaAction($request, $RESULTADOS);
+            } else {
+                return $this->bebidaAction($request, $RESULTADOS);
+            }
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato'));
     }
@@ -421,6 +456,8 @@ class AlimentacionController extends Controller {
             }
             // Obtenemos el coste del ejercicio
             $COSTE = $request->request->get('COSTE');
+            // Obtenemos si es un ejercicio de distrito o no
+            $ES_DISTRITO = $request->request->get('DISTRITO');
             // Buscamos si el enunciado ya existía para ese tipo y esa sección
             $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneBy([
                 'idEjercicioSeccion' => $EJERCICIO_SECCION,
@@ -438,7 +475,7 @@ class AlimentacionController extends Controller {
             $EJERCICIO->setCoste($COSTE);
             $em->persist($EJERCICIO);
             $em->flush();
-            
+
             $CALIFICACIONES = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
             foreach ($CALIFICACIONES as $CALIFICACION) {
                 $b = $request->request->get('BONIFICACION_' . $CALIFICACION->getIdCalificaciones());
@@ -447,6 +484,12 @@ class AlimentacionController extends Controller {
                 $BONIFICACION->setIdCalificacion($CALIFICACION);
                 $BONIFICACION->setBonificacion($b);
                 $em->persist($BONIFICACION);
+            }
+            // Si es un ejercicio de tipo distrito
+            if ($ES_DISTRITO) {
+                $EJERCICIO_DISTRITO = new \AppBundle\Entity\EjercicioDistrito();
+                $EJERCICIO_DISTRITO->setIdEjercicio($EJERCICIO);
+                $em->persist($EJERCICIO_DISTRITO);
             }
             $em->flush();
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));

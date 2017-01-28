@@ -109,7 +109,7 @@ class Alimentacion {
      * @return int 0 si no se han encontrado ejercicios en estado "solicitado"
      * de la sección "comida", 1 en cualquier otro caso
      */
-    static function getSolicitadosComida($doctrine, $USUARIO) {
+    static function getSolicitadosComida($doctrine, $USUARIO, $buscar_distrito = null) {
         $COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
         if ($COMIDA === null) {
             Utils::setError($doctrine, 1, 'No se encuentra la sección comida en EJERCICIO_SECCION');
@@ -127,7 +127,9 @@ class Alimentacion {
                     "idEjercicio" => $EJERCICIO, "idEjercicioEstado" => $SOLICITADO, "idUsuario" => $USUARIO
                 ]);
                 if ($CALIFICACION !== null) {
-                    return 1;
+                    $EJERCICIO_DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
+                    if($buscar_distrito && $EJERCICIO_DISTRITO !== null){ return 1;}
+                    if(!$buscar_distrito && $EJERCICIO_DISTRITO === null){ return 1;}
                 }
             }
         }
@@ -168,6 +170,28 @@ class Alimentacion {
         }
         if ($SECCION === 'bebida') {
             $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+        }
+        $em->persist($USUARIO);
+        $em->flush();
+    }
+    
+    /**
+     * Actualiza la fecha TSC o TSB de distrito dependiendo de la sección
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $SECCION
+     */
+    static function setTSCD_TSBD($doctrine, $USUARIO, $SECCION){
+        $em = $doctrine->getManager();
+        $FECHA = new \DateTime('now');
+        $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
+            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
+
+        if ($SECCION === 'comida') {
+            $USUARIO->setTiempoSinComerDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+        }
+        if ($SECCION === 'bebida') {
+            $USUARIO->setTiempoSinBeberDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
         }
         $em->persist($USUARIO);
         $em->flush();

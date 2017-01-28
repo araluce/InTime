@@ -24,6 +24,7 @@
         <link href="{{ asset('css/inTime.css')}}" rel="stylesheet" type="text/css" />
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'/>
         <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('css/customradio.css')}}" rel="stylesheet" type="text/css" />
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     {% block stylesheets %}{% endblock %}
 </head>
@@ -99,13 +100,13 @@
                 {% endif %}
             </div>
             {% if ESTADO_USUARIO == 'Fallecido' %}
-                <div id="header-muerte">
-                    <center>MUERTO</center>
+                <div class="header-muerte">
+                    FALLECIDO
                 </div>
             {% endif %}
             {% if ESTADO_USUARIO == 'Vacaciones' %}
-                <div id="header-vacaciones">
-                    <center>VACACIONES</center>
+                <div class="header-vacaciones">
+                    VACACIONES
                 </div>
             {% endif %}
         </div>
@@ -144,16 +145,6 @@
         }
         $(document).ready(function () {
             var font_size = responsive_screen();
-        {% if ESTADO_USUARIO is defined %}
-            {% if ESTADO_USUARIO == 'Fallecido' %}
-                    $('header-muerte').css('font-size', responsive_screen());
-                    $('header-muerte').css('font-family', 'Kimberley');
-            {% endif %}
-            {% if ESTADO_USUARIO == 'Vacaciones' %}
-                    $('header-vacaciones').css('font-size', responsive_screen());
-                    $('header-vacaciones').css('font-family', 'Kimberley');
-            {% endif %}
-        {% endif %}
         {% if TDV is defined %}
                 $('#countdown-11').timeTo({
                     //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),

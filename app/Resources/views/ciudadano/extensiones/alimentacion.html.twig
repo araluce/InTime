@@ -18,13 +18,6 @@
                 <center>
                     <a href="/ciudadano/alimentacion/comida">
                         <img alt="Logo" src="{{ asset('images/iconos/Comida.png') }}" />
-                        {% if MENSAJES_COMIDA is defined %}
-                            {% if MENSAJES_COMIDA|length > 0%}
-                                <span class="badge badge-alimentacion">
-                                    {{ MENSAJES_COMIDA|length}}
-                                </span>
-                            {% endif %}
-                        {% endif %}
                     </a>
                 </center>
             </div>
@@ -32,13 +25,6 @@
                 <center>
                     <a href="/ciudadano/alimentacion/bebida">
                         <img alt="Logo" src="{{ asset('images/iconos/Bebida.png') }}" />
-                        {% if MENSAJES_BEBIDA is defined %}
-                            {% if MENSAJES_BEBIDA|length > 0%}
-                                <span class="badge badge-alimentacion">
-                                    {{ MENSAJES_BEBIDA|length}}
-                                </span>
-                            {% endif %}
-                        {% endif %}
                     </a>
                 </center>
             </div>

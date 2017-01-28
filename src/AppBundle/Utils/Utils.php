@@ -81,7 +81,13 @@ class Utils {
         $doctrine->getManager()->flush();
 
         if ($SECCION === 'comida' || $SECCION === 'bebida') {
-            Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
+            $EJERCICIO_DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($id_ejercicio);
+            if($EJERCICIO_DISTRITO === null){
+                Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
+            }
+            else{
+                Alimentacion::setTSCD_TSBD($doctrine, $id_usuario, $SECCION);
+            }
         }
 
         $DATOS = [];
