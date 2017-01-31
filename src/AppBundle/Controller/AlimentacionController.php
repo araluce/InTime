@@ -333,59 +333,67 @@ class AlimentacionController extends Controller {
                 return $this->comidaAction($request, array('info' => 'Acceso no autorizado'));
             }
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
-            if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
-                if ($EJERCICIO === null) {
-                    Utils::setError($doctrine, 0, 'El ejercicio con id: ' . $id_ejercicio . ' no existe (entregarAlimentoAction)', $USUARIO);
-                    return $this->comidaAction($request, array('info' => 'El ejercicio no existe'));
-                }
-                $SECCION = $EJERCICIO->getIdEjercicioSeccion();
-                $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-                $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-                    'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
-                ]);
-                if ($NOTA === null) {
-                    Utils::setError($doctrine, 1, 'No hay definida una constante para nota_por_defecto en la tabla CONSTANTES', $USUARIO);
-                    $RESULTADOS = [];
-                    $RESULTADOS['info'] = 'Error inesperado entregaAlimentacion #1';
-                    if ($SECCION->getSeccion() === 'comida') {
-                        return $this->comidaAction($request, $RESULTADOS);
-                    } else {
-                        return $this->bebidaAction($request, $RESULTADOS);
-                    }
-                }
-                $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getBonificacion()));
-                $RESULTADOS['SECCION'] = $SECCION->getSeccion();
-
-                $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                    'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                ]);
-
-                $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
-                if (!file_exists($ruta)) {
-                    mkdir($ruta, 0777, true);
-                }
-                $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
-                        . $ENTREGA->getClientOriginalName();
-                $ENTREGA->move($ruta, $nombre_entrega);
-                $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                    'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                ]);
-                if ($EJERCICIO_ENTREGA === null) {
-                    $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
-                }
-                $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
-                $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                $EJERCICIO_ENTREGA->setNombre($EJERCICIO_CALIFICACION->getFecha()->getTimestamp() . $ENTREGA->getClientOriginalName());
-                $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
-                $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
-                $em->persist($EJERCICIO_ENTREGA);
-                $em->flush();
-                return new RedirectResponse('/ciudadano/alimentacion');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+            if ($EJERCICIO === null) {
+                Utils::setError($doctrine, 0, 'El ejercicio con id: ' . $id_ejercicio . ' no existe (entregarAlimentoAction)', $USUARIO);
+                return $this->comidaAction($request, array('info' => 'El ejercicio no existe'));
             }
-            $RESULTADOS['info'] = 'El archivo que intenta subir supera el tamaño máximo permitido.'
-                    . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
-                    . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024;
+            $SECCION = $EJERCICIO->getIdEjercicioSeccion();
+            if ($ENTREGA !== null) {
+                if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
+                    $DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
+                    if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
+                        $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                        return $this->comidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
+                    }
+                    $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                    $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                        'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
+                    ]);
+                    if ($NOTA === null) {
+                        Utils::setError($doctrine, 1, 'No hay definida una constante para nota_por_defecto en la tabla CONSTANTES', $USUARIO);
+                        $RESULTADOS = [];
+                        $RESULTADOS['info'] = 'Error inesperado entregaAlimentacion #1';
+                        if ($SECCION->getSeccion() === 'comida') {
+                            return $this->comidaAction($request, $RESULTADOS);
+                        } else {
+                            return $this->bebidaAction($request, $RESULTADOS);
+                        }
+                    }
+                    $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getBonificacion()));
+                    $RESULTADOS['SECCION'] = $SECCION->getSeccion();
+
+                    $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                        'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+                    ]);
+
+                    $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
+                    if (!file_exists($ruta)) {
+                        mkdir($ruta, 0777, true);
+                    }
+                    $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
+                            . $ENTREGA->getClientOriginalName();
+                    $ENTREGA->move($ruta, $nombre_entrega);
+                    $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                        'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+                    ]);
+                    if ($EJERCICIO_ENTREGA === null) {
+                        $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
+                    }
+                    $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
+                    $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
+                    $EJERCICIO_ENTREGA->setNombre($EJERCICIO_CALIFICACION->getFecha()->getTimestamp() . $ENTREGA->getClientOriginalName());
+                    $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
+                    $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
+                    $em->persist($EJERCICIO_ENTREGA);
+                    $em->flush();
+                    return new RedirectResponse('/ciudadano/alimentacion');
+                }
+                $RESULTADOS['info'] = 'El archivo que intenta subir supera el tamaño máximo permitido.'
+                        . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
+                        . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024;
+            }
+            $RESULTADOS['info'] = 'No se ha seleccionado archivo';
             if ($SECCION->getSeccion() === 'comida') {
                 return $this->comidaAction($request, $RESULTADOS);
             } else {

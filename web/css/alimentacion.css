@@ -78,9 +78,6 @@ and open the template in the editor.
 .fila-abajo{
     border-top: 0px;
 }
-.btn-pref .btn {
-    -webkit-border-radius:0 !important;
-}
 .btn13{
     border-style: solid;
     border-color: #000000;

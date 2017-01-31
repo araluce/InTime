@@ -63,7 +63,7 @@ class Alimentacion {
             if ($DATOS['ESTADO'] === 'solicitado') {
                 if ($DATOS['SECCION'] === 'comida') {
                     $DATOS['TSC'] = $USUARIO->getTiempoSinComer();
-                } else if ($DATOS['SECCION'] === 'bebida'){
+                } else if ($DATOS['SECCION'] === 'bebida') {
                     $DATOS['TSB'] = $USUARIO->getTiempoSinBeber();
                 }
             }
@@ -128,21 +128,25 @@ class Alimentacion {
                 ]);
                 if ($CALIFICACION !== null) {
                     $EJERCICIO_DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
-                    if($buscar_distrito && $EJERCICIO_DISTRITO !== null){ return 1;}
-                    if(!$buscar_distrito && $EJERCICIO_DISTRITO === null){ return 1;}
+                    if ($buscar_distrito && $EJERCICIO_DISTRITO !== null) {
+                        return 1;
+                    }
+                    if (!$buscar_distrito && $EJERCICIO_DISTRITO === null) {
+                        return 1;
+                    }
                 }
             }
         }
         return 0;
     }
-    
+
     /**
      * Realiza la operación de ts_usuario, ts_defecto a porcentaje
      * @param type $ts_usuario
      * @param type $ts_defecto
      * @return type
      */
-    static function porcetajeEnergia($ts_usuario, $ts_defecto){
+    static function porcetajeEnergia($ts_usuario, $ts_defecto) {
         $HOY = new \DateTime('now');
         $respuesta = [];
         $respuesta['suelo'] = $ts_usuario->getTimestamp();
@@ -152,18 +156,18 @@ class Alimentacion {
         $respuesta['porcentaje'] = 100 - (($respuesta['recorrido'] * 100) / $ts_defecto->getValor());
         return $respuesta;
     }
-    
+
     /**
      * Actualiza la fecha TSC o TSB dependiendo de la sección
      * @param type $doctrine
      * @param type $USUARIO
      * @param type $SECCION
      */
-    static function setTSC_TSB($doctrine, $USUARIO, $SECCION){
+    static function setTSC_TSB($doctrine, $USUARIO, $SECCION) {
         $em = $doctrine->getManager();
         $FECHA = new \DateTime('now');
         $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
-            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
+        $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
 
         if ($SECCION === 'comida') {
             $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
@@ -174,18 +178,18 @@ class Alimentacion {
         $em->persist($USUARIO);
         $em->flush();
     }
-    
+
     /**
      * Actualiza la fecha TSC o TSB de distrito dependiendo de la sección
      * @param type $doctrine
      * @param type $USUARIO
      * @param type $SECCION
      */
-    static function setTSCD_TSBD($doctrine, $USUARIO, $SECCION){
+    static function setTSCD_TSBD($doctrine, $USUARIO, $SECCION) {
         $em = $doctrine->getManager();
         $FECHA = new \DateTime('now');
         $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
-            $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
+        $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
 
         if ($SECCION === 'comida') {
             $USUARIO->setTiempoSinComerDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
@@ -196,4 +200,78 @@ class Alimentacion {
         $em->persist($USUARIO);
         $em->flush();
     }
+
+    /**
+     * Separación entre entregas por secciones. Esta función nos dice si un 
+     * ejercicio puede ser entregado si el último ejercicio de su sección 
+     * @param type $doctrine
+     * @param type $SECCION
+     * @param type $USUARIO
+     * @return int
+     */
+    static function tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO = null) {
+        $FECHA = new \DateTime('now');
+        if ($DISTRITO === null) {
+            $ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO);
+        } else {
+            $ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO, $USUARIO->getIdDistrito());
+        }
+        if ($ultimoEjercicio) {
+            $diasDif = Utils::getConstante($doctrine, 'diasDifEntregas');
+            $fechaEntrega = $ultimoEjercicio->getFecha();
+            if ($FECHA->format("Y") === $fechaEntrega->format("Y")) {
+                if ($FECHA->format("d") - $FECHA->format("d") < $diasDif) {
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * Obtiene la última entrega de una sección específica
+     * @param type $doctrine
+     * @param type $SECCION
+     * @param type $USUARIO
+     * @return 0|Ejercicio
+     */
+    static function ultimaEntrega($doctrine, $SECCION, $USUARIO, $DISTRITO = null) {
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION);
+        if ($DISTRITO !== null) {
+            $query = $doctrine->getRepository('AppBundle:EjercicioDistrito')->createQueryBuilder('a');
+            $query->select('a');
+            $query->where('a.idEjercicio IN (:EJERCICIOS)');
+            $query->setParameters(['EJERCICIOS' => array_values($EJERCICIOS)]);
+            $EJERCICIO_DISTRITO = $query->getQuery()->getResult();
+            if (!count($EJERCICIO_DISTRITO)) {
+                return 0;
+            }
+            $ID_EJERCICIOS = [];
+            foreach($EJERCICIO_DISTRITO as $E){
+                $ID_EJERCICIOS[] = $E->getIdEjercicio();
+            }
+            $USUARIOS_DISTRITO = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
+            $query = $doctrine->getRepository('AppBundle:EjercicioEntrega')->createQueryBuilder('a');
+            $query->select('a');
+            $query->where('a.idEjercicio IN (:EJERCICIOS) AND a.idUsuario IN (:USUARIOS)');
+            $query->orderBy('a.fecha', 'DESC');
+            $query->setParameters(['EJERCICIOS' => array_values($ID_EJERCICIOS), 'USUARIOS' => array_values($USUARIOS_DISTRITO)]);
+            $ENTREGAS = $query->getQuery()->getResult();
+        } else {
+            if (!count($EJERCICIOS)) {
+                return 0;
+            }
+            $query = $doctrine->getRepository('AppBundle:EjercicioEntrega')->createQueryBuilder('a');
+            $query->select('a');
+            $query->where('a.idEjercicio IN (:EJERCICIOS) AND a.idUsuario = :USUARIO');
+            $query->orderBy('a.fecha', 'DESC');
+            $query->setParameters(['EJERCICIOS' => array_values($EJERCICIOS), 'USUARIO' => $USUARIO]);
+            $ENTREGAS = $query->getQuery()->getResult();
+        }
+        if (!count($ENTREGAS)) {
+            return 0;
+        }
+        return $ENTREGAS[0];
+    }
+
 }
