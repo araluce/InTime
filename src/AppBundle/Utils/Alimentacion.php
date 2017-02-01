@@ -11,6 +11,7 @@ namespace AppBundle\Utils;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Alimentacion;
 use AppBundle\Utils\Ejercicio;
+use AppBundle\Utils\Distrito;
 
 /**
  * Description of Alimentacion
@@ -139,6 +140,45 @@ class Alimentacion {
         }
         return 0;
     }
+    
+    /**
+     * Comprueba si se han solicitado ejercicios de la sección bebida
+     * 
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int 0 si no se han encontrado ejercicios en estado "solicitado"
+     * de la sección "bebida", 1 en cualquier otro caso
+     */
+    static function getSolicitadosBebida($doctrine, $USUARIO, $buscar_distrito = null) {
+        $BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
+        if ($BEBIDA === null) {
+            Utils::setError($doctrine, 1, 'No se encuentra la sección bebida en EJERCICIO_SECCION');
+            return -1;
+        }
+        $SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
+        if ($SOLICITADO === null) {
+            Utils::setError($doctrine, 1, 'No se encuentra el estado solicitado en EJERCICIO_ESTADO');
+            return -1;
+        }
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($BEBIDA);
+        if (count($EJERCICIOS)) {
+            foreach ($EJERCICIOS as $EJERCICIO) {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    "idEjercicio" => $EJERCICIO, "idEjercicioEstado" => $SOLICITADO, "idUsuario" => $USUARIO
+                ]);
+                if ($CALIFICACION !== null) {
+                    $EJERCICIO_DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
+                    if ($buscar_distrito && $EJERCICIO_DISTRITO !== null) {
+                        return 1;
+                    }
+                    if (!$buscar_distrito && $EJERCICIO_DISTRITO === null) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
 
     /**
      * Realiza la operación de ts_usuario, ts_defecto a porcentaje
@@ -247,7 +287,7 @@ class Alimentacion {
                 return 0;
             }
             $ID_EJERCICIOS = [];
-            foreach($EJERCICIO_DISTRITO as $E){
+            foreach ($EJERCICIO_DISTRITO as $E) {
                 $ID_EJERCICIOS[] = $E->getIdEjercicio();
             }
             $USUARIOS_DISTRITO = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
@@ -272,6 +312,20 @@ class Alimentacion {
             return 0;
         }
         return $ENTREGAS[0];
+    }
+
+    static function numeroSolicitantes($doctrine, $EJERCICIO, $DISTRITO) {
+        $estadoSolicitado = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
+        $usuariosDistrito = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+
+        $query = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->createQueryBuilder('a');
+        $query->select('COUNT(a)');
+        $query->where('a.idEjercicio = :EJERCICIO AND a.idUsuario IN (:USUARIOS) AND a.idEjercicioEstado = :ESTADO');
+        $query->orderBy('a.fecha', 'DESC');
+        $query->setParameters(['EJERCICIO' => $EJERCICIO, 'USUARIOS' => array_values($usuariosDistrito), 'ESTADO' => $estadoSolicitado]);
+        $SOLICITUDES = $query->getQuery()->getSingleScalarResult();
+        
+        return $SOLICITUDES;
     }
 
 }

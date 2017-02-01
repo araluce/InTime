@@ -81,13 +81,7 @@ class Utils {
         $doctrine->getManager()->flush();
 
         if ($SECCION === 'comida' || $SECCION === 'bebida') {
-            $EJERCICIO_DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($id_ejercicio);
-            if($EJERCICIO_DISTRITO === null){
-                Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
-            }
-            else{
-                Alimentacion::setTSCD_TSBD($doctrine, $id_usuario, $SECCION);
-            }
+            Alimentacion::setTSC_TSB($doctrine, $id_usuario, $SECCION);
         }
 
         $DATOS = [];
@@ -534,7 +528,7 @@ class Utils {
                     $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
                         'idEjercicio' => $EJERCICIO[0], 'idCalificacion' => $CALIFICACION
                     ]);
-                    if($BONIFICACION !== null){
+                    if ($BONIFICACION !== null) {
                         $aux['BONIFICACION'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
                     }
                 }
@@ -544,9 +538,9 @@ class Utils {
         }
         return 0;
     }
-    
-    static function tutoriaDiaToInt($dia){
-        switch ($dia){
+
+    static function tutoriaDiaToInt($dia) {
+        switch ($dia) {
             case 'Lunes':
                 return '0';
             case 'Martes':
@@ -563,4 +557,5 @@ class Utils {
                 return '6';
         }
     }
+
 }

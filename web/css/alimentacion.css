@@ -7,8 +7,10 @@ and open the template in the editor.
     Created on : 11-ene-2017, 22:46:52
     Author     : araluce
 */
-
-.tablon-progreso h5,
+.tablon-progreso h5{
+    font-family: 'Isocpeur';
+    text-transform: uppercase;
+}
 .detalle-coste,
 .tablon-progreso,
 .btn,
@@ -43,6 +45,7 @@ and open the template in the editor.
     background-color: #E1E1E1;
     margin-bottom: 0px;
     height: 40px;
+    border-radius: 15px;
 }
 .progress-bar{
     font-size: 24px;
@@ -252,7 +255,7 @@ and open the template in the editor.
         font-size: 50px;
     }
     .detalle-fecha{
-        font-size: 30px;
+        font-size: 20px;
     }
     .detalle-enunciado,
     .detalle-coste{
@@ -330,10 +333,12 @@ and open the template in the editor.
     .btn-pref span,
     .btn-pref .hidden-xs,
     .tablon-progreso h5,
-    .detalle-fecha,
     .detalle-enunciado,
     .detalle-coste{
         font-size: 25px;
+    }
+    .detalle-fecha{
+        font-size: 15px;
     }
     .detalle-enunciado{
         min-height: 150px;

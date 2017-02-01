@@ -606,6 +606,10 @@ svg:not(:root) {
 #fondo-principal img{
     height: 190px;
 }
+.modal-content{
+    padding: 15px;
+    border-radius: 15px;
+}
 #modal-advice0 .modal-body,
 #modal-advice0 .modal-header,
 #modal-advice1 .modal-body,
@@ -654,6 +658,10 @@ svg:not(:root) {
     font-family: 'Kimberley';
     text-align: center;
     font-size: 110px;
+}
+
+.fa{
+    font-size: 55px;
 }
 
 /** MEDIA **/
@@ -1121,6 +1129,9 @@ svg:not(:root) {
     .header-vacaciones{
         font-size: 80px;
     }
+    .fa{
+        font-size: 20px;
+    }
 }
 @media (min-width: 1200px){
     .form-control {
@@ -1403,5 +1414,8 @@ svg:not(:root) {
     .header-muerte,
     .header-vacaciones{
         font-size: 40px;
+    }
+    .fa{
+        font-size: 25px;
     }
 }

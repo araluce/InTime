@@ -52,8 +52,9 @@ class DefaultController extends Controller {
                 Usuario::compruebaUsuario($doctrine, $session, '/login');
                 Ejercicio::actualizarEjercicioXUsuario($doctrine, $usuario);
 
+                return new RedirectResponse('/');
                 //Cargar el menu del usuario según rol
-                return $this->inicio_usuario($usuario, $session);
+                //return $this->inicio_usuario($usuario, $session);
             }
         }
         $DATOS = [

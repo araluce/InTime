@@ -29,59 +29,62 @@ class CronController extends Controller {
     public function cronJornadaLaboralAction(Request $request) {
         $doctrine = $this->getDoctrine();
         Utils::setError($doctrine, 3, 'CRON - Jornada Laboral');
-        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
-        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL_CIUDADANO);
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
         $n = 0;
-        foreach ($CIUDADANOS as $CIUDADANO) {
-            $RES = Trabajo::comprobarJornadaLaboral($doctrine, $CIUDADANO);
-            if ($RES) {
-                $TDV_JORNADA_LABORAL = Utils::getConstante($doctrine, 'jornada_laboral');
-                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $TDV_JORNADA_LABORAL, 'Ingreso - Jornada Laboral');
-                $n++;
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                $RES = Trabajo::comprobarJornadaLaboral($doctrine, $CIUDADANO);
+                if ($RES) {
+                    $TDV_JORNADA_LABORAL = Utils::getConstante($doctrine, 'jornada_laboral');
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $TDV_JORNADA_LABORAL, 'Ingreso - Jornada Laboral');
+                    $n++;
+                }
             }
         }
         return new JsonResponse(json_encode(array(
-            'estado' => 'OK',
-            'message' => $n . ' ciudadano/s han cobrado su Jornada Laboral'
+                    'estado' => 'OK',
+                    'message' => $n . ' ciudadano/s han cobrado su Jornada Laboral'
                 )), 200);
     }
-    
+
     /**
      * @Route("/cron/checkTdV", name="checkTdV")
      */
     public function checkTdVAction(Request $request) {
         $doctrine = $this->getDoctrine();
         Utils::setError($doctrine, 3, 'CRON - Tiempo de vida');
-        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
-        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL_CIUDADANO);
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
         $Fecha = new \DateTime('now');
         $n = 0;
-        foreach ($CIUDADANOS as $CIUDADANO) {
-            if($CIUDADANO->getIdCuenta()->getTdv() < $Fecha){
-                Usuario::setDefuncion($doctrine, $CIUDADANO);
-                $n++;
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                if ($CIUDADANO->getIdCuenta()->getTdv() < $Fecha) {
+                    Usuario::setDefuncion($doctrine, $CIUDADANO);
+                    $n++;
+                }
             }
         }
         return new JsonResponse(json_encode(array(
-            'estado' => 'OK',
-            'message' => $n . ' ciudadano/s declarados fallecidos'
+                    'estado' => 'OK',
+                    'message' => $n . ' ciudadano/s declarados fallecidos'
                 )), 200);
     }
-    
+
     /**
      * @Route("/cron/pagarFinDeSemana", name="pagarFinDeSemana")
      */
     public function pagarFinDeSemanaAction(Request $request) {
         $doctrine = $this->getDoctrine();
         Utils::setError($doctrine, 3, 'CRON - Pago fines de semana');
-        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
-        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL_CIUDADANO);
-        foreach ($CIUDADANOS as $CIUDADANO) {
-            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, 172800, 'Ajuste - Fin de semana');
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, 172800, 'Ajuste - Fin de semana');
+            }
         }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
-    
+
     /**
      * @Route("/cron/cobrarCuotaPrestamo", name="cobrarCuotaPrestamo")
      */
@@ -93,20 +96,47 @@ class CronController extends Controller {
         $query->where('a.restante > 0');
         $PRESTAMOS = $query->getQuery()->getResult();
         $recaudado = 0;
-        foreach($PRESTAMOS as $PRESTAMO){
+        foreach ($PRESTAMOS as $PRESTAMO) {
             $interes = $PRESTAMO->getInteres();
-            $cuota = ($PRESTAMO->getCantidad() + ($PRESTAMO->getCantidad() * $interes))/4;
+            $cuota = ($PRESTAMO->getCantidad() + ($PRESTAMO->getCantidad() * $interes)) / 4;
             $recaudado += $cuota;
             $restante = $PRESTAMO->getRestante() - $cuota;
             $CIUDADANO = $PRESTAMO->getIdUsuario();
-            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1)*$cuota, 'Cobro - Cuota semanal por préstamo pendiente');
+            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $cuota, 'Cobro - Cuota semanal por préstamo pendiente');
             $PRESTAMO->setRestante($restante);
             $em->persist($PRESTAMO);
         }
         $em->flush();
-        Utils::setError($doctrine, 3, 'CRON - Cobrar la cuota de préstamo ('.$recaudado.')');
-        
-        return new JsonResponse(json_encode(array('estado' => 'OK','message' => 'Se ha recaudado un total de ' . $recaudado . ' segundos')), 200);
+        Utils::setError($doctrine, 3, 'CRON - Cobrar la cuota de préstamo (' . $recaudado . ')');
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Se ha recaudado un total de ' . $recaudado . ' segundos')), 200);
+    }
+
+    /**
+     * @Route("/cron/comprobarAlimentacion", name="comprobarAlimentacion")
+     */
+    public function comprobarAlimentacionAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+        $contador = 0;
+        $fecha = new \DateTime('now');
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                if ($CIUDADANO->getTiempoSinComer() < $fecha ||
+                        $CIUDADANO->getTiempoSinBeber() < $fecha) {
+                    Usuario::setDefuncion($doctrine, $CIUDADANO);
+                    $contador++;
+                }
+            }
+        }
+        $em->flush();
+        Utils::setError($doctrine, 3, 'CRON - Comprobar alimentación');
+        if ($contador) {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $contador . ' ciudadanos han fallecido de inanición')), 200);
+        } else {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los ciudadanos están bien alimentados')), 200);
+        }
     }
 
 }

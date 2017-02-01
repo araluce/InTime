@@ -43,66 +43,61 @@
                     <div class="progress progress-striped active">
                         <div class="progress-bar progress-bar-danger" id="progress-tsc"></div>
                     </div>
-                    <div class="progress progress-striped active">
-                        <div class="progress-bar progress-bar-warning" id="progress-tscd"></div>
-                    </div>
                 </div>
                 <div class="row bordes border-radius tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="tab1">
                             <div class="row" style="margin-top: 1%;">
                                 <div class="fila-producto-tienda-inf col-lg-8 col-lg-offset-3">
-                                    <div class="slot fila" id="tienda-individual-1"></div>
+                                    <div class="slot fila btn-menu-first" id="tienda-individual-1"></div>
                                     <div class="slot fila" id="tienda-individual-2"></div>
                                     <div class="slot fila" id="tienda-individual-3"></div>
                                     <div class="slot fila" id="tienda-individual-4"></div>
                                     <div class="slot fila" id="tienda-individual-5"></div>
                                     <div class="slot fila" id="tienda-individual-6"></div>
-                                    <div class="slot" id="tienda-individual-7"></div>
+                                    <div class="slot btn-menu-last" id="tienda-individual-7"></div>
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 1%;">
-                                <div class="col-xs-12" id="detalle-tienda"></div>
+                                <div class="col-xs-12 border-radius" id="detalle-tienda"></div>
                             </div>
                             <div class="row" style="margin-top: 1%;">
                                 <div class="fila-producto-tienda-sup">
-                                    <div class="slot fila" id="tienda-distrito-1"></div>
+                                    <div class="slot fila btn-menu-first" id="tienda-distrito-1"></div>
                                     <div class="slot fila" id="tienda-distrito-2"></div>
-                                    <div class="slot" id="tienda-distrito-3"></div>
+                                    <div class="slot btn-menu-last" id="tienda-distrito-3"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane fade in" id="tab2">
                             <div class="row">
-                                <div class="col-xs-3 col-xs-offset-1">
-                                    <div class="row" style="margin-top: 3%;">
+                                <div class="col-xs-4 col-xs-offset-4">
+                                    <div class="row" style="margin-top: 1%;">
                                         <div class="slot border-radius" id="proceso-individual"></div>
-                                    </div>
-                                    <div class="row" style="margin-top: 3%;">
-                                        <div class="slot border-radius" id="proceso-distrito"></div>
+                                        <div class="slot border-radius" style="float:right;" id="proceso-distrito"></div>
                                     </div>
 
                                 </div>
-                                <div class="col-xs-7 col-xs-offset-1" id="detalle-proceso"></div>
+                                <div class="col-xs-12 border-radius" style="margin-top: 1%;" id="detalle-proceso"></div>
                             </div>
                         </div>
                         <div class="tab-pane fade in" id="tab3">
                             <div class="row">
                                 <div class="fila-producto-terminado">
-                                    <div class="slot fila" id="terminado-1"></div>
+                                    <div class="slot fila btn-menu-first" id="terminado-1"></div>
                                     <div class="slot fila" id="terminado-2"></div>
                                     <div class="slot fila" id="terminado-3"></div>
                                     <div class="slot fila" id="terminado-4"></div>
-                                    <div class="slot" id="terminado-5"></div>
+                                    <div class="slot btn-menu-last" id="terminado-5"></div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="fila-producto-terminado">
-                                    <div class="slot fila" id="terminado-6"></div>
+                                    <div class="slot fila btn-menu-first" id="terminado-6"></div>
                                     <div class="slot fila" id="terminado-7"></div>
                                     <div class="slot fila" id="terminado-8"></div>
                                     <div class="slot fila" id="terminado-9"></div>
-                                    <div class="slot" id="terminado-10"></div>
+                                    <div class="slot btn-menu-last" id="terminado-10"></div>
                                 </div>
                             </div>
                             <div class="row" style="margin-bottom: 1%;">
@@ -110,7 +105,7 @@
                                     Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
                                 </span>
                             </div>
-                            <div class="row" id="detalle-terminado"></div>
+                            <div class="row border-radius" id="detalle-terminado"></div>
                         </div>
                     </div>
                 </div>
@@ -130,9 +125,8 @@
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
             setTSC();
-            setTSCD();
         });
 
         function arena_ejercicio(id) {
@@ -154,7 +148,6 @@
         $(function () {
             setInterval(function () {
                 setTSC();
-                setTSCD();
             }, 5000);
         });
         function setTSC() {
@@ -173,26 +166,6 @@
                     $('#progress-tsc').html(contenido);
                 } else {
                     $('#progress-tsc').parent().hide();
-                }
-            });
-        }
-        function setTSCD() {
-            var ruta = '/getTiempoSinComerDistrito';
-            $.get(ruta, function (data, status) {
-                datos = jQuery.parseJSON(data);
-                console.log(datos);
-                if (datos.porcentaje !== 'null') {
-                    $('#progress-tscd').width(datos.porcentaje + '%');
-                    contenido = '';
-                    if (datos.porcentaje > 0) {
-                        contenido += datos.porcentaje.toFixed(2) + '%';
-                    }
-                    if (datos.porcentaje <= 0) {
-                        contenido += 'FALLECIDO POR INANICION';
-                    }
-                    $('#progress-tscd').html(contenido);
-                } else {
-                    $('#progress-tscd').parent().hide();
                 }
             });
         }
@@ -217,6 +190,8 @@
             contador_tienda_individual = 1;
             contador_proceso = 1;
             contador_terminado = 1;
+            $('#modal-avisos2').click();
+            mostrarCarga('Rellenando escaparate');
             $.each(productos, function (k, v) {
                 switch (v.ESTADO) {
                     case 'no_solicitado':
@@ -253,6 +228,7 @@
                         break;
                 }
             });
+            cerrarModal();
         }
 
         function mostrarTienda(id) {
@@ -260,6 +236,8 @@
             $("#tab1 .slot").css('background-color', 'gray');
             $("#image-tienda-" + id).removeClass("opacidad");
             $("#image-tienda-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -267,10 +245,27 @@
                     contenido = '';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-fecha">';
-                    contenido += '      <span class="fa fa-calendar">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
                     contenido += '          ' + data.message.FECHA.date;
-                    contenido += '      </span>';
                     contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
+                    if (!data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO INDIVIDUAL';
+                    }
+                    if (data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
+                        contenido += '</div>';
+                    }
+                    contenido += '</div>';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
@@ -314,14 +309,19 @@
                     contenido += '  </div>';
                     contenido += '</div>';
                     $('#detalle-tienda').html(contenido);
+                    cerrarModal();
                 } else {
-
+                    mostrarResultadoOperacion(data.message);
                 }
             });
         }
         function mostrarProceso(id) {
             $(".btn-solicitado").addClass("opacidad");
             $("#image-solicitado-" + id).removeClass("opacidad");
+            $("#tab2 .slot").css('background-color', 'gray');
+            $("#image-solicitado-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -329,56 +329,87 @@
                     contenido = '';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-fecha">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
+                    contenido += '          ' + data.message.FECHA.date;
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
                     if (!data.message.ES_DISTRITO) {
                         contenido += '      EJERCICIO INDIVIDUAL';
                     }
                     if (data.message.ES_DISTRITO) {
                         contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
+                        contenido += '</div>';
                     }
                     contenido += '  </div>';
-                    contenido += '  <div class="col-md-12 detalle-fecha">';
-                    contenido += '      <span class="fa fa-calendar">';
-                    contenido += '          ' + data.message.FECHA.date;
-                    contenido += '      </span>';
-                    contenido += '  </div>';
+                    contenido += '</div>';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
                     contenido += '  </div>';
                     contenido += '</div>';
-                    contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data">';
-                    contenido += '  <input type="hidden" name="id_ejercicio" value="' + id + '">';
-                    contenido += '  <div class="row">';
-                    contenido += '        <div class="col-md-12" id="panel-entrega">';
-                    contenido += '            <div class="form-group">';
-                    contenido += '                <div class="input-group">';
-                    contenido += '                    <label class="input-group-btn">';
-                    contenido += '                        <span class="btn btn-primary detalle-boton" style="color: black;">';
-                    contenido += '                            Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">';
-                    contenido += '                        </span>';
-                    contenido += '                    </label>';
-                    contenido += '                    <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
-                    contenido += '                </div>';
-                    contenido += '            </div>';
-                    contenido += '        </div>';
-                    contenido += '    </div>';
-                    contenido += '  <div class="row">';
-                    contenido += '      <div class="col-md-12">';
-                    //contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
-                    contenido += '          <button type="submit" class="btn detalle-boton">';
-                    contenido += '              ENTREGAR';
-                    contenido += '          </button>';
-                    contenido += '      </div>';
-                    contenido += '  </div>';
-                    contenido += '</form>';
+                    if (!rest_soli) {
+                        contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data">';
+                        contenido += '  <input type="hidden" name="id_ejercicio" value="' + id + '">';
+                        contenido += '  <div class="row">';
+                        contenido += '        <div class="col-md-12" id="panel-entrega">';
+                        contenido += '            <div class="form-group">';
+                        contenido += '                <div class="input-group">';
+                        contenido += '                    <label class="input-group-btn">';
+                        contenido += '                        <span class="btn btn-primary detalle-boton" style="color: black;">';
+                        contenido += '                            Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">';
+                        contenido += '                        </span>';
+                        contenido += '                    </label>';
+                        contenido += '                    <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
+                        contenido += '                </div>';
+                        contenido += '            </div>';
+                        contenido += '        </div>';
+                        contenido += '    </div>';
+                        contenido += '  <div class="row">';
+                        contenido += '      <div class="col-md-12">';
+                        //contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
+                        contenido += '          <button type="submit" class="btn detalle-boton">';
+                        contenido += '              ENTREGAR';
+                        contenido += '          </button>';
+                        contenido += '      </div>';
+                        contenido += '  </div>';
+                        contenido += '</form>';
+                    } else {
+                        contenido += '  <div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-enunciado" style="color: #286090; min-height: 0px;">';
+                        contenido += '  <p>Este ejercicio debe ser solicitado por todos los miembros de su distrito para poder realizar la entrega</p>';
+                        contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
+                        contenido += '  </div>';
+                        contenido += '      <div class="col-md-12">';
+                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud('+id+')">';
+                        contenido += '              RETIRAR SOLICITUD';
+                        contenido += '          </button>';
+                        contenido += '      </div>';
+                        contenido += '  </div>';
+                    }
                     $('#detalle-proceso').html(contenido);
                     $("#carga").hide();
+                    cerrarModal();
+                } else {
+                    mostrarResultadoOperacion(data.message);
                 }
             });
         }
         function mostrarTerminado(id) {
             $(".btn-terminado").addClass("opacidad");
             $("#image-terminado-" + id).removeClass("opacidad");
+            $("#tab3 .slot").css('background-color', 'gray');
+            $("#image-terminado-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -386,10 +417,28 @@
                     contenido = '';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-fecha">';
-                    contenido += '      <span class="fa fa-calendar">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
                     contenido += '          ' + data.message.FECHA.date;
-                    contenido += '      </span>';
                     contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
+                    if (!data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO INDIVIDUAL';
+                    }
+                    if (data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
+                        contenido += '</div>';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
@@ -437,10 +486,46 @@
                     contenido += '  </div>';
                     contenido += '</div>';
                     $('#detalle-terminado').html(contenido);
+                    cerrarModal();
                 } else {
-
+                    mostrarResultadoOperacion(data.message);
                 }
             });
+        }
+        function retirarSolicitud(id) {
+            var ruta = '/ciudadano/alimentacion/comida/retirarSolicitud/' + id;
+            $('#modal-avisos2').click();
+            mostrarCarga('Retirando solicitud');
+            $.get(ruta, function (data, status) {
+                var respuesta = jQuery.parseJSON(data);
+                mostrarResultadoOperacion(respuesta.message);
+            });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '      ' + resultado;
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3 col-xs-offset-4">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function cerrarModal() {
+            $('#modal-advice2').modal('toggle');
         }
         $(function () {
             // We can attach the `fileselect` event to all file inputs on the page

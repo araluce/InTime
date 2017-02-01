@@ -23,6 +23,7 @@ use AppBundle\Utils\Alimentacion;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Ejercicio;
+use AppBundle\Utils\Distrito;
 
 class AlimentacionController extends Controller {
 
@@ -106,28 +107,6 @@ class AlimentacionController extends Controller {
 
     /**
      * 
-     * @Route("/getTiempoSinComerDistrito", name="tiempoSinComerDistrito")
-     */
-    public function getTiempoSinComerDistritoAction(Request $request) {
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $id_usuario = $session->get('id_usuario');
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        if ($USUARIO === null) {
-            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
-        }
-
-        $tsc = $USUARIO->getTiempoSinComerDistrito();
-        if ($tsc === null) {
-            return new JsonResponse(json_encode(array('porcentaje' => 'null')), 200);
-        }
-        $TSC_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_comer');
-        $respuesta = Alimentacion::porcetajeEnergia($tsc, $TSC_DEFECTO);
-        return new JsonResponse(json_encode($respuesta), 200);
-    }
-
-    /**
-     * 
      * @Route("/getTiempoSinBeber", name="tiempoSinBeber")
      */
     public function getTiempoSinBeberAction(Request $request) {
@@ -136,15 +115,15 @@ class AlimentacionController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         if ($USUARIO === null) {
-            return new JsonResponse(array('error' => 'El usuario no está logueado'), 200);
+            return new JsonResponse(json_encode(array('error' => 'El usuario no está logueado')), 200);
         }
         $tsb = $USUARIO->getTiempoSinBeber();
         if ($tsb === null) {
-            return new JsonResponse(array('porcentaje' => 'null'), 200);
+            return new JsonResponse(json_encode(array('porcentaje' => 'null')), 200);
         }
         $TSB_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_beber');
         $respuesta = Alimentacion::porcetajeEnergia($tsb, $TSB_DEFECTO);
-        return new JsonResponse($respuesta, 200);
+        return new JsonResponse(json_encode($respuesta), 200);
     }
 
     /**
@@ -224,24 +203,27 @@ class AlimentacionController extends Controller {
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/bebida/tienda');
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
 
         // Obtenemos los ejercicios de comida del usuario
         $SECCION_BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
-        $EJERCICIOS_COMIDA_DEL_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
+        $EJERCICIOS_AGUA_DEL_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
             'idUsu' => $USUARIO, 'idSeccion' => $SECCION_BEBIDA
         ]);
         $DATOS = [];
-        $DATOS['NUMERO_EJERCICIOS'] = count($EJERCICIOS_COMIDA_DEL_USUARIO);
+        $DATOS['NUMERO_EJERCICIOS'] = count($EJERCICIOS_AGUA_DEL_USUARIO);
 
         $DATOS['EJERCICIOS'] = [];
         $EJERCICIOS_CONSUMIDOS = [];
+        $EJERCICIOS_ALEATORIOS = [];
         // Si el usuario tiene ejercicios...
         if ($DATOS['NUMERO_EJERCICIOS']) {
-            $DATOS['YA_SOLICITADO'] = Alimentacion::getSolicitadosComida($doctrine, $USUARIO);
-            foreach ($EJERCICIOS_COMIDA_DEL_USUARIO as $EJERCICIO_USUARIO) {
+            $contador = 0;
+            $DATOS['YA_SOLICITADO_INDIVIDUAL'] = Alimentacion::getSolicitadosBebida($doctrine, $USUARIO);
+            $DATOS['YA_SOLICITADO_DISTRITO'] = Alimentacion::getSolicitadosBebida($doctrine, $USUARIO, true);
+            foreach ($EJERCICIOS_AGUA_DEL_USUARIO as $EJERCICIO_USUARIO) {
                 $EJERCICIO = $EJERCICIO_USUARIO->getIdEjercicio();
                 $EJERCICIOS_CONSUMIDOS[] = $EJERCICIO;
                 $aux = [];
@@ -252,7 +234,7 @@ class AlimentacionController extends Controller {
                     $aux['ICONO'] = $EJERCICIO->getIcono()->getNombreImg();
                 }
                 $aux['ESTADO'] = 'no_solicitado';
-
+                $aux['ES_DISTRITO'] = Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO);
                 $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                 ]);
@@ -261,7 +243,14 @@ class AlimentacionController extends Controller {
                 }
 
                 $DATOS['EJERCICIOS'][] = $aux;
+                if ($aux['ESTADO'] === 'no_solicitado' && !$aux['ES_DISTRITO']) {
+                    $EJERCICIOS_ALEATORIOS[] = $aux;
+                    $contador++;
+                }
             }
+            $aleatorio = rand(0, $contador) -1;
+            $DATOS['ALEATORIO'] = $EJERCICIOS_ALEATORIOS[$aleatorio];
+            
         }
         // Ejercicios no solicitados aún
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_BEBIDA);
@@ -281,7 +270,7 @@ class AlimentacionController extends Controller {
                 }
             }
         }
-        return new JsonResponse(array('estado' => 'OK', 'message' => $DATOS));
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
     /**
@@ -304,6 +293,10 @@ class AlimentacionController extends Controller {
         $resp['FECHA'] = $EJERCICIO->getFecha();
         $resp['ENUNCIADO'] = $EJERCICIO->getEnunciado();
         $resp['ES_DISTRITO'] = Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO);
+        if ($resp['ES_DISTRITO']) {
+            $resp['NUM_SOLICITANTES_DISTRITO'] = Alimentacion::numeroSolicitantes($doctrine, $EJERCICIO, $USUARIO->getIdDistrito());
+            $resp['NUM_CIUDADANOS_DISTRITO'] = count(Distrito::getCiudadanosDistrito($doctrine, $USUARIO->getIdDistrito()));
+        }
         $resp['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
         $resp['ICONO'] = null;
         if ($EJERCICIO->getIcono() !== null) {
@@ -552,6 +545,39 @@ class AlimentacionController extends Controller {
             
         }
         return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));
+    }
+
+    /**
+     * @Route("/ciudadano/alimentacion/comida/retirarSolicitud/{id_ejercicio}", name="retirarSolicitud")
+     */
+    public function retirarSolicitudAction(Request $request, $id_ejercicio) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/retirarSolicitud/' . $id_ejercicio);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+        if ($EJERCICIO === null) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este ejercicio no existe')));
+        }
+        $coste = $EJERCICIO->getCoste();
+        $estadoSolicitado = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
+
+        $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+            'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO, 'idEjercicioEstado' => $estadoSolicitado
+        ]);
+        if ($CALIFICACION === null) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este ejercicio no había sido solicitado')));
+        }
+
+        $em->remove($CALIFICACION);
+        $em->flush();
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, $coste, 'Ingreso - Reingreso al revocar solicitud');
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Solicitud retirada')), 200);
     }
 
     public function return_bytes($val) {

@@ -6,18 +6,6 @@
 
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
-    <style>
-        div.roulette_container {
-            background-color:rgb(253, 252, 253);
-            width:200px;
-            height:200px;
-            border:1px solid rgba(253, 252, 253, 0.31);
-            box-shadow:0px 0px 3px lightpink;margin:auto;
-        }
-        .roulette img{
-            height: 200px;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -25,7 +13,7 @@
         <div class="row" style="margin-top: 1%;">
             <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
                 <div class="btn-group" role="group">
-                    <button type="button" id="tienda" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
+                    <button type="button" id="tienda" class="btn btn-primary btn13 btn-menu-first" href="#tab1" data-toggle="tab">
                         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
                         <div class="hidden-xs">TIENDA</div>
                     </button>
@@ -43,61 +31,77 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                    <button type="button" id="exit" class="btn btn-default btn4 btn-menu-last" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
                         <div class="hidden-xs">ATRÁS</div>
                     </button>
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="row tablon-progreso">
+                <div class="row bordes border-radius tablon-progreso">
                     <h5>Energía</h5>
                     <div class="progress progress-striped active">
-                        <div class="progress-bar progress-bar-danger" id="progress-tsc"></div>
+                        <div class="progress-bar progress-bar-danger" id="progress-tsb"></div>
                     </div>
                 </div>
-                <div class="row tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
+                <div class="row bordes border-radius tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="tab1">
-                            <div class="roulette" id="roulete" style="display:none;"> </div>
+                            <div class="row" style="margin-top: 1%;">
+                                <div class="col-xs-4 col-xs-offset-4">
+                                    <button class="btn btn-block btn-primary" id="btn-solicitar-aleatorio" onclick="solicitarAleatorio();">
+                                        SOLICITAR EJERCICIO ALEATORIO
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 1%;">
+                                <div class="col-xs-12 border-radius" id="detalle-tienda"></div>
+                            </div>
+                            <div class="row" style="margin-top: 1%;">
+                                <div class="fila-producto-tienda-sup">
+                                    <div class="slot fila btn-menu-first" id="tienda-distrito-1"></div>
+                                    <div class="slot fila" id="tienda-distrito-2"></div>
+                                    <div class="slot btn-menu-last" id="tienda-distrito-3"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane fade in" id="tab2">
                             <div class="row">
-                                <div class="col-xs-5 titulo-proceso">
-                                    Individual
+                                <div class="col-xs-4 col-xs-offset-4">
+                                    <div class="row" style="margin-top: 1%;">
+                                        <div class="slot border-radius" id="proceso-individual"></div>
+                                        <div class="slot border-radius" style="float:right;" id="proceso-distrito"></div>
+                                    </div>
+
                                 </div>
-                                <div class="col-xs-5 col-xs-offset-2 titulo-proceso">
-                                    Distrito
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-5" id="detalle-proceso-individual"></div>
-                                <div class="col-xs-5 col-xs-offset-2" id="detalle-proceso-distrito"></div>
+                                <div class="col-xs-12 border-radius" style="margin-top: 1%;" id="detalle-proceso"></div>
                             </div>
                         </div>
                         <div class="tab-pane fade in" id="tab3">
-                            <div class="col-xs-5" id="estanteria-terminado">
-                                <div class="row">
-                                    <div class="slot col-xs-2 fila" id="terminado-1"></div>
-                                    <div class="slot col-xs-2 fila" id="terminado-2"></div>
-                                    <div class="slot col-xs-2 fila" id="terminado-3"></div>
-                                    <div class="slot col-xs-2 fila" id="terminado-4"></div>
-                                    <div class="slot col-xs-2" id="terminado-5"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-6"></div>
-                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-7"></div>
-                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-8"></div>
-                                    <div class="slot col-xs-2 fila-abajo fila" id="terminado-9"></div>
-                                    <div class="slot col-xs-2 fila-abajo" id="terminado-10"></div>
-                                </div>
-                                <div class="row" style="margin-bottom: 1%;">
-                                    <span class="descripcion">
-                                        Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
-                                    </span>
+                            <div class="row">
+                                <div class="fila-producto-terminado">
+                                    <div class="slot fila btn-menu-first" id="terminado-1"></div>
+                                    <div class="slot fila" id="terminado-2"></div>
+                                    <div class="slot fila" id="terminado-3"></div>
+                                    <div class="slot fila" id="terminado-4"></div>
+                                    <div class="slot btn-menu-last" id="terminado-5"></div>
                                 </div>
                             </div>
-                            <div class="col-xs-7" id="detalle-terminado"></div>
+                            <div class="row">
+                                <div class="fila-producto-terminado">
+                                    <div class="slot fila btn-menu-first" id="terminado-6"></div>
+                                    <div class="slot fila" id="terminado-7"></div>
+                                    <div class="slot fila" id="terminado-8"></div>
+                                    <div class="slot fila" id="terminado-9"></div>
+                                    <div class="slot btn-menu-last" id="terminado-10"></div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 1%;">
+                                <span class="descripcion">
+                                    Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
+                                </span>
+                            </div>
+                            <div class="row border-radius" id="detalle-terminado"></div>
                         </div>
                     </div>
                 </div>
@@ -108,303 +112,453 @@
 
 {% block javascripts %}
     <script>
-        var ya_solicitado = false;
+        var ya_solicitado_individual = false;
+        var ya_solicitado_distrito = false;
         var puede_entregar = true;
+        var aleatorio = 0;
         $(document).ready(function () {
             obtenerTienda();
-            setTSB();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            setTSB();
+        });
+        $(function () {
+            setInterval(function () {
+                setTSB();
+            }, 5000);
+        });
+        function arena_ejercicio(id) {
+            var ruta = '/arena/' + id;
+            window.location.replace(ruta);
+        }
+        function solicitar(id) {
+            var ruta = '/solicitar/' + id;
+            $.get(ruta, function (data, status) {
+                if (data.respuesta === 'OK') {
+                    location.reload();
+                } else {
+                    $('#mensaje-titulo').html('&nbsp;ERROR...');
+                    $('#mensaje-texto').html(data.mensaje);
+                    $('#modal-avisos2').click();
+                }
             });
-
-            function arena_ejercicio(id) {
-                var ruta = '/arena/' + id;
-                window.location.replace(ruta);
-            }
-            function solicitar(id) {
-                var ruta = '/solicitar/' + id;
-                $.get(ruta, function (data, status) {
-                    if (data.respuesta === 'OK') {
-                        location.reload();
-                    } else {
-                        $('#mensaje-titulo').html('&nbsp;ERROR...');
-                        $('#mensaje-texto').html(data.mensaje);
-                        $('#modal-avisos2').click();
+        }
+        function solicitarAleatorio(){
+            solicitar(aleatorio);
+        }
+        function setTSB() {
+            var ruta = '/getTiempoSinBeber';
+            $.get(ruta, function (data, status) {
+                datos = jQuery.parseJSON(data);
+                if (datos.porcentaje !== 'null') {
+                    $('#progress-tsb').width(datos.porcentaje + '%');
+                    contenido = '';
+                    if (datos.porcentaje > 0) {
+                        contenido += datos.porcentaje.toFixed(2) + '%';
                     }
-                });
-            }
-            $(function () {
-                setInterval(function () {
-                    setTSB();
-                }, 5000);
+                    if (datos.porcentaje <= 0) {
+                        contenido += 'FALLECIDO POR INANICION';
+                    }
+                    $('#progress-tsb').html(contenido);
+                } else {
+                    $('#progress-tsb').parent().hide();
+                }
             });
-            function setTSB() {
-                var ruta = '/getTiempoSinBeber';
-                $.get(ruta, function (data, status) {
-                    if (data.porcentaje !== 'null') {
-                        $('#progress-tsc').width(data.porcentaje + '%');
-                        contenido = '';
-                        if (data.porcentaje > 0) {
-                            contenido += data.porcentaje.toFixed(2) + '%';
+        }
+        function obtenerTienda() {
+            ruta = '/ciudadano/alimentacion/bebida/tienda';
+            $.get(ruta, function (data, status) {
+                datos = jQuery.parseJSON(data);
+                console.log(datos);
+                if (datos.estado === 'OK') {
+                    aleatorio = datos.message.ALEATORIO.ID;
+                    if (datos.message.YA_SOLICITADO_INDIVIDUAL) {
+                        ya_solicitado_individual = true;
+                        $('#btn-solicitar-aleatorio').prop( "disabled", true );
+ 
+                    }
+                    if (datos.message.YA_SOLICITADO_DISTRITO) {
+                        ya_solicitado_distrito = true;
+                    }
+                    rellenarEstantes(datos.message.EJERCICIOS);
+                }
+            });
+        }
+        function rellenarEstantes(productos) {
+            contador_tienda_distrito = 1;
+            contador_proceso = 1;
+            contador_terminado = 1;
+            $('#modal-avisos2').click();
+            mostrarCarga('Rellenando escaparate');
+            $.each(productos, function (k, v) {
+                switch (v.ESTADO) {
+                    case 'no_solicitado':
+                        contenido = '<span class="btn-tienda" id="image-tienda-' + v.ID + '" onclick="mostrarTienda(' + v.ID + ');">';
+                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '</span>';
+                        if (v.ES_DISTRITO) {
+                            $("#tienda-distrito-" + contador_tienda_distrito).html(contenido);
+                            contador_tienda_distrito++;
                         }
-                        if (data.porcentaje <= 0) {
-                            contenido += 'FALLECIDO POR DESIDRATACION';
+                        break;
+                    case 'solicitado':
+                        contenido = '<span class="btn-solicitado" id="image-solicitado-' + v.ID + '" onclick="mostrarProceso(' + v.ID + ');">';
+                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '</span>';
+                        if (!v.ES_DISTRITO) {
+                            $('#proceso-individual').html(contenido);
                         }
-                        $('#progress-tsc').html(contenido);
-                    }
-                });
-            }
-            function obtenerTienda() {
-                ruta = '/ciudadano/alimentacion/bebida/tienda';
-                $.get(ruta, function (data, status) {
-                    if (data.estado === 'OK') {
-                        if (data.message.YA_SOLICITADO) {
-                            ya_solicitado = true;
+                        if (v.ES_DISTRITO) {
+                            $('#proceso-distrito').html(contenido);
                         }
-                        rellenarEstantes(data.message.EJERCICIOS);
-                    }
-                });
-            }
-            function rellenarEstantes(productos) {
-                contador_tienda = 0;
-                contador_proceso = 1;
-                contador_terminado = 1;
-                var ejercicios_tienda = new Array();
-                $.each(productos, function (k, v) {
-                    var ejercicio = {
-                        'ID': v.ID,
-                        'ICONO': v.ICONO
-                    };
-                    if (v.ESTADO === 'no_solicitado') {
-                        contador_tienda++;
-                        contenido = '<img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
-                        $(".roulette-inner").append(contenido);
-                        ejercicios_tienda.push(ejercicio);
-                    }
-                    if (v.ESTADO === 'no_solicitado') {
-                        contenido = '<span onclick="mostrarTienda(' + v.ID + ');">';
-                    }
-                    if (v.ESTADO === 'entregado') {
-                        contenido = '<span onclick="mostrarTerminado(' + v.ID + ');" class="opacidad">';
-                    }
-                    if (v.ESTADO === 'evaluado') {
-                        contenido = '<span onclick="mostrarTerminado(' + v.ID + ');">';
-                    }
-                    contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
-                    contenido += '</span>';
-                    if (v.ESTADO === 'solicitado') {
-                        mostrarProceso(v.ID);
-                    }
-                    if (v.ESTADO === 'evaluado' || v.ESTADO === 'entregado') {
+                        break;
+                    case 'entregado':
+                    case 'evaluado':
+                        contenido = '<span class="btn-terminado" id="image-terminado-' + v.ID + '" onclick="mostrarTerminado(' + v.ID + ');">';
+                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '</span>';
                         $("#terminado-" + contador_terminado).html(contenido);
                         contador_terminado++;
-                    }
-                });
-                ejercicioRandom(ejercicios_tienda, contador_tienda);
-            }
+                        break;
+                }
+            });
+            cerrarModal();
+        }
 
-            function mostrarTienda(id) {
-                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
-                $.get(ruta, function (data, status) {
-                    if (data.estado === 'OK') {
-                        contenido = '';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-fecha">';
-                        contenido += '      <span class="fa fa-calendar">';
-                        contenido += '          ' + data.message.FECHA.date;
-                        contenido += '      </span>';
-                        contenido += '  </div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-enunciado">';
-                        contenido += '      ' + data.message.ENUNCIADO;
-                        contenido += '  </div>';
+        function mostrarTienda(id) {
+            $(".btn-tienda").addClass("opacidad");
+            $("#tab1 .slot").css('background-color', 'gray');
+            $("#image-tienda-" + id).removeClass("opacidad");
+            $("#image-tienda-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
+            var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-fecha">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
+                    contenido += '          ' + data.message.FECHA.date;
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
+                    if (!data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO INDIVIDUAL';
+                    }
+                    if (data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
                         contenido += '</div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-coste">';
-                        contenido += '      <span class="fa fa-money"> </span>&nbsp;';
-                        if (data.message.COSTE.dias !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
-                        }
-                        if (data.message.COSTE.horas !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
-                        }
-                        if (data.message.COSTE.minutos !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
-                        }
-                        if (data.message.COSTE.segundos !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
-                        }
-                        if (!data.message.COSTE.segundos &&
-                                !data.message.COSTE.minutos &&
-                                !data.message.COSTE.horas &&
-                                !data.message.COSTE.dias) {
-                            contenido += '<span style="color:green;">gratis</span>&nbsp;';
-                        }
-                        contenido += '  </div>';
-                        contenido += '</div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12">';
-                        if (!ya_solicitado) {
-                            contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
-                            contenido += '          SOLICITAR';
-                            contenido += '      </button>';
-                        } else {
-                            contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
-                            contenido += '          SOLICITAR';
-                            contenido += '      </button>';
-                        }
-                        contenido += '  </div>';
-                        contenido += '</div>';
-                        $('#detalle-tienda').html(contenido);
+                    }
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-enunciado">';
+                    contenido += '      ' + data.message.ENUNCIADO;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-coste">';
+                    contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                    if (data.message.COSTE.dias !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
+                    }
+                    if (data.message.COSTE.horas !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
+                    }
+                    if (data.message.COSTE.minutos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
+                    }
+                    if (data.message.COSTE.segundos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
+                    }
+                    if (!data.message.COSTE.segundos &&
+                            !data.message.COSTE.minutos &&
+                            !data.message.COSTE.horas &&
+                            !data.message.COSTE.dias) {
+                        contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12">';
+                    if (!data.message.ES_DISTRITO && ya_solicitado_individual) {
+                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un ejercicio individual en curso. Antes de solicitar otro debe realizar una entrega.</p>';
+
+                    } else if (data.message.ES_DISTRITO && ya_solicitado_distrito) {
+                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un ejercicio de distrito pendiente de entrega. Al menos un ciudadano de su distrito debe entregar para poder solicitar otro.</p>';
                     } else {
-
+                        contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                        contenido += '          SOLICITAR';
+                        contenido += '      </button>';
                     }
-                });
-            }
-            function mostrarProceso(id) {
-                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
-                $.get(ruta, function (data, status) {
-                    if (data.estado === 'OK') {
-                        contenido = '';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-fecha">';
-                        contenido += '      <span class="fa fa-calendar">';
-                        contenido += '          ' + data.message.FECHA.date;
-                        contenido += '      </span>';
-                        contenido += '  </div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-enunciado">';
-                        contenido += '      ' + data.message.ENUNCIADO;
-                        contenido += '  </div>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    $('#detalle-tienda').html(contenido);
+                    cerrarModal();
+                } else {
+                    mostrarResultadoOperacion(data.message);
+                }
+            });
+        }
+        function mostrarProceso(id) {
+            $(".btn-solicitado").addClass("opacidad");
+            $("#image-solicitado-" + id).removeClass("opacidad");
+            $("#tab2 .slot").css('background-color', 'gray');
+            $("#image-solicitado-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
+            var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-fecha">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
+                    contenido += '          ' + data.message.FECHA.date;
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
+                    if (!data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO INDIVIDUAL';
+                    }
+                    if (data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
                         contenido += '</div>';
-                        //contenido += '<center><i class="fa fa-spinner fa-spin" id="carga"></i></center>';
-                        //contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="entrega();" id="form-entrega" >';
-                        //contenido += '  <div class="input-group">';
-                        //contenido += '      <label class="input-group-btn">';
-                        //contenido += '          <span class="btn boton-entrega">';
-                        //contenido += '              Buscar&hellip; <input type="file" id="entrega_proceso" name="ENTREGA" id="ENTREGA" style="display: none;" required>';
-                        //contenido += '          </span>';
-                        //contenido += '      </label>';
-                        //contenido += '      <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
-                        //contenido += '  </div>';
-                        //contenido += '  <input type="hidden" name="id_ejercicio" value="' + data.message.ID + '">';
-                        //contenido += '  <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>';
-                        //contenido += '  <center><span id="error" style="color:red;"></span></center>';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-enunciado">';
+                    contenido += '      ' + data.message.ENUNCIADO;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    if (!rest_soli) {
+                        contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data">';
+                        contenido += '  <input type="hidden" name="id_ejercicio" value="' + id + '">';
+                        contenido += '  <div class="row">';
+                        contenido += '        <div class="col-md-12" id="panel-entrega">';
+                        contenido += '            <div class="form-group">';
+                        contenido += '                <div class="input-group">';
+                        contenido += '                    <label class="input-group-btn">';
+                        contenido += '                        <span class="btn btn-primary detalle-boton" style="color: black;">';
+                        contenido += '                            Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">';
+                        contenido += '                        </span>';
+                        contenido += '                    </label>';
+                        contenido += '                    <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
+                        contenido += '                </div>';
+                        contenido += '            </div>';
+                        contenido += '        </div>';
+                        contenido += '    </div>';
                         contenido += '  <div class="row">';
                         contenido += '      <div class="col-md-12">';
-                        contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
-                        //contenido += '          <button type="submit" class="btn detalle-boton">';
+                        //contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
+                        contenido += '          <button type="submit" class="btn detalle-boton">';
                         contenido += '              ENTREGAR';
                         contenido += '          </button>';
                         contenido += '      </div>';
                         contenido += '  </div>';
-                        //contenido += '</form>';
-                        $('#detalle-proceso-individual').html(contenido);
-                        $("#carga").hide();
+                        contenido += '</form>';
                     } else {
-
+                        contenido += '  <div class="row">';
+                        contenido += '  <div class="col-md-12 detalle-enunciado" style="color: #286090; min-height: 0px;">';
+                        contenido += '  <p>Este ejercicio debe ser solicitado por todos los miembros de su distrito para poder realizar la entrega</p>';
+                        contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
+                        contenido += '  </div>';
+                        contenido += '      <div class="col-md-12">';
+                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud('+id+')">';
+                        contenido += '              RETIRAR SOLICITUD';
+                        contenido += '          </button>';
+                        contenido += '      </div>';
+                        contenido += '  </div>';
                     }
-                });
-            }
-            function mostrarTerminado(id) {
-                var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
-                $.get(ruta, function (data, status) {
-                    if (data.estado === 'OK') {
-                        contenido = '';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-fecha">';
-                        contenido += '      <span class="fa fa-calendar">';
-                        contenido += '          ' + data.message.FECHA.date;
-                        contenido += '      </span>';
-                        contenido += '  </div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-enunciado">';
-                        contenido += '      ' + data.message.ENUNCIADO;
-                        contenido += '  </div>';
-                        contenido += '</div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12 detalle-coste">';
-                        contenido += '      <span class="fa fa-money"> </span>&nbsp;';
-                        if (data.message.COSTE.dias !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
-                        }
-                        if (data.message.COSTE.horas !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
-                        }
-                        if (data.message.COSTE.minutos !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
-                        }
-                        if (data.message.COSTE.segundos !== 0) {
-                            contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
-                        }
-                        if (!data.message.COSTE.segundos &&
-                                !data.message.COSTE.minutos &&
-                                !data.message.COSTE.horas &&
-                                !data.message.COSTE.dias) {
-                            contenido += '<span style="color:green;">gratis</span>&nbsp;';
-                        }
-                        contenido += '  </div>';
-                        contenido += '</div>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-12">';
-                        if (!ya_solicitado) {
-                            if (data.message.ESTADO === 'entregado') {
-                                contenido += '      <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
-                                contenido += '          MODIFICAR ENTREGA';
-                            } else {
-                                contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
-                                contenido += '          VOLVER A SOLICITAR';
-                            }
-                            contenido += '      </button>';
-                        } else {
-                            contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
-                            contenido += '          VOLVER A SOLICITAR';
-                            contenido += '      </button>';
-                        }
-                        contenido += '  </div>';
-                        contenido += '</div>';
-                        $('#detalle-terminado').html(contenido);
-                    } else {
-
-                    }
-                });
-            }
-            $(function () {
-                // We can attach the `fileselect` event to all file inputs on the page
-                $(document).on('change', ':file', function () {
-                    var input = $(this),
-                            numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                    input.trigger('fileselect', [numFiles, label]);
-                });
-
-                // We can watch for our custom `fileselect` event like this
-                $(document).ready(function () {
-                    $(':file').on('fileselect', function (event, numFiles, label) {
-
-                        var input = $(this).parents('.input-group').find(':text'),
-                                log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-                        if (input.length) {
-                            input.val(log);
-                        } else {
-                            if (log)
-                                alert(log);
-                        }
-
-                    });
-                });
-
+                    $('#detalle-proceso').html(contenido);
+                    $("#carga").hide();
+                    cerrarModal();
+                } else {
+                    mostrarResultadoOperacion(data.message);
+                }
             });
-            function ejercicioRandom(ejercicios, n_ejercicios) {
-                n_ej = parseInt(n_ejercicios);
-                random = Math.random();
-                return Math.floor(random * n_ej + 1);
-            }
+        }
+        function mostrarTerminado(id) {
+            $(".btn-terminado").addClass("opacidad");
+            $("#image-terminado-" + id).removeClass("opacidad");
+            $("#tab3 .slot").css('background-color', 'gray');
+            $("#image-terminado-" + id).parent().css('background-color', 'white');
+            $('#modal-avisos2').click();
+            mostrarCarga('Obteniendo información del ejercicio');
+            var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-fecha">';
+                    contenido += '      <span class="fa fa-calendar"></span>';
+                    contenido += '          ' + data.message.FECHA.date;
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
+                    if (!data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO INDIVIDUAL';
+                    }
+                    if (data.message.ES_DISTRITO) {
+                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '<div class="col-md-12" style="display:inline-block;">';
+                        var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
+                        var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
+                        for (var i = 0; i < solicitantes; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #5cb85c;"></span>';
+                        }
+                        for (var i = 0; i < rest_soli; i++) {
+                            contenido += '<span class="fa fa-user" style="color: #f0ad4e;"></span>';
+                        }
+                        contenido += '</div>';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-enunciado">';
+                    contenido += '      ' + data.message.ENUNCIADO;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-coste">';
+                    contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                    if (data.message.COSTE.dias !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
+                    }
+                    if (data.message.COSTE.horas !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
+                    }
+                    if (data.message.COSTE.minutos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
+                    }
+                    if (data.message.COSTE.segundos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
+                    }
+                    if (!data.message.COSTE.segundos &&
+                            !data.message.COSTE.minutos &&
+                            !data.message.COSTE.horas &&
+                            !data.message.COSTE.dias) {
+                        contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12">';
+                    if (!ya_solicitado_individual) {
+                        if (data.message.ESTADO === 'entregado') {
+                            contenido += '      <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
+                            contenido += '          MODIFICAR ENTREGA';
+                        } else {
+                            contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                            contenido += '          VOLVER A SOLICITAR';
+                        }
+                        contenido += '      </button>';
+                    } else {
+                        contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
+                        contenido += '          VOLVER A SOLICITAR';
+                        contenido += '      </button>';
+                    }
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    $('#detalle-terminado').html(contenido);
+                    cerrarModal();
+                } else {
+                    mostrarResultadoOperacion(data.message);
+                }
+            });
+        }
+        function retirarSolicitud(id) {
+            var ruta = '/ciudadano/alimentacion/comida/retirarSolicitud/' + id;
+            $('#modal-avisos2').click();
+            mostrarCarga('Retirando solicitud');
+            $.get(ruta, function (data, status) {
+                var respuesta = jQuery.parseJSON(data);
+                mostrarResultadoOperacion(respuesta.message);
+            });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '      ' + resultado;
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3 col-xs-offset-4">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function cerrarModal() {
+            $('#modal-advice2').modal('toggle');
+        }
+        $(function () {
+            // We can attach the `fileselect` event to all file inputs on the page
+            $(document).on('change', ':file', function () {
+                var input = $(this),
+                        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [numFiles, label]);
+            });
+            // We can watch for our custom `fileselect` event like this
+            $(document).ready(function () {
+                $(':file').on('fileselect', function (event, numFiles, label) {
+
+                    var input = $(this).parents('.input-group').find(':text'),
+                            log = numFiles > 1 ? numFiles + ' files selected' : label;
+                    if (input.length) {
+                        input.val(log);
+                    } else {
+                        if (log)
+                            alert(log);
+                    }
+
+                });
+            });
+            $('#ENTREGA').bind('change', function () {
+                $("#carga").show();
+                var tamanio = this.files[0].size;
+                if (tamanio > {{ max_size }}) {
+                    puede_entregar = false;
+                    $("#error").show();
+                    $('#error').html('Se ha sobrepasado el tamaño máximo permitido: ' + tamanio + '/{{max_size}}');
+                } else {
+                    $("#error").hide();
+                }
+                $("#carga").hide();
+            });
+        });
     </script>
 {% endblock %}

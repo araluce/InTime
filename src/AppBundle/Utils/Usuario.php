@@ -495,5 +495,20 @@ class Usuario {
         }
         return 1;
     }
+    
+    /**
+     * Obtiene los ciudadanos vivos
+     * @param type $doctrine
+     * @return null|array
+     */
+    static function getCiudadanosVivos($doctrine){
+        $ESTADO_ACTIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
+        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findBy([
+            'idRol' => $ROL_CIUDADANO, 'idEstado' => $ESTADO_ACTIVO
+        ]);
+        
+        return $CIUDADANOS;
+    }
 
 }

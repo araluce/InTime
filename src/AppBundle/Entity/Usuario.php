@@ -85,23 +85,9 @@ class Usuario
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="tiempo_sin_comer_distrito", type="datetime", nullable=true)
-     */
-    private $tiempoSinComerDistrito;
-
-    /**
-     * @var \DateTime
-     *
      * @ORM\Column(name="tiempo_sin_beber", type="datetime", nullable=true)
      */
     private $tiempoSinBeber;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="tiempo_sin_beber_distrito", type="datetime", nullable=true)
-     */
-    private $tiempoSinBeberDistrito;
 
     /**
      * @var integer
@@ -385,29 +371,6 @@ class Usuario
     }
 
     /**
-     * Set tiempoSinComerDistrito
-     *
-     * @param \DateTime $tiempoSinComerDistrito
-     * @return Usuario
-     */
-    public function setTiempoSinComerDistrito($tiempoSinComerDistrito)
-    {
-        $this->tiempoSinComerDistrito = $tiempoSinComerDistrito;
-
-        return $this;
-    }
-
-    /**
-     * Get tiempoSinComerDistrito
-     *
-     * @return \DateTime 
-     */
-    public function getTiempoSinComerDistrito()
-    {
-        return $this->tiempoSinComerDistrito;
-    }
-
-    /**
      * Set tiempoSinBeber
      *
      * @param \DateTime $tiempoSinBeber
@@ -428,29 +391,6 @@ class Usuario
     public function getTiempoSinBeber()
     {
         return $this->tiempoSinBeber;
-    }
-
-    /**
-     * Set tiempoSinBeberDistrito
-     *
-     * @param \DateTime $tiempoSinBeberDistrito
-     * @return Usuario
-     */
-    public function setTiempoSinBeberDistrito($tiempoSinBeberDistrito)
-    {
-        $this->tiempoSinBeberDistrito = $tiempoSinBeberDistrito;
-
-        return $this;
-    }
-
-    /**
-     * Get tiempoSinBeberDistrito
-     *
-     * @return \DateTime 
-     */
-    public function getTiempoSinBeberDistrito()
-    {
-        return $this->tiempoSinBeberDistrito;
     }
 
     /**
