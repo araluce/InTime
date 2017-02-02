@@ -39,9 +39,14 @@
             </div>
             <div class="col-md-12">
                 <div class="row bordes border-radius tablon-progreso">
-                    <h5>Energía</h5>
+                    <h5>Energía*</h5>
                     <div class="progress progress-striped active">
                         <div class="progress-bar progress-bar-danger" id="progress-tsc"></div>
+                    </div>
+                    <div class="row" style="margin-top: 1%;">
+                        <span class="recordatorio">
+                            *Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
+                        </span>
                     </div>
                 </div>
                 <div class="row bordes border-radius tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
@@ -100,12 +105,7 @@
                                     <div class="slot btn-menu-last" id="terminado-10"></div>
                                 </div>
                             </div>
-                            <div class="row" style="margin-bottom: 1%;">
-                                <span class="descripcion">
-                                    Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
-                                </span>
-                            </div>
-                            <div class="row border-radius" id="detalle-terminado"></div>
+                            <div class="row border-radius" id="detalle-terminado" style="margin-top: 1%;"></div>
                         </div>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                 switch (v.ESTADO) {
                     case 'no_solicitado':
                         contenido = '<span class="btn-tienda" id="image-tienda-' + v.ID + '" onclick="mostrarTienda(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         if (!v.ES_DISTRITO) {
                             $("#tienda-individual-" + contador_tienda_individual).html(contenido);
@@ -209,7 +209,7 @@
                         break;
                     case 'solicitado':
                         contenido = '<span class="btn-solicitado" id="image-solicitado-' + v.ID + '" onclick="mostrarProceso(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         if (!v.ES_DISTRITO) {
                             $('#proceso-individual').html(contenido);
@@ -221,7 +221,7 @@
                     case 'entregado':
                     case 'evaluado':
                         contenido = '<span class="btn-terminado" id="image-terminado-' + v.ID + '" onclick="mostrarTerminado(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Comida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         $("#terminado-" + contador_terminado).html(contenido);
                         contador_terminado++;
@@ -389,7 +389,7 @@
                         contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
                         contenido += '  </div>';
                         contenido += '      <div class="col-md-12">';
-                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud('+id+')">';
+                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud(' + id + ')">';
                         contenido += '              RETIRAR SOLICITUD';
                         contenido += '          </button>';
                         contenido += '      </div>';

@@ -76,6 +76,9 @@ class AlimentacionController extends Controller {
             return new RedirectResponse('/');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Bebida', $session);
+        if ($mensaje !== null) {
+            $DATOS['info']['message'] = $mensaje['info'];
+        }
         $DATOS['max_size'] = $this->return_bytes(ini_get('upload_max_filesize'));
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
         $SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
@@ -248,9 +251,8 @@ class AlimentacionController extends Controller {
                     $contador++;
                 }
             }
-            $aleatorio = rand(0, $contador) -1;
+            $aleatorio = rand(0, $contador) - 1;
             $DATOS['ALEATORIO'] = $EJERCICIOS_ALEATORIOS[$aleatorio];
-            
         }
         // Ejercicios no solicitados aún
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_BEBIDA);
@@ -337,7 +339,11 @@ class AlimentacionController extends Controller {
                     $DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
                     if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
                         $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
-                        return $this->comidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
+                        if ($SECCION->getSeccion() === 'comida') {
+                            return $this->comidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
+                        } else {
+                            return $this->bebidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
+                        }
                     }
                     $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
                     $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([

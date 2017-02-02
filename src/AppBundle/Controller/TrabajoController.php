@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Twitter;
+use AppBundle\Utils\DataManager;
 
 /**
  * Description of TrabajoController
@@ -37,6 +39,62 @@ class TrabajoController extends Controller {
         $DATOS['TITULO'] = 'Inspección';
         $DATOS['ULT_CAL'] = Utils::getUltimasCalificacionesSeccion($doctrine, 'inspeccion_trabajo');
         return $this->render('guardian/ejercicios/ejerciciosInspeccionTrabajo.twig', $DATOS);
+    }
+    
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral", name="jornadaLaboral")
+     */
+    public function jornadaLaboralAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral');
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS = DataManager::setDefaultData($doctrine, 'Jornada Laboral', $session);
+        return $this->render('ciudadano/trabajo/jornada_laboral.twig', $DATOS);
+    }
+    
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/getSeguidos", name="getSeguidos")
+     */
+    public function getSeguidosAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/getSeguidos');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $USUARIO_X_TUITERO = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($USUARIO);
+        $SEGUIDOS = [];
+        foreach($USUARIO_X_TUITERO as $SEGUIDO){
+            $aux = [];
+            $aux['ID'] = $SEGUIDO->getIdTuitero();
+            $SEGUIDOS[] = $aux;
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
+    }
+    
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/descargarTuits/{usuario_tw}", name="descargarTuits")
+     */
+    public function descargarTuitsAction(Request $request, $usuario_tw) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/descargarTuits/' . $usuario_tw);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $count = 10;
+        $SEGUIDOS = 0;
+        if (isset($usuario_tw)) {
+            $SEGUIDOS = Twitter::twitter2($doctrine, $USUARIO, $usuario_tw, $count);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
     }
 
     /**

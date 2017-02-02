@@ -132,10 +132,11 @@
         $('#redirect-info').click(function () {
             window.location.replace('/ciudadano/info');
         });
+        $(document).on('mobileinit', function () {
+            $.mobile.ignoreContentEnabled = true;
+        });
         $(document).ready(function () {
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
-            });
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        });
     </script>
 {% endblock %}

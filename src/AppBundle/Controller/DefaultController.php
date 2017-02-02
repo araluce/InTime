@@ -78,7 +78,7 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/trabajo/jornada_laboral", name="twitter")
+     * @Route("/ciudadano/trabajo/jornada_laboral2", name="twitter")
      */
     public function twitter(Request $request, $msg = null) {
         $doctrine = $this->getDoctrine();

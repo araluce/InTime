@@ -39,20 +39,23 @@
             </div>
             <div class="col-md-12">
                 <div class="row bordes border-radius tablon-progreso">
-                    <h5>Energía</h5>
+                    <h5>HIDRATACIÓN*</h5>
                     <div class="progress progress-striped active">
                         <div class="progress-bar progress-bar-danger" id="progress-tsb"></div>
+                    </div>
+                    <div class="row" style="margin-top: 1%;">
+                        <span class="recordatorio">
+                            *Recuerda que debes hidratarte al menos cada 2 semanas para no morir de deshidratación.
+                        </span>
                     </div>
                 </div>
                 <div class="row bordes border-radius tablon-contenido" id="seccion_compra" style="margin-bottom: 1%;">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="tab1">
                             <div class="row" style="margin-top: 1%;">
-                                <div class="col-xs-4 col-xs-offset-4">
-                                    <button class="btn btn-block btn-primary" id="btn-solicitar-aleatorio" onclick="solicitarAleatorio();">
-                                        SOLICITAR EJERCICIO ALEATORIO
-                                    </button>
-                                </div>
+                                <center>
+                                    <img id="img-aleatorio" src="{{ asset('images/iconos/Agua.png') }}" onclick="solicitarAleatorio();"/>
+                                </center>
                             </div>
                             <div class="row" style="margin-top: 1%;">
                                 <div class="col-xs-12 border-radius" id="detalle-tienda"></div>
@@ -96,12 +99,7 @@
                                     <div class="slot btn-menu-last" id="terminado-10"></div>
                                 </div>
                             </div>
-                            <div class="row" style="margin-bottom: 1%;">
-                                <span class="descripcion">
-                                    Recuerda que debes alimentarte al menos cada 3 semanas para no morir de inanición.
-                                </span>
-                            </div>
-                            <div class="row border-radius" id="detalle-terminado"></div>
+                            <div class="row border-radius" id="detalle-terminado" style="margin-top: 1%;"></div>
                         </div>
                     </div>
                 </div>
@@ -112,6 +110,7 @@
 
 {% block javascripts %}
     <script>
+        $('#img-aleatorio').hide();
         var ya_solicitado_individual = false;
         var ya_solicitado_distrito = false;
         var puede_entregar = true;
@@ -146,7 +145,7 @@
                 }
             });
         }
-        function solicitarAleatorio(){
+        function solicitarAleatorio() {
             solicitar(aleatorio);
         }
         function setTSB() {
@@ -177,8 +176,9 @@
                     aleatorio = datos.message.ALEATORIO.ID;
                     if (datos.message.YA_SOLICITADO_INDIVIDUAL) {
                         ya_solicitado_individual = true;
-                        $('#btn-solicitar-aleatorio').prop( "disabled", true );
- 
+
+                    } else {
+                        $('#img-aleatorio').show();
                     }
                     if (datos.message.YA_SOLICITADO_DISTRITO) {
                         ya_solicitado_distrito = true;
@@ -197,7 +197,7 @@
                 switch (v.ESTADO) {
                     case 'no_solicitado':
                         contenido = '<span class="btn-tienda" id="image-tienda-' + v.ID + '" onclick="mostrarTienda(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         if (v.ES_DISTRITO) {
                             $("#tienda-distrito-" + contador_tienda_distrito).html(contenido);
@@ -206,7 +206,7 @@
                         break;
                     case 'solicitado':
                         contenido = '<span class="btn-solicitado" id="image-solicitado-' + v.ID + '" onclick="mostrarProceso(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         if (!v.ES_DISTRITO) {
                             $('#proceso-individual').html(contenido);
@@ -218,7 +218,7 @@
                     case 'entregado':
                     case 'evaluado':
                         contenido = '<span class="btn-terminado" id="image-terminado-' + v.ID + '" onclick="mostrarTerminado(' + v.ID + ');">';
-                        contenido += '  <img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" />';
+                        contenido += '  <center><img src="{{ asset('images/iconos/Bebida/') }}' + v.ICONO + '" /></center>';
                         contenido += '</span>';
                         $("#terminado-" + contador_terminado).html(contenido);
                         contador_terminado++;
@@ -386,7 +386,7 @@
                         contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
                         contenido += '  </div>';
                         contenido += '      <div class="col-md-12">';
-                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud('+id+')">';
+                        contenido += '          <button class="btn detalle-boton" onclick="retirarSolicitud(' + id + ')">';
                         contenido += '              RETIRAR SOLICITUD';
                         contenido += '          </button>';
                         contenido += '      </div>';

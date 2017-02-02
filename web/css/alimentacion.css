@@ -69,7 +69,7 @@ and open the template in the editor.
     display: inline-block;
 }
 .slot img{
-    height: 13vw;
+    height: 12vw;
     cursor: pointer;
 }
 .slot-fila{
@@ -80,17 +80,6 @@ and open the template in the editor.
 }
 .fila-abajo{
     border-top: 0px;
-}
-.btn13{
-    border-style: solid;
-    border-color: #000000;
-    border-width: 2px;
-    border-right: 2px;
-}
-.btn4{
-    border-style: solid;
-    border-color: #000000;
-    border-width: 2px;
 }
 .btn-pref span {
     font-size: 25px;
@@ -165,6 +154,15 @@ and open the template in the editor.
 }
 .opacidad img{
     opacity: 0.2;
+}
+.recordatorio{
+    font-family: 'Isocpeur';
+    line-height: 24px; 
+    font-size: 30px;
+}
+#img-aleatorio{
+    cursor: pointer;
+    height: 150px;
 }
 @media (max-width: 760px){
     .detalle-fecha{
@@ -348,6 +346,12 @@ and open the template in the editor.
     }
     #carga{
         font-size: 40px;
+    }
+    .recordatorio{
+        font-size: 18px;
+    }
+    #img-aleatorio{
+        height: 110px;
     }
 }
 

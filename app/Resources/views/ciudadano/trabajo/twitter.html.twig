@@ -35,6 +35,12 @@
         .div-tweet-folders-comp{
             display: none;
         }
+        .btn-group img{
+            height: 70px;
+        }
+        .hidden-xs{
+            font-size: 20px;
+        }
         @media (min-width: 1200px){
             .tweet-perfil img{
                 width: 73px;
@@ -56,279 +62,263 @@
             }
             .div-tweet-folders-comp{
                 display: block;
-            }         
+            }
+            .btn-group img{
+                height: 31px;
+            }
+            .hidden-xs{
+                font-size: 20px;
+            }
         }
     </style>
 {% endblock %}
 
 
 {% block body %}
-    <div class="container">
-        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal_compartir" id="modal_compartir_button" style="display:none;">
-            Launch demo modal
-        </button>
-        <div class="modal fade" id="modal_compartir">
-            <div class="modal-dialog share_modal_dialog" role="document">
-                <div class="modal-content">
-                    <form method="POST" action="/compartir" id="formulario_share">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <h4 class="modal-title" style="color:white;" >Compartir con...</h4>
-                        </div>
-                        <div class="modal-body" style="background-color:white; color: black;">
-                            {% if ALIAS is defined %}
-                                {% for a in ALIAS %}
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="share_list[]" value="{{ a.id }}">{{ a.alias }}</label>
-                                    </div>
-                                {% endfor %}
-                                <input type="hidden" value="" name="id_tweet" id="share_id_tweet" />
-                                <input type="hidden" value="" name="id_tuitero" id="share_id_tuitero" />
-                            {% else %}
-                                Se ha producido un error, vuelva a intentarlo de nuevo...
-                            {% endif %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-send" style="color:white;">&nbsp;&nbsp;Compartir</i>
-                            </button>
-                        </div>
-                    </form>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-        <!-- MODAL TWEETS -->
-        <button type="button" class="btn btn-info btn-lg" id="modal_tweet_button"
-                data-toggle="modal" data-target="#modal_result"
-                style="display:none;">Open Modal
-        </button>
-        <div id="modal_result" class="modal fade modal_tweet" tabindex="-1" role="dialog">
-            <div class="modal-dialog share_modal_dialog">
-                <div class="modal-content">
-                    <div class="modal-header panel-heading">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modal_tweet_tittle" style="color: white;"></h4>
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal_compartir" id="modal_compartir_button" style="display:none;">
+        Launch demo modal
+    </button>
+    <div class="modal fade" id="modal_compartir">
+        <div class="modal-dialog share_modal_dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="/compartir" id="formulario_share">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" style="color:white;" >Compartir con...</h4>
                     </div>
-                    <div class="modal-body" id="modal_tweet_body" style="background-color: white;">
-                        <div class="col-xs-12">
-                            <!-- MENSAJE -->
-                        </div>
-                    </div>
-                    <div class="modal-footer"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12 bordes">
-                <div class="row" style="margin-bottom: 1%;">
-                    <div class="col-lg-5">
-                        {% if twiteers is defined %}
-                            <form id="form" method="post" action="/ciudadano/trabajo/jornada_laboral" >
-                                <select class="custom-select" id="selector_tuits">
-                                    <option selected value="0">Seleccione una cuenta de twitter</option>
-                                    {% for twiteer in twiteers %}
-                                        <option value="{{ twiteer.getIdTuitero() }}">{{ twiteer.getIdTuitero() }}</option>
-                                    {% endfor %}
-                                </select>
-                                <input type="hidden" class="form-control" name="TWITEER" id="input_hidden_twitter">
-                                <button type="submit" style="display:none;" id="button_hidden_twitter">OK</button>
-                            </form>
+                    <div class="modal-body" style="background-color:white; color: black;">
+                        {% if ALIAS is defined %}
+                            {% for a in ALIAS %}
+                                <div class="checkbox">
+                                    <label><input type="checkbox" name="share_list[]" value="{{ a.id }}">{{ a.alias }}</label>
+                                </div>
+                            {% endfor %}
+                            <input type="hidden" value="" name="id_tweet" id="share_id_tweet" />
+                            <input type="hidden" value="" name="id_tuitero" id="share_id_tuitero" />
+                        {% else %}
+                            Se ha producido un error, vuelva a intentarlo de nuevo...
                         {% endif %}
                     </div>
-                    <div class="col-lg-3">
-                        <form id="form" method="post" action="/ciudadano/trabajo/jornada_laboral" >
-                            <div class="input-group">
-                                <span class="input-group-addon"><i>@</i></span>
-                                <input type="text" class="form-control" name="TWITEER" placeholder="twiteer" aria-describedby="basic-addon1">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-info" type="submit">SEGUIR</button>
-                                </span>
-                            </div>   
-                        </form>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-send" style="color:white;">&nbsp;&nbsp;Compartir</i>
+                        </button>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        {% if string == 0 %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p style="font-size: 13px; color: #8899A6;">
-                                        <strong>Siga una cuenta de twitter para visualizar sus tuits</strong>
-                                    </p>
-                                </div>
-                                <hr style="margin:0 0 0 0;">
-                            </div>
-                        {% elseif string.error is defined %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p style="font-size: 13px; color: #8899A6;">
-                                        <strong>La cuenta de twitter que está consultando es privada o no existe</strong>
-                                    </p>
-                                </div>
-                                <hr style="margin:0 0 0 0;">
-                            </div>
-                        {% elseif string.errors is defined %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p style="font-size: 13px; color: #8899A6;">
-                                        <strong>La cuenta de twitter que está consultando es privada o no existe</strong>
-                                    </p>
-                                </div>
-                                <hr style="margin:0 0 0 0;">
-                            </div>
-                        {% else %}
-                            <div class="col-lg-3 div-tweet-folders-comp">
-                                <div class="button-tweet-folders-comp">
-                                    <center>
-                                        <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}" />
-                                    </center>
-                                </div>
-                                <div class="button-tweet-folders-comp">
-                                    <center>
-                                        <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}" />
-                                    </center>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <legend>Tweets {% if string.0 is defined %} de @{{ string.0.user.screen_name }}{% endif %}</legend>
-                                <div class="ventana-tweets">
-                                    {% for items in string %}
-                                        <div class="row">
-                                            {% if items is defined %}
-                                                {% if items.retweeted_status is defined %} <div id="{{ 'base_' ~ items.retweeted_status.id_str }}"> {% else %} <div id="{{ 'base_' ~ items.id_str }}"> {% endif %}
-                                                        <div class="row tweet-perfil">
-                                                            <div style="display: inline-block">
-                                                                <img {% if items.retweeted_status is defined %} src="{{ items.retweeted_status.user.profile_image_url }}" {% else %} src="{{ items.user.profile_image_url }}" {% endif %} alt="profile_twitter" class="img-thumbnail"/>
-                                                            </div>
-                                                            <div style="display: inline-block; margin-left: 2%;">
-                                                                {% if items.retweeted_status is defined %} <p> Tweet de <strong>{{ items.retweeted_status.user.name }}</strong> @{{ items.retweeted_status.user.screen_name }}<br> Retweet por {% else %} <p> {% endif %} <strong>{{ items.user.name }}</strong> @{{ items.user.screen_name }}<br> {{ items.created_at }} </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row tweet-cuerpo">
-                                                            <div class="col-xs-11">
-                                                                <p>{{ items.text }}</p>
-                                                                {% if items.extended_entities is defined %}
-                                                                    {% if items.extended_entities.media is defined %}
-                                                                        {% for media in items.extended_entities.media %}
-                                                                            {% if 'video' in media.type %}
-                                                                                <div align="center" class="embed-responsive embed-responsive-16by9">
-                                                                                    <video loop class="embed-responsive-item" controls>
-                                                                                        <source src="{{ media.video_info.variants.1.url }}" type="video/mp4">
-                                                                                    </video>
-                                                                                </div>
-                                                                            {% elseif 'photo' in media.type %}
-                                                                                <img style="width: 100%;"
-                                                                                     src="{{ media.media_url }}"                                    
-                                                                                     alt="media_twitter" class="img-responsive"/>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    {% endif %}
-                                                                {% endif %}                                            
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- MODAL TWEETS -->
+    <button type="button" class="btn btn-info btn-lg" id="modal_tweet_button"
+            data-toggle="modal" data-target="#modal_result"
+            style="display:none;">Open Modal
+    </button>
+    <div id="modal_result" class="modal fade modal_tweet" tabindex="-1" role="dialog">
+        <div class="modal-dialog share_modal_dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="modal_tweet_body" style="background-color: white;"></div>
+                <button type="button" class="btn btn-block btn-primary" data-dismiss="modal" aria-label="Close">
+                    ACEPTAR
+                </button>
+            </div>
+        </div>
+    </div>
 
-                                                            </div>
-                                                        </div>
-                                                        {% if items.retweeted_status is defined %} <div class="row" id="{{ 'button_tweet_' ~ items.retweeted_status.id_str }}"> {% else %} <div class="row" id="{{ 'button_tweet_' ~ items.id_str }}"> {% endif %}
-                                                                <div class="col-lg-12">
-                                                                    {% if items.retweeted_status is defined %}
-                                                                        <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 1, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 2, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 3, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="aniadeIdTweet('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />
-                                                                            </div>
-                                                                        </div>
-                                                                    {% else %}
-                                                                        <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 1, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 2, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 3, null, '{{ items.text|replace({"/":""}) }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />
-                                                                            </div>
-                                                                            <div class="button-tweet-panel" onclick="aniadeIdTweet('{{ items.id_str }}', '{{ items.user.screen_name }}');">
-                                                                                <img src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />
-                                                                            </div>
-                                                                        </div>
-                                                                    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary btn13 btn-menu-first" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-twitter" aria-hidden="true"></span>
+                        <div class="hidden-xs">TWITTER</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                        <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}"/>
+                        <div class="hidden-xs">TEXTO</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn13" href="#tab3" data-toggle="tab">
+                        <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}"/>
+                        <div class="hidden-xs">AUDIOVISUAL</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn13" href="#tab4" data-toggle="tab">
+                        <img src="{{ asset('images/iconos/Twitter/Carpeta_herramientas.png') }}"/>
+                        <div class="hidden-xs">HERRAMIENTAS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn13" href="#tab5" data-toggle="tab">
+                        <img src="{{ asset('images/iconos/Twitter/Carpeta_compartir.png') }}"/>
+                        <div class="hidden-xs">COMPARTIDOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn4 btn-menu-last" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 bordes border-radius" style="margin-top: 1%;">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tab1">
+                            <div class="row" style="margin-bottom: 1%;">
+                                <div class="col-lg-5">
+                                    {% if twiteers is defined %}
+                                        <form id="form" method="post" action="/ciudadano/trabajo/jornada_laboral" >
+                                            <select class="custom-select" id="selector_tuits">
+                                                <option selected value="0">Seleccione una cuenta de twitter</option>
+                                                {% for twiteer in twiteers %}
+                                                    <option value="{{ twiteer.getIdTuitero() }}">{{ twiteer.getIdTuitero() }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" class="form-control" name="TWITEER" id="input_hidden_twitter">
+                                            <button type="submit" style="display:none;" id="button_hidden_twitter">OK</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                                <div class="col-lg-3">
+                                    <form id="form" method="post" action="/ciudadano/trabajo/jornada_laboral" >
+                                        <div class="input-group">
+                                            <span class="input-group-addon">@</span>
+                                            <input type="text" class="form-control" name="TWITEER" placeholder="usuario" aria-describedby="basic-addon1">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-info" type="submit">SEGUIR</button>
+                                            </span>
+                                        </div>   
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if string == 0 %}
+                                        <legend>Siga una cuenta de twitter para visualizar sus tuits</legend>
+                                    {% elseif string.error is defined %}
+                                        <legend>La cuenta de twitter que está consultando es privada o no existe</legend>
+                                    {% elseif string.errors is defined %}
+                                        <legend>La cuenta de twitter que está consultando es privada o no existe</legend>
+                                    {% else %}
+                                        <legend>Tweets {% if string.0 is defined %} de @{{ string.0.user.screen_name }}{% endif %}</legend>
+                                        <div class="ventana-tweets">
+                                            {% for items in string %}
+                                                <div class="row">
+                                                    {% if items is defined %}
+                                                        {% if items.retweeted_status is defined %} <div id="{{ 'base_' ~ items.retweeted_status.id_str }}"> {% else %} <div id="{{ 'base_' ~ items.id_str }}"> {% endif %}
+                                                                <div class="row tweet-perfil">
+                                                                    <div style="display: inline-block">
+                                                                        <img {% if items.retweeted_status is defined %} src="{{ items.retweeted_status.user.profile_image_url }}" {% else %} src="{{ items.user.profile_image_url }}" {% endif %} alt="profile_twitter" class="img-thumbnail"/>
+                                                                    </div>
+                                                                    <div style="display: inline-block; margin-left: 2%;">
+                                                                        {% if items.retweeted_status is defined %} <p> Tweet de <strong>{{ items.retweeted_status.user.name }}</strong> @{{ items.retweeted_status.user.screen_name }}<br> Retweet por {% else %} <p> {% endif %} <strong>{{ items.user.name }}</strong> @{{ items.user.screen_name }}<br> {{ items.created_at }} </p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                                <div class="row tweet-cuerpo">
+                                                                    <div class="col-xs-11">
+                                                                        <p>{{ items.text }}</p>
+                                                                        {% if items.extended_entities is defined %}
+                                                                            {% if items.extended_entities.media is defined %}
+                                                                                {% for media in items.extended_entities.media %}
+                                                                                    {% if 'video' in media.type %}
+                                                                                        <div align="center" class="embed-responsive embed-responsive-16by9">
+                                                                                            <video loop class="embed-responsive-item" controls>
+                                                                                                <source src="{{ media.video_info.variants.1.url }}" type="video/mp4">
+                                                                                            </video>
+                                                                                        </div>
+                                                                                    {% elseif 'photo' in media.type %}
+                                                                                        <img style="width: 100%;"
+                                                                                             src="{{ media.media_url }}"                                    
+                                                                                             alt="media_twitter" class="img-responsive"/>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                        {% endif %}                                            
+
+                                                                    </div>
+                                                                </div>
+                                                                {% if items.retweeted_status is defined %} <div class="row" id="{{ 'button_tweet_' ~ items.retweeted_status.id_str }}"> {% else %} <div class="row" id="{{ 'button_tweet_' ~ items.id_str }}"> {% endif %}
+                                                                        <div class="col-lg-12">
+                                                                            {% if items.retweeted_status is defined %}
+                                                                                <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 1, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 2, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}', 3, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="aniadeIdTweet('{{ items.retweeted_status.id_str }}', '{{ items.retweeted_status.user.screen_name }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% else %}
+                                                                                <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 1, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 2, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="almacenar('{{ items.id_str }}', '{{ items.user.screen_name }}', 3, null, '{{ items.text|replace({"/":""}) }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />
+                                                                                    </div>
+                                                                                    <div class="button-tweet-panel" onclick="aniadeIdTweet('{{ items.id_str }}', '{{ items.user.screen_name }}');">
+                                                                                        <img src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
                                                         </div>
-                                                    {% endif %}
+                                                    {% endfor %}
                                                 </div>
-                                            {% endfor %}
+                                            {% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
-                                <div class="col-lg-3 div-tweet-folders-comp">
-                                    <div class="button-tweet-folders-comp">
-                                        <center>
-                                            <img src="{{ asset('images/iconos/Twitter/Carpeta_herramientas.png') }}" />
-                                        </center>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="row bordes div-tweet-folders-mvl" style="margin-top:1%;"> 
+                                <div class="col-lg-9 col-lg-offset-3">
+                                    <div class="row">
+                                        <div class="col-md-12 oculto" id="mochila_texto_super">
+                                            <legend>Mi Mochila de Texto</legend>
+                                            <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_texto"></div>
+                                        </div>
                                     </div>
-                                    <div class="button-tweet-folders-comp">
-                                        <center>
-                                            <img src="{{ asset('images/iconos/Twitter/Carpeta_compartir.png') }}" />
-                                        </center>
+                                    <div class="row">
+                                        <div class="col-md-12 oculto" id="mochila_multimedia_super">
+                                            <legend>Mi Mochila de Multimedia</legend>
+                                            <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_multimedia"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 oculto" id="mochila_recursos_super">
+                                            <legend>Mi Mochila de Recursos</legend>
+                                            <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_recursos"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 oculto" id="mochila_compartidos_super">
+                                            <legend>Mi Mochila de Compartidos</legend>
+                                            <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_compartidos"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
+                            -->
                         </div>
-                    </div>
-                </div>
-                <div class="row bordes div-tweet-folders-mvl" style="margin-top:1%;"> 
-                    <div class="col-lg-9 col-lg-offset-3">
-                        <div class="button-tweet-folders">
-                            <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}" />
-                        </div>
-                        <div class="button-tweet-folders">
-                            <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}" />
-                        </div>
-                        <div class="button-tweet-folders">
-                            <img src="{{ asset('images/iconos/Twitter/Carpeta_herramientas.png') }}" />
-                        </div>
-                        <div class="button-tweet-folders">
-                            <img src="{{ asset('images/iconos/Twitter/Carpeta_compartir.png') }}" />
-                        </div>
-                        <!--
-                        <div class="row">
-                            <div class="col-md-12 oculto" id="mochila_texto_super">
-                                <legend>Mi Mochila de Texto</legend>
-                                <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_texto"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 oculto" id="mochila_multimedia_super">
-                                <legend>Mi Mochila de Multimedia</legend>
-                                <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_multimedia"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 oculto" id="mochila_recursos_super">
-                                <legend>Mi Mochila de Recursos</legend>
-                                <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_recursos"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 oculto" id="mochila_compartidos_super">
-                                <legend>Mi Mochila de Compartidos</legend>
-                                <div class="row" style="background-color: rgba(125, 125, 125, 0.8);" id="mochila_compartidos"></div>
-                            </div>
-                        </div>
-                        -->
                     </div>
                 </div>
             </div>
@@ -337,113 +327,115 @@
         {% block javascripts %}
             <script>
                 $(document).ready(function () {
-                {% if info.message is defined or info.type is defined %}
-                        $('#box_modal_result').click();
-                {% endif %}
-                        $('#selector_tuits').on('change', function () {
-                            $('#input_hidden_twitter').val(this.value);
-                            $('#button_hidden_twitter').click();
-                        });
-                        // Cargamos los tweets de la mochila
-                        almacenar('null', 'null', 'null', 'null', null);
+                    {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
+                    $(".btn-pref .btn").click(function () {
+                        $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                        $(this).removeClass("btn-default").addClass("btn-primary");
                     });
-                    function almacenar(id_tweet, id_tuitero, tipo_tweet, alias_usu_dest, text_tweet) {
-                        var url = "service/store_tweet/" + id_tweet + "/" + id_tuitero + "/" + tipo_tweet + "/" + alias_usu_dest + "/" + text_tweet + "";
-                        var texto = [];
-                        var multimedia = [];
-                        var recursos = [];
-                        var compartidos = [];
-                        $("#mochila_texto").empty();
-                        $("#mochila_multimedia").empty();
-                        $("#mochila_recursos").empty();
-                        $("#mochila_compartidos").empty();
-                        $.get(url, function (data, status) {
-                            console.log(data);
-                            texto = data.datos.texto;
-                            multimedia = data.datos.multimedia;
-                            recursos = data.datos.recursos;
-                            compartidos = data.datos.compartidos;
-                            actualizar_mochilas(texto, 'mochila_texto');
-                            actualizar_mochilas(multimedia, 'mochila_multimedia');
-                            actualizar_mochilas(recursos, 'mochila_recursos');
-                            actualizar_mochilas(compartidos, 'mochila_compartidos');
-                        });
+                    $('#selector_tuits').on('change', function () {
+                        $('#input_hidden_twitter').val(this.value);
+                        $('#button_hidden_twitter').click();
+                    });
+                    // Cargamos los tweets de la mochila
+                    almacenar('null', 'null', 'null', 'null', null);
+                });
+                function almacenar(id_tweet, id_tuitero, tipo_tweet, alias_usu_dest, text_tweet) {
+                    var url = "service/store_tweet/" + id_tweet + "/" + id_tuitero + "/" + tipo_tweet + "/" + alias_usu_dest + "/" + text_tweet + "";
+                    var texto = [];
+                    var multimedia = [];
+                    var recursos = [];
+                    var compartidos = [];
+                    $("#mochila_texto").empty();
+                    $("#mochila_multimedia").empty();
+                    $("#mochila_recursos").empty();
+                    $("#mochila_compartidos").empty();
+                    $.get(url, function (data, status) {
+                        console.log(data);
+                        texto = data.datos.texto;
+                        multimedia = data.datos.multimedia;
+                        recursos = data.datos.recursos;
+                        compartidos = data.datos.compartidos;
+                        actualizar_mochilas(texto, 'mochila_texto');
+                        actualizar_mochilas(multimedia, 'mochila_multimedia');
+                        actualizar_mochilas(recursos, 'mochila_recursos');
+                        actualizar_mochilas(compartidos, 'mochila_compartidos');
+                    });
+                }
+
+                function actualizar_mochilas(mochila, mochila_div) {
+                    for (var i = 0, l = mochila.length; i < l; i++) {
+                        $('#' + mochila_div).append('<div class="col-xs-2 slot-mochila" onclick="show_tweet(' + mochila[i] + ')"><center><i class="fa fa-twitter"></i></center></div>');
                     }
-
-                    function actualizar_mochilas(mochila, mochila_div) {
-                        for (var i = 0, l = mochila.length; i < l; i++) {
-                            $('#' + mochila_div).append('<div class="col-xs-2 slot-mochila" onclick="show_tweet(' + mochila[i] + ')"><center><i class="fa fa-twitter"></i></center></div>');
-                        }
-                        if (mochila.length === 0) {
-                            $('#' + mochila_div + '_super').addClass('oculto');
-                        } else {
-                            $('#' + mochila_div + '_super').removeClass('oculto');
-                        }
+                    if (mochila.length === 0) {
+                        $('#' + mochila_div + '_super').addClass('oculto');
+                    } else {
+                        $('#' + mochila_div + '_super').removeClass('oculto');
                     }
+                }
 
-                    function show_tweet(id_mochila) {
-                        var url = 'service/show_tweet/' + id_mochila;
-                        var datos;
-                        $.get(url, function (data) {
-                            //console.log(data);
-                            datos = data;
+                function show_tweet(id_mochila) {
+                    var url = 'service/show_tweet/' + id_mochila;
+                    var datos;
+                    $.get(url, function (data) {
+                        //console.log(data);
+                        datos = data;
 
-                            // vaciar modal_tweet_tittle
-                            $("#modal_tweet_tittle").empty();
-                            // vaciar modal_tweet_body
-                            $("#modal_tweet_body").empty();
-                            var body = '<div class="row" style="padding-left: 5%; padding-top: 1%;"><div class="col-xs-3" id="modal_tweet_perfil">';
-                            //if(datos['retweeted_status'] != 'undefined'){
-                            //    var imagen_perfil = datos['retweeted_status']['user']['profile_image_url'];
-                            //    var imagen_perfil = datos['retweeted_status']['user']['profile_image_url'];
-                            //}
-                            //else{
-                            //var imagen_perfil = datos['user']['profile_image_url'];
-                            var imagen_perfil = datos['user']['profile_image_url'];
-                            //}
-                            body += '<img src="' + imagen_perfil + '" alt="profile_twitter" class="img-thumbnail"/>';
-                            body += '</div><div class="col-xs-9"><div class="row">';
-                            //if(datos['retweeted_status'] != 'undefined' ){
-                            //    body += '<p style="font-size: 13px; color: #8899A6;">Tweet de ' +
-                            //            '<strong>'+datos['retweeted_status']['user']['name']+'</strong> @'+
-                            //            datos['retweeted_status']['user']['screen_name']+'<br> Retweet por';
-                            //}
-                            //else{
-                            body += '<p id="modal_tweet_descripcion" style="color: #8899A6;">';
-                            //}
-                            body += '<strong>' + datos['user']['name'] + '</strong> @' + datos['user']['screen_name'] + '<br>' + datos['created_at'] + '</p></div></div></div>';
-                            body += '<div class="row"  style="padding-left: 5%;"><div class="col-xs-11 texto-tweet">';
-                            body += '<p style="font-weight: 400; color:black;">' + datos['text'] + '</p>';
-                            if (datos['extended_entities'] !== 'undefined') {
-                                for (var i = 0, l = datos['extended_entities']['media'].length; i < l; i++) {
-                                    if (datos['extended_entities']['media'][i]['type'] === 'photo') {
-                                        body += '<img style="width: 100%;"src="' + datos['extended_entities']['media'][i]['media_url'] + '" alt="media_twitter" class="img-responsive"/>';
-                                    }
-                                }
-                                if (datos['extended_entities']['media'][0]['type'] === 'video') {
-                                    body += '<div align="center" class="embed-responsive embed-responsive-16by9"><video loop class="embed-responsive-item" controls>' +
-                                            '<source src="' + datos['extended_entities']['media'][0]['video_info']['url'] + '" type="video/mp4"></video></div>';
+                        // vaciar modal_tweet_tittle
+                        $("#modal_tweet_tittle").empty();
+                        // vaciar modal_tweet_body
+                        $("#modal_tweet_body").empty();
+                        var body = '<div class="row" style="padding-left: 5%; padding-top: 1%;"><div class="col-xs-3" id="modal_tweet_perfil">';
+                        //if(datos['retweeted_status'] != 'undefined'){
+                        //    var imagen_perfil = datos['retweeted_status']['user']['profile_image_url'];
+                        //    var imagen_perfil = datos['retweeted_status']['user']['profile_image_url'];
+                        //}
+                        //else{
+                        //var imagen_perfil = datos['user']['profile_image_url'];
+                        var imagen_perfil = datos['user']['profile_image_url'];
+                        //}
+                        body += '<img src="' + imagen_perfil + '" alt="profile_twitter" class="img-thumbnail"/>';
+                        body += '</div><div class="col-xs-9"><div class="row">';
+                        //if(datos['retweeted_status'] != 'undefined' ){
+                        //    body += '<p style="font-size: 13px; color: #8899A6;">Tweet de ' +
+                        //            '<strong>'+datos['retweeted_status']['user']['name']+'</strong> @'+
+                        //            datos['retweeted_status']['user']['screen_name']+'<br> Retweet por';
+                        //}
+                        //else{
+                        body += '<p id="modal_tweet_descripcion" style="color: #8899A6;">';
+                        //}
+                        body += '<strong>' + datos['user']['name'] + '</strong> @' + datos['user']['screen_name'] + '<br>' + datos['created_at'] + '</p></div></div></div>';
+                        body += '<div class="row"  style="padding-left: 5%;"><div class="col-xs-11 texto-tweet">';
+                        body += '<p style="font-weight: 400; color:black;">' + datos['text'] + '</p>';
+                        if (datos['extended_entities'] !== 'undefined') {
+                            for (var i = 0, l = datos['extended_entities']['media'].length; i < l; i++) {
+                                if (datos['extended_entities']['media'][i]['type'] === 'photo') {
+                                    body += '<img style="width: 100%;"src="' + datos['extended_entities']['media'][i]['media_url'] + '" alt="media_twitter" class="img-responsive"/>';
                                 }
                             }
-                            body += '</div></div>';
-                            header = 'Tweet de ' + datos['alias'];
-                            $("#modal_tweet_tittle").append(header);
-                            $("#modal_tweet_body").append(body);
-                        });
-                        $('#modal_tweet_button').click();
-                    }
+                            if (datos['extended_entities']['media'][0]['type'] === 'video') {
+                                body += '<div align="center" class="embed-responsive embed-responsive-16by9"><video loop class="embed-responsive-item" controls>' +
+                                        '<source src="' + datos['extended_entities']['media'][0]['video_info']['url'] + '" type="video/mp4"></video></div>';
+                            }
+                        }
+                        body += '</div></div>';
+                        header = 'Tweet de ' + datos['alias'];
+                        $("#modal_tweet_tittle").append(header);
+                        $("#modal_tweet_body").append(body);
+                    });
+                    $('#modal_tweet_button').click();
+                }
 
-                    function aniadeIdTweet(id_tweet, id_tuitero) {
-                        //alert(id_tweet);
-                        //$(this).find(":hidden").filter(':not(input[name=csrfmiddlewaretoken])').remove();
-                        //$("#formulario_share").find(":hidden").filter(':not(input[name=id_tweet])').remove();
-                        //$("#formulario_share").append('<input type="hidden" name="id_tweet" value="'+id_tweet+'" />');
-                        //$("#formulario_share").find(":text").filter(':not(input[name=id_tweet])').remove();
-                        //$("#formulario_share").append('<input type="text" name="id_tweet" value="'+id_tweet+'" />');
-                        $('#share_id_tweet').val(id_tweet);
-                        $('#share_id_tuitero').val(id_tuitero);
-                        $('#modal_compartir_button').click();
-                    }
+                function aniadeIdTweet(id_tweet, id_tuitero) {
+                    //alert(id_tweet);
+                    //$(this).find(":hidden").filter(':not(input[name=csrfmiddlewaretoken])').remove();
+                    //$("#formulario_share").find(":hidden").filter(':not(input[name=id_tweet])').remove();
+                    //$("#formulario_share").append('<input type="hidden" name="id_tweet" value="'+id_tweet+'" />');
+                    //$("#formulario_share").find(":text").filter(':not(input[name=id_tweet])').remove();
+                    //$("#formulario_share").append('<input type="text" name="id_tweet" value="'+id_tweet+'" />');
+                    $('#share_id_tweet').val(id_tweet);
+                    $('#share_id_tuitero').val(id_tuitero);
+                    $('#modal_compartir_button').click();
+                }
 
             </script>
         {% endblock %}
