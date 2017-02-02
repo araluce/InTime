@@ -329,9 +329,6 @@ class Usuario {
      */
     static function aliasToId($usuario_share, $doctrine) {
         $id_usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($usuario_share);
-        if ($id_usuario === null) {
-            return 0;
-        }
         return $id_usuario;
     }
 

@@ -18,6 +18,7 @@
 }
 .btn{
     border-radius: 15px;
+    -webkit-border-radius: 15px;
 }
 .border-radius,
 .btn-menu-first,
@@ -43,6 +44,7 @@
 .border-radius{
     background-color: #FFFFFF;
     border-radius: 15px;
+    -webkit-border-radius: 15px;
     padding: 20px;
 }
 .btn13{

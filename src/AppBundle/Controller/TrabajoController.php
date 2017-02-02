@@ -40,7 +40,7 @@ class TrabajoController extends Controller {
         $DATOS['ULT_CAL'] = Utils::getUltimasCalificacionesSeccion($doctrine, 'inspeccion_trabajo');
         return $this->render('guardian/ejercicios/ejerciciosInspeccionTrabajo.twig', $DATOS);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral", name="jornadaLaboral")
      */
@@ -54,7 +54,7 @@ class TrabajoController extends Controller {
         $DATOS = DataManager::setDefaultData($doctrine, 'Jornada Laboral', $session);
         return $this->render('ciudadano/trabajo/jornada_laboral.twig', $DATOS);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral/getSeguidos", name="getSeguidos")
      */
@@ -69,14 +69,14 @@ class TrabajoController extends Controller {
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $USUARIO_X_TUITERO = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($USUARIO);
         $SEGUIDOS = [];
-        foreach($USUARIO_X_TUITERO as $SEGUIDO){
+        foreach ($USUARIO_X_TUITERO as $SEGUIDO) {
             $aux = [];
             $aux['ID'] = $SEGUIDO->getIdTuitero();
             $SEGUIDOS[] = $aux;
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral/descargarTuits/{usuario_tw}", name="descargarTuits")
      */
@@ -94,7 +94,69 @@ class TrabajoController extends Controller {
         if (isset($usuario_tw)) {
             $SEGUIDOS = Twitter::twitter2($doctrine, $USUARIO, $usuario_tw, $count);
         }
+
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/seguir", name="seguir")
+     */
+    public function seguirAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/seguir');
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $id_usuario = $session->get('id_usuario');
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+
+            $usuario_tw = $request->request->get('usuario_tw');
+            $count = 10;
+            $SEGUIDOS = Twitter::twitter2($doctrine, $USUARIO, $usuario_tw, $count);
+
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/almacenarTweet", name="almacenarTweet")
+     */
+    public function almacenarTweet(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/seguir');
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $id_tweet = $request->request->get('id_tweet');
+            $id_tuitero = $request->request->get('id_tuitero');
+            $tipo_tweet = $request->request->get('tipo_tweet');
+            $alias_usu_dest = $request->request->get('alias_usu_dest');
+            $text_tweet = $request->request->get('text_tweet');
+            $coincidencias = [];
+            preg_match("/@{1}[a-z,-,_]*/i", $text_tweet, $coincidencias);
+            if (count($coincidencias)) {
+                $id_tuitero = str_replace('@', '', $coincidencias[0]);
+            }
+            if ($alias_usu_dest !== null || $alias_usu_dest !== 'null') {
+                $alias_usu_dest = Usuario::aliasToId($alias_usu_dest, $doctrine);
+            } else {
+                $alias_usu_dest = null;
+            }
+            $fecha = Twitter::getFecha($id_tweet);
+            if (!$fecha) {
+                $fecha = 'ERROR';
+            }
+            $id_usuario = $this->get('session')->get('id_usuario');
+
+            $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $alias_usu_dest, $fecha, $doctrine);
+            return new JsonResponse(json_encode(array('datos' => $respuesta)), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
 
     /**

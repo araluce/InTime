@@ -131,9 +131,9 @@
                             <div class="col-lg-3">
                                 <div class="input-group">
                                     <span class="input-group-addon">@</span>
-                                    <input type="text" class="form-control" name="TWITEER" placeholder="usuario" aria-describedby="basic-addon1">
+                                    <input type="text" class="form-control" id="input-seguir" placeholder="usuario" aria-describedby="basic-addon1">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-menu-last">SEGUIR</button>
+                                        <button class="btn btn-primary btn-menu-last" id="button-seguir">SEGUIR</button>
                                     </span>
                                 </div>
                             </div>
@@ -175,6 +175,26 @@
                 actualizar_mochilas(compartidos, 'mochila_compartidos');
             });
         }
+        
+        function almacenarTweet(id_tweet, tipo_tweet) {
+            var id = id_tweet;
+            var alias = $('#alias-'+id).val();
+            var tweet = $('#tweet-'+id).val();
+            var id_tweet = $('#id-'+id).val();
+            var datos = {
+                'id_tweet': id_tweet,
+                'id_tuitero': alias,
+                'tipo_tweet': tipo_tweet,
+                'alias_usu_dest': null,
+                'text_tweet': tweet
+            };
+            console.log(datos);
+            var url = '/ciudadano/trabajo/jornada_laboral/almacenarTweet';
+            $.post(url, datos, function (datos) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+            });
+        }
 
         function actualizar_mochilas(mochila, mochila_div) {
             for (var i = 0, l = mochila.length; i < l; i++) {
@@ -191,7 +211,6 @@
             var url = 'service/show_tweet/' + id_mochila;
             var datos;
             $.get(url, function (data) {
-                //console.log(data);
                 datos = data;
 
                 // vaciar modal_tweet_tittle
@@ -268,6 +287,7 @@
             });
         }
         function descargarTuits(id){
+            var contador_tweet = 0;
             var ruta = '/ciudadano/trabajo/jornada_laboral/descargarTuits/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -277,6 +297,9 @@
                     $.each(data.message.TWEETS, function (k, v) {
                         contenido += '<div class="row">';
                         contenido += '  <div id="base_' + v.ID_STR + '">';
+                        contenido += '      <input type="hidden" id="id-'+ contador_tweet +'" value="'+ v.ID_STR +'">';
+                        contenido += '      <input type="hidden" id="alias-'+contador_tweet+'" value="'+v.ALIAS+'">';
+                        contenido += '      <input type="hidden" id="tweet-'+contador_tweet+'" value="'+v.TWEET+'">';
                         contenido += '      <div class="row tweet-perfil">';
                         contenido += '          <div style="display: inline-block">';
                         contenido += '              <img src="'+v.IMG_PERFIL+'" alt="profile_twitter" class="img-thumbnail"/>';
@@ -318,7 +341,7 @@
                         contenido += '  <div class="row" id="' + v.ID_STR + '">';
                         contenido += '      <div class="col-lg-12">';
                         contenido += '          <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">';
-                        contenido += '              <div class="button-tweet-panel" onclick="almacenar('+v.ID_STR+', '+v.ALIAS+', 1, null, "'+v.TWEET.replace('/','')+');">';
+                        contenido += '              <div class="button-tweet-panel" onclick="almacenarTweet('+contador_tweet+', 1);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />';
                         contenido += '              </div>';
                         contenido += '              <div class="button-tweet-panel" onclick="almacenar('+v.ID_STR+', '+v.ALIAS+', 2, null, "'+v.TWEET.replace('/','')+');">';
@@ -334,6 +357,7 @@
                         contenido += '      </div>';
                         contenido += '  </div>';
                         contenido += '</div>';
+                        contador_tweet++;
                     });
                     $('.ventana-tweets').html(contenido);
                 }
@@ -342,6 +366,22 @@
                 }
             });
         }
+        $('#button-seguir').click(function () {
+            var seguir = $('#input-seguir').val();
+            if ($.trim(seguir) !== '') {
+                $('#input-seguir').val('');
+                $('#button-seguir').html('ENVIANDO');
+                datos = {'usuario_tw': seguir};
+                $.post('/ciudadano/trabajo/jornada_laboral/seguir', datos, function (datos) {
+                    data = jQuery.parseJSON(datos);
+                    if (data.estado === 'OK') {
+                        descargarSeguidos();
+                        descargarTuits(data.message.ALIAS);
+                    }
+                });
+                $('#button-seguir').html('SEGUIR');
+            }
+        });
         $(document).ready(function () {
         {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
