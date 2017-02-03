@@ -76,95 +76,7 @@ class DefaultController extends Controller {
         $session->remove('id_usuario');
         return new RedirectResponse('/');
     }
-
-    /**
-     * @Route("/ciudadano/trabajo/jornada_laboral2", name="twitter")
-     */
-    public function twitter(Request $request, $msg = null) {
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral');
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-
-        $id_usuario = $session->get('id_usuario');
-        $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        $tuiteros = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($usuario);
-        $TWITEER = $request->request->get('TWITEER');
-        if ($request->getMethod() == 'POST' && isset($TWITEER)) {
-            $usuario_twitter = $TWITEER;
-        } else {
-            if ($tuiteros) {
-                $usuario_twitter = $tuiteros[0]->getIdTuitero();
-            }
-        }
-        $count = 10;
-
-        $string = 0;
-        if (isset($usuario_twitter)) {
-            $string = [];
-            $string = Twitter::twitter($usuario, $usuario_twitter, $count, $doctrine);
-        }
-
-        // Recargamos la lista de usuarios de twitter a la que sigue el jugador
-        $tuiteros = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findByIdUsuario($usuario);
-
-        $alias = [];
-        $id_rol = $doctrine->getRepository('AppBundle:Rol')->findOneByIdRol(1);
-        $resultados = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($id_rol);
-
-        foreach ($resultados as $r) {
-            if ($r !== $usuario && $r->getSeudonimo() !== null) {
-                $res = [];
-                $res['alias'] = $r->getSeudonimo();
-                $res['id'] = $r->getIdUsuario();
-                $alias[] = $res;
-            }
-        }
-        $DATOS = DataManager::setDefaultData($doctrine, 'Jornada Laboral', $session);
-        $DATOS['string'] = $string;
-        $DATOS['twiteers'] = $tuiteros;
-        $DATOS['ALIAS'] = $alias;
-        if ($msg !== null) {
-            $DATOS['info'] = [];
-            $DATOS['info']['message'] = $msg['message'];
-            $DATOS['info']['type'] = $msg['type'];
-        }
-        $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-//        Utils::pretty_print($DATOS['string']);
-        return $this->render('ciudadano/trabajo/twitter.html.twig', $DATOS);
-    }
-
-    /**
-     * @Route("ciudadano/trabajo/service/store_tweet/{id_tweet}/{id_tuitero}/{tipo_tweet}/{usuario_share}/{texto_tweet}", name="almacenarTweet")
-     */
-    public function almacenarTweet($id_tweet, $id_tuitero, $tipo_tweet, $usuario_share, $texto_tweet) {
-        preg_match("/@{1}[a-z,-,_]*/i", $texto_tweet, $coincidencias);
-        if (count($coincidencias)) {
-            $id_tuitero_real = str_replace('@', '', $coincidencias[0]);
-        }
-        $fecha = Twitter::getFecha($id_tweet);
-
-        if (!$fecha) {
-            $fecha = 'ERROR';
-        }
-        $doctrine = $this->getDoctrine();
-        $id_usuario = $this->get('session')->get('id_usuario');
-        $id_usuario_destino = $usuario_share;
-        if ($usuario_share !== 'null') {
-            $id_usuario_destino = Usuario::aliasToId($usuario_share, $doctrine);
-        } else {
-            $id_usuario_destino = null;
-        }
-        if (count($coincidencias)) {
-            $respuesta = Twitter::almacenar_tweet($id_tuitero_real, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
-        } else {
-            $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
-        }
-        return new JsonResponse(array('datos' => $respuesta), 200);
-    }
-
+    
     /**
      * @Route("ciudadano/trabajo/service/show_tweet/{id_mochila}", name="showTweet")
      */
@@ -193,7 +105,7 @@ class DefaultController extends Controller {
             $id_usuario = $this->get('session')->get('id_usuario');
             if (!empty($lista_usuarios_id)) {
                 foreach ($lista_usuarios_id as $id_usuario_destino) {
-                    $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, 4, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
+                    Twitter::almacenar_tweet($id_tuitero, $id_tweet, 4, $id_usuario, $id_usuario_destino, $fecha, $doctrine);
                 }
             }
         }

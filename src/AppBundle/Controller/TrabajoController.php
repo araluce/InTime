@@ -92,7 +92,7 @@ class TrabajoController extends Controller {
         $count = 10;
         $SEGUIDOS = 0;
         if (isset($usuario_tw)) {
-            $SEGUIDOS = Twitter::twitter2($doctrine, $USUARIO, $usuario_tw, $count);
+            $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $usuario_tw, $count);
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
@@ -114,7 +114,7 @@ class TrabajoController extends Controller {
 
             $usuario_tw = $request->request->get('usuario_tw');
             $count = 10;
-            $SEGUIDOS = Twitter::twitter2($doctrine, $USUARIO, $usuario_tw, $count);
+            $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $usuario_tw, $count);
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
         }
@@ -142,21 +142,43 @@ class TrabajoController extends Controller {
             if (count($coincidencias)) {
                 $id_tuitero = str_replace('@', '', $coincidencias[0]);
             }
-            if ($alias_usu_dest !== null || $alias_usu_dest !== 'null') {
-                $alias_usu_dest = Usuario::aliasToId($alias_usu_dest, $doctrine);
-            } else {
-                $alias_usu_dest = null;
+            $id_usuario = $this->get('session')->get('id_usuario');
+            if ($alias_usu_dest === null || $alias_usu_dest === 'null' || $alias_usu_dest === '') {
+                $alias_usu_dest = $id_usuario;
             }
             $fecha = Twitter::getFecha($id_tweet);
             if (!$fecha) {
                 $fecha = 'ERROR';
             }
-            $id_usuario = $this->get('session')->get('id_usuario');
 
-            $respuesta = Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $alias_usu_dest, $fecha, $doctrine);
-            return new JsonResponse(json_encode(array('datos' => $respuesta)), 200);
+            Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $alias_usu_dest, $fecha, $doctrine);
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tweet almacenado correctamente')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/mostrarMochila/{id_tipo_tweet}", name="mostrarMochilaTipo")
+     */
+    public function mostrarMochilaAction(Request $request, $id_tipo_tweet) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/mostrarMochila/' . $id_tipo_tweet);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $TIPO_TWEET = $doctrine->getRepository('AppBundle:TipoTweet')->findOneById($id_tipo_tweet);
+        if ($TIPO_TWEET === null) {
+            Utils::setError($doctrine, 1, 'Se ha intentado descargar una mochila no identificada con el id: ' . $id_tipo_tweet);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este tipo de mochila no existe')), 200);
+        }
+        $TWEETS = Twitter::getMochila($doctrine, $USUARIO, $TIPO_TWEET);
+        if (!$TWEETS) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Mochila vacía')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $TWEETS)), 200);
     }
 
     /**
@@ -233,6 +255,35 @@ class TrabajoController extends Controller {
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/trabajo/jornada_laboral/getAlias", name="mostrarMochila")
+     */
+    public function getAliasAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/getAlias');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $USUARIOS = Usuario::getCiudadanosVivos($doctrine);
+        $id_usuario = $session->get('id_usuario');
+        $MI_USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $DATOS = [];
+        if (!count($USUARIOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay usuarios vivos aún')), 200);
+        }
+        foreach ($USUARIOS as $USUARIO) {
+            if ($USUARIO !== $MI_USUARIO && $USUARIO->getSeudonimo() !== null) {
+                $aux = [];
+                $aux['ALIAS'] = $USUARIO->getSeudonimo();
+                $aux['ID'] = $USUARIO->getIdUsuario();
+                $DATOS[] = $aux;
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
 }
