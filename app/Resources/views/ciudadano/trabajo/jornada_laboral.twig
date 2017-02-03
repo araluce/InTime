@@ -46,6 +46,28 @@
             border-bottom-right-radius: 15px;
             border-left-width: 0px;
         }
+        .panel-seguir{
+            margin-top: 1%;
+        }
+        select{
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+        }
+        .panel-btn-seguir div{
+            display: table-cell;
+            float: none;
+            width: 1%;
+        }
+        .button-tweet-panel{
+            border-bottom: 2px #000000 solid;
+        }
+        .button-tweet-panel img{
+            width: 80%;
+        }
+        #img-compartir{
+            width: 30%;
+        }
         @media (min-width: 1200px){
             .tweet-perfil img{
                 width: 73px;
@@ -74,6 +96,9 @@
             .hidden-xs{
                 font-size: 20px;
             }
+            .panel-seguir{
+                margin-top: 0%;
+            }
         }
     </style>
 {% endblock %}
@@ -96,13 +121,13 @@
         <div class="row">
             <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-primary btn13 btn-menu-first" href="#tab1" data-toggle="tab">
+                    <button type="button" class="btn btn-primary btn13 btn-menu-first" id="menu-primer" href="#tab1" data-toggle="tab">
                         <span class="fa fa-twitter" aria-hidden="true"></span>
                         <div class="hidden-xs">TWITTER</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default btn13" href="#tab2" data-toggle="tab" onclick="descargarMochila(1);">
+                    <button type="button" class="btn btn-default btn13" id="menu-segun" href="#tab2" data-toggle="tab" onclick="descargarMochila(1);">
                         <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}"/>
                         <div class="hidden-xs">TEXTO</div>
                     </button>
@@ -137,11 +162,13 @@
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row">
                             <div class="col-lg-5">
-                                <select class="custom-select" id="selector_tuits">
-                                </select>
+                                <span class="flecha-select">
+                                    <select class="custom-select" id="selector_tuits">
+                                    </select>
+                                </span>
                             </div>
                             <div class="col-lg-3">
-                                <div class="input-group">
+                                <div class="input-group panel-seguir">
                                     <span class="input-group-addon">@</span>
                                     <input type="text" class="form-control" id="input-seguir" placeholder="usuario" aria-describedby="basic-addon1">
                                     <span class="input-group-btn">
@@ -211,10 +238,10 @@
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     contenido = '';
-                    contenido += '<input type="hidden" id="modal-id-tweet" value="'+id_tweet+'" />';
+                    contenido += '<input type="hidden" id="modal-id-tweet" value="' + id_tweet + '" />';
                     contenido += '<div class="checkbox">';
                     $.each(data.message, function (k, v) {
-                        contenido += '    <label><input type="checkbox" onclick="getUsuarioACompartir('+v.ID+');" name="share_list" id="share_list">' + v.ALIAS + '</label>';
+                        contenido += '    <label><input type="checkbox" onclick="getUsuarioACompartir(' + v.ID + ');" name="share_list" id="share_list">' + v.ALIAS + '</label>';
                     });
                     contenido += '</div>';
                     $('#modal-usuarios').html(contenido);
@@ -224,7 +251,7 @@
             });
             $('#modal_compartir_button').click();
         }
-        function getUsuarioACompartir(usuario_compartir){
+        function getUsuarioACompartir(usuario_compartir) {
             id_tweet = $('#modal-id-tweet').val();
             almacenarTweet(id_tweet, 4, usuario_compartir);
             $('#modal_compartir').modal('toggle');
@@ -299,7 +326,7 @@
                         contenido += '  </div>';
                         contenido += '  <div class="row" id="' + v.ID_STR + '">';
                         contenido += '      <div class="col-lg-12">';
-                        contenido += '          <div class="col-lg-9 col-lg-offset-2 col-xs-9 col-xs-offset-2">';
+                        contenido += '          <div class="col-lg-12 panel-btn-seguir">';
                         contenido += '              <div class="button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 1, null);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />';
                         contenido += '              </div>';
@@ -310,7 +337,7 @@
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />';
                         contenido += '              </div>';
                         contenido += '              <div class="button-tweet-panel" onclick="aniadeIdTweet(' + contador_tweet + ');">';
-                        contenido += '                  <img src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />';
+                        contenido += '                  <img id="img-compartir" src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />';
                         contenido += '              </div>';
                         contenido += '          </div>';
                         contenido += '      </div>';
@@ -390,6 +417,16 @@
                 $('#button-seguir').html('SEGUIR');
             }
         });
+        function igualarMenu() {
+            var a1 = $('#menu-primer').height();
+            var a2 = $('#menu-segun').height();
+            var max = a1;
+            if (a1 < a2) {
+                max = a2;
+            }
+            $('.btn13').height(max);
+            $('.btn4').height(max);
+        }
         $(document).ready(function () {
             {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
@@ -403,6 +440,7 @@
                     descargarTuits(seguidor);
                 }
             });
+            igualarMenu();
         });
 
     </script>

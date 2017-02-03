@@ -148,6 +148,32 @@ select, select[size="1"]{
     background-color: rgb(255, 255, 255);
     color:black;
     border: 2px solid;
+    appearance:none;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+}
+
+.flecha-select {position:relative}
+.flecha-select:after {
+    content:'<>';
+    font:60px "Isocpeur";
+    color:#aaa;
+    -webkit-transform:rotate(90deg);
+    -moz-transform:rotate(90deg);
+    -ms-transform:rotate(90deg);
+    transform:rotate(90deg);
+    right:8px; top:-30px;
+    padding:0 0 2px;
+    position:absolute;
+    pointer-events:none;
+}
+.flecha-select:before {
+    content:'';
+    right:6px; top:0px;
+    width:20px; height:20px;
+    position:absolute;
+    pointer-events:none;
+    display:block;
 }
 
 table{
@@ -826,9 +852,6 @@ legend{
     footer{
         font-size: 20px;
     }
-    .button-tweet-panel img{
-        height: 100px;
-    }
     #modal-advice0 .modal-body,
     #modal-advice1 .modal-body,
     #modal-advice2 .modal-body{
@@ -978,9 +1001,6 @@ legend{
     }
     footer{
         font-size: 35px;
-    }
-    .button-tweet-panel img{
-        height: 100px;
     }
     #modal-advice0 .modal-body,
     #modal-advice1 .modal-body,
@@ -1414,14 +1434,32 @@ legend{
     #fondo-principal img{
         height: 95px;
     }
-    .button-tweet-panel img{
-        height: 50px;
-    }
     .header-muerte,
     .header-vacaciones{
         font-size: 40px;
     }
     .fa{
         font-size: 25px;
+    }
+    .flecha-select:after {
+        content:'<>';
+        font:35px "Isocpeur";
+        color:#aaa;
+        -webkit-transform:rotate(90deg);
+        -moz-transform:rotate(90deg);
+        -ms-transform:rotate(90deg);
+        transform:rotate(90deg);
+        right:8px; top:-12px;
+        padding:0 0 2px;
+        position:absolute;
+        pointer-events:none;
+    }
+    .flecha-select:before {
+        content:'';
+        right:6px; top:0px;
+        width:20px; height:20px;
+        position:absolute;
+        pointer-events:none;
+        display:block;
     }
 }
