@@ -26,6 +26,7 @@ class DataManager {
             Usuario::setDefuncion($doctrine, $usuario);
         }
         $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
+        $DATOS['CHAT'] = DataManager::chatsPendientes($doctrine, $usuario);
 
         $mensajes_sin_ver = $doctrine->getRepository('AppBundle:MensajeXUsuario')->findBy(
                 ['idUsuario' => $usuario, 'visto' => 0]);
@@ -110,6 +111,17 @@ class DataManager {
         }
 //        \AppBundle\Utils\Utils::pretty_print($DATOS);
         return $DATOS;
+    }
+    
+    static function chatsPendientes($doctrine, $USUARIO){
+        $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
+        $contador = 0;
+        if($CIUDADANOS !== null){
+            foreach($CIUDADANOS as $CIUDADANO){
+                $contador += Usuario::numeroMensajesChat($doctrine, $USUARIO, $CIUDADANO);
+            }
+        }
+        return $contador;
     }
 
 }

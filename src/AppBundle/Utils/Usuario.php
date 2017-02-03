@@ -492,20 +492,65 @@ class Usuario {
         }
         return 1;
     }
-    
+
     /**
      * Obtiene los ciudadanos vivos
      * @param type $doctrine
-     * @return null|array
+     * @return array
      */
-    static function getCiudadanosVivos($doctrine){
+    static function getCiudadanosVivos($doctrine) {
         $ESTADO_ACTIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
         $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
         $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findBy([
             'idRol' => $ROL_CIUDADANO, 'idEstado' => $ESTADO_ACTIVO
         ]);
-        
+
         return $CIUDADANOS;
+    }
+    
+    /**
+     * Obtiene todos los usuario que no sean el sistema
+     * @param type $doctrine
+     * @return array
+     */
+    static function getUsuariosMenosSistema($doctrine) {
+        $SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idRol != :idRol')
+                ->setParameters(array('idRol' => $SISTEMA));
+        $USUARIOS = $query->getQuery()->getResult();
+        return $USUARIOS;
+    }
+
+    /**
+     * Nos dice el número de mensajes por ver en un chat entre dos usuarios específicos
+     * @param type $doctrine
+     * @param type $YO
+     * @param type $USUARIO_CHAT
+     * @return int
+     */
+    static function numeroMensajesChat($doctrine, $YO, $USUARIO_CHAT) {
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $query = $qb->select('c1')
+                ->from('\AppBundle\Entity\Chat', 'c1')
+                ->where('c1.idUsuario1 = :emisor AND c1.idUsuario2 = :receptor_usuario')
+                ->orWhere('c1.idUsuario1 = :receptor_usuario AND c1.idUsuario2 = :emisor')
+                ->orderBy('c1.fecha', 'ASC')
+                ->setParameters(array('emisor' => $YO, 'receptor_usuario' => $USUARIO_CHAT));
+        $CHAT = $query->getQuery()->getOneOrNullResult();
+        if ($CHAT !== null) {
+            $query = $qb->select('cm')
+                    ->from('\AppBundle\Entity\ChatMensajes', 'cm')
+                    ->where('cm.idChat = :idChat AND cm.visto = 0')
+                    ->setParameters(array('idChat' => $CHAT));
+            $n_mensajes = $query->getQuery()->getResult();
+            return count($n_mensajes);
+        }
+        return 0;
     }
 
 }

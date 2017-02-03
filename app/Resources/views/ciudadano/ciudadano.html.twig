@@ -54,9 +54,16 @@
                     <img alt="Logo" src="{{ asset('images/iconos/Jugador.png') }}"  />
                 </a>
             </div>
-            <div class="menu" id="menu-ocio" style="float:right;">
+            <div class="menu contenedor-badge" id="menu-ocio" style="float:right;">
                 <a href="/ciudadano/ocio">
                     <img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" />
+                    {% if CHAT is defined %}
+                        {% if CHAT > 0 %}
+                            <span class="badge badge-aviso">
+                                {{ CHAT }}
+                            </span>
+                        {% endif %}
+                    {% endif %}
                 </a>
             </div>
         </div>

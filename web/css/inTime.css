@@ -355,7 +355,10 @@ legend{
     font-size: 14px;
     font-weight: 600;
 }
-
+.badge-aviso{
+    top: 0px;
+    left: 0px;
+}
 .tarjeta-ejercicio{
     font-weight: 600;
     color: white;
@@ -748,9 +751,6 @@ legend{
     .ventana-tweets{
         height: 1000px;
     }
-    .badge-aviso{
-        top: 0px;
-    }
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
@@ -911,9 +911,6 @@ legend{
     .ventana-tweets{
         height: 1000px;
     }
-    .badge-aviso{
-        top: 0px;
-    }
     .badge-alimentacion,
     .badge-aviso{
         font-size: 40px;
@@ -1058,9 +1055,6 @@ legend{
     .ventana-tweets{
         height: 250px;
     }
-    .badge-aviso{
-        top: 0px;
-    }
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
@@ -1196,8 +1190,11 @@ legend{
         font-size: 16px;
     }
     .badge-aviso{
-        top: 0px;
         font-size: 14px;
+        font-weight: 600;
+    }
+    .badge-aviso{
+        left: 10%;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -1281,10 +1278,6 @@ legend{
     }
     .radio-inline{
         font-size: 15px;
-        font-weight: 600;
-    }
-    .badge-aviso{
-        font-size: 14px;
         font-weight: 600;
     }
     .tarjeta-ejercicio{

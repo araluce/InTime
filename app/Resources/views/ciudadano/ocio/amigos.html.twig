@@ -17,8 +17,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-2 col-md-offset-4 col-xs-offset-2 menu">
-                <center><a href="/ciudadano/ocio/amigos/chat"><img alt="Logo" src="{{ asset('images/iconos/Chat.png') }}" rel="external"/></a></center>
+            <div class="col-xs-2 col-md-offset-4 col-xs-offset-2 menu contenedor-badge">
+                <center>
+                    <a href="/ciudadano/ocio/amigos/chat">
+                        <img alt="Logo" src="{{ asset('images/iconos/Chat.png') }}" rel="external"/>
+                        {% if CHAT is defined %}
+                            {% if CHAT > 0 %}
+                                <span class="badge badge-aviso">
+                                    {{ CHAT }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </center>
             </div>
             <div class="col-xs-2 col-md-offset-0 col-xs-offset-2 menu">
                 <center><a href="/ciudadano/ocio/amigos/fotos"><img alt="Logo" src="{{ asset('images/iconos/Fotos.png') }}" rel="external"/></a></center>

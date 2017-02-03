@@ -7,8 +7,21 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
     <style>
-        body{
+        body, input, select, textarea, button, .ui-btn, .btn {
             font-family: "Isocpeur";
+        }
+        .ui-shadow {
+            -webkit-box-shadow: 0 0px 3px rgba(0,0,0,.15);
+            -moz-box-shadow: 0 0px 3px rgba(0,0,0,.15);
+            box-shadow: 0 0px rgba(0,0,0,.15);
+        }
+        .ui-corner-all {
+            -webkit-border-radius: 0em;
+            border-radius: 0em;
+        }
+        .ui-content{
+            font-family: "Isocpeur";
+            background-color: #FFFFFF;
         }
         .ui-input-search:after {
             left: .3125em;
@@ -54,8 +67,8 @@
             font-weight: 300;
         }
         .ui-listview-inset>.ui-li-static, .ui-listview-inset>.ui-li-divider, .ui-listview-inset>li>a.ui-btn {
-            border-right-width: 2px;
-            border-left-width: 2px;
+            border-right-width: 0px;
+            border-left-width: 0px;
         }
         .ui-listview>.ui-li-static, .ui-listview>.ui-li-divider, .ui-listview>li>a.ui-btn {
             border-width: 2px 0 0;
@@ -198,6 +211,15 @@
             /*color: #3D66A2;*/
             color: white;
         }
+        #btn-principal-volver{
+            border-radius: 0px;
+            -webkit-border-radius: 0px;
+            font-size: 75px;
+        }
+        .badge{
+            background-color: rgba(51, 122, 183,.3);
+            font-size: 45px;
+        }
         @media (min-width: 1200px){
             .ui-btn-icon-left:after, 
             .ui-btn-icon-right:after, 
@@ -277,6 +299,13 @@
             #pagetwo .ui-content small{
                 font-size: 13px;
             }
+            #btn-principal-volver{
+                font-size: 25px;
+            }
+            .badge{
+                background-color: rgba(51, 122, 183,.3);
+                font-size: 25px;
+            }
         }
     </style>
 {% endblock %}
@@ -287,7 +316,7 @@
             <form class="ui-filterable">
                 <input id="myFilter" data-type="search" placeholder="Buscar ciudadano">
             </form>
-            <ul data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true" >
+            <ul data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true" id="lista-usuarios">
                 {% if DISTRITOS is not null %}
                     {% for DISTRITO in DISTRITOS %}
                         <li onclick="abrir_chat(null, {{ DISTRITO.getIdUsuarioDistrito() }});">
@@ -309,6 +338,7 @@
                                          class="img-chat"/>
                                 {% endif %}
                                 {{ CIUDADANO.getSeudonimo() }}
+                                <span class="badge" id="badge-{{ CIUDADANO.getIdUsuario() }}">0</span>
                             </a>
                         </li>
                     {% endfor %}
@@ -318,9 +348,9 @@
         <div data-role="footer" data-position="fixed">
             <div class="col-md-12" role="none">
                 <a role="none" href="/ciudadano/ocio/amigos" rel="external">
-                <button role="none" data-enhance="false" class="btn btn-block btn-primary">
-                    Volver
-                </button>
+                    <button id="btn-principal-volver" role="none" data-enhance="false" class="btn btn-block btn-primary">
+                        Volver
+                    </button>
                 </a>
             </div>
             <!--
@@ -361,10 +391,29 @@
         chat_grupo_actual = null;
         offset = 0;
         $(document).ready(function () {
+            obtenerMensajesNoVistos();
             setInterval(function () {
+                obtenerMensajesNoVistos();
                 abrir_chat(chat_actual, chat_grupo_actual);
             }, 6000);
         });
+        function obtenerMensajesNoVistos() {
+            url = '/ciudadano/ocio/amigos/chat/getSinVer';
+            $.get(url, function (datos) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (k, v) {
+                        $('#badge-' + v.ID).html(v.NUM_MENSAJES);
+                        if(v.NUM_MENSAJES > 0){
+                            $('#badge-' + v.ID).show();
+                        } else{
+                            $('#badge-' + v.ID).hide();
+                        }
+                    });
+                }
+            });
+        }
         function abrir_chat(id_usuario, id_grupo) {
             if (id_usuario !== null) {
                 chat_actual = id_usuario;
@@ -386,7 +435,7 @@
                 $.get(url, function (data) {
                     $('#panel-chat').empty();
                     if (data.estado === 'OK') {
-                        console.log(data);
+                        //console.log(data);
                         contenido = '';
                         $.each(data.mensajes, function (k, v) {
                             contenido += '<div class="col-xs-12" style="margin-top:1%;">';
@@ -420,6 +469,7 @@
                     $("#panel-chat").animate({scrollTop: $(document).height() + 1000000}, "slow");
                 });
             } else {
+                contenido = '';
                 contenido += '<div class="col-lg-12" style="margin-top:1%;">';
                 contenido += '<span style="float:left; background-color: #EBF8A4; padding: 1%; color:black;">';
                 contenido += 'Para comenzar a chatear con amigos o tu distrito selecciona el contacto en la lista';
@@ -436,8 +486,6 @@
                 $('#mensaje').val('');
                 datos = {'id_usuario': chat_actual, 'id_distrito': chat_grupo_actual, 'mensaje': mensaje};
                 $.post('/ciudadano/enviarMensajeChat', datos, function (data) {
-                    console.log(datos);
-                    console.log(data);
                     if (data.estado === 'OK') {
                         if (chat_actual !== null) {
                             abrir_chat(chat_actual, null);

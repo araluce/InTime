@@ -48,7 +48,7 @@ class CiudadanoController extends Controller {
                 $DATOS['DISTRITOS'] = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
             }
         }
-        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL);
+        $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
         $DATOS['CIUDADANOS'] = [];
         foreach ($CIUDADANOS as $CIUDADANO) {
             if ($CIUDADANO->getSeudonimo() !== null) {
@@ -59,49 +59,30 @@ class CiudadanoController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/getUltimoChat", name="getUltimoChat")
+     * @Route("/ciudadano/ocio/amigos/chat/getSinVer", name="getSinVer")
      */
-    /*
-      public function getUltimoChat(Request $request) {
-      $session = $request->getSession();
-      $doctrine = $this->getDoctrine();
-      $em = $doctrine->getManager();
-      $qb = $em->createQueryBuilder();
-      $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/getUltimoChat');
-      if (!$status) {
-      $JsonResponse_data["estado"] = "ERROR - No autorizado";
-      }
-      $Usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-      $query = $qb->select('c')
-      ->from('\AppBundle\Entity\Chat', 'c')
-      ->where('c.idUsuario1 = :usuario OR c.idUsuario2 = :usuario')
-      ->orderBy('c.fechaUltimoMensaje', 'DESC')
-      ->setParameter('usuario', $Usuario)
-      //                      ->setFirstResult( $offset )
-      ->setMaxResults(1);
-      $CHAT = $query->getQuery()->getResult();
-
-      $JsonResponse_data["estado"] = "OK";
-      if (!count($CHAT)) {
-      return new JsonResponse(array('estado' => 'ERROR - Este usuario no tiene chats abiertos'), 200);
-      } else {
-      if ($CHAT[0]->getIdUsuario1() === $Usuario && $CHAT[0]->getIdUsuario2() !== null) {
-      $JsonResponse_data['id_chat'] = $CHAT[0]->getIdUsuario2()->getIdUsuario();
-      $JsonResponse_data['id_grupo'] = null;
-      } else if ($CHAT[0]->getIdUsuario2() === $Usuario && $CHAT[0]->getIdUsuario1() !== null) {
-      $JsonResponse_data['id_chat'] = $CHAT[0]->getIdUsuario1()->getIdUsuario();
-      $JsonResponse_data['id_grupo'] = null;
-      } else if ($CHAT[0]->getIdUsuario1() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
-      $JsonResponse_data['id_chat'] = null;
-      $JsonResponse_data['id_grupo'] = $CHAT[0]->getIdDistrito()->getIdUsuarioDistrito();
-      } else if ($CHAT[0]->getIdUsuario2() === $Usuario && $CHAT[0]->getIdDistrito() !== null) {
-      $JsonResponse_data['id_chat'] = null;
-      $JsonResponse_data['id_grupo'] = $CHAT[0]->getIdDistrito()->getIdUsuarioDistrito();
-      }
-      }
-      return new JsonResponse($JsonResponse_data, 200);
-      }
-     */
+    public function getSinVerAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/chat/getSinVer');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+        $DATOS = [];
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                if ($CIUDADANO->getSeudonimo() !== null) {
+                    $aux = [];
+                    $aux['ID'] = $CIUDADANO->getIdUsuario();
+                    $aux['NUM_MENSAJES'] = Usuario::numeroMensajesChat($doctrine, $USUARIO, $CIUDADANO);
+                    $DATOS[] = $aux;
+                }
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
 
     /**
      * @Route("/ciudadano/getChat/{id_usuario_destino}/{id_grupo_destino}/{offset}", name="getChat")
@@ -172,7 +153,7 @@ class CiudadanoController extends Controller {
                 $aux['visto'] = $CHAT->getVisto();
                 $aux['fecha'] = $CHAT->getFecha();
                 $JsonResponse_data['mensajes'][] = $aux;
-                if($CHAT->getIdUsuario() !== $Usuario){
+                if ($CHAT->getIdUsuario() !== $Usuario) {
                     $CHAT->setVisto(1);
                 }
                 $em->persist($CHAT);
@@ -200,12 +181,6 @@ class CiudadanoController extends Controller {
             $Usuario2 = $request->request->get('id_usuario');
             $Distrito = $request->request->get('id_distrito');
             $mensaje = $request->request->get('mensaje');
-//            return new JsonResponse(array(
-//                'estado' => 'Datos', 
-//                'Usuario' => $Usuario2,
-//                'Distrito' => $Distrito,
-//                'Mensaje' => $mensaje
-//                ), 200);
             if ($Usuario2 !== "") {
                 $receptor_usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($Usuario2);
                 $query = $qb->select('ch')
