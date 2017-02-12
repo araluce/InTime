@@ -626,8 +626,16 @@ class TrabajoController extends Controller {
         $EJERCICIO_CALIFICACION->setIdEvaluador(null);
         $EJERCICIO_CALIFICACION->setIdGrupo(null);
         $em->persist($EJERCICIO_CALIFICACION);
+        
+        
+        $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
+            'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+        ]);
+        if($EJERCICIO_USUARIO !== null){
+            $EJERCICIO_USUARIO->setVisto(1);
+            $em->persist($EJERCICIO_USUARIO);
+        }
         $em->flush();
-
         Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra de ejercicio en Paga extra');
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio solicitado correctamente')), 200);
     }
