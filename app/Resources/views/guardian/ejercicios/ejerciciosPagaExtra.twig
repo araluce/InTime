@@ -10,9 +10,7 @@
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
     <style>
-        .form-control{
-            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        }
+
     </style>
 {% endblock %}
 
@@ -85,50 +83,17 @@
                             {% endfor %}
                         </div>
                         <div class="row bordes" style="margin-top: 1%;">
-                            <legend>Proponer una inspección</legend>
+                            <legend><i class="fa fa-comments-o"></i> Fecha de presentación</legend>
+                            <div class="left-inner-addon ">
+                                <i class="fa fa-calendar"></i>
+                                <input class="form-control" type="datetime-local" id="fecha">
+                            </div>
+                            
+                            <legend><i class="fa fa-search" style="margin-top: 1%;"></i>  Proponer una inspección</legend>
 
-                            <label for="enunciado_comida">Enunciado del test</label>
+                            <label for="enunciado_comida">Enunciado de la entrega</label>
                             <textarea class="form-control" id="enunciado" rows="3"></textarea>
 
-                            <legend style="margin-top: 1%;">Posibles respuestas</legend>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <input type="checkbox" name="checkbox1">
-                                                </span>
-                                                <input type="text" class="form-control" id="resp1" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <input type="checkbox" name="checkbox2">
-                                                </span>
-                                                <input type="text" class="form-control" id="resp2" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <input type="checkbox" name="checkbox3">
-                                                </span>
-                                                <input type="text" class="form-control" id="resp3" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <input type="checkbox" name="checkbox4">
-                                                </span>
-                                                <input type="text" class="form-control" id="resp4" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <label for="caja_coste" style="margin-top: 1%;">Coste</label>
                             <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                 <div class="col-xs-3">
@@ -165,7 +130,7 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="publicarInspeccion();">PUBLICAR</button>
+                            <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="publicarPaga();">PUBLICAR</button>
                         </div>
                     </div>
                     <div class="tab-pane fade in" id="tab2">
@@ -180,22 +145,10 @@
 
 {% block javascripts %}
     <script>
-        function publicarInspeccion() {
+        function publicarPaga() {
             var enunciado = $("#enunciado").val();
-            var resp1 = $("#resp1").val();
-            var resp2 = $("#resp2").val();
-            var resp3 = $("#resp3").val();
-            var resp4 = $("#resp4").val();
-            respuestas = [resp1, resp2, resp3, resp4];
-            var check1 = $('input[name="checkbox1"]:checked').val();
-            if(check1 !== 'on'){check1 = 'off';}
-            var check2 = $('input[name="checkbox2"]:checked').val();
-            if(check2 !== 'on'){check2 = 'off';}
-            var check3 = $('input[name="checkbox3"]:checked').val();
-            if(check3 !== 'on'){check3 = 'off';}
-            var check4 = $('input[name="checkbox4"]:checked').val();
-            if(check4 !== 'on'){check4 = 'off';}
-            checks = [check1, check2, check3, check4];
+            var fecha = $("#fecha").val();
+
             var dias = parseInt($("#dias").val());
             var horas = parseInt($("#horas").val());
             var minutos = parseInt($("#minutos").val());
@@ -207,13 +160,12 @@
             } else if (tiempo < 0) {
                 alert('Debes insertar un coste válido');
             } else {
-                ruta = '/guardian/ejercicios/inspeccion/publicar';
+                ruta = '/guardian/ejercicios/paga/publicar';
                 tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
                 datos = {
                     'ENUNCIADO': enunciado,
-                    'COSTE': tiempo,
-                    'RESPUESTAS': respuestas,
-                    'RESPUESTAS_CHECK': checks
+                    'FECHA': fecha,
+                    'COSTE': tiempo
                 };
                 $.each(bonificadores, function (k, v) {
                     $.each(v, function (kk, vv) {
@@ -225,7 +177,7 @@
                     alert(data.message);
                     location.reload();
                 });
-                
+
             }
         }
 
@@ -249,9 +201,6 @@
                     $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                     $(this).removeClass("btn-default").addClass("btn-primary");
                 });
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
             });
     </script>
 {% endblock %}

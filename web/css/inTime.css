@@ -91,7 +91,7 @@ footer{
     font-weight: bold; 
     margin-top: 1%; 
     margin-bottom:1%;
-    font-family: 'Oregano', cursive;
+    font-family: 'Isocpeur';
 }
 
 body{
@@ -354,7 +354,7 @@ legend{
     white-space: nowrap;
     text-align: center;
     background-color: transparent;
-    border-radius: 10px;
+    border-radius: 15px;
 }
 .modal-advice-body img {
     width: 100%;
@@ -385,30 +385,7 @@ legend{
     top: 0px;
     left: 0px;
 }
-.tarjeta-ejercicio{
-    font-weight: 600;
-    color: white;
-    padding: 10px 25px;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-.tarjeta-ejercicio .tarjeta-ejercicio-fecha,
-.tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
-.tarjeta-ejercicio .tarjeta-ejercicio-tipo{
-    border-style: solid;
-    border-color: white;
-}
-.tarjeta-ejercicio .tarjeta-ejercicio-enunciado{
-    /*    border: 2px;*/
-}
-.tarjeta-ejercicio .tarjeta-ejercicio-tipo{
-    height: auto;
-    border-bottom: 2px;
-    border-right: 2px;
-}
-.tarjeta-ejercicio .tarjeta-ejercicio-fecha{
-    height: auto;
-    border-bottom: 2px;
-}
+
 .resultados-titulo{
     text-transform: uppercase;
     font-size: 35px; 
@@ -691,6 +668,7 @@ svg:not(:root) {
     border: 2px solid #000000;
 }
 
+.titulo-xs,
 .hidden-xs{
     font-family: 'Isocpeur';
     font-size: 35px;
@@ -709,6 +687,12 @@ svg:not(:root) {
 
 legend{
     font-size: 35px;
+}
+
+.justified .centrado{
+    display: table-cell;
+    float: none;
+    width: 1%;
 }
 
 /** MEDIA **/
@@ -1154,6 +1138,7 @@ legend{
     #modal-advice2 .modal-body{
         font-size: 20px;
     }
+    .titulo-xs,
     .hidden-xs{
         font-size: 20px;
     }
@@ -1299,10 +1284,6 @@ legend{
     .radio-inline{
         font-size: 15px;
         font-weight: 600;
-    }
-    .tarjeta-ejercicio{
-        font-weight: 600;
-        padding: 10px 25px;
     }
     .resultados-titulo{
         font-size: 35px; 

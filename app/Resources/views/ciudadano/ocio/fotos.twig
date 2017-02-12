@@ -329,10 +329,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    <!--
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js">
-    </script>
-    -->
     <script>
         function getPhotos() {
             ruta = '/ciudadano/obtenerFotos';
@@ -394,5 +390,4 @@
             {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
     </script>
-    <!--<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>-->
 {% endblock %}

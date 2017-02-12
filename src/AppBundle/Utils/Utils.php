@@ -36,7 +36,6 @@ class Utils {
         $CALIFICACION = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByCorrespondenciaNumerica($corresponidencia_numerica);
         $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
         $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
-        $EJERCICIO_CALIFICACION = [];
 
         if ($id_grupo !== null) {
             $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -47,11 +46,7 @@ class Utils {
                 'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
             ]);
         }
-
-        if ($EJERCICIO_CALIFICACION === null) {
-            $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
-            $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
-        } else {
+        if ($EJERCICIO_CALIFICACION !== null) {
             // Ejercicio ya calificado, se resta el TdV ganado con el y se le
             //ingresa el TdV por defecto.
             if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
@@ -59,13 +54,27 @@ class Utils {
                 Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
             }
         }
+        $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
+        $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
         if ($id_grupo !== null) {
             $EJERCICIO_CALIFICACION->setIdGrupo($id_grupo);
         } else {
             $EJERCICIO_CALIFICACION->setIdEjercicio($id_ejercicio);
         }
-        $TdVDefecto = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('pago_paga_' . $corresponidencia_numerica);
-        Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto->getValor(), 'Ingreso - Pago por defecto temporal por entrega');
+        if ($SECCION === 'inspeccion_trabajo') {
+            $concepto = 'Ingreso - Pago por realización de ejercicio';
+        } else {
+            $concepto = 'Ingreso - Pago por defecto temporal por entrega';
+        }
+        $EJERCICIO_BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+            'idEjercicio' => $id_ejercicio, 'idCalificacion' => $CALIFICACION
+        ]);
+        if ($EJERCICIO_BONIFICACION !== null) {
+            $TdVDefecto = $EJERCICIO_BONIFICACION->getBonificacion();
+        } else {
+            $TdVDefecto = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('pago_paga_' . $corresponidencia_numerica)->getValor();
+        }
+        Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto, $concepto);
         $EJERCICIO_CALIFICACION->setIdCalificaciones($CALIFICACION);
         $EJERCICIO_CALIFICACION->setIdEvaluador($SISTEMA);
         $EJERCICIO_CALIFICACION->setFecha(new \DateTime('now'));
@@ -184,12 +193,16 @@ class Utils {
         $aux = [];
         if ($grupo !== null) {
             $ejercicio = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findOneByIdGrupoEjercicios($grupo)->getIdEjercicio();
-            $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneByIdGrupo($grupo);
+            $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
+                'idUsu' => $USUARIO, 'idGrupo' => $grupo
+            ]);
             $EJERCICIO_CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                'idUsuario' => $USUARIO, 'idGrupo' => $grupo
+                'idUsuario' => $USUARIO, 'idGrupo' => $grupo,
             ]);
         } else {
-            $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneByIdEjercicio($ejercicio);
+            $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
+                'idUsu' => $USUARIO, 'idEjercicio' => $ejercicio
+            ]);
             $EJERCICIO_CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                 'idUsuario' => $USUARIO, 'idEjercicio' => $ejercicio
             ]);

@@ -5,121 +5,477 @@
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .badge{
+            background-color: #E0B831;
+            padding: 9px 9px;
+        }
+        .badge,
+        .ejercicio-evaluado{
+            font-size: 45px;
+        }
+        #tab1,
+        #tab2,
+        #tab3{
+            font-size: 35px;
+        }
+        #tab3 h4{
+            font-size: 55px;
+        }
+        #tab3 img{
+            width: 120px;
+        }
+        .ejercicio-calificacion img{
+            height: 70px;
+        }
+        .tarjeta-ejercicio{
+            margin-top: 1%;
+            padding: 10px 25px;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+        .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+        .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+        .tarjeta-ejercicio .ejercicio-calificacion{
+            border: 2px #000000 solid;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-tipo{
+            border-top-left-radius: 15px;
+            border-bottom: 0px;
+            border-right: 0px;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-fecha{
+            border-bottom: 0px;
+            border-top-right-radius: 15px;
+        }
+        .tarjeta-ejercicio -tarjeta-ejercicio-evaluacion{
+            border-top-width: 0px;
+        }
+        .tarjeta-ejercicio .ejercicio-calificacion{
+            border-bottom-width: 0px;
+        }
+        .btn-ejercicio{
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+        }
+        .no-elegible{
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        .file-upload-indicator {
+            display: inline;
+            cursor: default;
+            opacity: .8;
+            width: 60%;
+        }
+        .file-drop-zone{
+            border-top-color: rgb(255, 255, 255);
+            border-top-style: dotted;
+            border-top-width: 3px;
+            border-right-color: rgb(255, 255, 255);
+            border-right-style: dotted;
+            border-right-width: 3px;
+            border-left-color: rgb(255, 255, 255);
+            border-left-style: dotted;
+            border-left-width: 3px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .file-preview-frame {
+            position: relative;
+            display: table;
+            margin: 8px;
+            height: 160px;
+            border: 1px solid #ddd;
+            box-shadow: 1px 1px 5px 0 #a2958a;
+            padding: 6px;
+            float: left;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .file-preview-image {
+            vertical-align: middle;
+            image-orientation: from-image;
+        }
+        .file-preview {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .close {
+            float: right;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            filter: alpha(opacity=20);
+            opacity: .2;
+        }
+        .file-thumbnail-footer {
+            position: relative;
+        }
+        .file-footer-caption {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 160px;
+            text-align: center;
+            padding-top: 4px;
+            font-size: 11px;
+            color: #777;
+            margin: 5px auto;
+        }
+        .file-preview .clickable, .clickable .file-drop-zone-title {
+            cursor: pointer;
+        }
+        .file-drop-zone {
+            border: 1px dashed #aaa;
+            border-radius: 4px;
+            height: 100%;
+            text-align: center;
+            vertical-align: middle;
+            margin: 12px 15px 12px 12px;
+            padding: 5px;
+        }
+        code, kbd, pre, samp {
+            font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        }
+        code, kbd, pre, samp {
+            font-family: monospace,monospace;
+            font-size: 1em;
+        }
+        .file-thumb-progress .progress, .file-thumb-progress .progress-bar {
+            height: 10px;
+            font-size: 9px;
+            line-height: 10px;
+        }
+        @media (min-width: 1200px){
+            #tab1,
+            #tab2,
+            #tab3{
+                font-size: 16px;
+            }
+            #tab3 h4{
+                font-size: 25px;
+            }
+            #tab3 img{
+                width: 60px;
+            }
+            .badge,
+            .ejercicio-evaluado{
+                font-size: 14px;
+            }
+            .ejercicio-calificacion img{
+                height: 20px;
+            }
+            .tarjeta-ejercicio{
+                font-size: 18px;
+                padding: 10px 25px;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="row">
-            <div class="col-md-12 jumbotron">
-                <div class="row" style="margin-top:-4%;">
-                    <div class="col-md-12">
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="/">
-                                    <i class="fa fa-home"></i>
-                                    HOME
-                                </a>
-                                <span class="divider">/</span>
-                            </li>
-                            <li>
-                                <a href="/ciudadano/trabajo">
-                                    <i class="fa fa-briefcase"></i>
-                                    TRABAJO
-                                </a> 
-                                <span class="divider">/</span>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-search"></i> PAGA EXTRA
-                            </li>
-                            <li style="float:right;">
-                                <a href="/logout">
-                                    <i class="fa fa-sign-out"></i>
-                                    SALIR
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" style="margin-bottom: 1%;" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary btn-menu-first" href="#tab1" data-toggle="tab" onclick="getEjerciciosPaga();">
+                        <span class="fa fa-briefcase" aria-hidden="true"></span>
+                        <div class="titulo-xs">EJERCICIOS</div>
+                    </button>
                 </div>
-                <div class="row" style="margin-bottom: 1%;">
-                    <div class="col-md-12">
-                        {% if EJERCICIOS is defined and EJERCICIOS|length > 0 %}
-                            {% set contador = 1 %}
-                            {% for EJERCICIO in EJERCICIOS %}
-
-                                {%if contador is divisible by(2)%}
-                                    <div class="row">
-                                        <div class="col-md-5 tarjeta-ejercicio" 
-                                             style="margin-top: 1%; {% if EJERCICIO.NOTA %}{% if EJERCICIO.NOTA > 2 %} background-color: rgba(36,231,17,0.4); {% elseif EJERCICIO.NOTA < 3 %} background-color: rgba(204,6,5,0.4); {% endif %}{% endif %}">
-                                        {%else%}
-                                            <div class="col-md-5 tarjeta-ejercicio" 
-                                                 style="margin-top: 1%; {% if EJERCICIO.NOTA %}{% if EJERCICIO.NOTA > 2 %} background-color: rgba(36,231,17,0.4); {% elseif EJERCICIO.NOTA < 3 %} background-color: rgba(204,6,5,0.4); {% endif %}{% endif %}">
-                                            {%endif%}
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    {% if EJERCICIO.VISTO %}
-                                                        <span class="fa fa-eye"></span>
-                                                    {% else %}
-                                                        <span class="badge" style="font-size: 14px; background-color: #E0B831; padding: 9px 9px;">NUEVO</span>
-                                                        <!--<span class="fa fa-eye-slash"></span>-->
-                                                    {% endif %}
-                                                </div>
-                                                <div class="col-xs-6" style="text-align: right; font-size: 16px;">
-                                                    {% if EJERCICIO.NOTA %}
-                                                        {{ EJERCICIO.NOTA }}
-                                                    {% else %}
-                                                        S/N
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 tarjeta-ejercicio-tipo">
-                                                    <span class="fa fa-check-square"> </span>
-                                                    {{ EJERCICIO.TIPO }}
-                                                </div>
-                                                <div class="col-xs-6 tarjeta-ejercicio-fecha" style="float:right;">
-                                                    <span class="fa fa-calendar"> </span>
-                                                    {{ EJERCICIO.FECHA.date }}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12 tarjeta-ejercicio-enunciado">
-                                                    <div class="row">
-                                                        <div class="col-xs-3">
-                                                            <span class="fa fa-graduation-cap"></span>
-                                                        </div>
-                                                        <div class="col-xs-9">
-                                                            {{ EJERCICIO.ENUNCIADO }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-top: 2%;">
-                                                <div class="col-md-4 col-md-offset-8">
-                                                    <button class="btn btn-warning btn-block" style="font-weight: 600; font-size: 15px;" onclick="arena_ejercicio({{ EJERCICIO.ID }});">HAZLO!</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {%if contador is divisible by(2)%}</div>{%endif%}
-                                        {% set contador = contador + 1 %}
-                                    {% endfor %}
-                                {% endif %}
-                        </div>
-                    </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-menu-first" href="#tab2" data-toggle="tab" onclick="getEjerciciosPaga();">
+                        <span class="fa fa-refresh" aria-hidden="true"></span>
+                        <div class="titulo-xs">SOLICITADOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-menu-first" href="#tab3" data-toggle="tab" onclick="getEjerciciosPaga();">
+                        <span class="fa fa-check" aria-hidden="true"></span>
+                        <div class="titulo-xs">EVALUADOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-menu-last" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
                 </div>
             </div>
         </div>
-    {% endblock %}
-    {% block javascripts %}
-        <script>
-            $(document).ready(function () {
-            {% if info.message is defined or info.type is defined%}
-                    $('#box_modal_result').click();
-            {% endif %}
-                });
+        <div style="margin-top: 1%;">
+            <div class="tab-content">
+                <div class="row tab-pane fade in active" id="tab1"> </div>
+                <div class="row tab-pane fade in" id="tab2"> </div>
+                <div class="row tab-pane fade in" id="tab3"> </div>
+                <div class="row tab-pane fade in" id="tab4">
+                    <input id="entrega-paga" name="entrega" type="file" multiple class="file-loading">
+                </div>
+                <div class="tab-pane fade in" id="tab5"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-                function arena_ejercicio(id) {
-                    var ruta = '/arena/' + id;
-                    window.location.replace(ruta);
+{% block javascripts %}
+    <script>
+        var solicitado = 0;
+        var id_ejercicio = 0;
+        function setId(id) {
+            id_ejercicio = id;
+            $('#entrega-paga').fileinput('refresh', {uploadExtraData: {"id_ejercicio": id_ejercicio}});
+        }
+        $("#entrega-paga").fileinput({
+            uploadUrl: "/ciudadano/trabajo/paga/entregarPaga",
+            uploadExtraData: {"id_ejercicio": id_ejercicio},
+            uploadAsync: true,
+            maxFileCount: 1,
+            showBrowse: false,
+            browseOnZoneClick: true,
+            maxFileSize: 2000
+        });
+        $("#entrega-paga").on('fileuploaded', function (event, data, previewId, index) {
+            var response = data.response;
+            data = jQuery.parseJSON(response);
+            alert(data.message);
+            location.reload();
+        });
+        $('#entrega-paga').on('fileselectnone', function (event) {
+            alert("Huh! No hay ficheros seleccionados.");
+        });
+        $(document).ready(function () {
+            getEjerciciosPaga();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        });
+        function solicitar(id) {
+            var ruta = '/ciudadano/trabajo/paga/solicitar/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    getEjerciciosPaga();
+                } else {
+                    alert(data.message);
                 }
-        </script>
-    {% endblock %}
+            });
+        }
+        function getEjerciciosPaga() {
+            $('#tab1').html('');
+            $('#tab2').html('');
+            $('#tab3').html('');
+            var ruta = '/ciudadano/trabajo/getEjerciciosPaga';
+            $.get(ruta, function (datos) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    solicitado = data.message.SOLICITADO;
+                    $.each(data.message.EJERCICIOS, function (k, v) {
+                        switch (v.ESTADO) {
+                            case 'no_solicitado':
+                                procesarNoSolicitado(v);
+                                break;
+                            case 'solicitado':
+                                procesaSolicitado(v);
+                                break;
+                            case 'entregado':
+                                procesaEntregado(v);
+                                break;
+                            case 'evaluado':
+                                procesaEvaluado(v);
+                                break;
+                        }
+                    });
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+        function procesarNoSolicitado(v) {
+            contenido = '';
+            contenido += '<div class="col-lg-6 tarjeta-ejercicio" >';
+            contenido += '   <div class="row">';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-tipo">';
+            contenido += '           <span class="fa fa-money"> </span>';
+            if (v.COSTE.dias > 0) {
+                contenido += '           ' + v.COSTE.dias + 'd ';
+            }
+            if (v.COSTE.horas > 0) {
+                contenido += '           ' + v.COSTE.horas + 'h ';
+            }
+            if (v.COSTE.minutos > 0) {
+                contenido += '           ' + v.COSTE.minutos + 'm ';
+            }
+            if (v.COSTE.segundos > 0) {
+                contenido += '           ' + v.COSTE.segundos + 's ';
+            }
+            contenido += '       </div>';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha">';
+            contenido += '           <span class="fa fa-calendar"> </span>';
+            contenido += '           ' + v.FECHA.date;
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '   <div class="row">';
+            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado">';
+            contenido += '           <div class="row">';
+            contenido += '               <div class="col-lg-1 col-xs-1">';
+            contenido += '                   <span class="fa fa-graduation-cap"></span>';
+            contenido += '               </div>';
+            contenido += '               <div class="col-lg-11 col-xs-11">';
+            contenido += '                   ' + v.ENUNCIADO;
+            contenido += '               </div>';
+            contenido += '           </div>';
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '<div class="row">';
+            if (v.ESTADO === 'no_solicitado') {
+                contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" onclick="solicitar(' + v.ID + ')"';
+                if (solicitado) {
+                    contenido += ' disabled>';
+                } else {
+                    contenido += ' >';
+                }
+                contenido += '          SOLICITAR&nbsp;(' + v.SOLICITANTES + '/' + v.NUM_MAX_SOLICITANTES + ')';
+                if (!v.VISTO) {
+                    contenido += '      <span class="badge">NUEVO</span>';
+                }
+                contenido += '      </button>';
+            }
+            contenido += '</div>';
+            contenido += '</div>';
+            $('#tab1').append(contenido);
+        }
+        function procesaSolicitado(v) {
+            contenido = '';
+            contenido += '<div class="col-lg-6 tarjeta-ejercicio" >';
+            contenido += '   <div class="row">';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-tipo">';
+            contenido += '           <span class="fa fa-money"> </span>';
+            if (v.COSTE.dias > 0) {
+                contenido += '           ' + v.COSTE.dias + 'd ';
+            }
+            if (v.COSTE.horas > 0) {
+                contenido += '           ' + v.COSTE.horas + 'h ';
+            }
+            if (v.COSTE.minutos > 0) {
+                contenido += '           ' + v.COSTE.minutos + 'm ';
+            }
+            if (v.COSTE.segundos > 0) {
+                contenido += '           ' + v.COSTE.segundos + 's ';
+            }
+            contenido += '       </div>';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha">';
+            contenido += '           <span class="fa fa-calendar"> </span>';
+            contenido += '           ' + v.FECHA.date;
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '   <div class="row">';
+            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado">';
+            contenido += '           <div class="row">';
+            contenido += '               <div class="col-lg-1 col-xs-1">';
+            contenido += '                   <span class="fa fa-graduation-cap"></span>';
+            contenido += '               </div>';
+            contenido += '               <div class="col-lg-11 col-xs-11">';
+            contenido += '                   ' + v.ENUNCIADO;
+            contenido += '               </div>';
+            contenido += '              <input type="hidden" value="' + v.ID + '" id="entrega-id" />';
+            contenido += '           </div>';
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '   <div class="row">';
+            contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" onclick="setId(' + v.ID + ');" href="#tab4" data-toggle="tab">';
+            contenido += '          ENTREGAR';
+            contenido += '      </button>';
+            contenido += '   </div>';
+            contenido += '</div>';
+            $('#tab2').append(contenido);
+        }
+        function procesaEntregado(v) {
+            contenido = '';
+            contenido += '<div class="col-lg-6 tarjeta-ejercicio" >';
+            contenido += '   <div class="row">';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-tipo">';
+            contenido += '           <span class="fa fa-money"> </span>';
+            if (v.COSTE.dias > 0) {
+                contenido += '           ' + v.COSTE.dias + 'd ';
+            }
+            if (v.COSTE.horas > 0) {
+                contenido += '           ' + v.COSTE.horas + 'h ';
+            }
+            if (v.COSTE.minutos > 0) {
+                contenido += '           ' + v.COSTE.minutos + 'm ';
+            }
+            if (v.COSTE.segundos > 0) {
+                contenido += '           ' + v.COSTE.segundos + 's ';
+            }
+            contenido += '       </div>';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha">';
+            contenido += '           <span class="fa fa-calendar"> </span>';
+            contenido += '           ' + v.FECHA.date;
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '   <div class="row">';
+            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado no-elegible">';
+            contenido += '           <div class="row">';
+            contenido += '               <div class="col-lg-1 col-xs-1">';
+            contenido += '                   <span class="fa fa-graduation-cap"></span>';
+            contenido += '               </div>';
+            contenido += '               <div class="col-lg-11 col-xs-11">';
+            contenido += '                   ' + v.ENUNCIADO;
+            contenido += '               </div>';
+            contenido += '           </div>';
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '</div>';
+            $('#tab2').append(contenido);
+        }
+        function procesaEvaluado(v) {
+            contenido = '';
+            contenido += '   <div class="row bordes border-radius">';
+            contenido += '       <div class="col-xs-12">';
+            contenido += '           <span class="fa fa-money"> </span>';
+            if (v.COSTE.dias > 0) {
+                contenido += '           ' + v.COSTE.dias + 'd ';
+            }
+            if (v.COSTE.horas > 0) {
+                contenido += '           ' + v.COSTE.horas + 'h ';
+            }
+            if (v.COSTE.minutos > 0) {
+                contenido += '           ' + v.COSTE.minutos + 'm ';
+            }
+            if (v.COSTE.segundos > 0) {
+                contenido += '           ' + v.COSTE.segundos + 's ';
+            }
+            contenido += '       </div>';
+            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha">';
+            contenido += '           <span class="fa fa-calendar"> </span>';
+            contenido += '           ' + v.FECHA.date;
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '   <div class="row">';
+            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado no-elegible">';
+            contenido += '           <div class="row">';
+            contenido += '               <div class="col-lg-1 col-xs-1">';
+            contenido += '                   <span class="fa fa-graduation-cap"></span>';
+            contenido += '               </div>';
+            contenido += '               <div class="col-lg-11 col-xs-11">';
+            contenido += '                   ' + v.ENUNCIADO;
+            contenido += '               </div>';
+            contenido += '           </div>';
+            contenido += '       </div>';
+            contenido += '   </div>';
+            contenido += '</div>';
+            $('#tab3').append(contenido);
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,326 @@
+
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "ciudadano/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .badge{
+            background-color: #E0B831;
+            padding: 9px 9px;
+        }
+        .badge,
+        .ejercicio-evaluado{
+            font-size: 45px;
+        }
+        #tab1,
+        #tab2,
+        #tab3{
+            font-size: 35px;
+        }
+        #tab3 h4{
+            font-size: 55px;
+        }
+        #tab3 img{
+            width: 120px;
+        }
+        .ejercicio-calificacion img{
+            height: 70px;
+        }
+        .tarjeta-ejercicio{
+            margin-top: 1%;
+            padding: 10px 25px;
+        }
+        .borde-verde{
+            border: 2px green solid;
+        }
+        .borde-rojo{
+            border: 2px red solid;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-fecha,
+        .tarjeta-ejercicio .tarjeta-ejercicio-enunciado,
+        .tarjeta-ejercicio .tarjeta-ejercicio-tipo,
+        .tarjeta-ejercicio .ejercicio-calificacion{
+            border: 2px #000000 solid;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-tipo{
+            border-top-left-radius: 15px;
+            border-bottom: 0px;
+            border-right: 0px;
+        }
+        .tarjeta-ejercicio .tarjeta-ejercicio-fecha{
+            border-bottom: 0px;
+            border-top-right-radius: 15px;
+        }
+        .tarjeta-ejercicio -tarjeta-ejercicio-evaluacion{
+            border-top-width: 0px;
+        }
+        .tarjeta-ejercicio .ejercicio-calificacion{
+            border-bottom-width: 0px;
+        }
+        .btn-ejercicio{
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+        }
+        .no-elegible{
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        
+        @media (min-width: 1200px){
+            #tab1,
+            #tab2,
+            #tab3{
+                font-size: 16px;
+            }
+            #tab3 h4{
+                font-size: 25px;
+            }
+            #tab3 img{
+                width: 60px;
+            }
+            .badge,
+            .ejercicio-evaluado{
+                font-size: 14px;
+            }
+            .ejercicio-calificacion img{
+                height: 20px;
+            }
+            .tarjeta-ejercicio{
+                font-size: 18px;
+                padding: 10px 25px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" style="margin-bottom: 1%;" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary btn-menu-first" href="#tab1" data-toggle="tab" onclick="getEjerciciosInspeccion();">
+                        <span class="fa fa-briefcase" aria-hidden="true"></span>
+                        <div class="titulo-xs">EJERCICIOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-menu-last" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="titulo-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 1%;">
+            <div class="tab-content">
+                <div class="row tab-pane fade in active" id="tab1"> </div>
+                <div class="row tab-pane fade in" id="tab2"> </div>
+                <div class="row tab-pane fade in" id="tab3"> </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            getEjerciciosInspeccion();
+            bordes();
+        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+        });
+        function bordes(){
+            $('.borde-verde').css('border-color', 'green');
+            $('.borde-rojo').css('border-color', 'red');
+        }
+        function getEjerciciosInspeccion() {
+            var ruta = '/ciudadano/trabajo/getEjerciciosInspeccion';
+            $.get(ruta, function (datos) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    contador = 1;
+                    contenido = '';
+                    $.each(data.message.EJERCICIOS, function (k, v) {
+                        if (contador % 2 !== 0) {
+                            contenido += '<div class="row">';
+                        }
+                        contenido += '<div class="col-lg-6 tarjeta-ejercicio" >';
+                        contenido += '   <div class="row">';
+                        if (v.ELEGIBLE) {
+                            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-tipo">';
+                        } else {
+                            if(v.CORRECTO){
+                            contenido += '       <div class="col-xs-6 borde-verde tarjeta-ejercicio-tipo">';
+                            } else {
+                            contenido += '       <div class="col-xs-6 borde-rojo tarjeta-ejercicio-tipo">';
+                            }
+                        }
+                        contenido += '           Coste: ';
+                        if (v.COSTE.dias > 0) {
+                            contenido += '           ' + v.COSTE.dias + 'd ';
+                        }
+                        if (v.COSTE.horas > 0) {
+                            contenido += '           ' + v.COSTE.horas + 'h ';
+                        }
+                        if (v.COSTE.minutos > 0) {
+                            contenido += '           ' + v.COSTE.minutos + 'm ';
+                        }
+                        if (v.COSTE.segundos > 0) {
+                            contenido += '           ' + v.COSTE.segundos + 's ';
+                        }
+                        contenido += '           <span class="fa fa-money" style="float:right;"> </span>';
+                        contenido += '       </div>';
+                        if (v.ELEGIBLE) {
+                            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha">';
+                        } else {
+                            if(v.CORRECTO){
+                            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha borde-verde">';
+                            } else {
+                            contenido += '       <div class="col-xs-6 tarjeta-ejercicio-fecha borde-rojo">';
+                            }
+                        }
+                        contenido += '           Beneficio: ';
+                        if (v.BENEFICIO.dias > 0) {
+                            contenido += '           ' + v.BENEFICIO.dias + 'd ';
+                        }
+                        if (v.BENEFICIO.horas > 0) {
+                            contenido += '           ' + v.BENEFICIO.horas + 'h ';
+                        }
+                        if (v.BENEFICIO.minutos > 0) {
+                            contenido += '           ' + v.BENEFICIO.minutos + 'm ';
+                        }
+                        if (v.BENEFICIO.segundos > 0) {
+                            contenido += '           ' + v.BENEFICIO.segundos + 's ';
+                        }
+                        contenido += '           <span class="fa fa-money" style="float:right;"> </span>';
+                        contenido += '       </div>';
+                        contenido += '   </div>';
+                        contenido += '   <div class="row">';
+                        if (v.ELEGIBLE) {
+                            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado">';
+                        } else {
+                            if(v.CORRECTO){
+                            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado no-elegible borde-verde">';
+                            } else {
+                            contenido += '  <div class="col-md-12 tarjeta-ejercicio-enunciado no-elegible borde-rojo">';
+                            }
+                        }
+                        contenido += '           <div class="row">';
+                        contenido += '               <div class="col-lg-1 col-xs-1">';
+                        contenido += '                   <span class="fa fa-graduation-cap"></span>';
+                        contenido += '               </div>';
+                        contenido += '               <div class="col-lg-11 col-xs-11">';
+                        contenido += '                   ' + v.ENUNCIADO;
+                        contenido += '               </div>';
+                        contenido += '           </div>';
+                        contenido += '       </div>';
+                        contenido += '   </div>';
+                        if (v.ELEGIBLE) {
+                            contenido += '<div class="row">';
+                            contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" href="#tab2" data-toggle="tab" onclick="obtenerEjercicio(' + v.ID + ');">';
+                            contenido += '          HAZLO';
+                            if (!v.VISTO) {
+                                contenido += '      <span class="badge">NUEVO</span>';
+                            }
+                            contenido += '      </button>';
+                            contenido += '</div>';
+                        }
+                        contenido += '</div>';
+                        if (contador % 2 === 0) {
+                            contenido += '</div>';
+                        }
+                        contador++;
+                    });
+                    $('#tab1').html(contenido);
+                    bordes();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+        function obtenerEjercicio(id) {
+            var ruta = '/ciudadano/trabajo/getEjercicioInspeccion/' + id;
+            $.get(ruta, function (datos) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '  <div class="col-md-12">';
+                    contenido += '      ' + data.message.ENUNCIADO;
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-12">';
+                    var contador = 1;
+                    $.each(data.message.RESPUESTAS, function (k, v) {
+                        contenido += '  <div class="input-group">';
+                        contenido += '      <input type="checkbox" name="checkbox' + contador + '">';
+                        contenido += '      ' + v;
+                        contenido += '  </div>';
+                        contador++;
+                    });
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-xs-6 col-xs-offset-3" style="margin-top: 1%;">';
+                    contenido += '      <button class="btn btn-primary btn-block" href="#tab3" data-toggle="tab" onclick="entregarEjercicio(' + id + ')">';
+                    contenido += '          <span class="fa fa-send-o"></span> &nbsp;ENVIAR';
+                    contenido += '      </button>';
+                    contenido += '  </div>';
+                    $('#tab2').html(contenido);
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+        function entregarEjercicio(id) {
+            var ruta = '/ciudadano/trabajo/inspeccion/corregir/' + id;
+            var check1 = $('input[name="checkbox1"]:checked').val();
+            if (check1 !== 'on') {
+                check1 = 'off';
+            }
+            var check2 = $('input[name="checkbox2"]:checked').val();
+            if (check2 !== 'on') {
+                check2 = 'off';
+            }
+            var check3 = $('input[name="checkbox3"]:checked').val();
+            if (check3 !== 'on') {
+                check3 = 'off';
+            }
+            var check4 = $('input[name="checkbox4"]:checked').val();
+            if (check4 !== 'on') {
+                check4 = 'off';
+            }
+            datos = {
+                'resp1': check1,
+                'resp2': check2,
+                'resp3': check3,
+                'resp4': check4
+            };
+            $.post(ruta, datos, function (datos) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="col-md-12">';
+                    contenido += '  <center>';
+                    if(data.message === 'correcto'){
+                        contenido += '  <h4>Test correcto</h4>';
+                        contenido += '  <br>';
+                        contenido += '  <img src="{{ asset('images/generic/OK.gif') }}" />';
+                    } else {
+                        contenido += '  <h4>Test incorrecto</h4>';
+                        contenido += '  <br>';
+                        contenido += '  <img src="{{ asset('images/generic/OOPS.gif') }}" />';
+                    }
+                    contenido += '  </center>';
+                    contenido += '</div>';
+                    $('#tab3').html(contenido);
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -7,6 +7,7 @@
  */
 
 namespace AppBundle\Utils;
+
 use AppBundle\Utils\Usuario;
 
 /**
@@ -22,7 +23,7 @@ class DataManager {
         $DATOS['TITULO'] = $TITULO;
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
         $FECHA = new \DateTime('now');
-        if($DATOS['TDV'] < $FECHA){
+        if ($DATOS['TDV'] < $FECHA) {
             Usuario::setDefuncion($doctrine, $usuario);
         }
         $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
@@ -112,16 +113,80 @@ class DataManager {
 //        \AppBundle\Utils\Utils::pretty_print($DATOS);
         return $DATOS;
     }
-    
-    static function chatsPendientes($doctrine, $USUARIO){
+
+    static function chatsPendientes($doctrine, $USUARIO) {
         $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
         $contador = 0;
-        if($CIUDADANOS !== null){
-            foreach($CIUDADANOS as $CIUDADANO){
+        if ($CIUDADANOS !== null) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
                 $contador += Usuario::numeroMensajesChat($doctrine, $USUARIO, $CIUDADANO);
             }
         }
         return $contador;
+    }
+
+    static function getDatosEjercicioInspeccion($doctrine, $USUARIO, $EJERCICIO) {
+        $aux = [];
+        $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
+            'idUsu' => $USUARIO, 'idEjercicio' => $EJERCICIO
+        ]);
+        $EJERCICIO_CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+            'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+        ]);
+        $CALIFICACION = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+        $EJERCICIO_BENEFICIO = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+            'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION
+        ]);
+        $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+        $aux['BENEFICIO'] = Utils::segundosToDias($EJERCICIO_BENEFICIO->getBonificacion());
+        $aux['ID'] = $EJERCICIO->getIdEjercicio();
+        $aux['VISTO'] = $EJERCICIO_USUARIO->getVisto();
+        $aux['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
+        $aux['ELEGIBLE'] = true;
+        if ($EJERCICIO_CALIFICACIONES !== null) {
+            $aux['ELEGIBLE'] = false;
+            if($EJERCICIO_CALIFICACIONES->getIdCalificaciones() !== null){
+                $aux['CORRECTO'] = true;
+            } else {
+                $aux['CORRECTO'] = false;
+            }
+        }
+        return $aux;
+    }
+
+    static function getDatosEjercicioPaga($doctrine, $USUARIO, $ejercicio) {
+        $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
+            'idEjercicio' => $ejercicio, 'idUsu' => $USUARIO
+        ]);
+        $EJERCICIO_CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+            'idUsuario' => $USUARIO, 'idEjercicio' => $ejercicio
+        ]);
+        $SOLICITANTES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($ejercicio);
+        $NUM_MAX_SOLICITANTES = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga');
+
+        //$NUM_EJERCICIOS_SOLICITADOS = count($UTILS->ejercicios_solicitados_por_en($doctrine, $USUARIO, $ejercicio, 'paga_extra'));
+        $aux = [];
+        $aux['ELEGIBLE'] = true;
+        $aux['ENUNCIADO'] = $ejercicio->getEnunciado();
+        $aux['FECHA'] = $ejercicio->getFecha();
+        $aux['ID'] = $ejercicio->getIdEjercicio();
+        $aux['COSTE'] = Utils::segundosToDias($ejercicio->getCoste());
+        $aux['VISTO'] = $EJERCICIO_USUARIO->getVisto();
+        $aux['SOLICITANTES'] = count($SOLICITANTES);
+        $aux['NUM_MAX_SOLICITANTES'] = $NUM_MAX_SOLICITANTES->getValor();
+        $aux['ESTADO'] = 'no_solicitado';
+        if ($EJERCICIO_CALIFICACIONES !== null) {
+            $ESTADO = $EJERCICIO_CALIFICACIONES->getIdEjercicioEstado()->getEstado();
+            if ($ESTADO === 'evaluado') {
+                $aux['EVALUACION'] = [];
+                $aux['EVALUACION']['ICONO'] = $EJERCICIO_CALIFICACIONES->getIdCalificaciones()->getCorrespondenciaIcono();
+                $aux['EVALUACION']['TEXTO'] = $EJERCICIO_CALIFICACIONES->getIdCalificaciones()->getCorrespondenciaTexto();
+                $aux['EVALUACION']['NUMERICA'] = $EJERCICIO_CALIFICACIONES->getIdCalificaciones()->getCorrespondenciaNumerica();
+            }
+            $aux['ESTADO'] = $ESTADO;
+        }
+
+        return $aux;
     }
 
 }
