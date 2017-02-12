@@ -63,6 +63,7 @@
         </div>
         <div class="row bordes" style="margin-top: 1%;">
             <center><legend>RETO DE LA SEMANA</legend></center>
+            {% if tipo is defined %}
             <div class="group basic-values-container with-margin is-first">
                 <ul class="value-label-list value-label-list--horizontal is-centered with-icon">
                     <div class="value-label-list__two-columns">
@@ -124,6 +125,9 @@
                     </div>
                 </ul>
             </div>
+            {% else %}
+                <center><h1>No se ha propuesto un ejercicio esta semana</h1></center>
+            {% endif %}
         </div>
         <div class="row bordes" style="margin-top: 1%;">
             <div class="col-md-12">

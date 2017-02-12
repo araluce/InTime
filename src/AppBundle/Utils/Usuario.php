@@ -509,6 +509,21 @@ class Usuario {
     }
     
     /**
+     * Obtiene los ciudadanos en vacaciones
+     * @param type $doctrine
+     * @return array
+     */
+    static function getCiudadanosVacaciones($doctrine) {
+        $ESTADO_ACTIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
+        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findBy([
+            'idRol' => $ROL_CIUDADANO, 'idEstado' => $ESTADO_ACTIVO
+        ]);
+
+        return $CIUDADANOS;
+    }
+    
+    /**
      * Obtiene todos los usuario que no sean el sistema
      * @param type $doctrine
      * @return array

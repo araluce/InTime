@@ -299,6 +299,9 @@
                         </div>
                         {% set contador = contador + 1 %}
                     {% endfor %}
+                    {% if not SESIONES | length %}
+                        <center><h1>No se han registrado sesiones esta semana con esta cuenta</h1></center>
+                    {% endif %}
                 </div>
             {% else %}
             </div>
@@ -366,12 +369,7 @@
             mostrarCarga('Descargando información de las sesiones');
             ruta = '/ciudadano/ocio/deporte/actualizarInfo';
             $.get(ruta, function (data, status) {
-                //if(data.estado === 'OK'){
-                //    location.reload();
-                //}
-                //else{
                 mostrarResultadoOperacion(data.message);
-                //}
             });
         }
         function cerrarSesion() {

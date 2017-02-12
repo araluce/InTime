@@ -524,4 +524,98 @@ class CiudadanoController extends Controller {
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Este alias no está disponible'), 200);
     }
 
+    /**
+     * 
+     * @Route("/ciudadano/ocio/getVacaciones", name="getVacaciones")
+     */
+    public function getVacacionesAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/getVacaciones');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+        $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+        if (null === $TARJETA) {
+            Utils::setError($doctrine, 1, 'No se encuentra BONIFICACION_EXTRA con id 1', $USUARIO);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $bonificacion = false;
+        $TARJETA_VACACIONES = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO
+        ]);
+        if (null !== $TARJETA_VACACIONES) {
+            $bonificacion = true;
+        }
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $bonificacion)), 200);
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/ocio/solicitarVacaciones", name="solicitarVacaciones")
+     */
+    public function solicitarVacacionesAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/solicitarVacaciones');
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+            $tarjeta_experiencia = $request->request->get('tarjeta_experiencia');
+            if ($tarjeta_experiencia) {
+                $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+                if (null === $TARJETA) {
+                    Utils::setError($doctrine, 1, 'No se encuentra BONIFICACION_EXTRA con id 1', $USUARIO);
+                    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+                }
+                $TARJETA_VACACIONES = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                    'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO
+                ]);
+                if (null === $TARJETA_VACACIONES) {
+                    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes tarjeta de vacaciones')), 200);
+                }
+            }
+            $tiempo = 432000;
+            $VACACIONES = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([
+                'idUsuario' => $USUARIO,
+                'motivo' => 'vacaciones'
+            ]);
+            if (count($VACACIONES)) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Ya habías solicitado vacaciones anteriormente.')), 200);
+            }
+            $PRESTAMO = new \AppBundle\Entity\UsuarioPrestamo();
+            $PRESTAMO->setIdUsuario($USUARIO);
+            $PRESTAMO->setMotivo('vacaciones');
+            $PRESTAMO->setCantidad($tiempo);
+            $PRESTAMO->setRestante(0);
+            $PRESTAMO->setInteres(0);
+            $PRESTAMO->setFecha(new \DateTime('now'));
+            $em->persist($PRESTAMO);
+            if ($tarjeta_experiencia) {
+                $TARJETA_VACACIONES->setUsado(1);
+                $em->persist($TARJETA_VACACIONES);
+            } else {
+                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * ($tiempo / 2), 'Gasto - Semana de vacaciones');
+            }
+            $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
+            
+            $CUENTA = $USUARIO->getIdCuenta();
+            $finBloqueo = new \DateTime('now');
+            $finBloqueo->add(new \DateInterval('P5D'));
+            $CUENTA->setFinbloqueo($finBloqueo);
+            $em->persist($CUENTA);
+            $USUARIO->setIdEstado($ESTADO_VACACIONES);
+            $em->persist($USUARIO);
+            $em->flush();
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones en marcha.')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato')), 200);
+    }
+
 }

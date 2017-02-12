@@ -74,20 +74,23 @@
         </div>
     {% endif %}
     {% if ESTADO_USUARIO is defined %}
+        {% if ESTADO_USUARIO == 'Vacaciones' %}
+            <div class="header-muerte">
+                <center>VACACIONES</center>
+            </div>
+        {% endif %}
         <div class="row" style="margin-bottom:1%;">
             <div id="posicion-reloj">
                 {% if ESTADO_USUARIO == 'Activo' and TDV is defined %}
+                    <div id="countdown-11"></div>
+                {% endif %}
+                {% if ESTADO_USUARIO == 'Vacaciones' %}
                     <div id="countdown-11"></div>
                 {% endif %}
             </div>
             {% if ESTADO_USUARIO == 'Fallecido' %}
                 <div class="header-muerte">
                     FALLECIDO
-                </div>
-            {% endif %}
-            {% if ESTADO_USUARIO == 'Vacaciones' %}
-                <div class="header-vacaciones">
-                    VACACIONES
                 </div>
             {% endif %}
         </div>
@@ -126,7 +129,7 @@
         }
         $(document).ready(function () {
             var font_size = responsive_screen();
-        {% if TDV is defined %}
+        {% if ESTADO_USUARIO == 'Activo' %}
                 $('#countdown-11').timeTo({
                     //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
                     timeTo: new Date(new Date('{{ TDV.date }}')),
@@ -136,6 +139,17 @@
                     fontSize: font_size,
                     captionSize: 0
                 });
+        {% endif %}
+        {% if ESTADO_USUARIO == 'Vacaciones' %}
+                $('#countdown-11').timeTo({
+                    timeTo: new Date(new Date('{{ TDV.date }}')),
+                    displayDays: 2,
+                    theme: "white",
+                    displayCaptions: true,
+                    fontSize: font_size,
+                    captionSize: 0
+                });
+                $('#countdown-11').timeTo('stop');
         {% endif %}
         {% if MENSAJES is defined and MENSAJES|length > 0 %}
                 $('#modal-avisos').click();

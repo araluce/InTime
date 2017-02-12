@@ -93,7 +93,7 @@ class CronController extends Controller {
         $em = $doctrine->getManager();
         $query = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->createQueryBuilder('a');
         $query->select('a');
-        $query->where('a.restante > 0');
+        $query->where('a.restante > 0 AND a.motivo = "prestamo"');
         $PRESTAMOS = $query->getQuery()->getResult();
         $recaudado = 0;
         foreach ($PRESTAMOS as $PRESTAMO) {
@@ -137,6 +137,37 @@ class CronController extends Controller {
         } else {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los ciudadanos están bien alimentados')), 200);
         }
+    }
+
+    /**
+     * @Route("/cron/comprobarVacaciones", name="comprobarVacaciones")
+     */
+    public function comprobarVacacionesAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $CIUDADANOS = Usuario::getCiudadanosVacaciones($doctrine);
+        $fecha = new \DateTime('now');
+        $diaSemana = date("w", $fecha->getTimestamp());
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                $CUENTA = $CIUDADANO->getIdCuenta();
+                if ($diaSemana !== '6' && $diaSemana !== '0') {
+                    if ($CUENTA->getFinbloqueo() < $fecha) {
+                        $ESTADO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
+                        $CIUDADANO->setIdEstado($ESTADO);
+                        $em->persist($CIUDADANO);
+                    }
+                } else {
+                    $finBloqueo = $CUENTA->getFinbloqueo();
+                    $finBloqueo->add(new \DateInterval('P2D'));
+                    $CUENTA->setFinbloqueo($finBloqueo);
+                    $em->persist($CUENTA);
+                }
+            }
+        }
+        $em->flush();
+        Utils::setError($doctrine, 3, 'CRON - Comprobar vacaciones');
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones comprobadas'.$diaSemana)), 200);
     }
 
 }

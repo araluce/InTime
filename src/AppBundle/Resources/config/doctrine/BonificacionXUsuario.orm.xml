@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\BonificacionXUsuario" table="BONIFICACION_X_USUARIO">
+    <indexes>
+      <index name="id_bonificacion_extra" columns="id_bonificacion_extra,id_usuario"/>
+    </indexes>
+    <id name="idBonificacionXUsuario" type="integer" column="id_bonificacion_x_usuario">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="idBonificacionExtra" type="integer" column="id_bonificacion_extra" nullable="false"/>
+    <field name="idUsuario" type="integer" column="id_usuario" nullable="false"/>
+    <field name="usado" type="boolean" column="usado" nullable="false"/>
+  </entity>
+</doctrine-mapping>

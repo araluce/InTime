@@ -1,25 +1,51 @@
-{# empty Twig template #}
-{# empty Twig template #}
-
 {% extends "base.html.twig" %}
 
 {% block header %}
     {% include "ciudadano/header.html.twig" %}
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .advertencia{
+            font-size: 15px;
+        }
+        .btn-modal-der{
+            border-left-width: 0px;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        @media (min-width: 760px){
+            .advertencia{
+                font-size: 25px;
+            }
+        }
+        @media (min-width: 992px){
+
+        }
+        @media (min-width: 1200px){
+
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container-fluid">
-        <div class="row" style="margin-bottom: 5%;">
+        <div class="row">
             <div class="col-xs-4 menu menu-principal">
                 <center><a href="/"><img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" /></a></center>
             </div>
         </div>
-        <div class="row" style="margin-bottom: 5%;">
+        <div class="row">
             <div class="col-xs-5 col-xs-offset-1 menu">
                 <center><a href="/ciudadano/ocio/deporte"><img alt="Logo" src="{{ asset('images/iconos/Deporte.png') }}" /></a></center>
             </div>
             <div class="col-xs-5 menu">
                 <center><a href="/ciudadano/ocio/apuestas"><img alt="Logo" src="{{ asset('images/iconos/Apuestas.png') }}" /></a></center>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-5 menu">
+                <img alt="Logo" src="{{ asset('images/iconos/Vacaciones.png') }}" onclick="modalVacaciones();" />
             </div>
         </div>
         <div class="row">
@@ -42,4 +68,98 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var tarjeta = 0;
+        function modalVacaciones() {
+            $("#mensaje-titulo").html('Donar TdV');
+            $("#modal-button-aceptar").hide();
+            getFormularioVaciones();
+            $("#modal-avisos2").click();
+        }
+        function getFormularioVaciones() {
+            $("#mensaje-texto").empty();
+            ruta = '/ciudadano/ocio/getVacaciones';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12">';
+                    contenido += '      <legend>Formulario de solicitud: "Semana de vacaciones"</legend>';
+                    contenido += '      <p><span style="color:red; font-weight: bold;">Atención: </span> las vacaciones se harán efectivas en el momento de la compra. Sólo se puede soliciar una vez.</p>';
+                    contenido += '  </div>';
+                    if (data.message) {
+                        contenido += '<div class="col-md-12">';
+                        contenido += '  <ul class="list-group">';
+                        contenido += '      <li class="list-group-item">';
+                        contenido += '          ¿Quiere usar su bono de vacaciones?';
+                        contenido += '          <div class="material-switch pull-right">';
+                        contenido += '              <input id="tarjeta-experiencia" type="checkbox"/>';
+                        contenido += '              <label for="tarjeta-experiencia" class="label-primary" onclick="cambiaTarjeta();"></label>';
+                        contenido += '          </div>';
+                        contenido += '      </li>';
+                        contenido += '  </ul>';
+                        contenido += '</div>';
+                    }
+                    contenido += '  <div class="input-group">';
+                    contenido += '      <span class="input-group-addon" id="basic-addon1">Precio: </span>';
+                    contenido += '      <input type="text" class="form-control" value="5 días 12 horas" disabled>';
+                    contenido += '      <span class="input-group-btn">';
+                    contenido += '          <button class="btn btn-primary btn-modal-der" type="button" onclick="solicitarVacaciones()">Solicitar</button>';
+                    contenido += '      </span>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    $("#mensaje-texto").append(contenido);
+                } else {
+                    mostrarResultadoOperacion(data.message);
+                }
+            });
+        }
+        function cambiaTarjeta(){
+            if(tarjeta === 0)
+                tarjeta = 1;
+            else
+                tarjeta = 0;
+            console.log(tarjeta);
+        }
+        function solicitarVacaciones() {
+            mostrarCarga('Enviando solicitud');
+            ruta = '/ciudadano/ocio/solicitarVacaciones';
+            datos = {'tarjeta_experiencia': tarjeta};
+            console.log(datos);
+            $.post(ruta, datos, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                mostrarResultadoOperacion(data.message);
+            });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+    </script>
 {% endblock %}
