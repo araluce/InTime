@@ -629,7 +629,7 @@ class TrabajoController extends Controller {
         
         
         $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
-            'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+            'idEjercicio' => $EJERCICIO, 'idUsu' => $USUARIO
         ]);
         if($EJERCICIO_USUARIO !== null){
             $EJERCICIO_USUARIO->setVisto(1);

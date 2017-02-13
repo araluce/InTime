@@ -159,7 +159,10 @@
                         contenido += datos.porcentaje.toFixed(2) + '%';
                     }
                     if (datos.porcentaje <= 0) {
-                        contenido += 'FALLECIDO POR INANICION';
+                        contenido += 'FALLECIDO POR DESHIDRATACION';
+                    }
+                    if (datos.porcentaje > 100) {
+                        contenido += '100%';
                     }
                     $('#progress-tsb').html(contenido);
                 } else {

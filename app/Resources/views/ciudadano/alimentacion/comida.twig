@@ -163,6 +163,9 @@
                     if (datos.porcentaje <= 0) {
                         contenido += 'FALLECIDO POR INANICION';
                     }
+                    if (datos.porcentaje > 100) {
+                        contenido += '100%';
+                    }
                     $('#progress-tsc').html(contenido);
                 } else {
                     $('#progress-tsc').parent().hide();

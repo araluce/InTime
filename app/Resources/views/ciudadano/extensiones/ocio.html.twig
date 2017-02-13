@@ -14,13 +14,21 @@
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
         }
+        .btn-modal-der{
+            font-size: 30px;
+        }
         @media (min-width: 760px){
             .advertencia{
                 font-size: 25px;
             }
+            .btn-modal-der{
+                font-size: 40px;
+            }
         }
         @media (min-width: 992px){
-
+            .btn-modal-der{
+                font-size: 20px;
+            }
         }
         @media (min-width: 1200px){
 
@@ -44,7 +52,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-2 col-xs-offset-5 menu">
+            <div class="col-lg-2 col-lg-offset-5 col-xs-2 col-xs-offset-4 menu">
                 <img alt="Logo" src="{{ asset('images/iconos/Vacaciones.png') }}" onclick="modalVacaciones();" />
             </div>
         </div>
@@ -106,7 +114,7 @@
                     }
                     contenido += '  <div class="input-group">';
                     contenido += '      <span class="input-group-addon" id="basic-addon1">Precio: </span>';
-                    contenido += '      <input type="text" class="form-control" value="5 días 12 horas" disabled>';
+                    contenido += '      <input type="text" class="form-control" value="2 días 12 horas" disabled>';
                     contenido += '      <span class="input-group-btn">';
                     contenido += '          <button class="btn btn-primary btn-modal-der" type="button" onclick="solicitarVacaciones()">Solicitar</button>';
                     contenido += '      </span>';
@@ -118,8 +126,8 @@
                 }
             });
         }
-        function cambiaTarjeta(){
-            if(tarjeta === 0)
+        function cambiaTarjeta() {
+            if (tarjeta === 0)
                 tarjeta = 1;
             else
                 tarjeta = 0;

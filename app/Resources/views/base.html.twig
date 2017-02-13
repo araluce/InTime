@@ -129,6 +129,7 @@
         }
         $(document).ready(function () {
             var font_size = responsive_screen();
+            {% if ESTADO_USUARIO is defined %}
         {% if ESTADO_USUARIO == 'Activo' %}
                 $('#countdown-11').timeTo({
                     //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
@@ -153,6 +154,7 @@
         {% endif %}
         {% if MENSAJES is defined and MENSAJES|length > 0 %}
                 $('#modal-avisos').click();
+        {% endif %}
         {% endif %}
             });
     </script>

@@ -1,0 +1,456 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .caja-opcion:first-child{
+            margin-top: 0%;
+        }
+        .caja-opcion{
+            border-left: 5px #337ab7 solid;
+            padding-left: 15px;
+            margin-top: 1%;
+        }
+        .label-primary{
+            border-bottom-width: 0px;
+        }
+        label{
+            font-size: 50px;
+            border-bottom: 2px #000000 solid;
+        }
+        small{
+            font-size: 40px;
+        }
+        @media (max-width: 760px){
+
+        }
+        @media (min-width: 760px){
+
+        }
+        @media (min-width: 992px){
+
+        }
+        @media (min-width: 1200px){
+            label{
+                font-size: 20px;
+            }
+            small{
+                font-size: 15px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
+                        <span class="fa fa-cog" aria-hidden="true"></span>
+                        <div class="hidden-xs">AJUSTES</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row bordes border-radius" style="margin-top:1%;">
+                            <div id="alertas"></div>
+                            <legend>Jornada Laboral</legend>
+                            <div class="caja-opcion">
+                                <label for="n_tweets" style="margin-top:1%;">Número de tweets diarios: </label><br>
+                                <small>Establece el número de tweets mínimo que un ciudadano debe publicar diariamente en su jornada laboral</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="n_tweets" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">tweets</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="pago_jornada">Pago por jornada laboral</label><br>
+                                <small>Este pago se realiza cada noche a las 00:00 para cada ciudadano que haya alcanzado el número
+                                    mínimo de tweets publicados al día (establecido en el apartado anterior)</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_jornada" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_jornada" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_jornada" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_jornada" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <legend style="margin-top: 1%;">Paga Extra</legend>
+                            <div class="caja-opcion">
+                                <label for="n_solicitantes_paga" style="margin-top:1%;">Número máximo de solicitantes: </label><br>
+                                <small>Establece el número máximo de ciudadanos que pueden solicitar el mismo ejercicio en el apartado <strong>Paga Extra</strong></small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="n_solicitantes_paga" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">solicitantes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <legend style="margin-top: 1%;">Alimentación</legend>
+                            <div class="caja-opcion">
+                                <label for="n_dias_entrega" style="margin-top:1%;">Días entre entregas: </label><br>
+                                <small>Establece el número de días que deben pasar por cada entrega</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="n_dias_entrega" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">días</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="pago_jornada">Tiempo entre comidas</label><br>
+                                <small>Establece el tiempo que tarda un ciudadano en morir de hambre una vez se ha alimentado</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_comida" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_comida" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_comida" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_comida" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="pago_jornada">Tiempo entre hidratación</label><br>
+                                <small>Establece el tiempo que tarda un ciudadano en morir de sed una vez se ha hidratado</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_bebida" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_bebida" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_bebida" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_bebida" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <legend style="margin-top: 1%;">Apuestas</legend>
+                            <div class="caja-opcion">
+                                <label for="disparador_apuesta" style="margin-top:1%;">Disparador de apuestas: </label><br>
+                                <small>Es el factor multiplicativo que aumenta el beneficio del ganador. Así, si el disparador es 2 y el beneficio por cada ganador es de 1 día, el beneficio final para cada uno de ellos será 1 * 2 = 2 días.</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="disparador_apuesta" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">solicitantes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarComida();">PUBLICAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        function setSuccess(message) {
+            contenido = '<div class="alert alert-danger alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            $('#alertas').append(contenido);
+        }
+        function setAlert(message) {
+            contenido = '<div class="alert alert-success alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            $('#alertas').append(contenido);
+        }
+        function getNumeroTweetsDiarios() {
+            ruta = '/guardian/ajustes/getNumTweetsDiarios';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#n_tweets').val(data.message);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getNumeroSolicitantesPaga() {
+            ruta = '/guardian/ajustes/getNumeroSolicitantesPaga';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#n_solicitantes_paga').val(data.message);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getNumeroDiasEntrega() {
+            ruta = '/guardian/ajustes/getNumeroDiasEntrega';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#n_dias_entrega').val(data.message);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getDisparadorApuesta() {
+            ruta = '/guardian/ajustes/getDisparadorApuesta';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#disparador_apuesta').val(data.message);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getPagoJornadaLaboral() {
+            ruta = '/guardian/ajustes/getPagoJornadaLaboral';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_jornada').val(data.message.dias);
+                    $('#horas_jornada').val(data.message.horas);
+                    $('#minutos_jornada').val(data.message.minutos);
+                    $('#segundos_jornada').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getTiempoComida() {
+            ruta = '/guardian/ajustes/getTiempoComida';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_comida').val(data.message.dias);
+                    $('#horas_comida').val(data.message.horas);
+                    $('#minutos_comida').val(data.message.minutos);
+                    $('#segundos_comida').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getTiempoBebida() {
+            ruta = '/guardian/ajustes/getTiempoBebida';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_bebida').val(data.message.dias);
+                    $('#horas_bebida').val(data.message.horas);
+                    $('#minutos_bebida').val(data.message.minutos);
+                    $('#segundos_bebida').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+
+        function publicarComida() {
+            var enunciado = $("#enunciado_comida").val();
+            var icono = $("#icono_comida").val();
+            var dias = parseInt($("#dias_comida").val());
+            var horas = parseInt($("#horas_comida").val());
+            var minutos = parseInt($("#minutos_comida").val());
+            var segundos = parseInt($("#segundos_comida").val());
+            var bonificadores = obtenerBonificadores();
+            var distrito = $("#ejercicio-distrito-comida:checked").length;
+            tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+            if (icono === '0') {
+                alert('Debe seleccionar un icono');
+            } else if ($.trim(enunciado) === '') {
+                alert('Debe insertar un enunciado');
+            } else if (tiempo < 0) {
+                alert('Debes insertar un coste válido');
+            } else {
+                ruta = '/guardian/ejercicios/alimentacion/publicar';
+                tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                datos = {
+                    'SECCION': 'comida',
+                    'ENUNCIADO': enunciado,
+                    'ICONO': icono,
+                    'COSTE': tiempo,
+                    'DISTRITO': distrito
+                };
+                $.each(bonificadores, function (k, v) {
+                    $.each(v, function (kk, vv) {
+                        datos[kk] = vv;
+                    });
+                });
+                console.log(datos);
+                $.post(ruta, datos, function (data, status) {
+                    alert(data.message);
+                    location.reload();
+                });
+            }
+        }
+        function publicarBebida() {
+            var enunciado = $("#enunciado_bebida").val();
+            var icono = $("#icono_bebida").val();
+            var dias = parseInt($("#dias_bebida").val());
+            var horas = parseInt($("#horas_bebida").val());
+            var minutos = parseInt($("#minutos_bebida").val());
+            var segundos = parseInt($("#segundos_bebida").val());
+            var bonificadores = obtenerBonificadores();
+            var distrito = $("#ejercicio-distrito-bebida:checked").length;
+            tiempo = ((((dias * 24) + horas) * 60) + minutos) * 60 + segundos;
+            if (icono === '0') {
+                alert('Debe seleccionar un icono');
+            } else if ($.trim(enunciado) === '') {
+                alert('Debe insertar un enunciado');
+            } else if (tiempo < 0) {
+                alert('Debes insertar un coste válido');
+            } else {
+                ruta = '/guardian/ejercicios/alimentacion/publicar';
+                datos = {
+                    'SECCION': 'bebida',
+                    'ENUNCIADO': enunciado,
+                    'ICONO': icono,
+                    'COSTE': tiempo,
+                    'DISTRITO': distrito
+                };
+                $.each(bonificadores, function (k, v) {
+                    $.each(v, function (kk, vv) {
+                        datos[kk] = vv;
+                    });
+                });
+                $.post(ruta, datos, function (data, status) {
+                    alert(data.message);
+                    location.reload();
+                });
+            }
+        }
+        $(document).ready(function () {
+            getNumeroTweetsDiarios();
+            getPagoJornadaLaboral();
+            getNumeroSolicitantesPaga();
+            getNumeroDiasEntrega();
+            getTiempoComida();
+            getTiempoBebida();
+            getDisparadorApuesta();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+        });
+    </script>
+{% endblock %}
