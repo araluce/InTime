@@ -14,7 +14,9 @@
         }
         .caja-opcion{
             border-left: 5px #337ab7 solid;
+            /*border-right: 5px #337ab7 solid;*/
             padding-left: 15px;
+            padding-right: 15px;
             margin-top: 1%;
         }
         .label-primary{
@@ -75,7 +77,6 @@
                             <div class="caja-opcion">
                                 <label for="n_tweets" style="margin-top:1%;">Número de tweets diarios: </label><br>
                                 <small>Establece el número de tweets mínimo que un ciudadano debe publicar diariamente en su jornada laboral</small>
-
                                 <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                     <div class="col-lg-6">
                                         <div class="row">
@@ -91,7 +92,6 @@
                                 <label for="pago_jornada">Pago por jornada laboral</label><br>
                                 <small>Este pago se realiza cada noche a las 00:00 para cada ciudadano que haya alcanzado el número
                                     mínimo de tweets publicados al día (establecido en el apartado anterior)</small>
-
                                 <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                     <div class="col-xs-3">
                                         <div class="row">
@@ -127,6 +127,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
                             <legend style="margin-top: 1%;">Paga Extra</legend>
                             <div class="caja-opcion">
                                 <label for="n_solicitantes_paga" style="margin-top:1%;">Número máximo de solicitantes: </label><br>
@@ -143,6 +144,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
                             <legend style="margin-top: 1%;">Alimentación</legend>
                             <div class="caja-opcion">
                                 <label for="n_dias_entrega" style="margin-top:1%;">Días entre entregas: </label><br>
@@ -236,6 +238,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
                             <legend style="margin-top: 1%;">Apuestas</legend>
                             <div class="caja-opcion">
                                 <label for="disparador_apuesta" style="margin-top:1%;">Disparador de apuestas: </label><br>
@@ -252,7 +255,180 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarComida();">PUBLICAR</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <legend style="margin-top: 1%;">Inspección de trabajo</legend>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Bonificacion por test correcto</label><br>
+                                <small>Establece el tiempo que obtiene un ciudadano al realizar correctamente un test</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_test_correcto" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_test_correcto" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_test_correcto" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_test_correcto" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <legend style="margin-top: 1%;">Mina</legend>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Bonificacion por desactivación</label><br>
+                                <small>Establece el tiempo que obtiene un ciudadano al realizar desactivar una mina</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_mina" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_mina" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_mina" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_mina" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Bonificacion base por desactivación</label><br>
+                                <small>Establece el tiempo que obtiene el resto de ciudadanos que no han desactivado la mina</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_base_mina" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_base_mina" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_base_mina" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_base_mina" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <legend style="margin-top: 1%;">Préstamos</legend>
+                            <div class="caja-opcion">
+                                <label for="n_dias_entrega" style="margin-top:1%;">Interés: </label><br>
+                                <small>Interés aplicado a los préstamos</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="interes" class="form-control input-number" value="0.00" min="0.01" max="100" step="0.01" />
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Tiempo máximo prestado</label><br>
+                                <small>Establece el tiempo tope que puede solicitar como préstamo un ciudadano</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_max_prestado" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_max_prestado" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_max_prestado" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_max_prestado" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
                         </div>
                     </div>
                 </div>
@@ -364,7 +540,73 @@
                 }
             });
         }
-
+        function getTestCorrecto() {
+            ruta = '/guardian/ajustes/getTestCorrecto';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_test_correcto').val(data.message.dias);
+                    $('#horas_test_correcto').val(data.message.horas);
+                    $('#minutos_test_correcto').val(data.message.minutos);
+                    $('#segundos_test_correcto').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getPremioMina() {
+            ruta = '/guardian/ajustes/getPremioMina';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_mina').val(data.message.dias);
+                    $('#horas_mina').val(data.message.horas);
+                    $('#minutos_mina').val(data.message.minutos);
+                    $('#segundos_mina').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getPremioBaseMina() {
+            ruta = '/guardian/ajustes/getPremioBaseMina';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_base_mina').val(data.message.dias);
+                    $('#horas_base_mina').val(data.message.horas);
+                    $('#minutos_base_mina').val(data.message.minutos);
+                    $('#segundos_base_mina').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getInteresPrestamo() {
+            ruta = '/guardian/ajustes/getInteresPrestamo';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#interes').val(data.message);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
+        function getTiempoMaximoPrestado() {
+            ruta = '/guardian/ajustes/getTiempoMaximoPrestado';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_max_prestado').val(data.message.dias);
+                    $('#horas_max_prestado').val(data.message.horas);
+                    $('#minutos_max_prestado').val(data.message.minutos);
+                    $('#segundos_max_prestado').val(data.message.segundos);
+                } else {
+                    setAlert(data.message);
+                }
+            });
+        }
         function publicarComida() {
             var enunciado = $("#enunciado_comida").val();
             var icono = $("#icono_comida").val();
@@ -447,6 +689,11 @@
             getTiempoComida();
             getTiempoBebida();
             getDisparadorApuesta();
+            getTestCorrecto();
+            getPremioMina();
+            getPremioBaseMina();
+            getInteresPrestamo();
+            getTiempoMaximoPrestado();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");

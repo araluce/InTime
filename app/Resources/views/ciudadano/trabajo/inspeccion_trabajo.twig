@@ -175,6 +175,9 @@
                         if (v.COSTE.segundos > 0) {
                             contenido += '           ' + v.COSTE.segundos + 's ';
                         }
+                        if(v.COSTE.dias + v.COSTE.horas + v.COSTE.minutos + v.COSTE.segundos === 0){
+                            contenido += '           <span style="color:green;">GRATIS</span>';
+                        }
                         contenido += '           <span class="fa fa-money" style="float:right;"> </span>';
                         contenido += '       </div>';
                         if (v.ELEGIBLE) {

@@ -44,47 +44,7 @@
             <div class="col-md-12">
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="tab1">
-                        <div class="row bordes bonificadores" style="margin-top: 1%;">
-                            <legend>Bonificación por calificación</legend>
-                            {% for c in ULT_CAL %}
-                                <img src="{{ asset('images/badges/' ~ c.CALIFICACION.getCorrespondenciaIcono())}}" />
-                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
-                                    <div class="col-xs-3">
-                                        <div class="row">
-                                            <div class="input-group">
-                                                <input type="number" id="dias{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.dias}}" min="0" max="100" />
-                                                <span class="input-group-addon">d</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="row">
-                                            <div class="input-group">
-                                                <input type="number" id="horas{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.horas}}" min="0" max="24" />
-                                                <span class="input-group-addon">h</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="row">
-                                            <div class="input-group">
-                                                <input type="number" id="minutos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.minutos}}" min="0" max="60" />
-                                                <span class="input-group-addon">m</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="row">
-                                            <div class="input-group">
-                                                <input type="number" id="segundos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.segundos}}" min="0" max="60" />
-                                                <span class="input-group-addon">s</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="row bordes" style="margin-top: 1%;">
+                        <div class="row bordes border-radius" style="margin-top: 1%;">
                             <legend>Proponer una inspección</legend>
 
                             <label for="enunciado_comida">Enunciado del test</label>
@@ -129,41 +89,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <label for="caja_coste" style="margin-top: 1%;">Coste</label>
-                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
-                                <div class="col-xs-3">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />
-                                            <span class="input-group-addon">d</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-3">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />
-                                            <span class="input-group-addon">h</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-3">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />
-                                            <span class="input-group-addon">m</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-3">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />
-                                            <span class="input-group-addon">s</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="publicarInspeccion();">PUBLICAR</button>
                         </div>
@@ -188,70 +113,44 @@
             var resp4 = $("#resp4").val();
             respuestas = [resp1, resp2, resp3, resp4];
             var check1 = $('input[name="checkbox1"]:checked').val();
-            if(check1 !== 'on'){check1 = 'off';}
+            if (check1 !== 'on') {
+                check1 = 'off';
+            }
             var check2 = $('input[name="checkbox2"]:checked').val();
-            if(check2 !== 'on'){check2 = 'off';}
+            if (check2 !== 'on') {
+                check2 = 'off';
+            }
             var check3 = $('input[name="checkbox3"]:checked').val();
-            if(check3 !== 'on'){check3 = 'off';}
+            if (check3 !== 'on') {
+                check3 = 'off';
+            }
             var check4 = $('input[name="checkbox4"]:checked').val();
-            if(check4 !== 'on'){check4 = 'off';}
+            if (check4 !== 'on') {
+                check4 = 'off';
+            }
             checks = [check1, check2, check3, check4];
-            var dias = parseInt($("#dias").val());
-            var horas = parseInt($("#horas").val());
-            var minutos = parseInt($("#minutos").val());
-            var segundos = parseInt($("#segundos").val());
-            var bonificadores = obtenerBonificadores();
-            tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
             if ($.trim(enunciado) === '') {
                 alert('Debe insertar un enunciado');
-            } else if (tiempo < 0) {
-                alert('Debes insertar un coste válido');
             } else {
                 ruta = '/guardian/ejercicios/inspeccion/publicar';
-                tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
                 datos = {
                     'ENUNCIADO': enunciado,
-                    'COSTE': tiempo,
                     'RESPUESTAS': respuestas,
                     'RESPUESTAS_CHECK': checks
                 };
-                $.each(bonificadores, function (k, v) {
-                    $.each(v, function (kk, vv) {
-                        datos[kk] = vv;
-                    });
-                });
-                console.log(datos);
                 $.post(ruta, datos, function (data, status) {
                     alert(data.message);
                     location.reload();
                 });
-                
+
             }
         }
-
-        function obtenerBonificadores() {
-            var respuesta = [];
-        {% for c in ULT_CAL %}
-            {% set id = c.CALIFICACION.getIdCalificaciones() %}
-                    var dias = parseInt($("#dias{{ id }}").val());
-                    var horas = parseInt($("#horas{{ id }}").val());
-                    var minutos = parseInt($("#minutos{{ id }}").val());
-                    var segundos = parseInt($("#segundos{{ id }}").val());
-                    var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
-                    var aux = {'BONIFICACION_{{ id }}': tiempo};
-                    respuesta.push(aux);
-        {% endfor %}
-                return respuesta;
-            }
-
-            $(document).ready(function () {
-                $(".btn-pref .btn").click(function () {
-                    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
-                    $(this).removeClass("btn-default").addClass("btn-primary");
-                });
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
+        $(document).ready(function () {
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
             });
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        });
     </script>
 {% endblock %}

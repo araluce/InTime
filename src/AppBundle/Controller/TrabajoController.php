@@ -351,7 +351,6 @@ class TrabajoController extends Controller {
         $EJERCICIO_USUARIO->setVisto(1);
         $em->persist($EJERCICIO_USUARIO);
         $em->flush();
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra de ejercicio en Inspección de trabajo');
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
@@ -722,7 +721,6 @@ class TrabajoController extends Controller {
             return new RedirectResponse('/');
         }
         $DATOS['TITULO'] = 'Inspección';
-        $DATOS['ULT_CAL'] = Utils::getUltimasCalificacionesSeccion($doctrine, 'inspeccion_trabajo');
         return $this->render('guardian/ejercicios/ejerciciosInspeccionTrabajo.twig', $DATOS);
     }
 
@@ -730,7 +728,7 @@ class TrabajoController extends Controller {
      * 
      * @Route("/guardian/ejercicios/inspeccion/publicar", name="publicarInspeccion")
      */
-    public function guardianPublicarInspeccionAction(Request $request) {
+    public function publicarInspeccionAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/inspeccion/publicar', true);
@@ -751,8 +749,6 @@ class TrabajoController extends Controller {
             }
             // Obtenemos todos los enunciados del formulario
             $ENUNCIADO = $request->request->get('ENUNCIADO');
-            // Obtenemos el coste del ejercicio
-            $COSTE = $request->request->get('COSTE');
             // Buscamos si el enunciado ya existía para ese tipo y esa sección
             $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneBy([
                 'idEjercicioSeccion' => $EJERCICIO_SECCION,
@@ -766,7 +762,7 @@ class TrabajoController extends Controller {
             $EJERCICIO->setIdEjercicioSeccion($EJERCICIO_SECCION);
             $EJERCICIO->setEnunciado($ENUNCIADO);
             $EJERCICIO->setFecha(new \DateTime('now'));
-            $EJERCICIO->setCoste($COSTE);
+            $EJERCICIO->setCoste(0);
             $em->persist($EJERCICIO);
             $em->flush();
 
@@ -786,15 +782,6 @@ class TrabajoController extends Controller {
                 $EJERCICIO_RESPUESTA->setRespuesta($RESPUESTAS[$n]);
                 $EJERCICIO_RESPUESTA->setCorrecta($CORRECTA);
                 $em->persist($EJERCICIO_RESPUESTA);
-            }
-            $CALIFICACIONES = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
-            foreach ($CALIFICACIONES as $CALIFICACION) {
-                $b = $request->request->get('BONIFICACION_' . $CALIFICACION->getIdCalificaciones());
-                $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
-                $BONIFICACION->setIdEjercicio($EJERCICIO);
-                $BONIFICACION->setIdCalificacion($CALIFICACION);
-                $BONIFICACION->setBonificacion($b);
-                $em->persist($BONIFICACION);
             }
             $em->flush();
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));

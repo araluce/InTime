@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
-use AppBundle\Utils\Twitter;
-use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Ejercicio;
 use AppBundle\Utils\Trabajo;
 
@@ -152,6 +150,87 @@ class Guardian extends Controller {
         $disparador_apuesta = Utils::getConstante($doctrine, 'disparador_apuesta');
         
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $disparador_apuesta)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getTestCorrecto", name="getTestCorrecto")
+     */
+    public function getTestCorrectoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getPagoJornadaLaboral', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::segundosToDias(Utils::getConstante($doctrine, 'test_correcto'));
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getPremioMina", name="getPremioMina")
+     */
+    public function getPremioMinaAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getPremioMina', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::segundosToDias(Utils::getConstante($doctrine, 'premio_mina'));
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
+    }
+        
+        
+    /**
+     * @Route("/guardian/ajustes/getPremioBaseMina", name="getPremioBaseMina")
+     */
+    public function getPremioBaseMinaAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getPremioBaseMina', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::segundosToDias(Utils::getConstante($doctrine, 'premio_base_mina'));
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getInteresPrestamo", name="getInteresPrestamo")
+     */
+    public function getInteresPrestamoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getInteresPrestamo', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::getConstante($doctrine, 'interes_prestamo');
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getTiempoMaximoPrestado", name="getTiempoMaximoPrestado")
+     */
+    public function getTiempoMaximoPrestadoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getTiempoMaximoPrestado', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::segundosToDias(Utils::getConstante($doctrine, 'tiempo_max_prestamo'));
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
     }
     
     /**

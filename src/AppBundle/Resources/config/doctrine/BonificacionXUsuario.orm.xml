@@ -3,12 +3,22 @@
   <entity name="AppBundle\Entity\BonificacionXUsuario" table="BONIFICACION_X_USUARIO">
     <indexes>
       <index name="id_bonificacion_extra" columns="id_bonificacion_extra,id_usuario"/>
+      <index name="id_usuario" columns="id_usuario"/>
+      <index name="IDX_FBE9D154C3B63D1A" columns="id_bonificacion_extra"/>
     </indexes>
     <id name="idBonificacionXUsuario" type="integer" column="id_bonificacion_x_usuario">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="idBonificacionExtra" type="integer" column="id_bonificacion_extra" nullable="false"/>
-    <field name="idUsuario" type="integer" column="id_usuario" nullable="false"/>
     <field name="usado" type="boolean" column="usado" nullable="false"/>
+    <many-to-one field="idUsuario" target-entity="Usuario">
+      <join-columns>
+        <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idBonificacionExtra" target-entity="BonificacionExtra">
+      <join-columns>
+        <join-column name="id_bonificacion_extra" referenced-column-name="id_bonificacion_extra"/>
+      </join-columns>
+    </many-to-one>
   </entity>
 </doctrine-mapping>

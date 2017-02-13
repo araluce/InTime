@@ -7,25 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * BonificacionXUsuario
  *
- * @ORM\Table(name="BONIFICACION_X_USUARIO", indexes={@ORM\Index(name="id_bonificacion_extra", columns={"id_bonificacion_extra", "id_usuario"})})
+ * @ORM\Table(name="BONIFICACION_X_USUARIO", indexes={@ORM\Index(name="id_bonificacion_extra", columns={"id_bonificacion_extra", "id_usuario"}), @ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="IDX_FBE9D154C3B63D1A", columns={"id_bonificacion_extra"})})
  * @ORM\Entity
  */
 class BonificacionXUsuario
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id_bonificacion_extra", type="integer", nullable=false)
-     */
-    private $idBonificacionExtra;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id_usuario", type="integer", nullable=false)
-     */
-    private $idUsuario;
-
     /**
      * @var boolean
      *
@@ -42,53 +28,27 @@ class BonificacionXUsuario
      */
     private $idBonificacionXUsuario;
 
-
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
 
     /**
-     * Set idBonificacionExtra
+     * @var \AppBundle\Entity\BonificacionExtra
      *
-     * @param integer $idBonificacionExtra
-     * @return BonificacionXUsuario
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\BonificacionExtra")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_bonificacion_extra", referencedColumnName="id_bonificacion_extra")
+     * })
      */
-    public function setIdBonificacionExtra($idBonificacionExtra)
-    {
-        $this->idBonificacionExtra = $idBonificacionExtra;
+    private $idBonificacionExtra;
 
-        return $this;
-    }
 
-    /**
-     * Get idBonificacionExtra
-     *
-     * @return integer 
-     */
-    public function getIdBonificacionExtra()
-    {
-        return $this->idBonificacionExtra;
-    }
-
-    /**
-     * Set idUsuario
-     *
-     * @param integer $idUsuario
-     * @return BonificacionXUsuario
-     */
-    public function setIdUsuario($idUsuario)
-    {
-        $this->idUsuario = $idUsuario;
-
-        return $this;
-    }
-
-    /**
-     * Get idUsuario
-     *
-     * @return integer 
-     */
-    public function getIdUsuario()
-    {
-        return $this->idUsuario;
-    }
 
     /**
      * Set usado
@@ -121,5 +81,51 @@ class BonificacionXUsuario
     public function getIdBonificacionXUsuario()
     {
         return $this->idBonificacionXUsuario;
+    }
+
+    /**
+     * Set idUsuario
+     *
+     * @param \AppBundle\Entity\Usuario $idUsuario
+     * @return BonificacionXUsuario
+     */
+    public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
+    {
+        $this->idUsuario = $idUsuario;
+
+        return $this;
+    }
+
+    /**
+     * Get idUsuario
+     *
+     * @return \AppBundle\Entity\Usuario 
+     */
+    public function getIdUsuario()
+    {
+        return $this->idUsuario;
+    }
+
+    /**
+     * Set idBonificacionExtra
+     *
+     * @param \AppBundle\Entity\BonificacionExtra $idBonificacionExtra
+     * @return BonificacionXUsuario
+     */
+    public function setIdBonificacionExtra(\AppBundle\Entity\BonificacionExtra $idBonificacionExtra = null)
+    {
+        $this->idBonificacionExtra = $idBonificacionExtra;
+
+        return $this;
+    }
+
+    /**
+     * Get idBonificacionExtra
+     *
+     * @return \AppBundle\Entity\BonificacionExtra 
+     */
+    public function getIdBonificacionExtra()
+    {
+        return $this->idBonificacionExtra;
     }
 }

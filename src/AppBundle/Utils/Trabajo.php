@@ -139,31 +139,26 @@ class Trabajo {
         }
         $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
         $USUARIO_SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
+        $ROL_GUARDIAN = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
+        $USUARIO_GUARDIAN = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GUARDIAN);
 
         $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
         $CALIFICACION->setFecha(new \DateTime('now'));
         $CALIFICACION->setIdEjercicio($EJERCICIO);
         $CALIFICACION->setIdUsuario($USUARIO);
-        $CALIFICACION->setIdEvaluador($USUARIO_SISTEMA);
+        
+        $CALIFICACION->setIdCalificaciones(null);
         if ($nota) {
+            $CALIFICACION->setIdEvaluador($USUARIO_GUARDIAN);
             $ESTADOS_EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
-            $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
-            ]);
-            if ($BONIFICACION === null) {
-                Utils::setError($doctrine, 1, 'setCalificacionInspeccion - '
-                        . 'no existe bonificación media para ejercicio ' . $EJERCICIO->getIdEjercicio());
-                return array('estado' => 'ERROR', 'message' => 'No se encuentra bonificación para este ejercicio');
-            }
-            $CALIFICACION->setIdCalificaciones($CALIFICACION_MEDIA);
+            $CALIFICACION_MEDIA = Utils::getConstante($doctrine, 'test_correcto');
             $CALIFICACION->setIdEjercicioEstado($ESTADOS_EVALUADO);
-            Usuario::operacionSobreTdV($doctrine, $USUARIO, $BONIFICACION->getBonificacion(), 'Ingreso - '
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $CALIFICACION_MEDIA, 'Ingreso - '
                     . 'Test de inspección realizado correctamente');
             $message = 'correcto';
         } else {
+            $CALIFICACION->setIdEvaluador($USUARIO_SISTEMA);
             $ESTADOS_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
-            $CALIFICACION->setIdCalificaciones(null);
             $CALIFICACION->setIdEjercicioEstado($ESTADOS_SOLICITADO);
             $message = 'incorrecto';
         }

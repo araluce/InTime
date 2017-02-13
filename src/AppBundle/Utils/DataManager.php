@@ -135,18 +135,16 @@ class DataManager {
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
         ]);
         $CALIFICACION = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-        $EJERCICIO_BENEFICIO = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-            'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION
-        ]);
+        $EJERCICIO_BENEFICIO = Utils::getConstante($doctrine, 'test_correcto');
         $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
-        $aux['BENEFICIO'] = Utils::segundosToDias($EJERCICIO_BENEFICIO->getBonificacion());
+        $aux['BENEFICIO'] = Utils::segundosToDias($EJERCICIO_BENEFICIO);
         $aux['ID'] = $EJERCICIO->getIdEjercicio();
         $aux['VISTO'] = $EJERCICIO_USUARIO->getVisto();
         $aux['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
         $aux['ELEGIBLE'] = true;
         if ($EJERCICIO_CALIFICACIONES !== null) {
             $aux['ELEGIBLE'] = false;
-            if($EJERCICIO_CALIFICACIONES->getIdCalificaciones() !== null){
+            if($EJERCICIO_CALIFICACIONES->getIdEvaluador()->getIdRol()->getNombre() === 'Guardián'){
                 $aux['CORRECTO'] = true;
             } else {
                 $aux['CORRECTO'] = false;
