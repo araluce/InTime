@@ -29,6 +29,9 @@
         small{
             font-size: 40px;
         }
+        .alert{
+            font-size: 35px;
+        }
         @media (max-width: 760px){
 
         }
@@ -44,6 +47,9 @@
             }
             small{
                 font-size: 15px;
+            }
+            .alert{
+                font-size: 13px;
             }
         }
     </style>
@@ -127,7 +133,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setJornadaLaboral();">GUARDAR CAMBIOS</button>
+                            <div id="alert-jornada"></div>
                             <legend style="margin-top: 1%;">Paga Extra</legend>
                             <div class="caja-opcion">
                                 <label for="n_solicitantes_paga" style="margin-top:1%;">Número máximo de solicitantes: </label><br>
@@ -144,7 +151,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setPagaExtra();">GUARDAR CAMBIOS</button>
+                            <div id="alert-paga"></div>
                             <legend style="margin-top: 1%;">Alimentación</legend>
                             <div class="caja-opcion">
                                 <label for="n_dias_entrega" style="margin-top:1%;">Días entre entregas: </label><br>
@@ -238,7 +246,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setAlimentacion();">GUARDAR CAMBIOS</button>
+                            <div id="alert-alimentacion"></div>
                             <legend style="margin-top: 1%;">Apuestas</legend>
                             <div class="caja-opcion">
                                 <label for="disparador_apuesta" style="margin-top:1%;">Disparador de apuestas: </label><br>
@@ -255,7 +264,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setApuestas();">GUARDAR CAMBIOS</button>
+                            <div id="alert-apuestas"></div>
                             <legend style="margin-top: 1%;">Inspección de trabajo</legend>
                             <div class="caja-opcion">
                                 <label for="test_correcto">Bonificacion por test correcto</label><br>
@@ -296,7 +306,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setInspeccion()">GUARDAR CAMBIOS</button>
+                            <div id="alert-inspeccion"></div>
                             <legend style="margin-top: 1%;">Mina</legend>
                             <div class="caja-opcion">
                                 <label for="test_correcto">Bonificacion por desactivación</label><br>
@@ -374,7 +385,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setMina();">GUARDAR CAMBIOS</button>
+                            <div id="alert-mina"></div>
                             <legend style="margin-top: 1%;">Préstamos</legend>
                             <div class="caja-opcion">
                                 <label for="n_dias_entrega" style="margin-top:1%;">Interés: </label><br>
@@ -428,7 +440,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-block btn-primary" style="margin-top: 1%;">GUARDAR CAMBIOS</button>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setPrestamos();">GUARDAR CAMBIOS</button>
+                            <div id="alert-prestamos"></div>
                         </div>
                     </div>
                 </div>
@@ -441,18 +454,18 @@
 {% block javascripts %}
     <script>
         function setSuccess(message) {
-            contenido = '<div class="alert alert-danger alert-dismissable">';
-            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-            contenido += '   ' + message;
-            contenido += '</div>';
-            $('#alertas').append(contenido);
-        }
-        function setAlert(message) {
             contenido = '<div class="alert alert-success alert-dismissable">';
             contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
             contenido += '   ' + message;
             contenido += '</div>';
-            $('#alertas').append(contenido);
+            return contenido;
+        }
+        function setAlert(message) {
+            contenido = '<div class="alert alert-danger alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            return contenido;
         }
         function getNumeroTweetsDiarios() {
             ruta = '/guardian/ajustes/getNumTweetsDiarios';
@@ -461,7 +474,8 @@
                 if (data.estado === 'OK') {
                     $('#n_tweets').val(data.message);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-jornada').html(alerta);
                 }
             });
         }
@@ -472,7 +486,8 @@
                 if (data.estado === 'OK') {
                     $('#n_solicitantes_paga').val(data.message);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-paga').html(alerta);
                 }
             });
         }
@@ -483,7 +498,8 @@
                 if (data.estado === 'OK') {
                     $('#n_dias_entrega').val(data.message);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-alimentacion').html(alerta);
                 }
             });
         }
@@ -494,7 +510,8 @@
                 if (data.estado === 'OK') {
                     $('#disparador_apuesta').val(data.message);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-apuestas').html(alerta);
                 }
             });
         }
@@ -508,7 +525,8 @@
                     $('#minutos_jornada').val(data.message.minutos);
                     $('#segundos_jornada').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-jornada').html(alerta);
                 }
             });
         }
@@ -522,7 +540,8 @@
                     $('#minutos_comida').val(data.message.minutos);
                     $('#segundos_comida').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-alimentacion').html(alerta);
                 }
             });
         }
@@ -536,7 +555,8 @@
                     $('#minutos_bebida').val(data.message.minutos);
                     $('#segundos_bebida').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-alimentacion').html(alerta);
                 }
             });
         }
@@ -550,7 +570,8 @@
                     $('#minutos_test_correcto').val(data.message.minutos);
                     $('#segundos_test_correcto').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-inspeccion').html(alerta);
                 }
             });
         }
@@ -564,7 +585,8 @@
                     $('#minutos_mina').val(data.message.minutos);
                     $('#segundos_mina').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-mina').html(alerta);
                 }
             });
         }
@@ -578,7 +600,8 @@
                     $('#minutos_base_mina').val(data.message.minutos);
                     $('#segundos_base_mina').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-mina').html(alerta);
                 }
             });
         }
@@ -589,7 +612,8 @@
                 if (data.estado === 'OK') {
                     $('#interes').val(data.message);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-prestamos').html(alerta);
                 }
             });
         }
@@ -603,81 +627,193 @@
                     $('#minutos_max_prestado').val(data.message.minutos);
                     $('#segundos_max_prestado').val(data.message.segundos);
                 } else {
-                    setAlert(data.message);
+                    alerta = setAlert(data.message);
+                    $('#alert-prestamos').html(alerta);
                 }
             });
         }
-        function publicarComida() {
-            var enunciado = $("#enunciado_comida").val();
-            var icono = $("#icono_comida").val();
-            var dias = parseInt($("#dias_comida").val());
-            var horas = parseInt($("#horas_comida").val());
-            var minutos = parseInt($("#minutos_comida").val());
-            var segundos = parseInt($("#segundos_comida").val());
-            var bonificadores = obtenerBonificadores();
-            var distrito = $("#ejercicio-distrito-comida:checked").length;
-            tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
-            if (icono === '0') {
-                alert('Debe seleccionar un icono');
-            } else if ($.trim(enunciado) === '') {
-                alert('Debe insertar un enunciado');
-            } else if (tiempo < 0) {
-                alert('Debes insertar un coste válido');
+        function setJornadaLaboral() {
+            var n_tweets = parseInt($('#n_tweets').val());
+            var dias_jornada = parseInt($('#dias_jornada').val());
+            var horas_jornada = parseInt($('#horas_jornada').val());
+            var minutos_jornada = parseInt($('#minutos_jornada').val());
+            var segundos_jornada = parseInt($('#segundos_jornada').val());
+            var pago_jornada = (((((dias_jornada * 24) + horas_jornada) * 60) + minutos_jornada) * 60) + segundos_jornada;
+            
+            if (n_tweets <= 0) {
+                $('#alert-jornada').html(setAlert('El número de tweets diario debe ser mayor que 0'));
+            } else if (pago_jornada <= 0) {
+                $('#alert-jornada').html(setAlert('Los ciudadanos necesitan un salario diario'));
             } else {
-                ruta = '/guardian/ejercicios/alimentacion/publicar';
-                tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                ruta = '/guardian/ajustes/setJornadaLaboral';
                 datos = {
-                    'SECCION': 'comida',
-                    'ENUNCIADO': enunciado,
-                    'ICONO': icono,
-                    'COSTE': tiempo,
-                    'DISTRITO': distrito
+                    'n_tweets': n_tweets,
+                    'pago_jornada': pago_jornada
                 };
-                $.each(bonificadores, function (k, v) {
-                    $.each(v, function (kk, vv) {
-                        datos[kk] = vv;
-                    });
-                });
-                console.log(datos);
                 $.post(ruta, datos, function (data, status) {
-                    alert(data.message);
-                    location.reload();
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-jornada').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-jornada').html(setAlert(data.message));
+                    }
                 });
             }
         }
-        function publicarBebida() {
-            var enunciado = $("#enunciado_bebida").val();
-            var icono = $("#icono_bebida").val();
-            var dias = parseInt($("#dias_bebida").val());
-            var horas = parseInt($("#horas_bebida").val());
-            var minutos = parseInt($("#minutos_bebida").val());
-            var segundos = parseInt($("#segundos_bebida").val());
-            var bonificadores = obtenerBonificadores();
-            var distrito = $("#ejercicio-distrito-bebida:checked").length;
-            tiempo = ((((dias * 24) + horas) * 60) + minutos) * 60 + segundos;
-            if (icono === '0') {
-                alert('Debe seleccionar un icono');
-            } else if ($.trim(enunciado) === '') {
-                alert('Debe insertar un enunciado');
-            } else if (tiempo < 0) {
-                alert('Debes insertar un coste válido');
+        function setPagaExtra() {
+            var n_num_max_solicitantes_paga = parseInt($('#n_solicitantes_paga').val());
+            if (n_num_max_solicitantes_paga <= 0) {
+                $('#alert-paga').html(setAlert('El número de solicitantes debe ser mayor que 0'));
             } else {
-                ruta = '/guardian/ejercicios/alimentacion/publicar';
+                ruta = '/guardian/ajustes/setPagaExtra';
                 datos = {
-                    'SECCION': 'bebida',
-                    'ENUNCIADO': enunciado,
-                    'ICONO': icono,
-                    'COSTE': tiempo,
-                    'DISTRITO': distrito
+                    'num_max_solicitantes_paga': n_num_max_solicitantes_paga
                 };
-                $.each(bonificadores, function (k, v) {
-                    $.each(v, function (kk, vv) {
-                        datos[kk] = vv;
-                    });
-                });
                 $.post(ruta, datos, function (data, status) {
-                    alert(data.message);
-                    location.reload();
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-paga').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-paga').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
+        function setAlimentacion() {
+            var n_dias_entrega = parseInt($('#n_dias_entrega').val());
+            var dias_comida = parseInt($('#dias_comida').val());
+            var horas_comida = parseInt($('#horas_comida').val());
+            var minutos_comida = parseInt($('#minutos_comida').val());
+            var segundos_comida = parseInt($('#segundos_comida').val());
+            var tsc = (((((dias_comida * 24) + horas_comida) * 60) + minutos_comida) * 60) + segundos_comida;
+            var dias_bebida = parseInt($('#dias_bebida').val());
+            var horas_bebida = parseInt($('#horas_bebida').val());
+            var minutos_bebida = parseInt($('#minutos_bebida').val());
+            var segundos_bebida = parseInt($('#segundos_bebida').val());
+            var tsb = (((((dias_bebida * 24) + horas_bebida) * 60) + minutos_bebida) * 60) + segundos_bebida;
+            
+            if (n_dias_entrega <= 0) {
+                $('#alert-alimentacion').html(setAlert('El número de dias entre entregas debe ser mayor que 0'));
+            } else if (tsc <= 0) {
+                $('#alert-alimentacion').html(setAlert('Asigne un valor al tiempo entre comidas'));
+            } else if (tsb <= 0) {
+                $('#alert-alimentacion').html(setAlert('Asigne un valor al tiempo entre hidratación'));
+            } else {
+                ruta = '/guardian/ajustes/setAlimentacion';
+                datos = {
+                    'n_dias_entrega': n_dias_entrega,
+                    'tsc': tsc,
+                    'tsb': tsb
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-alimentacion').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-alimentacion').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
+        function setApuestas() {
+            var disparador_apuesta = parseInt($('#disparador_apuesta').val());
+            if (disparador_apuesta <= 0) {
+                $('#alert-apuestas').html(setAlert('El valor del disparador debe ser mayor que 0'));
+            } else {
+                ruta = '/guardian/ajustes/setApuestas';
+                datos = {
+                    'disparador_apuesta': disparador_apuesta
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-apuestas').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-apuestas').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
+        function setInspeccion() {
+            var dias_test_correcto = parseInt($('#dias_test_correcto').val());
+            var horas_test_correcto = parseInt($('#horas_test_correcto').val());
+            var minutos_test_correcto = parseInt($('#minutos_test_correcto').val());
+            var segundos_test_correcto = parseInt($('#segundos_test_correcto').val());
+            var pago_inspeccion = (((((dias_test_correcto * 24) + horas_test_correcto) * 60) + minutos_test_correcto) * 60) + segundos_test_correcto;
+            
+            if (pago_inspeccion <= 0) {
+                $('#alert-inspeccion').html(setAlert('Tener una bonificación por inspección bien realizada ayudará a la economía del ciudadano'));
+            } else {
+                ruta = '/guardian/ajustes/setInspeccion';
+                datos = {
+                    'pago_inspeccion': pago_inspeccion
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-inspeccion').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-inspeccion').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
+        function setMina() {
+            var dias_mina = parseInt($('#dias_mina').val());
+            var horas_mina = parseInt($('#horas_mina').val());
+            var minutos_mina = parseInt($('#minutos_mina').val());
+            var segundos_mina = parseInt($('#segundos_mina').val());
+            var pago_mina = (((((dias_mina * 24) + horas_mina) * 60) + minutos_mina) * 60) + segundos_mina;
+            var dias_base_mina = parseInt($('#dias_base_mina').val());
+            var horas_base_mina = parseInt($('#horas_base_mina').val());
+            var minutos_base_mina = parseInt($('#minutos_base_mina').val());
+            var segundos_base_mina = parseInt($('#segundos_base_mina').val());
+            var pago_base_mina = (((((dias_base_mina * 24) + horas_base_mina) * 60) + minutos_base_mina) * 60) + segundos_base_mina;
+            
+            if (pago_mina <= 0) {
+                $('#alert-mina').html(setAlert('La bonificación por desactivación de mina no puede ser 0'));
+            } else if (pago_base_mina <= 0) {
+                $('#alert-mina').html(setAlert('La bonificación base por desactivación de mina no puede ser 0'));
+            } else {
+                ruta = '/guardian/ajustes/setMina';
+                datos = {
+                    'pago_mina': pago_mina,
+                    'pago_base_mina': pago_base_mina
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-mina').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-mina').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
+        function setPrestamos() {
+            var dias_max_prestado = parseInt($('#dias_max_prestado').val());
+            var horas_max_prestado = parseInt($('#horas_max_prestado').val());
+            var minutos_max_prestado = parseInt($('#minutos_max_prestado').val());
+            var segundos_max_prestado = parseInt($('#segundos_max_prestado').val());
+            var max_prestado = (((((dias_max_prestado * 24) + horas_max_prestado) * 60) + minutos_max_prestado) * 60) + segundos_max_prestado;
+            var interes = parseFloat($('#interes').val());
+            if (interes <= 0.00) {
+                $('#alert-prestamos').html(setAlert('El interés aplicado a un préstamo no puede ser 0'));
+            } else if (max_prestado <= 0) {
+                $('#alert-prestamos').html(setAlert('Debe haber un tiempo máximo a prestar'));
+            } else {
+                ruta = '/guardian/ajustes/setPrestamos';
+                datos = {
+                    'interes': interes,
+                    'max_prestado': max_prestado
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-prestamos').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-prestamos').html(setAlert(data.message));
+                    }
                 });
             }
         }
