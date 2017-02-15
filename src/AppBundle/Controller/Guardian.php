@@ -273,7 +273,7 @@ class Guardian extends Controller {
         }
         $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
         if (!count($CALIFICACIONES)) {
-            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay entregas para este ejercicio.')), 200);
         }
         $DATOS = [];
         $DATOS['NOTAS'] = [];
@@ -305,6 +305,7 @@ class Guardian extends Controller {
             if (null != $CALIFICACION->getIdCalificaciones()) {
                 $aux['CALIFICACION']['CALIFICADO'] = 1;
                 $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getIdCalificaciones();
+                $aux['CALIFICACION']['ICONO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
             }
             $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                 'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
@@ -580,6 +581,52 @@ class Guardian extends Controller {
             $em->persist($CONSTANTE_TMP);
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+    
+    /**
+     * 
+     * @Route("/guardian/setCalificacion", name="setCalificacion")
+     */
+    public function setCalificacionAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/setCalificacion', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $GdT = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+            $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
+            $idCalificacion = $request->request->get('idCalificacion');
+            $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicioCalificacion($idCalificacion);
+            $idNota = $request->request->get('idNota');
+            $NOTA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones($idNota);
+            if(null === $EVALUADO || null === $CALIFICACION || null === $NOTA){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $SECCION = $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion();
+            $BONIFICACION_ANTERIOR = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $CALIFICACION->getIdEjercicio(), 'idCalificacion' => $CALIFICACION->getIdCalificaciones()
+            ]);
+            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $CALIFICACION->getIdEjercicio(), 'idCalificacion' => $NOTA
+            ]);
+            if(null === $BONIFICACION){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            if(null !== $BONIFICACION_ANTERIOR){
+                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1)*$BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+            }
+            $CALIFICACION->setIdEvaluador($GdT);
+            $CALIFICACION->setIdEjercicioEstado($EVALUADO);
+            $CALIFICACION->setIdCalificaciones($NOTA);
+            $em->persist($CALIFICACION);
+            $em->flush();
+            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }

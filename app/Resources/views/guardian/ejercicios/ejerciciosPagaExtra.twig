@@ -10,11 +10,65 @@
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
     <style>
+        .alert{
+            font-size: 40px;
+        }
+        #ejercicio-evaluacion,
+        #ejercicios{
+            font-size: 50px;  
+        }
         .caja-opcion{
             border-left: 5px #337ab7 solid;
             padding-left: 15px;
             padding-right: 15px;
             margin-top: 1%;
+        }
+        .btn-menu-last{
+            border-right: 2px #000000 solid; 
+        }
+        .fila-producto{
+            height: 20vw;
+        }
+        .slot{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            margin-left: 0px;
+            width:  20vw;
+            height: 20vw;
+        }
+        .slot img{
+            height: 12vw;
+        }
+        @media (max-width: 760px){
+
+        }
+        @media (min-width: 760px){
+            .slot{
+                width:  15vw;
+                height: 15vw;
+            }
+            .slot img{
+                height: 10vw;
+            }
+        }
+        @media (min-width: 992px){
+
+        }
+        @media (min-width: 1200px){
+            .slot{
+                width:  6vw;
+                height: 6vw;
+            }
+            .slot img{
+                height: 4vw;
+            }
+            #ejercicio-evaluacion,
+            #ejercicios{
+                font-size: 20px;  
+            }
+            .alert{
+                font-size: 15px;
+            }
         }
     </style>
 {% endblock %}
@@ -46,7 +100,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="tab-content">
-                    <div id="alerta"></div>
+                    <div id="alerta" style="margin-top: 1%;"></div>
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row bordes bonificadores" style="margin-top: 1%;">
                             <legend>Bonificación por calificación</legend>
@@ -193,8 +247,14 @@
                 contenido += '  </div>';
                 if (v.ENTREGAS_PENDIENTES) {
                     contenido += '  <div class="col-lg-12">';
-                    contenido += '      <button class="btn btn-block btn-primary" href="#tab3" data-toggle="tab" onclick="getEntregas('+v.ID+');">';
+                    contenido += '      <button class="btn btn-block btn-primary" href="#tab3" data-toggle="tab" onclick="getEntregas(' + v.ID + ');">';
                     contenido += '          Corregir ' + v.ENTREGAS_PENDIENTES + ' entregas pendientes';
+                    contenido += '      </button>';
+                    contenido += '  </div>';
+                } else {
+                    contenido += '  <div class="col-lg-12">';
+                    contenido += '      <button class="btn btn-block btn-primary" href="#tab3" data-toggle="tab" onclick="getEntregas(' + v.ID + ');">';
+                    contenido += '          Ver evaluaciones';
                     contenido += '      </button>';
                     contenido += '  </div>';
                 }
@@ -204,20 +264,20 @@
             });
         }
         function getEntregas(id) {
+            $('#ejercicio-evaluacion').html('');
             ruta = '/guardian/pagaExtra/getEntregasPaga/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     console.log(data.message);
-                    mostrarEntregas(data.message.CALIFICACIONES);
+                    mostrarEntregas(data.message);
                 } else {
                     $('#alerta').html(setAlert(data.message));
                 }
             });
         }
         function mostrarEntregas(entregas) {
-            $('#ejercicio-evaluacion').html('');
-            $.each(entregas, function (k, v) {
+            $.each(entregas.CALIFICACIONES, function (k, v) {
                 contenido = '<div class="col-lg-12 bordes border-radius" style="margin-bottom: 1%;">';
                 contenido += '   <div class="col-lg-12">';
                 contenido += '      <legend>Datos del ciudadano</legend>';
@@ -227,14 +287,81 @@
                 contenido += '      <legend>Datos de la entrega</legend>';
                 contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/paga_extra/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
                 contenido += '  </div>';
+                contenido += '  <div class="row">';
+                contenido += '  <div class="col-lg-12" style="margin-top: 1%;">';
+                contenido += '      <legend>Evaluación</legend>';
+                if (v.CALIFICACION.ESTADO === 'entregado') {
+                    contenido += '      <div class="slot fila btn-menu-first">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[0].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[0].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[0].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[1].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[1].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[1].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[2].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[2].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[2].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[3].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[3].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[3].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[4].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[4].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[4].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila btn-menu-last">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[5].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[5].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[5].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                }
+                if (v.CALIFICACION.ESTADO === 'evaluado') {
+                    contenido += '  <p>Entrega ya evaluada</p>';
+                    contenido += '  <div class="slot border-radius">';
+                    contenido += '      <span class="btn-tienda">';
+                    contenido += '          <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
+                    contenido += '      </span>';
+                    contenido += '  </div>';
+                }
+                contenido += '  </div>';
+                contenido += '  </div>';
+                contenido += '<div id="aviso-entrega-' + v.ENTREGA.ID + '"></div>';
                 contenido += '</div>';
                 $('#ejercicio-evaluacion').append(contenido);
+            });
+        }
+        function setNota(idCalificacion, idNota) {
+            var idCajas = $.trim(idCalificacion + '' + idNota);
+            var idAviso = $.trim(idCalificacion);
+            $(".btn-tienda").addClass("opacidad");
+            $("#tab3 .slot").css('background-color', 'gray');
+            $("#image-tienda-" + idCajas).removeClass("opacidad");
+            $("#image-tienda-" + idCajas).parent().css('background-color', 'white');
+            ruta = '/guardian/setCalificacion';
+            datos = {
+                'idCalificacion': idCalificacion,
+                'idNota': idNota
+            };
+            $.post(ruta, datos, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                console.log(data.message);
+                if (data.estado === 'OK') {
+                    $('#aviso-entrega-' + idAviso).html(setSuccess(data.message));
+                } else {
+                    $('#aviso-entrega-' + idAviso).html(setAlert(data.message));
+                }
             });
         }
         function publicarPaga() {
             var enunciado = $("#enunciado").val();
             var fecha = $("#fecha").val();
-
             var dias = parseInt($("#dias").val());
             var horas = parseInt($("#horas").val());
             var minutos = parseInt($("#minutos").val());
@@ -258,12 +385,10 @@
                         datos[kk] = vv;
                     });
                 });
-                console.log(datos);
                 $.post(ruta, datos, function (data, status) {
                     alert(data.message);
                     location.reload();
                 });
-
             }
         }
 
@@ -287,6 +412,7 @@
                     $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                     $(this).removeClass("btn-default").addClass("btn-primary");
                 });
-            });
+            }
+            );
     </script>
 {% endblock %}
