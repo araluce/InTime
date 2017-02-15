@@ -13,6 +13,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Ejercicio;
@@ -217,6 +219,106 @@ class Guardian extends Controller {
     }
 
     /**
+     * @Route("/guardian/pagaExtra/getEjerciciosPaga", name="getEjerciciosPagaGuardian")
+     */
+    public function getEjerciciosPagaGuardianAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/pagaExtra/getEjerciciosPaga', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $SECCION_PAGA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('paga_extra');
+        if (null === $SECCION_PAGA) {
+            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe la seccion paga_extra');
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_PAGA);
+        if (!count($EJERCICIOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ejercicios en esta sección aún. Antes debes publicarlos en el apartado PROPONER')), 200);
+        }
+        $ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        if (null === $ENTREGADO) {
+            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe el estado entregado');
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $DATOS = [];
+        foreach ($EJERCICIOS as $EJERCICIO) {
+            $aux = [];
+            $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+            $aux['ID'] = $EJERCICIO->getIdEjercicio();
+            $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+                'idEjercicio' => $EJERCICIO, 'idEjercicioEstado' => $ENTREGADO
+            ]);
+            $aux['ENTREGAS_PENDIENTES'] = count($ENTREGAS);
+            $DATOS[] = $aux;
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/pagaExtra/getEntregasPaga/{id_ejercicio}", name="getEntregasPaga")
+     */
+    public function getEntregasPagaAction(Request $request, $id_ejercicio) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/pagaExtra/getEntregasPaga/' . $id_ejercicio, true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+        if (null === $EJERCICIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
+        if (!count($CALIFICACIONES)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $DATOS = [];
+        $DATOS['NOTAS'] = [];
+        $NOTAS = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
+        if (!count($NOTAS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        foreach ($NOTAS as $NOTA) {
+            $aux = [];
+            $aux['ICONO'] = $NOTA->getCorrespondenciaIcono();
+            $aux['ID'] = $NOTA->getIdCalificaciones();
+            $DATOS['NOTAS'][] = $aux;
+        }
+        $DATOS['CALIFICACIONES'] = [];
+        foreach ($CALIFICACIONES as $CALIFICACION) {
+            $aux = [];
+            $aux['CIUDADANO'] = [];
+            $aux['CALIFICACION'] = [];
+            $aux['ENTREGA'] = [];
+            $CIUDADANO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($CALIFICACION->getIdUsuario());
+            $aux['CIUDADANO']['ID'] = $CIUDADANO->getIdUsuario();
+            $aux['CIUDADANO']['NOMBRE'] = $CIUDADANO->getNombre();
+            $aux['CIUDADANO']['APELLIDOS'] = $CIUDADANO->getApellidos();
+            $aux['CIUDADANO']['ALIAS'] = $CIUDADANO->getSeudonimo();
+            $aux['CIUDADANO']['DNI'] = $CIUDADANO->getDni();
+            $aux['CALIFICACION']['ESTADO'] = $CALIFICACION->getIdEjercicioEstado()->getEstado();
+            $aux['CALIFICACION']['CALIFICADO'] = 0;
+            $aux['CALIFICACION']['FECHA'] = $CALIFICACION->getFecha();
+            if (null != $CALIFICACION->getIdCalificaciones()) {
+                $aux['CALIFICACION']['CALIFICADO'] = 1;
+                $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getIdCalificaciones();
+            }
+            $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+            ]);
+            $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+            $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+            $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+            $DATOS['CALIFICACIONES'][] = $aux;
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
      * @Route("/guardian/ajustes/getTiempoMaximoPrestado", name="getTiempoMaximoPrestado")
      */
     public function getTiempoMaximoPrestadoAction(Request $request) {
@@ -247,7 +349,7 @@ class Guardian extends Controller {
             }
             $n_tweets = $request->request->get('n_tweets');
             $pago_jornada = $request->request->get('pago_jornada');
-            if($n_tweets <= 0 || $pago_jornada <= 0){
+            if ($n_tweets <= 0 || $pago_jornada <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $CONSTANTE_N_TWEETS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('jornada_laboral_tweets');
@@ -269,7 +371,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setPagaExtra", name="setPagaExtra")
@@ -284,7 +386,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }
             $num_max_solicitantes_paga = $request->request->get('num_max_solicitantes_paga');
-            if($num_max_solicitantes_paga <= 0){
+            if ($num_max_solicitantes_paga <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
             }
             $CONSTANTE_N_MAX = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga');
@@ -299,7 +401,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setAlimentacion", name="setAlimentacion")
@@ -316,7 +418,7 @@ class Guardian extends Controller {
             $n_dias_entrega = $request->request->get('n_dias_entrega');
             $tsc = $request->request->get('tsc');
             $tsb = $request->request->get('tsb');
-            if($n_dias_entrega <= 0 || $tsc <= 0 || $tsb <= 0){
+            if ($n_dias_entrega <= 0 || $tsc <= 0 || $tsb <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $CONSTANTE_N_DIAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('diasDifEntregas');
@@ -345,7 +447,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setApuestas", name="setApuestas")
@@ -360,7 +462,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }
             $disparador_apuesta = $request->request->get('disparador_apuesta');
-            if($disparador_apuesta <= 0){
+            if ($disparador_apuesta <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
             }
             $CONSTANTE_DISP = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta');
@@ -375,7 +477,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setInspeccion", name="setInspeccion")
@@ -390,7 +492,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }
             $pago_inspeccion = $request->request->get('pago_inspeccion');
-            if($pago_inspeccion <= 0){
+            if ($pago_inspeccion <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
             }
             $CONSTANTE_INSP = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('test_correcto');
@@ -405,7 +507,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setMina", name="setInspeccion")
@@ -421,7 +523,7 @@ class Guardian extends Controller {
             }
             $pago_mina = $request->request->get('pago_mina');
             $pago_base_mina = $request->request->get('pago_base_mina');
-            if($pago_mina <= 0 || $pago_base_mina <= 0){
+            if ($pago_mina <= 0 || $pago_base_mina <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $CONSTANTE_PAGO_MINA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('premio_mina');
@@ -443,7 +545,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setPrestamos", name="setPrestamos")
@@ -459,7 +561,7 @@ class Guardian extends Controller {
             }
             $interes = $request->request->get('interes');
             $tiempo_max = $request->request->get('max_prestado');
-            if($interes <= 0.00 || $tiempo_max <= 0){
+            if ($interes <= 0.00 || $tiempo_max <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $CONSTANTE_INTERES = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('interes_prestamo');

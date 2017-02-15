@@ -24,55 +24,34 @@ class Utils {
         print '</pre>';
     }
 
-    static function setNota($doctrine, $id_usuario, $id_grupo, $id_ejercicio, $nota) {
-        if ($id_grupo === null) {
-            $SECCION = $id_ejercicio->getIdEjercicioSeccion()->getSeccion();
-        } else {
-            $SECCION = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->
-                            findOneByIdGrupoEjercicios($id_grupo)->getIdEjercicio()->
-                            getIdEjercicioSeccion()->getSeccion();
-        }
-        $corresponidencia_numerica = \AppBundle\Utils\Utils::notaToCalificacion($nota);
-        $CALIFICACION = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByCorrespondenciaNumerica($corresponidencia_numerica);
+    static function setNota($doctrine, $id_usuario, $id_ejercicio, $CALIFICACION) {
+        $SECCION = $id_ejercicio->getIdEjercicioSeccion()->getSeccion();
         $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
         $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
-
-        if ($id_grupo !== null) {
-            $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                'idUsuario' => $id_usuario, 'idGrupo' => $id_grupo
-            ]);
-        } else {
-            $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
-            ]);
-        }
+        $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+            'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
+        ]);
         if ($EJERCICIO_CALIFICACION !== null) {
             // Ejercicio ya calificado, se resta el TdV ganado con el y se le
             //ingresa el TdV por defecto.
             if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
-                $tdv = (-1) * $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaNumerica();
-                Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
+                $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                    'idEjercicio' => $id_ejercicio, 'idCalificacion' => $EJERCICIO_CALIFICACION->getIdCalificaciones()
+                ]);
+                if (null !== $BONIFICACION) {
+                    $tdv = (-1) * $BONIFICACION->getBonificacion();
+                    Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
+                }
             }
         }
-        $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
         $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
-        if ($id_grupo !== null) {
-            $EJERCICIO_CALIFICACION->setIdGrupo($id_grupo);
-        } else {
-            $EJERCICIO_CALIFICACION->setIdEjercicio($id_ejercicio);
-        }
-        if ($SECCION === 'inspeccion_trabajo') {
-            $concepto = 'Ingreso - Pago por realización de ejercicio';
-        } else {
-            $concepto = 'Ingreso - Pago por defecto temporal por entrega';
-        }
+        $EJERCICIO_CALIFICACION->setIdEjercicio($id_ejercicio);
+        $concepto = 'Ingreso - Pago por defecto temporal por entrega';
         $EJERCICIO_BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
             'idEjercicio' => $id_ejercicio, 'idCalificacion' => $CALIFICACION
         ]);
         if ($EJERCICIO_BONIFICACION !== null) {
             $TdVDefecto = $EJERCICIO_BONIFICACION->getBonificacion();
-        } else {
-            $TdVDefecto = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('pago_paga_' . $corresponidencia_numerica)->getValor();
         }
         Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto, $concepto);
         $EJERCICIO_CALIFICACION->setIdCalificaciones($CALIFICACION);

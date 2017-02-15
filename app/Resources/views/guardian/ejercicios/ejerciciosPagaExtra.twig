@@ -10,7 +10,12 @@
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
     <style>
-
+        .caja-opcion{
+            border-left: 5px #337ab7 solid;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 1%;
+        }
     </style>
 {% endblock %}
 
@@ -25,7 +30,7 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" id="resultados" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                    <button type="button" id="resultados" class="btn btn-default btn13" href="#tab2" data-toggle="tab" onclick="getEjercicios();">
                         <span class="fa fa-refresh" aria-hidden="true"></span>
                         <div class="hidden-xs">RESULTADOS</div>
                     </button>
@@ -41,6 +46,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="tab-content">
+                    <div id="alerta"></div>
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row bordes bonificadores" style="margin-top: 1%;">
                             <legend>Bonificación por calificación</legend>
@@ -88,7 +94,7 @@
                                 <i class="fa fa-calendar"></i>
                                 <input class="form-control" type="datetime-local" id="fecha">
                             </div>
-                            
+
                             <legend><i class="fa fa-search" style="margin-top: 1%;"></i>  Proponer una inspección</legend>
 
                             <label for="enunciado_comida">Enunciado de la entrega</label>
@@ -134,7 +140,14 @@
                         </div>
                     </div>
                     <div class="tab-pane fade in" id="tab2">
-
+                        <div class="row" style="margin-top: 1%;">
+                            <div id="ejercicios"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab3">
+                        <div class="row" style="margin-top: 1%;">
+                            <div id="ejercicio-evaluacion"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,6 +158,79 @@
 
 {% block javascripts %}
     <script>
+        function setSuccess(message) {
+            contenido = '<div class="alert alert-success alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            return contenido;
+        }
+        function setAlert(message) {
+            contenido = '<div class="alert alert-danger alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            return contenido;
+        }
+        function getEjercicios() {
+            ruta = '/guardian/pagaExtra/getEjerciciosPaga';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    mostrarEjercicios(data.message);
+                } else {
+                    $('#alerta').html(setAlert(data.message));
+                }
+            });
+        }
+        function mostrarEjercicios(ejercicios) {
+            $('#ejercicios').html('');
+            $.each(ejercicios, function (k, v) {
+                contenido = '<div class="col-lg-6" style="margin-bottom: 1%;">';
+                contenido += '  <div class="row bordes border-radius" style="margin: 1%;">';
+                contenido += '   <div class="col-lg-12">';
+                contenido += '      ' + v.ENUNCIADO;
+                contenido += '  </div>';
+                if (v.ENTREGAS_PENDIENTES) {
+                    contenido += '  <div class="col-lg-12">';
+                    contenido += '      <button class="btn btn-block btn-primary" href="#tab3" data-toggle="tab" onclick="getEntregas('+v.ID+');">';
+                    contenido += '          Corregir ' + v.ENTREGAS_PENDIENTES + ' entregas pendientes';
+                    contenido += '      </button>';
+                    contenido += '  </div>';
+                }
+                contenido += '  </div>';
+                contenido += '</div>';
+                $('#ejercicios').append(contenido);
+            });
+        }
+        function getEntregas(id) {
+            ruta = '/guardian/pagaExtra/getEntregasPaga/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    console.log(data.message);
+                    mostrarEntregas(data.message.CALIFICACIONES);
+                } else {
+                    $('#alerta').html(setAlert(data.message));
+                }
+            });
+        }
+        function mostrarEntregas(entregas) {
+            $('#ejercicio-evaluacion').html('');
+            $.each(entregas, function (k, v) {
+                contenido = '<div class="col-lg-12 bordes border-radius" style="margin-bottom: 1%;">';
+                contenido += '   <div class="col-lg-12">';
+                contenido += '      <legend>Datos del ciudadano</legend>';
+                contenido += '      ' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI;
+                contenido += '  </div>';
+                contenido += '   <div class="col-lg-12">';
+                contenido += '      <legend>Datos de la entrega</legend>';
+                contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/paga_extra/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                $('#ejercicio-evaluacion').append(contenido);
+            });
+        }
         function publicarPaga() {
             var enunciado = $("#enunciado").val();
             var fecha = $("#fecha").val();

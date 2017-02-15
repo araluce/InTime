@@ -230,7 +230,7 @@ class TrabajoController extends Controller {
         }
         $DATOS = [];
         $DATOS['SOLICITADO'] = false;
-        if (count(Utils::ejercicios_solicitados_en($doctrine, $USUARIO, 'paga_extra'))) {
+        if (Utils::ejercicios_solicitados_en($doctrine, $USUARIO, 'paga_extra')) {
             $DATOS['SOLICITADO'] = true;
         }
         $DATOS['EJERCICIOS'] = [];
@@ -388,186 +388,6 @@ class TrabajoController extends Controller {
     }
 
     /**
-     * @Route("/arena/{id_ejercicio}", name="arenatest")
-     */
-    public function arenaAction(Request $request, $id_ejercicio) {
-        $session = $this->get('session');
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/arena/' . $id_ejercicio);
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $DATOS = DataManager::setDefaultData($doctrine, 'Desafío', $this->get('session'));
-        $id_usuario = $session->get('id_usuario');
-
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
-        $SECCION = $EJERCICIO->getIdEjercicioSeccion();
-
-        if ($EJERCICIO->getIdTipoEjercicio()->getIdTipoEjercicio() !== 3) {
-            Utils::getDatosArenaTest($doctrine, $USUARIO, $EJERCICIO, $DATOS);
-            $EJERCICIO_X_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
-                'idEjercicio' => $EJERCICIO,
-                'idUsu' => $USUARIO
-            ]);
-        } else {
-            $EJERCICIO_X_GRUPO = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findOneByIdEjercicio($EJERCICIO);
-            $GRUPO = $EJERCICIO_X_GRUPO->getIdGrupoEjercicios();
-            $EJERCICIO_X_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
-                'idGrupo' => $GRUPO,
-                'idUsu' => $USUARIO
-            ]);
-            $d = Utils::getDatosArenaGrupoTest($doctrine, $USUARIO, $GRUPO);
-            $DATOS['EJERCICIOS'] = $d['EJERCICIOS'];
-            $DATOS['SECCION'] = $d['SECCION'];
-            $DATOS['TIPO'] = $d['TIPO'];
-        }
-        if ($request->getMethod() == 'POST') {
-            $seccion_texto = $SECCION->getSeccion();
-            $n_intentos = 0;
-            if ($DATOS['TIPO'] === 'test') {
-                if ($seccion_texto === 'inspeccion_trabajo' || $seccion_texto === 'paga_extra') {
-                    $n_intentos = count($this->getDoctrine()->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO));
-                }
-                if (!$n_intentos) {
-                    $RESP = [];
-                    $RESP[] = $request->request->get('RESPUESTAS_CHECK_1');
-                    $RESP[] = $request->request->get('RESPUESTAS_CHECK_2');
-                    $RESP[] = $request->request->get('RESPUESTAS_CHECK_3');
-                    $RESP[] = $request->request->get('RESPUESTAS_CHECK_4');
-                    $cont = 0;
-                    $nota = 0;
-                    foreach ($DATOS['RESPUESTAS'] as $r) {
-                        if (($RESP[$cont] === 'on' && $r['CORRECTA']) || ( $RESP[$cont] === null && !$r['CORRECTA'] )) {
-                            $nota++;
-                        }
-                        $cont++;
-                    }
-                    $nota = ($nota * 10) / 4;
-                    $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, $nota);
-                } else {
-                    $DATOS['RESULTADO']['TITULO'] = 'Error';
-                    $DATOS['RESULTADO']['NOTA_TEXTO'] = 'Este ejercicio ya ha sido evaluado';
-                    $DATOS['RESULTADO']['NOTA_ICONO'] = 'error.jpg';
-                    $DATOS['RESULTADO']['NOTA_ID'] = 0;
-                }
-            }
-            if ($DATOS['TIPO'] === 'grupo_test') {
-                if ($seccion_texto === 'inspeccion_trabajo' || $seccion_texto === 'paga_extra') {
-                    $n_intentos = count($this->getDoctrine()->getRepository('AppBundle:EjercicioCalificacion')->findByIdGrupo($GRUPO));
-                }
-                if (!$n_intentos) {
-                    $numero_enunciados = $request->request->get('N_EJERCICIO');
-                    $RESP = [];
-                    for ($i = 1; $i <= $numero_enunciados; $i++) {
-                        $aux = [];
-                        $aux[] = $request->request->get('RESPUESTAS_CHECK_' . $i . '1');
-                        $aux[] = $request->request->get('RESPUESTAS_CHECK_' . $i . '2');
-                        $aux[] = $request->request->get('RESPUESTAS_CHECK_' . $i . '3');
-                        $aux[] = $request->request->get('RESPUESTAS_CHECK_' . $i . '4');
-                        $RESP[] = $aux;
-                    }
-                    $cont_ejercicio = 0;
-                    $nota_4 = 0;
-                    foreach ($DATOS['EJERCICIOS'] as $EJERCICIO) {
-                        $cont_resp = 0;
-                        $nota = 0;
-                        foreach ($EJERCICIO['RESPUESTAS'] as $r) {
-                            if (($RESP[$cont_ejercicio][$cont_resp] === 'on' && $r['CORRECTA']) || ( $RESP[$cont_ejercicio][$cont_resp] === null && !$r['CORRECTA'] )) {
-                                $nota++;
-                            }
-                            $cont_resp++;
-                        }
-                        $nota_4 += $nota;
-                        $cont_ejercicio++;
-                    }
-                    $nota = (($nota_4 / $cont_ejercicio) * 10) / 4;
-                    $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, $GRUPO, null, $nota);
-                } else {
-                    $DATOS['RESULTADO']['TITULO'] = 'Error';
-                    $DATOS['RESULTADO']['NOTA_TEXTO'] = 'Este ejercicio ya ha sido evaluado';
-                    $DATOS['RESULTADO']['NOTA_ICONO'] = 'error.jpg';
-                    $DATOS['RESULTADO']['NOTA_ID'] = 0;
-                }
-            }
-            if ($DATOS['TIPO'] === 'entrega') {
-                $NOTA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('nota_por_defecto');
-                $DATOS['RESULTADO'] = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getValor()));
-                $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                    'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                ]);
-                $ENTREGA = $request->files->get('ENTREGA');
-                if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                    $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
-                    if (!file_exists($ruta)) {
-                        mkdir($ruta, 0777, true);
-                    }
-                    $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
-                            . $ENTREGA->getClientOriginalName();
-                    $UPLOAD = $ENTREGA->move($ruta, $nombre_entrega);
-                    if ($ENTREGA->getError()) {
-                        $MENSAJE['info'] = [];
-                        $MENSAJE['info']['message'] = getErrorMessage();
-                        $MENSAJE['info']['type'] = 'danger';
-                        $em->remove($EJERCICIO_CALIFICACION);
-                        $em->flush();
-                        switch ($SECCION->getSeccion()) {
-                            case 'paga_extra':
-                                return $this->paga_extraAction($request, $MENSAJE);
-                            case 'comida':
-                                return $this->paga_extraAction($request, $MENSAJE);
-                            case 'bebida':
-                                return $this->paga_extraAction($request, $MENSAJE);
-                        }
-                    }
-                    $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                        'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                    ]);
-                    if (!count($EJERCICIO_ENTREGA)) {
-                        $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
-                    }
-                    $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
-                    $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                    $EJERCICIO_ENTREGA->setNombre($EJERCICIO_CALIFICACION->getFecha()->getTimestamp() . $ENTREGA->getClientOriginalName());
-                    $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
-                    $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
-                    $em->persist($EJERCICIO_ENTREGA);
-                    $em->flush();
-                } else {
-                    $MENSAJE['info'] = [];
-                    $MENSAJE['info']['message'] = 'El archivo que intenta subir supera el tamaño máximo permitido.'
-                            . '          Tu archivo: ' . $ENTREGA->getClientSize() / 1024
-                            . '          Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024;
-                    $MENSAJE['info']['type'] = 'danger';
-                    $em->remove($EJERCICIO_CALIFICACION);
-                    $em->flush();
-                    switch ($SECCION->getSeccion()) {
-                        case 'paga_extra':
-                            return $this->paga_extraAction($request, $MENSAJE);
-                        case 'comida':
-                            return $this->paga_extraAction($request, $MENSAJE);
-                        case 'bebida':
-                            return $this->paga_extraAction($request, $MENSAJE);
-                    }
-                }
-                switch ($SECCION->getSeccion()) {
-                    case 'paga_extra':
-                        return $this->paga_extraAction($request);
-                    case 'comida':
-                        return $this->paga_extraAction($request);
-                    case 'bebida':
-                        return $this->paga_extraAction($request);
-                }
-            }
-            //Utils::pretty_print($DATOS);
-            return $this->render('ciudadano/extensiones/resumen.twig', $DATOS);
-        }
-
-        return $this->render('ciudadano/extensiones/arena.twig', $DATOS);
-    }
-
-    /**
      * @Route("/solicitar/{id_ejercicio}", name="solicitar")
      */
     public function solicitarAction(Request $request, $id_ejercicio) {
@@ -669,21 +489,13 @@ class TrabajoController extends Controller {
                 if (!file_exists($ruta)) {
                     mkdir($ruta, 0777, true);
                 }
-                $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
-                        . $ENTREGA->getClientOriginalName();
+                $nombre_entrega = $ENTREGA->getClientOriginalName();
                 $UPLOAD = $ENTREGA->move($ruta, $nombre_entrega);
                 if ($ENTREGA->getError()) {
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $ENTREGA->getErrorMessage())), 200);
                 }
                 $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-                $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-                    'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
-                ]);
-                if ($NOTA === null) {
-                    Utils::setError($doctrine, 1, 'No hay definida una bonificación en EJERCICIO_BONIFICACION idEjercicio ' . $EJERCICIO->getIdEjercicio() . ' idCalificacion: ' . $CALIFICACION->getIdCalificaciones(), $USUARIO);
-                    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
-                }
-                $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getBonificacion()));
+                $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
 
                 $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                     'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
@@ -693,14 +505,14 @@ class TrabajoController extends Controller {
                 }
                 $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
                 $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                $EJERCICIO_ENTREGA->setNombre($EJERCICIO_CALIFICACION->getFecha()->getTimestamp() . $ENTREGA->getClientOriginalName());
+                $EJERCICIO_ENTREGA->setNombre($ENTREGA->getClientOriginalName());
                 $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
                 $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                 $em->persist($EJERCICIO_ENTREGA);
 
                 $ESTADO_ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
                 $EJERCICIO_CALIFICACION->setIdEjercicioEstado($ESTADO_ENTREGADO);
-                $em->persist($ESTADO_ENTREGADO);
+                $em->persist($EJERCICIO_CALIFICACION);
                 $em->flush();
                 return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio entregado correctamente')), 200);
             }

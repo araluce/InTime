@@ -346,20 +346,7 @@ class AlimentacionController extends Controller {
                         }
                     }
                     $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-                    $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-                        'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
-                    ]);
-                    if ($NOTA === null) {
-                        Utils::setError($doctrine, 1, 'No hay definida una constante para nota_por_defecto en la tabla CONSTANTES', $USUARIO);
-                        $RESULTADOS = [];
-                        $RESULTADOS['info'] = 'Error inesperado entregaAlimentacion #1';
-                        if ($SECCION->getSeccion() === 'comida') {
-                            return $this->comidaAction($request, $RESULTADOS);
-                        } else {
-                            return $this->bebidaAction($request, $RESULTADOS);
-                        }
-                    }
-                    $RESULTADOS = Utils::setNota($doctrine, $USUARIO, null, $EJERCICIO, intval($NOTA->getBonificacion()));
+                    $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
                     $RESULTADOS['SECCION'] = $SECCION->getSeccion();
 
                     $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -370,8 +357,7 @@ class AlimentacionController extends Controller {
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
-                    $nombre_entrega = $EJERCICIO_CALIFICACION->getFecha()->getTimestamp()
-                            . $ENTREGA->getClientOriginalName();
+                    $nombre_entrega = $ENTREGA->getClientOriginalName();
                     $ENTREGA->move($ruta, $nombre_entrega);
                     $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                         'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
@@ -381,7 +367,7 @@ class AlimentacionController extends Controller {
                     }
                     $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
                     $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                    $EJERCICIO_ENTREGA->setNombre($EJERCICIO_CALIFICACION->getFecha()->getTimestamp() . $ENTREGA->getClientOriginalName());
+                    $EJERCICIO_ENTREGA->setNombre($ENTREGA->getClientOriginalName());
                     $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
                     $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                     $em->persist($EJERCICIO_ENTREGA);
