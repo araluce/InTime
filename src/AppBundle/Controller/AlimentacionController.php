@@ -98,13 +98,15 @@ class AlimentacionController extends Controller {
         if ($USUARIO === null) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
-
         $tsc = $USUARIO->getTiempoSinComer();
         if ($tsc === null) {
             return new JsonResponse(json_encode(array('porcentaje' => 'null')), 200);
         }
         $TSC_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_comer');
         $respuesta = Alimentacion::porcetajeEnergia($tsc, $TSC_DEFECTO);
+        if($respuesta['porcentaje'] <= 0){
+            Usuario::setDefuncion($doctrine, $USUARIO);
+        }
         return new JsonResponse(json_encode($respuesta), 200);
     }
 
@@ -126,6 +128,9 @@ class AlimentacionController extends Controller {
         }
         $TSB_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_beber');
         $respuesta = Alimentacion::porcetajeEnergia($tsb, $TSB_DEFECTO);
+        if($respuesta['porcentaje'] <= 0){
+            Usuario::setDefuncion($doctrine, $USUARIO);
+        }
         return new JsonResponse(json_encode($respuesta), 200);
     }
 

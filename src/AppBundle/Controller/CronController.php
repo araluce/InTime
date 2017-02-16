@@ -149,6 +149,7 @@ class CronController extends Controller {
         $CIUDADANOS = Usuario::getCiudadanosVacaciones($doctrine);
         $fecha = new \DateTime('now');
         $diaSemana = date("w", $fecha->getTimestamp());
+        $contador = 0;
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 $CUENTA = $CIUDADANO->getIdCuenta();
@@ -157,10 +158,11 @@ class CronController extends Controller {
                         $ESTADO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
                         $CIUDADANO->setIdEstado($ESTADO);
                         $em->persist($CIUDADANO);
+                        $contador++;
                     }
                 } else {
                     $finBloqueo = $CUENTA->getFinbloqueo();
-                    $finBloqueo->add(new \DateInterval('P2D'));
+                    $finBloqueo->add(new \DateInterval('P1D'));
                     $CUENTA->setFinbloqueo($finBloqueo);
                     $em->persist($CUENTA);
                 }
@@ -168,7 +170,7 @@ class CronController extends Controller {
         }
         $em->flush();
         Utils::setError($doctrine, 3, 'CRON - Comprobar vacaciones');
-        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones comprobadas' . $diaSemana)), 200);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $contador . ' ciudadanos reincorporados' . $diaSemana)), 200);
     }
 
     /**
