@@ -494,17 +494,18 @@ class Usuario {
     }
     
     /**
-     * Obtiene los ciudadanos con estado distinto de fallecido
+     * Obtiene los ciudadanos con estado distinto de fallecido e inactivo
      * @param type $doctrine
      * @return array
      */
     static function getCiudadanosVivos($doctrine) {
         $ESTADO_FALLECIDO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Fallecido');
+        $ESTADO_INACTIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Inactivo');
         $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
         $query = $doctrine->getRepository('AppBundle:Usuario')->createQueryBuilder('a');
         $query->select('a');
-        $query->where('a.idEstado != :ESTADO AND a.idRol = :ROL');
-        $query->setParameters(['ESTADO' => $ESTADO_FALLECIDO, 'ROL' => $ROL_CIUDADANO]);
+        $query->where('a.idEstado != :ESTADO_F AND a.idEstado != :ESTADO_I AND a.idRol = :ROL');
+        $query->setParameters(['ESTADO_F' => $ESTADO_FALLECIDO, 'ESTADO_I' => $ESTADO_INACTIVO, 'ROL' => $ROL_CIUDADANO]);
         $CIUDADANOS = $query->getQuery()->getResult();
 
         return $CIUDADANOS;
