@@ -140,7 +140,7 @@ class Alimentacion {
         }
         return 0;
     }
-    
+
     /**
      * Comprueba si se han solicitado ejercicios de la sección bebida
      * 
@@ -277,6 +277,9 @@ class Alimentacion {
      */
     static function ultimaEntrega($doctrine, $SECCION, $USUARIO, $DISTRITO = null) {
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION);
+        if (!count($EJERCICIOS)) {
+            return 0;
+        }
         if ($DISTRITO !== null) {
             $query = $doctrine->getRepository('AppBundle:EjercicioDistrito')->createQueryBuilder('a');
             $query->select('a');
@@ -298,15 +301,20 @@ class Alimentacion {
             $query->setParameters(['EJERCICIOS' => array_values($ID_EJERCICIOS), 'USUARIOS' => array_values($USUARIOS_DISTRITO)]);
             $ENTREGAS = $query->getQuery()->getResult();
         } else {
-            if (!count($EJERCICIOS)) {
-                return 0;
-            }
             $query = $doctrine->getRepository('AppBundle:EjercicioEntrega')->createQueryBuilder('a');
             $query->select('a');
             $query->where('a.idEjercicio IN (:EJERCICIOS) AND a.idUsuario = :USUARIO');
             $query->orderBy('a.fecha', 'DESC');
             $query->setParameters(['EJERCICIOS' => array_values($EJERCICIOS), 'USUARIO' => $USUARIO]);
             $ENTREGAS = $query->getQuery()->getResult();
+            if (count($ENTREGAS)) {
+                foreach ($ENTREGAS as $ENTREGA) {
+                    if (!Ejercicio::esEjercicioDistrito($doctrine, $ENTREGA->getIdEjercicio())) {
+                        return $ENTREGA;
+                    }
+                }
+            }
+            return 0;
         }
         if (!count($ENTREGAS)) {
             return 0;
@@ -324,7 +332,7 @@ class Alimentacion {
         $query->orderBy('a.fecha', 'DESC');
         $query->setParameters(['EJERCICIO' => $EJERCICIO, 'USUARIOS' => array_values($usuariosDistrito), 'ESTADO' => $estadoSolicitado]);
         $SOLICITUDES = $query->getQuery()->getSingleScalarResult();
-        
+
         return $SOLICITUDES;
     }
 

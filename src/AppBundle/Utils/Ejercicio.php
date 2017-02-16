@@ -58,5 +58,30 @@ class Ejercicio {
             return false;
         return true;
     }
+    
+    /**
+     * Para localizar la entrega de un ejercicio de distrito realizada por un integrante del mismo
+     * @param type $doctrine
+     * @param type $EJERCICIO
+     * @param type $DISTRITO
+     * @return EJERCICIO_CALIFICACION|null
+     */
+    static function getCalificacionPrincipalDistrito($doctrine, $EJERCICIO, $DISTRITO){
+        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
+        if(!count($CIUDADANOS || !count($ENTREGAS))){
+            return null;
+        }
+        foreach($ENTREGAS as $ENTREGA){
+            $CIUDADANO = $ENTREGA->getIdUsuario();
+            if(in_array($CIUDADANO, $CIUDADANOS)){
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+                    'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
+                ]);
+                return $CALIFICACION;
+            }
+        }
+        return null;
+    }
 
 }

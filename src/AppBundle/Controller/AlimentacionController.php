@@ -322,31 +322,41 @@ class AlimentacionController extends Controller {
             $em = $doctrine->getManager();
             $session = $request->getSession();
             $id_ejercicio = $request->request->get('id_ejercicio');
-            $ENTREGA = $request->files->get('ENTREGA');
-            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento/' . $id_ejercicio);
+            $ENTREGA = $request->files->get('entrega');
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento/');
             if (!$status) {
-                return $this->comidaAction($request, array('info' => 'Acceso no autorizado'));
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
             $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
             if ($EJERCICIO === null) {
                 Utils::setError($doctrine, 0, 'El ejercicio con id: ' . $id_ejercicio . ' no existe (entregarAlimentoAction)', $USUARIO);
-                return $this->comidaAction($request, array('info' => 'El ejercicio no existe'));
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $SECCION = $EJERCICIO->getIdEjercicioSeccion();
             if ($ENTREGA !== null) {
                 if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                    $DISTRITO = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
-                    if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
-                        $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
-                        if ($SECCION->getSeccion() === 'comida') {
-                            return $this->comidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
-                        } else {
-                            return $this->bebidaAction($request, array('info' => 'Tiempo entre entregas establecido es de ' . $tiempoEntreEntregas . ' días'));
-                        }
-                    }
                     $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
-                    $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
+                    if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+                        $DISTRITO = $USUARIO->getIdDistrito();
+                        if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
+                            $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                        }
+                        $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+//                        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => count($CIUDADANOS))), 200);
+                        if (count($CIUDADANOS)) {
+                            foreach ($CIUDADANOS as $CIUDADANO) {
+                                $RESULTADOS = Utils::setNota($doctrine, $CIUDADANO, $EJERCICIO, $CALIFICACION_MEDIA);
+                            }
+                        }
+                    } else {
+                        if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, null)) {
+                            $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                        }
+                        $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
+                    }
                     $RESULTADOS['SECCION'] = $SECCION->getSeccion();
 
                     $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -372,18 +382,14 @@ class AlimentacionController extends Controller {
                     $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                     $em->persist($EJERCICIO_ENTREGA);
                     $em->flush();
-                    return new RedirectResponse('/ciudadano/alimentacion');
+                    return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio entregado correctamente')), 200);
                 }
-                $RESULTADOS['info'] = 'El archivo que intenta subir supera el tamaño máximo permitido.'
+                $respuesta = 'El archivo que intenta subir supera el tamaño máximo permitido.'
                         . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024
                         . '<br>Tamaño máx: ' . $ENTREGA->getMaxFilesize() / 1024;
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $respuesta)), 200);
             }
-            $RESULTADOS['info'] = 'No se ha seleccionado archivo';
-            if ($SECCION->getSeccion() === 'comida') {
-                return $this->comidaAction($request, $RESULTADOS);
-            } else {
-                return $this->bebidaAction($request, $RESULTADOS);
-            }
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha seleccionado archivo')), 200);
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato'));
     }

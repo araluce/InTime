@@ -6,6 +6,99 @@
 
 {% block stylesheets %}
     <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
+    <style>
+        .file-upload-indicator {
+            display: inline;
+            cursor: default;
+            opacity: .8;
+            width: 60%;
+        }
+        .file-drop-zone{
+            border-top-color: rgb(255, 255, 255);
+            border-top-style: dotted;
+            border-top-width: 3px;
+            border-right-color: rgb(255, 255, 255);
+            border-right-style: dotted;
+            border-right-width: 3px;
+            border-left-color: rgb(255, 255, 255);
+            border-left-style: dotted;
+            border-left-width: 3px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .file-preview-frame {
+            position: relative;
+            display: table;
+            margin: 8px;
+            height: 160px;
+            border: 1px solid #ddd;
+            box-shadow: 1px 1px 5px 0 #a2958a;
+            padding: 6px;
+            float: left;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .file-preview-image {
+            vertical-align: middle;
+            image-orientation: from-image;
+        }
+        .file-preview {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .close {
+            float: right;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            filter: alpha(opacity=20);
+            opacity: .2;
+        }
+        .file-thumbnail-footer {
+            position: relative;
+        }
+        .file-footer-caption {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 160px;
+            text-align: center;
+            padding-top: 4px;
+            font-size: 11px;
+            color: #777;
+            margin: 5px auto;
+        }
+        .file-preview .clickable, .clickable .file-drop-zone-title {
+            cursor: pointer;
+        }
+        .file-drop-zone {
+            border: 1px dashed #aaa;
+            border-radius: 4px;
+            height: 100%;
+            text-align: center;
+            vertical-align: middle;
+            margin: 12px 15px 12px 12px;
+            padding: 5px;
+        }
+        code, kbd, pre, samp {
+            font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        }
+        code, kbd, pre, samp {
+            font-family: monospace,monospace;
+            font-size: 1em;
+        }
+        .file-thumb-progress .progress, .file-thumb-progress .progress-bar {
+            height: 10px;
+            font-size: 9px;
+            line-height: 10px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -107,6 +200,12 @@
                             </div>
                             <div class="row border-radius" id="detalle-terminado" style="margin-top: 1%;"></div>
                         </div>
+                        <div class="row tab-pane fade in" id="tab4">
+                            <input id="entrega-individual" name="entrega" type="file" multiple class="file-loading">
+                        </div>
+                        <div class="row tab-pane fade in" id="tab5">
+                            <input id="entrega-distrito" name="entrega" type="file" multiple class="file-loading">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,6 +218,52 @@
         var ya_solicitado_individual = false;
         var ya_solicitado_distrito = false;
         var puede_entregar = true;
+        var id_ejercicio = 0;
+        function setId(id) {
+            id_ejercicio = id;
+            console.log(id);
+            $('#entrega-individual').fileinput('refresh', {uploadExtraData: {"id_ejercicio": id_ejercicio, "tipo": "individual"}});
+            $('#entrega-distrito').fileinput('refresh', {uploadExtraData: {"id_ejercicio": id_ejercicio, "tipo": "distrito"}});
+        }
+        $("#entrega-individual").fileinput({
+            uploadUrl: "/ciudadano/alimentacion/comida/entregarAlimento",
+            uploadExtraData: {"id_ejercicio": id_ejercicio, "tipo": "individual"},
+            uploadAsync: true,
+            maxFileCount: 1,
+            showBrowse: false,
+            browseOnZoneClick: true,
+            maxFileSize: 2000
+        });
+        $("#entrega-distrito").fileinput({
+            uploadUrl: "/ciudadano/alimentacion/comida/entregarAlimento",
+            uploadExtraData: {"id_ejercicio": id_ejercicio, "tipo": "individual"},
+            uploadAsync: true,
+            maxFileCount: 1,
+            showBrowse: false,
+            browseOnZoneClick: true,
+            maxFileSize: 2000
+        });
+        $("#entrega-individual").on('fileuploaded', function (event, data, previewId, index) {
+            var response = data.response;
+            data = jQuery.parseJSON(response);
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion(data.message);
+        });
+        $("#entrega-distrito").on('fileuploaded', function (event, data, previewId, index) {
+            var response = data.response;
+            data = jQuery.parseJSON(response);
+            console.log(data);
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion(data.message);
+        });
+        $('#entrega-individual').on('fileselectnone', function (event) {
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion("Huh! No hay ficheros seleccionados.");
+        });
+        $('#entrega-distrito').on('fileselectnone', function (event) {
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion("Huh! No hay ficheros seleccionados.");
+        });
         $(document).ready(function () {
             obtenerTienda();
             $(".btn-pref .btn").click(function () {
@@ -128,11 +273,6 @@
             {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
             setTSC();
         });
-
-        function arena_ejercicio(id) {
-            var ruta = '/arena/' + id;
-            window.location.replace(ruta);
-        }
         function solicitar(id) {
             var ruta = '/solicitar/' + id;
             $.get(ruta, function (data, status) {
@@ -176,7 +316,6 @@
             ruta = '/ciudadano/alimentacion/comida/tienda';
             $.get(ruta, function (data, status) {
                 datos = jQuery.parseJSON(data);
-                console.log(datos);
                 if (datos.estado === 'OK') {
                     if (datos.message.YA_SOLICITADO_INDIVIDUAL) {
                         ya_solicitado_individual = true;
@@ -360,31 +499,17 @@
                     contenido += '  </div>';
                     contenido += '</div>';
                     if (!rest_soli) {
-                        contenido += '<form action="/ciudadano/alimentacion/comida/entregarAlimento" method="post" enctype="multipart/form-data">';
-                        contenido += '  <input type="hidden" name="id_ejercicio" value="' + id + '">';
-                        contenido += '  <div class="row">';
-                        contenido += '        <div class="col-md-12" id="panel-entrega">';
-                        contenido += '            <div class="form-group">';
-                        contenido += '                <div class="input-group">';
-                        contenido += '                    <label class="input-group-btn">';
-                        contenido += '                        <span class="btn btn-primary detalle-boton" style="color: black;">';
-                        contenido += '                            Buscar&hellip; <input type="file" name="ENTREGA" style="display: none;">';
-                        contenido += '                        </span>';
-                        contenido += '                    </label>';
-                        contenido += '                    <input type="text" class="form-control" readonly placeholder="Sube tu entrega">';
-                        contenido += '                </div>';
-                        contenido += '            </div>';
-                        contenido += '        </div>';
-                        contenido += '    </div>';
                         contenido += '  <div class="row">';
                         contenido += '      <div class="col-md-12">';
-                        //contenido += '          <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
-                        contenido += '          <button type="submit" class="btn detalle-boton">';
+                        if (!data.message.ES_DISTRITO) {
+                            contenido += '          <button class="btn detalle-boton" href="#tab4" data-toggle="tab" onclick="setId(' + id + ')">';
+                        } else {
+                            contenido += '          <button class="btn detalle-boton" href="#tab5" data-toggle="tab" onclick="setId(' + id + ')">';
+                        }
                         contenido += '              ENTREGAR';
                         contenido += '          </button>';
                         contenido += '      </div>';
                         contenido += '  </div>';
-                        contenido += '</form>';
                     } else {
                         contenido += '  <div class="row">';
                         contenido += '  <div class="col-md-12 detalle-enunciado" style="color: #286090; min-height: 0px;">';
@@ -473,10 +598,7 @@
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12">';
                     if (!ya_solicitado_individual) {
-                        if (data.message.ESTADO === 'entregado') {
-                            contenido += '      <button class="btn detalle-boton" onclick="arena_ejercicio(' + data.message.ID + ');">';
-                            contenido += '          MODIFICAR ENTREGA';
-                        } else {
+                        if (data.message.ESTADO !== 'entregado') {
                             contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
                             contenido += '          VOLVER A SOLICITAR';
                         }
@@ -530,41 +652,5 @@
         function cerrarModal() {
             $('#modal-advice2').modal('toggle');
         }
-        $(function () {
-            // We can attach the `fileselect` event to all file inputs on the page
-            $(document).on('change', ':file', function () {
-                var input = $(this),
-                        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                input.trigger('fileselect', [numFiles, label]);
-            });
-            // We can watch for our custom `fileselect` event like this
-            $(document).ready(function () {
-                $(':file').on('fileselect', function (event, numFiles, label) {
-
-                    var input = $(this).parents('.input-group').find(':text'),
-                            log = numFiles > 1 ? numFiles + ' files selected' : label;
-                    if (input.length) {
-                        input.val(log);
-                    } else {
-                        if (log)
-                            alert(log);
-                    }
-
-                });
-            });
-            $('#ENTREGA').bind('change', function () {
-                $("#carga").show();
-                var tamanio = this.files[0].size;
-                if (tamanio > {{ max_size }}) {
-                    puede_entregar = false;
-                    $("#error").show();
-                    $('#error').html('Se ha sobrepasado el tamaño máximo permitido: ' + tamanio + '/{{max_size}}');
-                } else {
-                    $("#error").hide();
-                }
-                $("#carga").hide();
-            });
-        });
     </script>
 {% endblock %}

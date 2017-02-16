@@ -15,6 +15,7 @@ use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Trabajo;
+use AppBundle\Utils\Distrito;
 
 /**
  * Description of CronController
@@ -167,7 +168,32 @@ class CronController extends Controller {
         }
         $em->flush();
         Utils::setError($doctrine, 3, 'CRON - Comprobar vacaciones');
-        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones comprobadas'.$diaSemana)), 200);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones comprobadas' . $diaSemana)), 200);
+    }
+
+    /**
+     * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")
+     */
+    public function testCiudadanos(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $DISTRITOS = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
+        $RESPUESTA = [];
+        foreach ($DISTRITOS as $DISTRITO) {
+            $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+            $aux = [];
+            $aux['DISTRITO'] = $DISTRITO->getNombre();
+            $aux['CIUDADANOS'] = [];
+            if (count($CIUDADANOS)) {
+                foreach($CIUDADANOS as $CIUDADANO) {
+                    $aux2 = [];
+                    $aux2['NOMBRE'] = $CIUDADANO->getNombre();
+                    $aux['CIUDADANOS'][] =$aux2;
+                }
+            }
+            $RESPUESTA[] = $aux;
+        }
+        Utils::pretty_print($RESPUESTA);
+        return new JsonResponse(json_encode($RESPUESTA), 200);
     }
 
 }

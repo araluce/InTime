@@ -13,6 +13,63 @@
         .form-control{
             font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         }
+        .alert{
+            font-size: 40px;
+        }
+        #ejercicio-evaluacion,
+        #ejercicios{
+            font-size: 50px;  
+        }
+        .caja-opcion{
+            border-left: 5px #337ab7 solid;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 1%;
+        }
+        .fila-producto{
+            height: 20vw;
+        }
+        .slot{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            margin-left: 0px;
+            width:  20vw;
+            height: 20vw;
+        }
+        .slot img{
+            height: 12vw;
+        }
+        @media (max-width: 760px){
+
+        }
+        @media (min-width: 760px){
+            .slot{
+                width:  15vw;
+                height: 15vw;
+            }
+            .slot img{
+                height: 10vw;
+            }
+        }
+        @media (min-width: 992px){
+
+        }
+        @media (min-width: 1200px){
+            .slot{
+                width:  6vw;
+                height: 6vw;
+            }
+            .slot img{
+                height: 4vw;
+            }
+            #ejercicio-evaluacion,
+            #ejercicios{
+                font-size: 20px;  
+            }
+            .alert{
+                font-size: 15px;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -33,6 +90,12 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
+                    <button type="button" id="resultados" class="btn btn-default btn13" href="#tab3" data-toggle="tab" onclick="getEjercicios();">
+                        <span class="fa fa-refresh" aria-hidden="true"></span>
+                        <div class="hidden-xs">RESULTADOS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
                     <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
                         <div class="hidden-xs">ATRÁS</div>
@@ -43,6 +106,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="tab-content">
+                    <div id="alerta" style="margin-top: 1%;"></div>
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row bordes" style="margin-top:1%;">
                             <legend>Proponer una entrega en comida</legend>
@@ -179,6 +243,16 @@
                             <button class="btn btn-block btn-default" onclick="publicarBebida();" style="margin-top: 1%;">PUBLICAR</button>
                         </div>
                     </div>
+                    <div class="tab-pane fade in" id="tab3">
+                        <div class="row" style="margin-top: 1%;">
+                            <div id="ejercicios"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab4">
+                        <div class="row" style="margin-top: 1%;">
+                            <div id="ejercicio-evaluacion"></div>
+                        </div>
+                    </div>
                     <div class="row bordes bonificadores" style="margin-top: 1%;">
                         <legend>Bonificación por calificación</legend>
                         {% for c in ULT_CAL_C %}
@@ -228,6 +302,171 @@
 
 {% block javascripts %}
     <script>
+        function setSuccess(message) {
+            contenido = '<div class="alert alert-success alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            return contenido;
+        }
+        function setAlert(message) {
+            contenido = '<div class="alert alert-danger alert-dismissable">';
+            contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+            contenido += '   ' + message;
+            contenido += '</div>';
+            return contenido;
+        }
+        function getEjercicios() {
+            ruta = '/guardian/alimentacion/getEjerciciosAlimentacion';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                //console.log(data);
+                if (data.estado === 'OK') {
+                    mostrarEjercicios(data.message);
+                } else {
+                    $('#alerta').html(setAlert(data.message));
+                }
+            });
+        }
+        function mostrarEjercicios(ejercicios) {
+            $('#ejercicios').html('');
+            $.each(ejercicios, function (k, v) {
+                contenido = '<div class="col-lg-6" style="margin-bottom: 1%;">';
+                contenido += '  <div class="row bordes border-radius" style="margin: 1%;">';
+                if (v.DISTRITO) {
+                    contenido += '   <div class="col-lg-12">';
+                    contenido += '      <center><h1>EJERCICIO DE DISTRITO</h1></center>';
+                    contenido += '  </div>';
+                }
+                contenido += '   <div class="col-lg-12">';
+                contenido += '      ' + v.ENUNCIADO;
+                contenido += '  </div>';
+                if (v.ENTREGAS_PENDIENTES) {
+                    contenido += '  <div class="col-lg-12">';
+                    contenido += '      <button class="btn btn-block btn-primary" href="#tab4" data-toggle="tab" onclick="getEntregas(' + v.ID + ');">';
+                    contenido += '          Corregir ' + v.ENTREGAS_PENDIENTES + ' entregas pendientes';
+                    contenido += '      </button>';
+                    contenido += '  </div>';
+                } else {
+                    contenido += '  <div class="col-lg-12">';
+                    contenido += '      <button class="btn btn-block btn-primary" href="#tab4" data-toggle="tab" onclick="getEntregas(' + v.ID + ');">';
+                    contenido += '          Ver evaluaciones';
+                    contenido += '      </button>';
+                    contenido += '  </div>';
+                }
+                contenido += '  </div>';
+                contenido += '</div>';
+                $('#ejercicios').append(contenido);
+            });
+        }
+        function getEntregas(id) {
+            $('#ejercicio-evaluacion').html('');
+            ruta = '/guardian/alimentacion/getEntregasAlimentacion/' + id;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    console.log(data.message);
+                    mostrarEntregas(data.message);
+                } else {
+                    $('#alerta').html(setAlert(data.message));
+                }
+            });
+        }
+        function mostrarEntregas(entregas) {
+            $.each(entregas.CALIFICACIONES, function (k, v) {
+                contenido = '<div class="col-lg-12 bordes border-radius" style="margin-bottom: 1%;">';
+                if (!entregas.DISTRITO) {
+                    contenido += '   <div class="col-lg-12">';
+                    contenido += '      <legend>Datos del ciudadano</legend>';
+                    contenido += '      ' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI;
+                    contenido += '  </div>';
+                } else {
+                    contenido += '   <div class="col-lg-12">';
+                    contenido += '      <legend>Datos del distrito</legend>';
+                    contenido += '      DISTRITO: ' + v.DISTRITO;
+                    contenido += '  </div>';
+                }
+                if (v.CALIFICACION.ESTADO !== 'solicitado') {
+                    contenido += '   <div class="col-lg-12">';
+                    contenido += '      <legend>Datos de la entrega</legend>';
+                    contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/' + v.SECCION + '/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
+                    contenido += '  </div>';
+                }
+                contenido += '  <div class="row">';
+                contenido += '  <div class="col-lg-12" style="margin-top: 1%;">';
+                contenido += '      <legend>Evaluación</legend>';
+                if (v.CALIFICACION.ESTADO === 'entregado') {
+                    contenido += '      <div class="slot fila btn-menu-first">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[0].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[0].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[0].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[1].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[1].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[1].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[2].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[2].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[2].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[3].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[3].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[3].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[4].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[4].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[4].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila btn-menu-last">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[5].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[5].ID + ');">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[5].ICONO + '" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                }
+                if (v.CALIFICACION.ESTADO === 'evaluado') {
+                    contenido += '  <p>Entrega ya evaluada</p>';
+                    contenido += '  <div class="slot border-radius">';
+                    contenido += '      <span class="btn-tienda">';
+                    contenido += '          <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
+                    contenido += '      </span>';
+                    contenido += '  </div>';
+                }
+                if (v.CALIFICACION.ESTADO === 'solicitado') {
+                    contenido += '  <p>Este ciudadano ha solicitado el ejercicio</p>';
+                }
+                contenido += '  </div>';
+                contenido += '  </div>';
+                contenido += '<div id="aviso-entrega-' + v.ENTREGA.ID + '"></div>';
+                contenido += '</div>';
+                $('#ejercicio-evaluacion').append(contenido);
+            });
+        }
+        function setNota(idCalificacion, idNota) {
+            var idCajas = $.trim(idCalificacion + '' + idNota);
+            var idAviso = $.trim(idCalificacion);
+            $(".btn-tienda").addClass("opacidad");
+            $("#tab3 .slot").css('background-color', 'gray');
+            $("#image-tienda-" + idCajas).removeClass("opacidad");
+            $("#image-tienda-" + idCajas).parent().css('background-color', 'white');
+            ruta = '/guardian/setCalificacion';
+            datos = {
+                'idCalificacion': idCalificacion,
+                'idNota': idNota
+            };
+            $.post(ruta, datos, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                //console.log(data.message);
+                if (data.estado === 'OK') {
+                    $('#aviso-entrega-' + idAviso).html(setSuccess(data.message));
+                } else {
+                    $('#aviso-entrega-' + idAviso).html(setAlert(data.message));
+                }
+            });
+        }
         function publicarComida() {
             var enunciado = $("#enunciado_comida").val();
             var icono = $("#icono_comida").val();
@@ -259,7 +498,6 @@
                         datos[kk] = vv;
                     });
                 });
-                console.log(datos);
                 $.post(ruta, datos, function (data, status) {
                     alert(data.message);
                     location.reload();
@@ -307,7 +545,7 @@
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
         function obtenerBonificadores() {
             var respuesta = [];

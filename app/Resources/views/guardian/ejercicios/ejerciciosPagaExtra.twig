@@ -23,9 +23,6 @@
             padding-right: 15px;
             margin-top: 1%;
         }
-        .btn-menu-last{
-            border-right: 2px #000000 solid; 
-        }
         .fila-producto{
             height: 20vw;
         }
@@ -283,10 +280,12 @@
                 contenido += '      <legend>Datos del ciudadano</legend>';
                 contenido += '      ' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI;
                 contenido += '  </div>';
-                contenido += '   <div class="col-lg-12">';
-                contenido += '      <legend>Datos de la entrega</legend>';
-                contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/paga_extra/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
-                contenido += '  </div>';
+                if (v.CALIFICACION.ESTADO !== 'solicitado') {
+                    contenido += '   <div class="col-lg-12">';
+                    contenido += '      <legend>Datos de la entrega</legend>';
+                    contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/paga_extra/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
+                    contenido += '  </div>';
+                }
                 contenido += '  <div class="row">';
                 contenido += '  <div class="col-lg-12" style="margin-top: 1%;">';
                 contenido += '      <legend>Evaluación</legend>';
@@ -329,6 +328,9 @@
                     contenido += '          <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
                     contenido += '      </span>';
                     contenido += '  </div>';
+                }
+                if (v.CALIFICACION.ESTADO === 'solicitado') {
+                    contenido += '  <p>Este ciudadano ha solicitado el ejercicio</p>';
                 }
                 contenido += '  </div>';
                 contenido += '  </div>';

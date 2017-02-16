@@ -445,12 +445,12 @@ class TrabajoController extends Controller {
         $EJERCICIO_CALIFICACION->setIdEvaluador(null);
         $EJERCICIO_CALIFICACION->setIdGrupo(null);
         $em->persist($EJERCICIO_CALIFICACION);
-        
-        
+
+
         $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
             'idEjercicio' => $EJERCICIO, 'idUsu' => $USUARIO
         ]);
-        if($EJERCICIO_USUARIO !== null){
+        if ($EJERCICIO_USUARIO !== null) {
             $EJERCICIO_USUARIO->setVisto(1);
             $em->persist($EJERCICIO_USUARIO);
         }
@@ -517,6 +517,42 @@ class TrabajoController extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio entregado correctamente')), 200);
             }
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El archivo supera el límite máximo permitido')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han recibido datos')), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/trabajo/paga/obtenerCalificacion", name="obtenerCalificacion")
+     */
+    public function obtenerCalificacionAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/paga/obtenerCalificacion');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $id_ejercicio = $request->request->get('id_ejercicio');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+            if (null === $EJERCICIO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe ' . $id_ejercicio)), 200);
+            }
+            $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+            ]);
+            $DATOS = [];
+            if ($EJERCICIO->getIdEjercicioSeccion()->getSeccion() === 'paga_extra') {
+                if (preg_match('/"([^"]+)"/', $EJERCICIO->getEnunciado(), $coincidencias)) {
+                    $DATOS['TITULO'] = $coincidencias[1];
+                }
+                if(trim($DATOS['TITULO']) === ''){
+                    $DATOS['TITULO'] = 'Sin título';
+                }
+            }
+            $DATOS['ICONO'] = $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
+            $DATOS['TEXTO'] = $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaTexto();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han recibido datos')), 200);
     }

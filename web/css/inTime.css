@@ -34,7 +34,7 @@
 }
 .btn-menu-last{
     border-width: 2px;
-    border-right: 2px;
+    border-right: 2px #000000 solid; 
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
 }

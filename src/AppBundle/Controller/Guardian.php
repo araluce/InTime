@@ -19,6 +19,7 @@ use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Ejercicio;
 use AppBundle\Utils\Trabajo;
+use AppBundle\Utils\Distrito;
 
 /**
  * Description of Guardian
@@ -258,6 +259,58 @@ class Guardian extends Controller {
     }
 
     /**
+     * @Route("/guardian/alimentacion/getEjerciciosAlimentacion", name="getEjerciciosAlimentacion")
+     */
+    public function getEjerciciosAlimentacionGuardianAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/alimentacion/getEjerciciosAlimentacion', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $SECCION_COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
+        $SECCION_BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
+        if (null === $SECCION_COMIDA || null === $SECCION_BEBIDA) {
+            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe la seccion paga_extra');
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $EJERCICIOS = [];
+        $EJERCICIOS_COMIDA = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_COMIDA);
+        $EJERCICIOS_BEBIDA = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_BEBIDA);
+        if (!count($EJERCICIOS_COMIDA) || !count($EJERCICIOS_BEBIDA)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ejercicios en esta sección aún. Antes debes publicarlos en el apartado PROPONER')), 200);
+        }
+        foreach ($EJERCICIOS_COMIDA as $E) {
+            $EJERCICIOS[] = $E;
+        }
+        foreach ($EJERCICIOS_BEBIDA as $E) {
+            $EJERCICIOS[] = $E;
+        }
+        $ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        if (null === $ENTREGADO) {
+            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe el estado entregado');
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $DATOS = [];
+        foreach ($EJERCICIOS as $EJERCICIO) {
+            $aux = [];
+            $aux['DISTRITO'] = 0;
+            if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+                $aux['DISTRITO'] = 1;
+            }
+            $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+            $aux['ID'] = $EJERCICIO->getIdEjercicio();
+            $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+                'idEjercicio' => $EJERCICIO, 'idEjercicioEstado' => $ENTREGADO
+            ]);
+            $aux['ENTREGAS_PENDIENTES'] = count($ENTREGAS);
+            $DATOS[] = $aux;
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
      * @Route("/guardian/pagaExtra/getEntregasPaga/{id_ejercicio}", name="getEntregasPaga")
      */
     public function getEntregasPagaAction(Request $request, $id_ejercicio) {
@@ -307,13 +360,134 @@ class Guardian extends Controller {
                 $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getIdCalificaciones();
                 $aux['CALIFICACION']['ICONO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
             }
-            $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
-            ]);
-            $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
-            $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
-            $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+            if ($aux['CALIFICACION']['ESTADO'] !== 'solicitado') {
+                $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                    'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+                ]);
+                $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+                $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+            }
             $DATOS['CALIFICACIONES'][] = $aux;
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/alimentacion/getEntregasAlimentacion/{id_ejercicio}", name="getEntregasAlimentacion")
+     */
+    public function getEntregasAlimentacionAction(Request $request, $id_ejercicio) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/alimentacion/getEntregasAlimentacion/' . $id_ejercicio, true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+        if (null === $EJERCICIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $DATOS = [];
+        if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+            $DATOS['DISTRITO'] = 1;
+        } else {
+            $DATOS['DISTRITO'] = 0;
+        }
+        $DATOS['NOTAS'] = [];
+        $NOTAS = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
+        if (!count($NOTAS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        foreach ($NOTAS as $NOTA) {
+            $aux = [];
+            $aux['ICONO'] = $NOTA->getCorrespondenciaIcono();
+            $aux['ID'] = $NOTA->getIdCalificaciones();
+            $DATOS['NOTAS'][] = $aux;
+        }
+        $DATOS['CALIFICACIONES'] = [];
+        if (!$DATOS['DISTRITO']) {
+            $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
+            if (!count($CALIFICACIONES)) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay entregas para este ejercicio.')), 200);
+            }
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                $aux = [];
+                $aux['CIUDADANO'] = [];
+                $aux['CALIFICACION'] = [];
+                $aux['ENTREGA'] = [];
+                $CIUDADANO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($CALIFICACION->getIdUsuario());
+                $aux['CIUDADANO']['ID'] = $CIUDADANO->getIdUsuario();
+                $aux['CIUDADANO']['NOMBRE'] = $CIUDADANO->getNombre();
+                $aux['CIUDADANO']['APELLIDOS'] = $CIUDADANO->getApellidos();
+                $aux['CIUDADANO']['ALIAS'] = $CIUDADANO->getSeudonimo();
+                $aux['CIUDADANO']['DNI'] = $CIUDADANO->getDni();
+                $aux['CALIFICACION']['ESTADO'] = $CALIFICACION->getIdEjercicioEstado()->getEstado();
+                $aux['CALIFICACION']['CALIFICADO'] = 0;
+                $aux['CALIFICACION']['FECHA'] = $CALIFICACION->getFecha();
+                if (null != $CALIFICACION->getIdCalificaciones()) {
+                    $aux['CALIFICACION']['CALIFICADO'] = 1;
+                    $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getIdCalificaciones();
+                    $aux['CALIFICACION']['ICONO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
+                }
+                if ($aux['CALIFICACION']['ESTADO'] !== 'solicitado') {
+                    $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                        'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+                    ]);
+                    $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                    $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+                    $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+                }
+                $DATOS['CALIFICACIONES'][] = $aux;
+            }
+        } else {
+            $DISTRITOS = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
+            if (!count($DISTRITOS)) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay entregas para este ejercicio.')), 200);
+            }
+            foreach ($DISTRITOS as $DISTRITO) {
+                $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
+                $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
+                if (count($CIUDADANOS && count($ENTREGAS))) {
+                    $CALIFICACION2 = null;
+                    foreach ($ENTREGAS as $ENTREGA) {
+                        $CIUDADANO = $ENTREGA->getIdUsuario();
+                        if (in_array($CIUDADANO, $CIUDADANOS)) {
+                            $CALIFICACION2 = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                                'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
+                            ]);
+                        }
+                    }
+                    if ($CALIFICACION2 !== null) {
+                        $aux = [];
+                        $aux['CIUDADANO'] = [];
+                        $aux['CALIFICACION'] = [];
+                        $aux['ENTREGA'] = [];
+                        $CIUDADANO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($CALIFICACION2->getIdUsuario());
+                        $aux['CIUDADANO']['DNI'] = $CIUDADANO->getDni();
+                        $aux['DISTRITO'] = $DISTRITO->getNombre();
+                        $aux['SECCION'] = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
+                        $aux['CALIFICACION']['ESTADO'] = $CALIFICACION2->getIdEjercicioEstado()->getEstado();
+                        $aux['CALIFICACION']['CALIFICADO'] = 0;
+                        $aux['CALIFICACION']['FECHA'] = $CALIFICACION2->getFecha();
+                        if (null != $CALIFICACION2->getIdCalificaciones()) {
+                            $aux['CALIFICACION']['CALIFICADO'] = 1;
+                            $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION2->getIdCalificaciones()->getIdCalificaciones();
+                            $aux['CALIFICACION']['ICONO'] = $CALIFICACION2->getIdCalificaciones()->getCorrespondenciaIcono();
+                        }
+                        $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                            'idUsuario' => $CALIFICACION2->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+                        ]);
+                        $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                        $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+                        $aux['ENTREGA']['ID'] = $CALIFICACION2->getIdEjercicioCalificacion();
+                        $DATOS['CALIFICACIONES'][] = $aux;
+                    }
+                }
+            }
+            if (!count($DATOS['CALIFICACIONES'])) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay entregas')), 200);
+            }
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
@@ -584,7 +758,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/setCalificacion", name="setCalificacion")
@@ -604,7 +778,7 @@ class Guardian extends Controller {
             $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicioCalificacion($idCalificacion);
             $idNota = $request->request->get('idNota');
             $NOTA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones($idNota);
-            if(null === $EVALUADO || null === $CALIFICACION || null === $NOTA){
+            if (null === $EVALUADO || null === $CALIFICACION || null === $NOTA) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $SECCION = $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion();
@@ -614,18 +788,36 @@ class Guardian extends Controller {
             $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
                 'idEjercicio' => $CALIFICACION->getIdEjercicio(), 'idCalificacion' => $NOTA
             ]);
-            if(null === $BONIFICACION){
+            if (null === $BONIFICACION) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
-            if(null !== $BONIFICACION_ANTERIOR){
-                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1)*$BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+            if (null !== $BONIFICACION_ANTERIOR) {
+                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
             }
-            $CALIFICACION->setIdEvaluador($GdT);
-            $CALIFICACION->setIdEjercicioEstado($EVALUADO);
-            $CALIFICACION->setIdCalificaciones($NOTA);
-            $em->persist($CALIFICACION);
-            $em->flush();
-            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+            $EJERCICIO = $CALIFICACION->getIdEjercicio();
+            if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+                $DISTRITO = $CALIFICACION->getIdUsuario()->getIdDistrito();
+                $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+                foreach ($CIUDADANOS as $CIUDADANO) {
+                    $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy(['idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO]);
+                    if (null !== $CALIFICACION) {
+                        $CALIFICACION->setIdEvaluador($GdT);
+                        $CALIFICACION->setIdEjercicioEstado($EVALUADO);
+                        $CALIFICACION->setIdCalificaciones($NOTA);
+                        $em->persist($CALIFICACION);
+                        $em->flush();
+                        Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+                    }
+                }
+            } else {
+                $CALIFICACION->setIdEvaluador($GdT);
+                $CALIFICACION->setIdEjercicioEstado($EVALUADO);
+                $CALIFICACION->setIdCalificaciones($NOTA);
+                $em->persist($CALIFICACION);
+                $em->flush();
+                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+            }
+
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
