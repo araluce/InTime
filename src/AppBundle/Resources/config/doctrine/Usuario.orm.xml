@@ -13,6 +13,7 @@
     </id>
     <field name="nombre" type="string" column="nombre" length="30" nullable="true"/>
     <field name="apellidos" type="string" column="apellidos" length="40" nullable="true"/>
+    <field name="fechaNacimiento" type="datetime" column="fecha_nacimiento" nullable="true"/>
     <field name="clave" type="string" column="clave" length="40" nullable="true"/>
     <field name="email" type="string" column="email" length="120" nullable="true"/>
     <field name="seudonimo" type="string" column="seudonimo" length="40" nullable="true"/>

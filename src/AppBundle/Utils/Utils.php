@@ -550,4 +550,52 @@ class Utils {
         }
     }
 
+    /**
+     * Convierte segundos en milisegundos
+     * @param int $mili
+     * @return int Segundos
+     */
+    static function milisegundosToSegundos($mili) {
+        $segundos = $mili / 1000;
+        return intval($segundos);
+    }
+
+    /**
+     * Nos dice si un usuario ha apostado o no a una opción de una apuesta. 
+     * Además nos dice si el usuario ha apostado ya a otra opción de la misma
+     * apuesta
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $OPCION_APUESTA
+     * @return int 0 - No ha apostado, -1 - Ha apostado a otra opción, 1 ha apostado a esa opción
+     */
+    static function haApostado($doctrine, $USUARIO, $OPCION_APUESTA) {
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $APUESTA_PRINCIPAL = $OPCION_APUESTA->getIdApuesta();
+        $TODAS_OPCIONES = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findByIdApuesta($APUESTA_PRINCIPAL);
+        // Reviso todas mis apuestas en esta categoría
+        $query = $qb->select('ua')
+                ->from('\AppBundle\Entity\UsuarioApuesta', 'ua')
+                ->where('ua.idApuestaPosibilidad IN (:TODAS) AND ua.idUsuario = :IdUsuario')
+                ->setParameters(['TODAS' => array_values($TODAS_OPCIONES), 'IdUsuario' => $USUARIO]);
+        $APUESTAS = $query->getQuery()->getResult();
+        // Mi apuesta...
+        $APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findOneBy([
+            'idApuestaPosibilidad' => $OPCION_APUESTA, 'idUsuario' => $USUARIO
+        ]);
+        
+        // Nunca he apostado en esta categoría
+        if (!count($APUESTAS)) {
+            return 0;
+        }
+        // Aquí he apostado sí o sí. Si la apuesta que voy a realizar no existe
+        // significa que estoy votando otra opción
+        if(null === $APUESTA){
+            return -1;
+        }
+        // La apuesta es para actualizar
+        return 1;
+    }
+
 }

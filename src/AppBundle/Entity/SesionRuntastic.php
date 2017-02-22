@@ -13,6 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class SesionRuntastic
 {
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="evaluado", type="boolean", nullable=false)
+     */
+    private $evaluado;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id_runtastic", type="integer", nullable=false)
@@ -137,6 +144,29 @@ class SesionRuntastic
     private $idUsuarioRuntastic;
 
 
+
+    /**
+     * Set evaluado
+     *
+     * @param boolean $evaluado
+     * @return SesionRuntastic
+     */
+    public function setEvaluado($evaluado)
+    {
+        $this->evaluado = $evaluado;
+
+        return $this;
+    }
+
+    /**
+     * Get evaluado
+     *
+     * @return boolean 
+     */
+    public function getEvaluado()
+    {
+        return $this->evaluado;
+    }
 
     /**
      * Set idRuntastic

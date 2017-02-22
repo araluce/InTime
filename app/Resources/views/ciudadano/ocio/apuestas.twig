@@ -74,10 +74,10 @@
             }
         }
         @media (min-width: 992px){
-            
+
         }
         @media (min-width: 1200px){
-            
+
         }
     </style>
 {% endblock %}
@@ -86,49 +86,17 @@
 {% block body %}
     <div class="container">
         <div class="row">
-            <div class="col-md-12 jumbotron">
-                <div class="row" style="margin-top:-4%;">
-                    <div class="col-md-12">
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="/">
-                                    <i class="fa fa-home"></i>
-                                    HOME
-                                </a>
-                                <span class="divider">/</span>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-pencil-square"></i> LOTERÍAS Y APUESTAS
-                            </li>
-                            <li style="float:right;">
-                                <a href="/logout">
-                                    <i class="fa fa-sign-out"></i>
-                                    SALIR
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" style="margin-bottom: 1%;" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-menu-last" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="titulo-xs">ATRÁS</div>
+                    </button>
                 </div>
-                <div class="row" style="margin-bottom: 1%;">
-                    <div class="col-md-12">
-                        <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
-                            <li {% if SECCION == 'APUESTAS' %} class="active" {% endif %}>
-                                <a href="/ciudadano/ocio/apuestas">APUESTAS</a>
-                            </li>
-                            <li {% if SECCION == 'LOTERIA' %} class="active" {% endif %}>
-                                <a href="#" onclick="alert('Función no disponible por el momento');">LOTERÍAS</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% if SECCION == 'APUESTAS' %}
-                    <div class="row">
-                        <div class="col-md-12" id="panel-apuestas-current">
-
-                        </div>
-                    </div>
-                {% endif %}
             </div>
+        </div>
+        <div class="row">
+            <div id="panel-apuestas-current"></div>
         </div>
     </div>
 {% endblock %}
@@ -137,196 +105,183 @@
 {% block javascripts %}
     <script>
         $(document).ready(function () {
-        {% if SECCION == 'APUESTAS' %}
+            actualizarApuestas();
+            setInterval(function () {
                 actualizarApuestas();
-                setInterval(function () {
-                    actualizarApuestas();
-                }, 30000);
-        {% endif %}
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
-            });
+            }, 30000);
+            {% if info.message is defined or info.type is defined%}  $('#box_modal_result').click();{% endif %}
+        });
 
-            var n_posibilidades = 2;
+        var n_posibilidades = 2;
 
-            function actualizarApuestas() {
-                ruta = '/ciudadano/ocio/apuestas/actualizar';
-                $.get(ruta, function (data, status) {
-                    console.log(data);
-                    $('#panel-apuestas-current').empty();
-                    if (data.resultado === 'OK') {
-                        $.each(data.apuestas, function (apuestak, apuestav) {
-                            contenido = '';
-                            contenido += '  <div class="col-md-6">';
-                            contenido += '      <div class="row apuesta">';
+        function actualizarApuestas() {
+            ruta = '/ciudadano/ocio/apuestas/actualizar';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                $('#panel-apuestas-current').empty();
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (apuestak, apuestav) {
+                        contenido = '';
+                        contenido += '  <div class="col-lg-6 bordes border-radius">';
+                        contenido += '      <div class="row apuesta">';
+                        contenido += '          <div class="col-md-12" style="text-align:center;">';
+                        contenido += '              ' + apuestav.DESCRIPCION;
+                        contenido += '          </div>';
+                        if (apuestav.ESTADO) {
                             contenido += '          <div class="col-md-12" style="text-align:center;">';
-                            contenido += '              ' + apuestav.DESCRIPCION;
+                            contenido += '              <small style="color:red;">Apuesta cerrada</small>';
                             contenido += '          </div>';
-                            contenido += '          <div class="col-md-12" style="text-align:center;">';
-                            dias = Math.floor(apuestav.TIEMPO_TOTAL / 86400);
-                            horas = Math.floor(apuestav.TIEMPO_TOTAL / 3600) - (dias * 24);
-                            minutos = Math.floor(apuestav.TIEMPO_TOTAL / 60) - (dias * 24 * 60) - (horas * 60);
-                            segundos = Math.floor(apuestav.TIEMPO_TOTAL) - (dias * 24 * 60 * 60) - (horas * 60 * 60) - (minutos * 60);
-                            //contenido += '              <small>' + dias + ' días ' + horas + ' h ' + minutos + ' m ' + segundos + ' s</small> (' + apuestav.N_APUESTAS + ' apuestas)';
-                            contenido += '          </div>';
-                            contenido += '      </div>';
+                        }
+                        contenido += '          <div class="col-md-12" style="text-align:center;">';
+                        dias = Math.floor(apuestav.TIEMPO_TOTAL / 86400);
+                        horas = Math.floor(apuestav.TIEMPO_TOTAL / 3600) - (dias * 24);
+                        minutos = Math.floor(apuestav.TIEMPO_TOTAL / 60) - (dias * 24 * 60) - (horas * 60);
+                        segundos = Math.floor(apuestav.TIEMPO_TOTAL) - (dias * 24 * 60 * 60) - (horas * 60 * 60) - (minutos * 60);
+                        contenido += '          </div>';
+                        contenido += '      </div>';
 
-                            var mas_tdv = [];
-                            mas_tdv['index'] = 0;
-                            mas_tdv['tdv'] = 0;
-                            index = 0;
-                            $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
-                                if (posibilidadv.TdV >= mas_tdv['tdv']) {
-                                    mas_tdv['index'] = index;
-                                    mas_tdv['tdv'] = posibilidadv.TdV;
-                                }
-                                index++;
-                            });
-                            index = 0;
-                            $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
-                                contenido += '<div class="row">';
-                                contenido += '      <div class="col-xs-12">';
-                                contenido += '          <button class="btn btn-block boton-opcion" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
-                                contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
-                                contenido += '          </button>';
-                                contenido += '      </div>';
-                                contenido += '      <div class="row collapse" id="datos' + posibilidadv.ID + '" style="margin: 0 22px;">';
-                                contenido += '          <div class="col-xs-12">';
-                                contenido += '              <div class="row">';
-                                if (!apuestav.ESTADO) {
-                                    contenido += '                  <div class="col-xs-2">';
-                                    contenido += '                      <div class="row">';
-                                    contenido += '                          <div class="input-group">';
-                                    contenido += '                              <input type="number" id="dias' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="100" />';
-                                    contenido += '                              <span class="input-group-addon">d</span>';
-                                    contenido += '                          </div>';
-                                    contenido += '                      </div>';
-                                    contenido += '                  </div>';
-                                    contenido += '                  <div class="col-xs-3">';
-                                    contenido += '                      <div class="row">';
-                                    contenido += '                          <div class="input-group">';
-                                    contenido += '                              <input type="number" id="horas' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="24" />';
-                                    contenido += '                              <span class="input-group-addon">h</span>';
-                                    contenido += '                          </div>';
-                                    contenido += '                      </div>';
-                                    contenido += '                  </div>';
-                                    contenido += '                  <div class="col-xs-3">';
-                                    contenido += '                      <div class="row">';
-                                    contenido += '                          <div class="input-group">';
-                                    contenido += '                              <input type="number" id="minutos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
-                                    contenido += '                              <span class="input-group-addon">m</span>';
-                                    contenido += '                          </div>';
-                                    contenido += '                      </div>';
-                                    contenido += '                  </div>';
-                                    contenido += '                  <div class="col-xs-3">';
-                                    contenido += '                      <div class="row">';
-                                    contenido += '                          <div class="input-group">';
-                                    contenido += '                              <input type="number" id="segundos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
-                                    contenido += '                              <span class="input-group-addon">s</span>';
-                                    contenido += '                          </div>';
-                                    contenido += '                      </div>';
-                                    contenido += '                  </div>';
-                                    contenido += '                  <div class="col-xs-1">';
-                                    contenido += '                      <div class="row">';
-                                    contenido += '                          <button class="btn btn-block" onclick="apostar(' + posibilidadv.ID + ');">';
-                                    contenido += '                             <i class="fa fa-money"></i>';
-                                    contenido += '                          </button>';
-                                    contenido += '                      </div>';
-                                    contenido += '                  </div>';
-                                } else {
-                                    contenido += '                  <span>APUESTA CERRADA</span>';
-                                }
-                                contenido += '              </div>';
-                                contenido += '      </div>';
-                                $.each(posibilidadv.APOSTADORES, function (apostador_k, apostador_v) {
-                                    contenido += '          <div class="col-xs-6 apostador-alias">@' + apostador_v.alias + '</div>';
-                                    contenido += '          <div class="col-xs-6 apostador-tdv">' + apostador_v.TdV + '</div>';
-                                });
-                                dias = Math.floor(posibilidadv.TdV / 86400);
-                                horas = Math.floor(posibilidadv.TdV / 3600) - (dias * 24);
-                                minutos = Math.floor(posibilidadv.TdV / 60) - (dias * 24 * 60) - (horas * 60);
-                                segundos = Math.floor(posibilidadv.TdV) - (dias * 24 * 60 * 60) - (horas * 60 * 60) - (minutos * 60);
-                                contenido += '          <div class="col-xs-12">';
-                                contenido += '              <small>' + dias + ' días ' + horas + ' h ' + minutos + ' m ' + segundos + ' s </small>';
-                                contenido += '          </div>';
-                                contenido += '      </div>';
-                                contenido += '</div>';
-                                index++;
-                            });
-                            contenido += '  </div>';
-                            contenido += '</div>';
-                            $('#panel-apuestas-current').append(contenido);
+                        var mas_tdv = {'index': 0, 'tdv': 0};
+                        index = 0;
+                        $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
+                            if (posibilidadv.TdV >= mas_tdv['tdv']) {
+                                mas_tdv['index'] = index;
+                                mas_tdv['tdv'] = posibilidadv.TdV;
+                            }
+                            index++;
                         });
+                        index = 0;
+                        $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
+                            contenido += '<div class="row">';
+                            contenido += '      <div class="col-xs-12">';
+                            contenido += '          <button class="btn btn-block boton-opcion" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
+                            contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
+                            contenido += '          </button>';
+                            contenido += '      </div>';
+                            contenido += '      <div class="row collapse" id="datos' + posibilidadv.ID + '" style="margin: 0 22px;">';
+                            contenido += '          <div class="col-xs-12">';
+                            contenido += '              <div class="row">';
+                            if (!apuestav.ESTADO) {
+                                contenido += '                  <div class="col-xs-2">';
+                                contenido += '                      <div class="row">';
+                                contenido += '                          <div class="input-group">';
+                                contenido += '                              <input type="number" id="dias' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="100" />';
+                                contenido += '                              <span class="input-group-addon">d</span>';
+                                contenido += '                          </div>';
+                                contenido += '                      </div>';
+                                contenido += '                  </div>';
+                                contenido += '                  <div class="col-xs-3">';
+                                contenido += '                      <div class="row">';
+                                contenido += '                          <div class="input-group">';
+                                contenido += '                              <input type="number" id="horas' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="24" />';
+                                contenido += '                              <span class="input-group-addon">h</span>';
+                                contenido += '                          </div>';
+                                contenido += '                      </div>';
+                                contenido += '                  </div>';
+                                contenido += '                  <div class="col-xs-3">';
+                                contenido += '                      <div class="row">';
+                                contenido += '                          <div class="input-group">';
+                                contenido += '                              <input type="number" id="minutos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
+                                contenido += '                              <span class="input-group-addon">m</span>';
+                                contenido += '                          </div>';
+                                contenido += '                      </div>';
+                                contenido += '                  </div>';
+                                contenido += '                  <div class="col-xs-3">';
+                                contenido += '                      <div class="row">';
+                                contenido += '                          <div class="input-group">';
+                                contenido += '                              <input type="number" id="segundos' + posibilidadv.ID + '" class="form-control input-number" value="0" min="0" max="60" />';
+                                contenido += '                              <span class="input-group-addon">s</span>';
+                                contenido += '                          </div>';
+                                contenido += '                      </div>';
+                                contenido += '                  </div>';
+                                contenido += '                  <div class="col-xs-1">';
+                                contenido += '                      <div class="row">';
+                                contenido += '                          <button class="btn btn-block" onclick="apostar(' + posibilidadv.ID + ');">';
+                                contenido += '                             <i class="fa fa-money"></i>';
+                                contenido += '                          </button>';
+                                contenido += '                      </div>';
+                                contenido += '                  </div>';
+                            } else {
+                                contenido += '                  <span>APUESTA CERRADA</span>';
+                            }
+                            contenido += '              </div>';
+                            contenido += '      </div>';
+                            $.each(posibilidadv.APOSTADORES, function (apostador_k, apostador_v) {
+                                contenido += '          <div class="col-xs-6 apostador-alias">@' + apostador_v.alias + '</div>';
+                                contenido += '          <div class="col-xs-6 apostador-tdv">';
+                                if (posibilidadv.TdV.dias > 0) {
+                                    contenido += '              ' + posibilidadv.TdV.dias + 'D ';
+                                }
+                                if (posibilidadv.TdV.horas > 0) {
+                                    contenido += '              ' + posibilidadv.TdV.horas + 'H ';
+                                }
+                                if (posibilidadv.TdV.minutos > 0) {
+                                    contenido += '              ' + posibilidadv.TdV.minutos + 'M ';
+                                }
+                                if (posibilidadv.TdV.segundos > 0) {
+                                    contenido += '              ' + posibilidadv.TdV.segundos + 'S ';
+                                }
+                                contenido += '          </div>';
+                            });
+                            contenido += '      </div>';
+                            contenido += '</div>';
+                            index++;
+                        });
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        $('#panel-apuestas-current').append(contenido);
+                    });
+                }
+            });
+        }
+        function apostar(opcion_id) {
+            var segundos = parseInt($('#segundos' + opcion_id).val());
+            var minutos = parseInt($('#minutos' + opcion_id).val());
+            var horas = parseInt($('#horas' + opcion_id).val());
+            var dias = parseInt($('#dias' + opcion_id).val());
+            var apuesta = (((((dias * 24) + horas) * 60) + minutos) * 60) + segundos;
+            $("#modal-button-aceptar").hide();
+            $("#modal-avisos2").click();
+            mostrarCarga('Procesando apuesta');
+            if (apuesta <= 0) {
+                mostrarResultadoOperacion('Haga una apuesta');
+            } else {
+                datos = {'apuesta': apuesta, 'id': opcion_id};
+                $.post('/ciudadano/ocio/apuestas/apostar', datos, function (data) {
+                    console.log(data);
+                    if (data.estado === 'OK') {
+                        mostrarResultadoOperacion(data.message);
+                    } else if (data.estado === 'ERROR') {
+                        mostrarResultadoOperacion(data.message);
                     }
                 });
             }
-            function apostar(opcion_id) {
-                var segundos = parseInt($('#segundos' + opcion_id).val());
-                var minutos = parseInt($('#minutos' + opcion_id).val());
-                var horas = parseInt($('#horas' + opcion_id).val());
-                var dias = parseInt($('#dias' + opcion_id).val());
-                $("#modal-button-aceptar").hide();
-                $("#modal-avisos2").click();
-                mostrarCarga('Procesando apuesta');
-                if (!Number.isInteger(segundos)
-                        || !Number.isInteger(minutos)
-                        || !Number.isInteger(horas)
-                        || !Number.isInteger(dias))
-                {
-                    mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
-                } else {
-                    if (segundos < 0
-                            || minutos < 0
-                            || horas < 0
-                            || dias < 0)
-                    {
-                        mostrarResultadoOperacion('El formato de la apuesta no es válido. Por favor, compruebe que ha introducido sólo números.');
-                    } else {
-                        datos = {
-                            'segundos': segundos,
-                            'minutos': minutos,
-                            'horas': horas,
-                            'dias': dias,
-                            'id': opcion_id
-                        };
-                        $.post('/ciudadano/ocio/apuestas/apostar', datos, function (data) {
-                            console.log(data);
-                            if (data.estado === 'OK') {
-                                mostrarResultadoOperacion(data.message);
-                            } else if (data.estado === 'ERROR') {
-                                mostrarResultadoOperacion(data.message);
-                            }
-                        });
-                    }
-                }
-            }
-            function mostrarCarga(texto) {
-                $("#mensaje-texto").empty();
-                contenido = '';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <center>';
-                contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
-                contenido += '  </center>';
-                contenido += '</div>';
-                $("#mensaje-texto").append(contenido);
-            }
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
 
-            function mostrarResultadoOperacion(resultado) {
-                $("#mensaje-texto").empty();
-                contenido = '';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <center>';
-                contenido += '      ' + resultado;
-                contenido += '  </center>';
-                contenido += '</div>';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <div class="col-xs-12">';
-                contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
-                contenido += '  </div>';
-                contenido += '</div>';
-                //$("#modal-button-aceptar").show();
-                $("#mensaje-texto").append(contenido);
-            }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            //$("#modal-button-aceptar").show();
+            $("#mensaje-texto").append(contenido);
+        }
     </script>
 {% endblock %}

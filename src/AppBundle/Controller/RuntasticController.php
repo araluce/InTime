@@ -22,6 +22,7 @@ use AppBundle\Runtastic\Runtastic;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Usuario;
+use AppBundle\Utils\Ejercicio;
 
 /**
  * Description of CiudadanoController
@@ -101,7 +102,7 @@ class RuntasticController extends Controller {
                     $DATOS['EJERCICIO']['tipo'] = $EJERCICIO->getTipo();
                     $DATOS['EJERCICIO']['velocidad'] = $EJERCICIO->getVelocidad();
                     $DATOS['EJERCICIO']['duracion'] = Utils::formatoDuracion($EJERCICIO->getDuracion());
-                    if ($DATOS['EJERCICIO']['tipo'] === 'runing') {
+                    if ($DATOS['EJERCICIO']['tipo'] === 'running') {
                         if ($RUNING_VELOCIDAD !== 0.0) {
                             $DATOS['EJERCICIO']['velocidad_ac'] = $RUNING_VELOCIDAD;
                         } else {
@@ -135,6 +136,49 @@ class RuntasticController extends Controller {
             }
         }
         return $this->render('ciudadano/ocio/deporte.twig', $DATOS);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/deporte/getRetoDeporte", name="getRetoDeporte")
+     */
+    public function getRetoDeporteAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/getRetoDeporte');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($DEPORTE);
+        if (!count($EJERCICIOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
+        }
+        $fase_min = 1000;
+        $RETO = Ejercicio::getFase($doctrine, $USUARIO);
+        if ($RETO === 0) {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
+        }
+        if (null === $RETO) {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los retos han sido superados')), 200);
+        }
+        $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($RETO);
+        if (!count($RETOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $BENEFICIO = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($RETO);
+        $DATOS = [];
+        $DATOS['FASE'] = intval($RETO->getEnunciado());
+        $DATOS['BENEFICIO'] = Utils::segundosToDias($BENEFICIO->getBonificacion());
+        $DATOS['EJERCICIOS'] = [];
+        foreach ($RETOS as $R) {
+            $aux = [];
+            $aux['TIPO'] = $R->getTipo();
+            $aux['VELOCIDAD'] = $R->getVelocidad();
+            $aux['DURACION'] = Utils::formatoDuracion($R->getDuracion());
+            $DATOS['EJERCICIOS'][] = $aux;
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
     /**
@@ -207,15 +251,19 @@ class RuntasticController extends Controller {
         $response['usuario'] = $r->getUsername();
         $response['Uid'] = $r->getUid();
 
-        $semana = new \DateTime('now');
-        $week_activities = $r->getActivities($semana->format("W"), $semana->format("m"), $semana->format("Y"));
+        $week_activities = $r->getActivities();
+//        return new JsonResponse($week_activities, 200);
+//        return new JsonResponse(array('estado' => 'ERROR', 'message' => $SESIONES), 200);
         foreach ($week_activities as $activity) {
             if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
                 $SESION = new \AppBundle\Entity\SesionRuntastic();
                 $SESION->setIdRuntastic($activity->id);
                 $SESION->setIdUsuarioRuntastic($UR);
-                $SESION->setTipo($activity->type);
-                $SESION->setDuracion($activity->duration);
+                $SESION->setTipo('cycling');
+                if ($activity->type === 'running'){
+                    $SESION->setTipo('running');
+                }
+                $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
                 $SESION->setDistancia($activity->distance);
                 $SESION->setPaso($activity->pace);
                 $SESION->setVelocidad($activity->speed);
@@ -224,6 +272,7 @@ class RuntasticController extends Controller {
                 $SESION->setRitmoCardiacoMax($activity->heartrate_max);
                 $SESION->setDesnivel($activity->elevation_gain);
                 $SESION->setPerdidaNivel($activity->elevation_loss);
+                $SESION->setEvaluado(0);
 
                 if ($activity->surface !== '') {
                     $SESION->setSuperficie($activity->surface);
@@ -309,7 +358,10 @@ class RuntasticController extends Controller {
         }
         $r = new Runtastic();
         $r->setUsername('araluce@correo.ugr.es')->setPassword('102938');
-
+        $semana = new \DateTime('now');
+        $week_activities = $r->getActivities($semana->format('W'));
+//        Utils::pretty_print($week_activities);
+        return new JsonResponse($week_activities, 200);
         if ($r->login()) {
             return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
         }
@@ -329,16 +381,6 @@ class RuntasticController extends Controller {
             return new RedirectResponse('/');
         }
         $DATOS['TITULO'] = 'Deporte';
-        $EJERCICIOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findAll();
-        if (count($EJERCICIOS)) {
-            foreach ($EJERCICIOS as $EJERCICIO) {
-                if (Utils::estaSemana($EJERCICIO->getFecha())) {
-                    $DATOS['tipo'] = $EJERCICIO->getTipo();
-                    $DATOS['velocidad'] = $EJERCICIO->getVelocidad();
-                    $DATOS['duracion'] = Utils::formatoDuracion($EJERCICIO->getDuracion());
-                }
-            }
-        }
         return $this->render('guardian/ejercicios/ejerciciosDeporte.twig', $DATOS);
     }
 
@@ -351,40 +393,266 @@ class RuntasticController extends Controller {
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/deporte/publicar', true);
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
 
         // Si se ha enviado un formulario
         if ($request->getMethod() == 'POST') {
             $em = $doctrine->getManager();
             // Obtenemos todos los enunciados del formulario
-            $MODALIDAD = $request->request->get('MODALIDAD');
-            $VELOCIDAD = $request->request->get('VELOCIDAD');
-            $DURACION = $request->request->get('DURACION');
+            $VELOCIDAD_BICI = $request->request->get('VELOCIDAD_BICICLETA');
+            $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
+            $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
+            $DURACION_RUN = $request->request->get('DURACION_RUNNING');
+            $BENEFICIO = $request->request->get('BENEFICIO_FASE');
+            $FASE = $request->request->get('FASE');
+            $OBLIGATORIO = $request->request->get('OBLIGATORIO');
 
-            $EJERCICIO = 0;
-            $EJERCICIOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findAll();
-            if (count($EJERCICIOS)) {
-                foreach ($EJERCICIOS as $E) {
-                    if (Utils::estaSemana($E->getFecha())) {
-                        $EJERCICIO = $E;
+            $SECCION_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+            $TIPO_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioTipo')->findOneByTipo('deporte');
+            $EJERCICIO = new \AppBundle\Entity\Ejercicio();
+            $EJERCICIO->setCoste(0);
+            $EJERCICIO->setEnunciado('' . $FASE);
+            $EJERCICIO->setFecha(new \DateTime('now'));
+            $EJERCICIO->setIcono(null);
+            $EJERCICIO->setIdEjercicioSeccion($SECCION_DEPORTE);
+            $EJERCICIO->setIdTipoEjercicio($TIPO_DEPORTE);
+            $em->persist($EJERCICIO);
+
+            $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+            $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
+            $BONIFICACION->setBonificacion($BENEFICIO);
+            $BONIFICACION->setIdCalificacion($NOTA_MEDIA);
+            $BONIFICACION->setIdEjercicio($EJERCICIO);
+            $em->persist($BONIFICACION);
+
+            $FASE_BICI = new \AppBundle\Entity\EjercicioRuntastic();
+            $FASE_BICI->setDuracion($DURACION_BICI);
+            $FASE_BICI->setTipo('cycling');
+            $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+            $FASE_BICI->setFecha(new \DateTime('now'));
+            $FASE_BICI->setIdEjercicio($EJERCICIO);
+            if ($OBLIGATORIO) {
+                $FASE_BICI->setOpcional(0);
+            } else {
+                $FASE_BICI->setOpcional(1);
+            }
+            $em->persist($FASE_BICI);
+
+            $FASE_RUN = new \AppBundle\Entity\EjercicioRuntastic();
+            $FASE_RUN->setDuracion($DURACION_RUN);
+            $FASE_RUN->setTipo('running');
+            $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
+            $FASE_RUN->setFecha(new \DateTime('now'));
+            $FASE_RUN->setIdEjercicio($EJERCICIO);
+            if ($OBLIGATORIO) {
+                $FASE_RUN->setOpcional(0);
+            } else {
+                $FASE_RUN->setOpcional(1);
+            }
+            $em->persist($FASE_RUN);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Fase publicada correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * 
+     * @Route("/guardian/ejercicios/deporte/modificarReto", name="modificarReto")
+     */
+    public function modificarRetoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/deporte/publicar', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+
+        // Si se ha enviado un formulario
+        if ($request->getMethod() == 'POST') {
+            $em = $doctrine->getManager();
+            // Obtenemos todos los enunciados del formulario
+            $VELOCIDAD_BICI = $request->request->get('VELOCIDAD_BICICLETA');
+            $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
+            $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
+            $DURACION_RUN = $request->request->get('DURACION_RUNNING');
+            $BENEFICIO = $request->request->get('BENEFICIO_FASE');
+            $FASE = $request->request->get('FASE');
+            $OBLIGATORIO = $request->request->get('OBLIGATORIO');
+            $ID = $request->request->get('ID');
+
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($ID);
+            if (null === $EJERCICIO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Ejercicio no localizado')), 200);
+            }
+            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+            $BONIFICACION->setBonificacion($BENEFICIO);
+            $em->persist($BONIFICACION);
+
+            $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'cycling']);
+            $FASE_BICI->setDuracion($DURACION_BICI);
+            $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+            if ($OBLIGATORIO) {
+                $FASE_BICI->setOpcional(0);
+            } else {
+                $FASE_BICI->setOpcional(1);
+            }
+            $em->persist($FASE_BICI);
+
+            $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'running']);
+            $FASE_RUN->setDuracion($DURACION_RUN);
+            $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
+            if ($OBLIGATORIO) {
+                $FASE_RUN->setOpcional(0);
+            } else {
+                $FASE_RUN->setOpcional(1);
+            }
+            $em->persist($FASE_RUN);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Fase actualizada correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * 
+     * @Route("/guardian/ejercicios/deporte/eliminarReto", name="eliminarReto")
+     */
+    public function eliminarRetoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/deporte/eliminarReto', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+
+        // Si se ha enviado un formulario
+        if ($request->getMethod() == 'POST') {
+            $em = $doctrine->getManager();
+            // Obtenemos todos los enunciados del formulario
+            $id_reto = $request->request->get('ID');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_reto);
+            if (null === $EJERCICIO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $em->remove($EJERCICIO);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Fase eliminada')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/deporte/getRetosDeporte", name="getRetosDeporte")
+     */
+    public function getRetosDeporteAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/getRetosDeporte');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+        $SECCION_DEPORTES = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_DEPORTES);
+        if (!count($EJERCICIOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay retos publicados')), 200);
+        }
+        $DATOS = [];
+        foreach ($EJERCICIOS as $EJERCICIO) {
+            $DATOS[intval($EJERCICIO->getEnunciado())] = [];
+            $aux = [];
+            $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'cycling']);
+            $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'running']);
+            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+            $aux['ID'] = $EJERCICIO->getIdEjercicio();
+            $aux['VELOCIDAD_BICI'] = $FASE_BICI->getVelocidad();
+            $aux['DURACION_BICI'] = Utils::segundosToDias($FASE_BICI->getDuracion());
+            $aux['VELOCIDAD_RUN'] = $FASE_RUN->getVelocidad();
+            $aux['DURACION_RUN'] = Utils::segundosToDias($FASE_RUN->getDuracion());
+            $aux['BENEFICIO'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
+            $aux['OBLIGATORIO'] = 1;
+            if ($FASE_BICI->getOpcional()) {
+                $aux['OBLIGATORIO'] = 0;
+            }
+            $DATOS[intval($EJERCICIO->getEnunciado())][] = $aux;
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/ciudadano/ocio/deporte/getMisSesiones", name="getMisSesiones")
+     */
+    public function getMisSesionesAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/getMisSesiones');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $query = $qb->select('ur')
+                ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
+                ->where('ur.idUsuario = :IdUsuario AND ur.activo = 1')
+                ->setParameters(['IdUsuario' => $USUARIO]);
+        $CUENTAS_RUNTASTIC = $query->getQuery()->getResult();
+        if (!count($CUENTAS_RUNTASTIC)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+        }
+        $DATOS = [];
+        $DATOS['COMPARATIVA'] = 0;
+        $EJERCICIO = Ejercicio::getFase($doctrine, $USUARIO);
+        if ($EJERCICIO !== null && $EJERCICIO !== 0) {
+            $DATOS['COMPARATIVA'] = 1;
+            $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
+            if (!count($RETOS)) {
+                $DATOS['COMPARATIVA'] = 0;
+            }
+        }
+        $DATOS['SESIONES'] = [];
+        $duracion_acumulada = 0;
+        $id_sesiones = [];
+        foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
+            $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
+            foreach ($SESIONES_RUNTASTIC as $SESION) {
+                $aux = [];
+                $aux['FECHA'] = $SESION->getFecha();
+                if (Utils::estaSemana($aux['FECHA'])) {
+                    $aux['TIPO'] = $SESION->getTipo();
+                    $duracion = $SESION->getDuracion();
+                    $aux['DURACION'] = Utils::formatoDuracion($duracion);
+                    $aux['VELOCIDAD'] = $SESION->getVelocidad();
+                    if ($DATOS['COMPARATIVA']) {
+                        $aux['VELOCIDAD_SUP'] = 0;
+                        $aux['EVALUADO_FASE'] = 0;
+                        if (!$SESION->getEvaluado()) {
+                            foreach ($RETOS as $RETO) {
+                                if ($RETO->getTipo() === $aux['TIPO'] && $RETO->getVelocidad() <= $aux['VELOCIDAD']) {
+                                    $aux['VELOCIDAD_SUP'] = 1;
+                                    if ($duracion >= $RETO->getDuracion()) {
+                                        $DATOS['EVALUADO'] = 1;
+                                        Ejercicio::evaluaFase($doctrine, $EJERCICIO, $USUARIO, $SESION);
+                                    } else {
+                                        $duracion_acumulada += $duracion;
+                                        $id_sesiones[] = $SESION;
+                                        if($duracion_acumulada >= $RETO->getDuracion()){
+                                            $DATOS['EVALUADO'] = 1;
+                                            Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            $aux['EVALUADO_FASE'] = 1;
+                        }
                     }
+                    $DATOS['SESIONES'][] = $aux;
                 }
             }
-            if (!$EJERCICIO) {
-                $message = 'El ejercicio semanal se ha actualizado correctamente';
-                $EJERCICIO = new \AppBundle\Entity\EjercicioRuntastic();
-            }
-            else { $message = 'Ejercicio semanal publicado correctamente'; }
-            $EJERCICIO->setDuracion($DURACION);
-            $EJERCICIO->setTipo($MODALIDAD);
-            $EJERCICIO->setVelocidad($VELOCIDAD);
-            $EJERCICIO->getFecha(new \DateTime('now'));
-            $em->persist($EJERCICIO);
-            $em->flush();
-            return new JsonResponse(array('estado' => 'OK', 'message' => $message));
         }
-        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
 }

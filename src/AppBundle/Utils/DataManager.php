@@ -114,6 +114,20 @@ class DataManager {
 //        \AppBundle\Utils\Utils::pretty_print($DATOS);
         return $DATOS;
     }
+    
+    static function infoUsu($doctrine, $session) {
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        if($USUARIO->getNombre() === '' || $USUARIO->getApellidos() === '' || $USUARIO->getSeudonimo() === ''
+                || $USUARIO->getFechaNacimiento() === ''){
+            return 0;
+        }
+        if($USUARIO->getNombre() === null || $USUARIO->getApellidos() === null || $USUARIO->getSeudonimo() === null
+                || $USUARIO->getFechaNacimiento() === null){
+            return 0;
+        }
+        return 1;
+    }
 
     static function chatsPendientes($doctrine, $USUARIO) {
         $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);

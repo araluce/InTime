@@ -262,7 +262,7 @@
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     contenido = '';
-                    contenido += '<option selected value="0">Seleccione una cuenta de twitter</option>';
+                    contenido += '<option selected value="0">Troyanos de cabecera</option>';
                     $.each(data.message, function (k, v) {
                         contenido += '<option value="' + v.ID + '">' + v.ID + '</option>';
                     });
@@ -282,6 +282,7 @@
                     contenido += '<legend>Tweets de @' + data.message.ALIAS + '</legend>';
                     $.each(data.message.TWEETS, function (k, v) {
                         contenido += '<div class="row">';
+                        contenido += '  <div class="col-xs-9">';
                         contenido += '  <div id="base_' + v.ID_STR + '">';
                         contenido += '      <input type="hidden" id="id-' + contador_tweet + '" value="' + v.ID_STR + '">';
                         contenido += '      <input type="hidden" id="alias-' + contador_tweet + '" value="' + v.ALIAS + '">';
@@ -324,23 +325,22 @@
                         contenido += '          </div>';
                         contenido += '      </div>';
                         contenido += '  </div>';
-                        contenido += '  <div class="row" id="' + v.ID_STR + '">';
-                        contenido += '      <div class="col-lg-12">';
-                        contenido += '          <div class="col-lg-12 panel-btn-seguir">';
-                        contenido += '              <div class="button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 1, null);">';
+                        contenido += '  </div>';
+                        contenido += '  <div class="col-xs-3" id="' + v.ID_STR + '">';
+                        contenido += '          <div class="btn-group-vertical panel-btn-seguir">';
+                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 1, null);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />';
-                        contenido += '              </div>';
-                        contenido += '              <div class="button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 2, null);"">';
+                        contenido += '              </button>';
+                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 2, null);"">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />';
-                        contenido += '              </div>';
-                        contenido += '              <div class="button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 3, null);">';
+                        contenido += '              </button>';
+                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 3, null);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />';
-                        contenido += '              </div>';
-                        contenido += '              <div class="button-tweet-panel" onclick="aniadeIdTweet(' + contador_tweet + ');">';
+                        contenido += '              </button>';
+                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="aniadeIdTweet(' + contador_tweet + ');">';
                         contenido += '                  <img id="img-compartir" src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />';
-                        contenido += '              </div>';
+                        contenido += '              </button>';
                         contenido += '          </div>';
-                        contenido += '      </div>';
                         contenido += '  </div>';
                         contenido += '</div>';
                         contador_tweet++;

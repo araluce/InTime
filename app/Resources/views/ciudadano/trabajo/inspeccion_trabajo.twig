@@ -103,7 +103,7 @@
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-primary btn-menu-first" href="#tab1" data-toggle="tab" onclick="getEjerciciosInspeccion();">
                         <span class="fa fa-briefcase" aria-hidden="true"></span>
-                        <div class="titulo-xs">EJERCICIOS</div>
+                        <div class="titulo-xs">PREGUNTAS</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
@@ -228,7 +228,7 @@
                         if (v.ELEGIBLE) {
                             contenido += '<div class="row">';
                             contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" href="#tab2" data-toggle="tab" onclick="obtenerEjercicio(' + v.ID + ');">';
-                            contenido += '          HAZLO';
+                            contenido += '          RESPONDER';
                             if (!v.VISTO) {
                                 contenido += '      <span class="badge">NUEVO</span>';
                             }
@@ -269,7 +269,7 @@
                     contenido += '  </div>';
                     contenido += '  <div class="col-xs-6 col-xs-offset-3" style="margin-top: 1%;">';
                     contenido += '      <button class="btn btn-primary btn-block" href="#tab3" data-toggle="tab" onclick="entregarEjercicio(' + id + ')">';
-                    contenido += '          <span class="fa fa-send-o"></span> &nbsp;ENVIAR';
+                    contenido += '          ENVIAR';
                     contenido += '      </button>';
                     contenido += '  </div>';
                     $('#tab2').html(contenido);

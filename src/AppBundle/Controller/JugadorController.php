@@ -46,6 +46,7 @@ class JugadorController extends Controller {
             $EMAIL = trim($request->request->get('EMAIL'));
             $CLAVE = trim($request->request->get('CLAVE'));
             $IMAGEN = $request->files->get('IMAGEN');
+            $FECHA_NACIMIENTO = str_replace("T", " ", $request->request->get('FECHA')) . "00:00:00";
 
             if ($ALIAS !== '') {
                 if (Usuario::aliasDisponible($doctrine, $session, $ALIAS)) {
@@ -75,6 +76,10 @@ class JugadorController extends Controller {
                 $usuario->setImagen($nombre_foto);
                 $IMAGEN->move($ruta, $nombre_foto);
             }
+            if($FECHA_NACIMIENTO !== ''){
+                $FECHA_FORMATO = \DateTime::createFromFormat('Y-m-d H:i:s', $FECHA_NACIMIENTO);
+                $usuario->setFechaNacimiento($FECHA_FORMATO);
+            }
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($usuario);
@@ -98,6 +103,10 @@ class JugadorController extends Controller {
         }
         if ($usuario->getImagen()) {
             $DATOS['IMAGEN'] = $usuario->getDni() . '/' . $usuario->getImagen();
+        }
+        if ($usuario->getFechaNacimiento()){
+            $fecha = $usuario->getFechaNacimiento();
+            $DATOS['FECHA_NACIMIENTO'] = $fecha->format('Y-m-d');
         }
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
         return $this->render('ciudadano/extensiones/informacion.html.twig', $DATOS);

@@ -7,6 +7,7 @@
     <id name="idSesionRuntastic" type="integer" column="id_sesion_runtastic">
       <generator strategy="IDENTITY"/>
     </id>
+    <field name="evaluado" type="boolean" column="evaluado" nullable="false"/>
     <field name="idRuntastic" type="integer" column="id_runtastic" nullable="false"/>
     <field name="tipo" type="string" column="tipo" length="1000" nullable="false"/>
     <field name="duracion" type="integer" column="duracion" nullable="false"/>

@@ -35,6 +35,9 @@ class PrestamosController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
+        if(!DataManager::infoUsu($doctrine, $session)){
+            return new RedirectResponse('/ciudadano/info');
+        }
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $DEUDAS = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([

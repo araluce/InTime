@@ -110,11 +110,7 @@
         .btn-pref .btn {
             -webkit-border-radius:0 !important;
         }
-        #nivel img,
-        #clasificaciones img,
-        #badges img,
-        #movimientos img,
-        #modificar img{
+        .btn-group img{
             height: 60px;
         }
         .datatable {
@@ -229,6 +225,9 @@
         #clasificacion-distritos{
             font-size: 45px;
         }
+        .hidden-xs{
+            font-size: 25px;
+        }
         @media (max-width: 760px){
             #mensaje-texto,
             .modal-title{
@@ -286,11 +285,7 @@
                 width:  280px;
                 height: 280px;
             }
-            #nivel img,
-            #clasificaciones img,
-            #badges img,
-            #movimientos img,
-            #modificar img{
+            .btn-group img{
                 height: 100px;
             }
             .card.hovercard .card-background {
@@ -359,11 +354,7 @@
                 width:  280px;
                 height: 280px;
             }
-            #nivel img,
-            #clasificaciones img,
-            #badges img,
-            #movimientos img,
-            #modificar img{
+            .btn-group img{
                 height: 60px;
             }
             .card.hovercard .card-background {
@@ -421,25 +412,29 @@
                         <div class="btn-group" role="group">
                             <button type="button" id="modificar" class="btn btn-primary" href="#tab1" data-toggle="tab">
                                 <img src="{{ asset('images/iconos/Jugador/Datos_personales.png') }}" />
+                                <div class="hidden-xs">MIS DATOS</div>
                             </button>
                         </div>
                         <div class="btn-group" role="group">
                             <button type="button" id="nivel" class="btn btn-default" href="#tab2" data-toggle="tab">
                                 <img src="{{ asset('images/iconos/Jugador/Nivel_y_privilegios.png') }}" />
+                                <div class="hidden-xs">NIVEL</div>
                             </button>
                         </div>
                         <div class="btn-group" role="group">
                             <button type="button" id="clasificaciones" class="btn btn-default" href="#tab3" data-toggle="tab">
                                 <img src="{{ asset('images/iconos/Jugador/Clasificaciones.png') }}" />
+                                <div class="hidden-xs">CLASIFICACIÓN</div>
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="movimientos" class="btn btn-default" href="#tab4" data-toggle="tab">
+                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab">
                                 <img src="{{ asset('images/iconos/Jugador/Consultar_movimientos.png') }}" />
+                                <div class="hidden-xs">MOVIMIENTOS</div>
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="exit" class="btn btn-default" onclick="window.history.back();" >
+                            <button type="button" id="menu-segun" class="btn btn-default" onclick="window.history.back();" >
                                 <span class="fa fa-arrow-left" aria-hidden="true"></span>
                                 <div class="hidden-xs">ATRÁS</div>
                             </button>
@@ -471,6 +466,13 @@
                                                 <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user"></i></span>
                                                 <input type="text" class="form-control" name="APELLIDOS" id="apellidos" placeholder="Apellidos"
                                                        {% if APELLIDOS is defined %} value="{{ APELLIDOS }}" {% endif %}/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar"></i></span>
+                                                <input type="date" class="form-control" name="FECHA" id="fecha" placeholder="Fecha de nacimiento"
+                                                       {% if FECHA_NACIMIENTO is defined %} value="{{ FECHA_NACIMIENTO }}" {% endif %}/>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -632,7 +634,8 @@
                 // $(".tab").addClass("active"); // instead of this do the below 
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            $('.btn-pref .btn').height($('#menu-primer').height());
+        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
         $(function () {
 

@@ -27,6 +27,13 @@ class Usuario
     private $apellidos;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_nacimiento", type="datetime", nullable=true)
+     */
+    private $fechaNacimiento;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="clave", type="string", length=40, nullable=true)
@@ -184,6 +191,29 @@ class Usuario
     public function getApellidos()
     {
         return $this->apellidos;
+    }
+
+    /**
+     * Set fechaNacimiento
+     *
+     * @param \DateTime $fechaNacimiento
+     * @return Usuario
+     */
+    public function setFechaNacimiento($fechaNacimiento)
+    {
+        $this->fechaNacimiento = $fechaNacimiento;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaNacimiento
+     *
+     * @return \DateTime 
+     */
+    public function getFechaNacimiento()
+    {
+        return $this->fechaNacimiento;
     }
 
     /**

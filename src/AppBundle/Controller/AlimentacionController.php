@@ -37,6 +37,9 @@ class AlimentacionController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
+        if(!DataManager::infoUsu($doctrine, $session)){
+            return new RedirectResponse('/ciudadano/info');
+        }
         $DATOS = DataManager::setDefaultData($doctrine, 'Alimentación', $session);
         if ($mensaje !== null) {
             $DATOS['info'] = $mensaje['info'];

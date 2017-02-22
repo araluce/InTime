@@ -26,7 +26,7 @@ class Ejercicio {
         $EJERCICIOS_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findByIdUsu($USUARIO);
         $EJERCICIOS_ACTUALES = [];
         if (count($EJERCICIOS_USUARIO)) {
-            foreach($EJERCICIOS_USUARIO as $EJERCICIO) {
+            foreach ($EJERCICIOS_USUARIO as $EJERCICIO) {
                 $EJERCICIOS_ACTUALES[] = $EJERCICIO->getIdEjercicio();
             }
         }
@@ -45,20 +45,20 @@ class Ejercicio {
         }
         $em->flush();
     }
-    
+
     /**
      * Comprueba si un ejercicio es de distrito o no
      * @param type $doctrine
      * @param type $EJERCICIO
      * @return true|false
      */
-    static function esEjercicioDistrito($doctrine, $EJERCICIO){
+    static function esEjercicioDistrito($doctrine, $EJERCICIO) {
         $val = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
-        if($val === null)
+        if ($val === null)
             return false;
         return true;
     }
-    
+
     /**
      * Para localizar la entrega de un ejercicio de distrito realizada por un integrante del mismo
      * @param type $doctrine
@@ -66,15 +66,15 @@ class Ejercicio {
      * @param type $DISTRITO
      * @return EJERCICIO_CALIFICACION|null
      */
-    static function getCalificacionPrincipalDistrito($doctrine, $EJERCICIO, $DISTRITO){
+    static function getCalificacionPrincipalDistrito($doctrine, $EJERCICIO, $DISTRITO) {
         $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
         $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
-        if(!count($CIUDADANOS || !count($ENTREGAS))){
+        if (!count($CIUDADANOS || !count($ENTREGAS))) {
             return null;
         }
-        foreach($ENTREGAS as $ENTREGA){
+        foreach ($ENTREGAS as $ENTREGA) {
             $CIUDADANO = $ENTREGA->getIdUsuario();
-            if(in_array($CIUDADANO, $CIUDADANOS)){
+            if (in_array($CIUDADANO, $CIUDADANOS)) {
                 $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
                     'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
                 ]);
@@ -82,6 +82,81 @@ class Ejercicio {
             }
         }
         return null;
+    }
+
+    /**
+     * Obtiene el ejercicio de tipo deportivo más bajo no superado
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int|EJERCICIO
+     */
+    static function getFase($doctrine, $USUARIO) {
+        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($DEPORTE);
+        if (!count($EJERCICIOS)) {
+            return 0;
+        }
+        $fase_min = 1000;
+        $RETO = null;
+        foreach ($EJERCICIOS as $EJERCICIO) {
+            $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+                'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+            ]);
+            if (!count($CALIFICACION) && $fase_min > intval($EJERCICIO->getEnunciado())) {
+                $RETO = $EJERCICIO;
+                $fase_min = intval($EJERCICIO->getEnunciado());
+            } else {
+                if (count($CALIFICACION)) {
+                    foreach ($CALIFICACION as $C) {
+                        if (!Utils::estaSemana($C->getFecha()) && $fase_min > intval($EJERCICIO->getEnunciado())) {
+                            $RETO = $EJERCICIO;
+                            $fase_min = intval($EJERCICIO->getEnunciado());
+                        }
+                    }
+                }
+            }
+        }
+        return $RETO;
+    }
+
+    static function evaluaFase($doctrine, $EJERCICIO, $USUARIO, $SESION) {
+        $em = $doctrine->getManager();
+        $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
+        $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+        $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
+        $CALIFICACION->setFecha(new \DateTime('now'));
+        $CALIFICACION->setIdCalificaciones($NOTA->getIdCalificacion());
+        $CALIFICACION->setIdEjercicio($EJERCICIO);
+        $CALIFICACION->setIdEjercicioEstado($EVALUADO);
+        $CALIFICACION->setIdUsuario($USUARIO);
+        $em->persist($CALIFICACION);
+
+        $SESION->setEvaluado(1);
+        $em->persist($SESION);
+        $em->flush();
+
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase ' . $EJERCICIO->getEnunciado() . ' de deportes superada.');
+    }
+
+    static function evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $SESIONES) {
+        $em = $doctrine->getManager();
+        $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
+        $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+        $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
+        $CALIFICACION->setFecha(new \DateTime('now'));
+        $CALIFICACION->setIdCalificaciones($NOTA->getIdCalificacion());
+        $CALIFICACION->setIdEjercicio($EJERCICIO);
+        $CALIFICACION->setIdEjercicioEstado($EVALUADO);
+        $CALIFICACION->setIdUsuario($USUARIO);
+        $em->persist($CALIFICACION);
+
+        foreach ($SESIONES as $SESION) {
+            $SESION->setEvaluado(1);
+            $em->persist($SESION);
+        }
+        $em->flush();
+
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase ' . $EJERCICIO->getEnunciado() . ' de deportes superada.');
     }
 
 }

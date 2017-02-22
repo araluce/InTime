@@ -92,7 +92,7 @@ footer{
     font-weight: bold; 
     margin-top: 1%; 
     margin-bottom:1%;
-    font-family: 'Isocpeur';
+    font-family: 'Oregano';
 }
 
 body{
@@ -570,7 +570,7 @@ svg:not(:root) {
         top: 10vh;*/
 }
 .menu img{
-    height: 130px;
+    height: 115px;
     width: auto;
 }
 .menu-principal img{
@@ -602,6 +602,7 @@ svg:not(:root) {
     width: 34vw;
 }
 #log-sal{
+    margin-top: -20vh;
     margin-left:42vw;
 }
 #fel-tra div,
@@ -614,7 +615,7 @@ svg:not(:root) {
     height: 80px;
 }
 #menu-salir img{
-    margin-top: 50%;
+    margin-top: -3vh;
     height: 120px;
 }
 #fondo-principal{
@@ -702,7 +703,7 @@ legend{
         margin-left: 3%;
     }
     .menu img{
-        height: 195px;
+        height: 170px;
         width: auto;
     }
     .menu-principal img{
@@ -881,7 +882,7 @@ legend{
         width: 65vw;
     }
     #log-sal{
-        margin-top: 15%;
+        margin-top: 0;
         margin-left:25vw;
     }
     #fondo-principal{
@@ -1027,7 +1028,7 @@ legend{
         width: 65vw;
     }
     #log-sal{
-        margin-top: 0;
+        margin-top: -20vh;
         margin-left:25vw;
     }
     #menu-logo img{
@@ -1400,13 +1401,14 @@ legend{
         width: 20vw;
     }
     #log-sal{
+        margin-top: -20vh;
         margin-left:42vw;
     }
     #menu-logo img{
         height: 80px;
     }
     #menu-salir img{
-        margin-top: 25%;
+        margin-top: -3vh;
         height: 60px;
     }
     #fondo-principal{

@@ -342,6 +342,7 @@ class Guardian extends Controller {
         }
         $DATOS['CALIFICACIONES'] = [];
         foreach ($CALIFICACIONES as $CALIFICACION) {
+            $saltar = false;
             $aux = [];
             $aux['CIUDADANO'] = [];
             $aux['CALIFICACION'] = [];
@@ -364,11 +365,18 @@ class Guardian extends Controller {
                 $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                     'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
                 ]);
-                $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
-                $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
-                $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+                if (null === $ENTREGA) {
+                    $saltar = true;
+                } else {
+//                    return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $EJERCICIO->getIdEjercicio())), 200);
+                    $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                    $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+                    $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+                }
             }
-            $DATOS['CALIFICACIONES'][] = $aux;
+            if (!$saltar) {
+                $DATOS['CALIFICACIONES'][] = $aux;
+            }
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
@@ -425,6 +433,7 @@ class Guardian extends Controller {
                 $aux['CALIFICACION']['ESTADO'] = $CALIFICACION->getIdEjercicioEstado()->getEstado();
                 $aux['CALIFICACION']['CALIFICADO'] = 0;
                 $aux['CALIFICACION']['FECHA'] = $CALIFICACION->getFecha();
+                $aux['SECCION'] = $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion()->getSeccion();
                 if (null != $CALIFICACION->getIdCalificaciones()) {
                     $aux['CALIFICACION']['CALIFICADO'] = 1;
                     $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getIdCalificaciones();

@@ -120,9 +120,11 @@ class DefaultController extends Controller {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo');
-
         if (!$status) {
             return new RedirectResponse('/');
+        }
+        if(!DataManager::infoUsu($doctrine, $session)){
+            return new RedirectResponse('/ciudadano/info');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Trabajo', $session);
         return $this->render('ciudadano/extensiones/trabajo.html.twig', $DATOS);
@@ -132,13 +134,14 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio", name="ocio")
      */
     public function ocio_ciudadanoAction(Request $request) {
-
-
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio');
         if (!$status) {
             return new RedirectResponse('/');
+        }
+        if(!DataManager::infoUsu($doctrine, $session)){
+            return new RedirectResponse('/ciudadano/info');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Ocio', $session);
         return $this->render('ciudadano/extensiones/ocio.html.twig', $DATOS);
@@ -619,202 +622,6 @@ class DefaultController extends Controller {
         }
         $DATOS['TITULO'] = 'Ejercicios y entregas';
         return $this->render('guardian/ejercicios/ejercicios_entregas.twig', $DATOS);
-    }
-
-    /**
-     * 
-     * @Route("/guardian/apuestas/proponer", name="proponerApuesta")
-     */
-    public function proponerApuestaAction(Request $request) {
-
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $em = $doctrine->getManager();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/proponer', true);
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $DATOS = ['TITULO' => 'Apuestas - Proponer', 'SECCION' => 'APUESTAS', 'SUBSECCION' => 'PROPONER'];
-        if ($request->getMethod() == 'POST') {
-            $DESCRIPCION = $request->request->get('APUESTA');
-            $GET_POSIBILIDADES = $request->request->get('POSIBILIDADES');
-            $POSIBILIDADES = [];
-            foreach ($GET_POSIBILIDADES as $POSIBILIDAD) {
-                if (trim($POSIBILIDAD) !== '') {
-                    $POSIBILIDADES[] = $POSIBILIDAD;
-                }
-            }
-            if (count($POSIBILIDADES) > 1) {
-                $APUESTA = new \AppBundle\Entity\Apuesta();
-                $APUESTA->setDescripcion($DESCRIPCION);
-                $em->persist($APUESTA);
-
-                foreach ($POSIBILIDADES as $POSIBILIDAD) {
-                    $APUESTA_POSIBILIDAD = new \AppBundle\Entity\ApuestaPosibilidad();
-                    $APUESTA_POSIBILIDAD->setPosibilidad($POSIBILIDAD);
-                    $APUESTA_POSIBILIDAD->setIdApuesta($APUESTA);
-                    $em->persist($APUESTA_POSIBILIDAD);
-                }
-                $em->flush();
-            }
-        }
-        return $this->render('guardian/loteriasApuestas.twig', $DATOS);
-    }
-
-    /**
-     * 
-     * @Route("/guardian/apuestas/gestion", name="gestionarApuestas")
-     */
-    public function gestionarApuestasAction(Request $request) {
-
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/gestion', true);
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-        $DATOS = ['TITULO' => 'Apuestas - Gestión', 'SECCION' => 'APUESTAS', 'SUBSECCION' => 'GESTIONAR'];
-
-        return $this->render('guardian/loteriasApuestas.twig', $DATOS);
-    }
-
-    /**
-     * 
-     * @Route("/guardian/apuestas/actualizarApuestas", name="actualizarApuestas")
-     */
-    public function actualizarApuestas() {
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
-        $qb = $em->createQueryBuilder();
-        $resultado['resultado'] = 'OK';
-        $APUESTAS_ACTUALES = [];
-
-        $query = $qb->select('a')
-                ->from('\AppBundle\Entity\Apuesta', 'a');
-        ;
-        //->orderBy('a.fecha', 'DESC');
-        $APUESTAS = $query->getQuery()->getResult();
-        if (!count($APUESTAS)) {
-            return new JsonResponse(array('resultado' => 'No hay apuestas'), 200);
-        }
-        foreach ($APUESTAS as $APUESTA) {
-//            $aniadir = true;
-            $aux = [];
-            $aux['DESCRIPCION'] = $APUESTA->getDescripcion();
-            $aux['ID'] = $APUESTA->getIdApuesta();
-            $aux['ESTADO'] = $APUESTA->getDisponible();
-            $aux['TIEMPO_TOTAL'] = 0;
-            $aux['N_APUESTAS'] = 0;
-            $APUESTA_POSIBILIDAD = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findByidApuesta($APUESTA);
-            foreach ($APUESTA_POSIBILIDAD as $POSIBILIDAD) {
-//                if ($POSIBILIDAD->getResultado() === null) {
-                $aux2 = [];
-                $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
-                $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
-                $aux2['TdV'] = 0;
-                $aux2['N_APUESTAS'] = 0;
-                $USUARIOS_APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
-                if (count($USUARIOS_APUESTA)) {
-                    foreach ($USUARIOS_APUESTA as $USUARIO_APUESTA) {
-                        $aux['TIEMPO_TOTAL'] += $USUARIO_APUESTA->getTdvApostado();
-                        $aux2['TdV'] += $USUARIO_APUESTA->getTdvApostado();
-                        $aux['N_APUESTAS'] += 1;
-                        $aux2['N_APUESTAS'] += 1;
-                    }
-                }
-                $aux['POSIBILIDAD'][] = $aux2;
-//                } else {
-//                    $aniadir = false;
-//                }
-            }
-//            if ($aniadir) {
-            $APUESTAS_ACTUALES[] = $aux;
-//            }
-        }
-        $resultado['apuestas'] = $APUESTAS_ACTUALES;
-        return new JsonResponse($resultado, 200);
-    }
-
-    /**
-     * @Route("/guardian/apuestas/terminarApuesta/{id_apuesta_posibilidad}", name="terminarApuesta")
-     */
-    public function terminarApuestaAction(Request $request, $id_apuesta_posibilidad) {
-
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $em = $doctrine->getManager();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/terminarApuesta/' . $id_apuesta_posibilidad, true);
-
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-
-        $POSIBILIDAD = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findOneByIdApuestaPosibilidad($id_apuesta_posibilidad);
-        $POSIBILIDAD->setResultado(1);
-        $em->persist($POSIBILIDAD);
-        $em->flush();
-        $APUESTA = $POSIBILIDAD->getIdApuesta();
-        $POSIBILIDADES = $doctrine->getRepository('AppBundle:ApuestaPosibilidad')->findByIdApuesta($APUESTA);
-        foreach ($POSIBILIDADES as $P) {
-            $P->setResultado(0);
-            $em->persist($P);
-        }
-        $em->flush();
-
-        // Obtenemos todas las apuestas de usuarios de esta apuesta
-        $APUESTAS_USUARIO_ALL = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findAll();
-        $APUESTAS_USUARIO_ESTA_APUESTA = [];
-        $RECAUDACION = 0;
-        // Si hay alguna apuesta
-        if (count($APUESTAS_USUARIO_ALL)) {
-            foreach ($APUESTAS_USUARIO_ALL AS $UA) {
-                if (in_array($UA->getIdApuestaPosibilidad(), $POSIBILIDADES)) {
-                    $APUESTAS_USUARIO_ESTA_APUESTA[] = $UA;
-                    $RECAUDACION += $UA->getTdvApostado();
-                    Usuario::operacionSobreTdV($doctrine, $UA->getIdUsuario(), $UA->getTdvApostado() * (-1), 'Cobro - Apuestas');
-                }
-            }
-
-            // Obtenemos las apuestas ganadoras, calculamos las ganancias y las repartimos entre los ganadores
-            $APUESTAS_GANADORAS = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
-            if (count($APUESTAS_GANADORAS)) {
-                $DISPARADOR_APUESTAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta')->getValor();
-                $GANANCIAS = round(($RECAUDACION * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
-                foreach ($APUESTAS_GANADORAS as $A) {
-                    Usuario::operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
-                }
-            }
-        }
-
-        return new JsonResponse(array('respuesta' => 'OK'), 200);
-    }
-
-    /**
-     * @Route("/guardian/apuestas/pararApuesta/{id_apuesta}/{desactivar}", name="pararApuesta")
-     */
-    public function pararApuestaAction(Request $request, $id_apuesta, $desactivar) {
-
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $em = $doctrine->getManager();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/apuestas/pararApuesta/' . $id_apuesta . '/' . $desactivar, true);
-
-        if (!$status) {
-            return new RedirectResponse('/');
-        }
-
-        $APUESTA = $doctrine->getRepository('AppBundle:Apuesta')->findOneByIdApuesta($id_apuesta);
-        if ($APUESTA === null) {
-            return new JsonResponse(array('respuesta' => 'No existe la apuesta' . $id_apuesta), 300);
-        }
-        if (intval($desactivar) !== 0 && intval($desactivar) !== 1) {
-            return new JsonResponse(array('respuesta' => 'No existe el estado ' . $desactivar . ' para una apuesta'), 300);
-        }
-        $APUESTA->setDisponible($desactivar);
-        $em->persist($APUESTA);
-        $em->flush();
-
-        return new JsonResponse(array('respuesta' => 'OK'), 200);
     }
 
     /**

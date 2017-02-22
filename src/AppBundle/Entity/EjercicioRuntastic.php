@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * EjercicioRuntastic
  *
- * @ORM\Table(name="EJERCICIO_RUNTASTIC")
+ * @ORM\Table(name="EJERCICIO_RUNTASTIC", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"})})
  * @ORM\Entity
  */
 class EjercicioRuntastic
@@ -41,6 +41,13 @@ class EjercicioRuntastic
     private $fecha;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="opcional", type="boolean", nullable=false)
+     */
+    private $opcional;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id_ejercicio_runtastic", type="integer")
@@ -48,6 +55,16 @@ class EjercicioRuntastic
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idEjercicioRuntastic;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
 
 
 
@@ -144,6 +161,29 @@ class EjercicioRuntastic
     }
 
     /**
+     * Set opcional
+     *
+     * @param boolean $opcional
+     * @return EjercicioRuntastic
+     */
+    public function setOpcional($opcional)
+    {
+        $this->opcional = $opcional;
+
+        return $this;
+    }
+
+    /**
+     * Get opcional
+     *
+     * @return boolean 
+     */
+    public function getOpcional()
+    {
+        return $this->opcional;
+    }
+
+    /**
      * Get idEjercicioRuntastic
      *
      * @return integer 
@@ -151,5 +191,28 @@ class EjercicioRuntastic
     public function getIdEjercicioRuntastic()
     {
         return $this->idEjercicioRuntastic;
+    }
+
+    /**
+     * Set idEjercicio
+     *
+     * @param \AppBundle\Entity\Ejercicio $idEjercicio
+     * @return EjercicioRuntastic
+     */
+    public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
+    {
+        $this->idEjercicio = $idEjercicio;
+
+        return $this;
+    }
+
+    /**
+     * Get idEjercicio
+     *
+     * @return \AppBundle\Entity\Ejercicio 
+     */
+    public function getIdEjercicio()
+    {
+        return $this->idEjercicio;
     }
 }
