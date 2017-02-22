@@ -194,8 +194,12 @@ class CronController extends Controller {
             }
             $RESPUESTA[] = $aux;
         }
-        Utils::pretty_print($RESPUESTA);
-        return new JsonResponse(json_encode($RESPUESTA), 200);
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario(9);
+        $resp = Usuario::dejarHerencia($doctrine, $USUARIO);
+        echo 'Número de compañeros:   [' . $resp . ']';
+//        Utils::pretty_print($RESPUESTA);
+//        return new JsonResponse(json_encode($RESPUESTA), 200);
     }
+    
 
 }

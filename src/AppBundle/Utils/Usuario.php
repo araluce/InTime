@@ -490,9 +490,10 @@ class Usuario {
             $em->persist($USUARIO);
             $em->flush();
         }
+        Usuario::dejarHerencia($doctrine, $USUARIO);
         return 1;
     }
-    
+
     /**
      * Obtiene los ciudadanos con estado distinto de fallecido e inactivo
      * @param type $doctrine
@@ -525,7 +526,7 @@ class Usuario {
 
         return $CIUDADANOS;
     }
-    
+
     /**
      * Obtiene los ciudadanos en vacaciones
      * @param type $doctrine
@@ -540,7 +541,7 @@ class Usuario {
 
         return $CIUDADANOS;
     }
-    
+
     /**
      * Obtiene todos los usuario que no sean el sistema
      * @param type $doctrine
@@ -584,6 +585,56 @@ class Usuario {
             return count($n_mensajes);
         }
         return 0;
+    }
+
+    /**
+     * Esta función despoja al Usuario de sus deudas pendientes y las pone (de 
+     * manera repartida) en herencia a cada uno de los miembros vivos de su
+     * distrito
+     * @param type $doctrine
+     * @param type $USUARIO
+     */
+    static function dejarHerencia($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        $DISTRITO = $USUARIO->getIdDistrito();
+        if (null !== $DISTRITO) {
+            $DEUDAS = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([
+                'idUsuario' => $USUARIO,
+                'motivo' => 'prestamo'
+            ]);
+            if (count($DEUDAS)) {
+                $deudaTotal = 0;
+                $interes_minimo = 10;
+                foreach ($DEUDAS as $DEUDA) {
+                    $deudaTotal += $DEUDA->getRestante();
+                    if ($DEUDA->getInteres() < $interes_minimo) {
+                        $interes_minimo = $DEUDA->getInteres();
+                    }
+                    $DEUDA->setRestante(0);
+                    $em->persist($DEUDA);
+                }
+                // Si hay deuda
+                if ($deudaTotal > 0) {
+                    Usuario::operacionSobreTdV($doctrine, $USUARIO, 0, 'Ha dejado en herencia ' . $deudaTotal . ' s de deuda a los miembros de su distrito');
+                    $COMPANEROS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+                    $n_companeros = count($COMPANEROS);
+                    if ($n_companeros) {
+                        $deudaIndividual = $deudaTotal / $n_companeros;
+                        foreach ($COMPANEROS as $COMPANERO) {
+                            $DEUDAHEREDADA = new \AppBundle\Entity\UsuarioPrestamo();
+                            $DEUDAHEREDADA->setCantidad($deudaIndividual);
+                            $DEUDAHEREDADA->setRestante($deudaIndividual);
+                            $DEUDAHEREDADA->setFecha(new \DateTime('now'));
+                            $DEUDAHEREDADA->setIdUsuario($COMPANERO);
+                            $DEUDAHEREDADA->setInteres($interes_minimo);
+                            $DEUDAHEREDADA->setMotivo('prestamo');
+                            $em->persist($DEUDAHEREDADA);
+                        }
+                    }
+                }
+            }
+        }
+        $em->flush();
     }
 
 }
