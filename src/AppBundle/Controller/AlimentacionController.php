@@ -259,7 +259,7 @@ class AlimentacionController extends Controller {
                     $contador++;
                 }
             }
-            $aleatorio = rand(0, $contador) - 1;
+            $aleatorio = rand(0, $contador);
             $DATOS['ALEATORIO'] = $EJERCICIOS_ALEATORIOS[$aleatorio];
         }
         // Ejercicios no solicitados aún

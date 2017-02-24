@@ -52,8 +52,8 @@ class Utils {
         ]);
         if ($EJERCICIO_BONIFICACION !== null) {
             $TdVDefecto = $EJERCICIO_BONIFICACION->getBonificacion();
+            Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto, $concepto);
         }
-        Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto, $concepto);
         $EJERCICIO_CALIFICACION->setIdCalificaciones($CALIFICACION);
         $EJERCICIO_CALIFICACION->setIdEvaluador($SISTEMA);
         $EJERCICIO_CALIFICACION->setFecha(new \DateTime('now'));
@@ -584,18 +584,60 @@ class Utils {
         $APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findOneBy([
             'idApuestaPosibilidad' => $OPCION_APUESTA, 'idUsuario' => $USUARIO
         ]);
-        
+
         // Nunca he apostado en esta categoría
         if (!count($APUESTAS)) {
             return 0;
         }
         // Aquí he apostado sí o sí. Si la apuesta que voy a realizar no existe
         // significa que estoy votando otra opción
-        if(null === $APUESTA){
+        if (null === $APUESTA) {
             return -1;
         }
         // La apuesta es para actualizar
         return 1;
+    }
+
+    /**
+     * Devuelve una mina si está activa, 0 en otro caso
+     * @param type $doctrine
+     * @return MINA|0
+     */
+    static function minaActiva($doctrine) {
+        $query = $doctrine->getRepository('AppBundle:Mina')->createQueryBuilder('a');
+        $query->select('a');
+        $query->orderBy('a.fecha', 'DESC');
+        $MINA = $query->getQuery()->getOneOrNullResult();
+        if (null === $MINA) {
+            return 0;
+        }
+        $HOY = new \DateTime('now');
+        if ($MINA->getFechaFinal() < $HOY) {
+            return 0;
+        }
+        return $MINA;
+    }
+
+    /**
+     * Obtiene la última mina desactivada, 0 si no hay minas
+     * @param type $doctrine
+     * @return MINA|0
+     */
+    static function ultimaMinaDesactivada($doctrine) {
+        $AHORA = new \DateTime('now');
+        $query = $doctrine->getRepository('AppBundle:Mina')->createQueryBuilder('a');
+        $query->select('a');
+        $query->orderBy('a.fechaFinal', 'DESC');
+        $MINAS = $query->getQuery()->getResult();
+        if (!count($MINAS)) {
+            return 0;
+        }
+        foreach($MINAS as $MINA) {
+            if ($MINA->getFechaFinal() < $AHORA) {
+                return $MINA;
+            }
+        }
+        return 0;
     }
 
 }

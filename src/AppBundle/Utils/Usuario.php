@@ -637,4 +637,132 @@ class Usuario {
         $em->flush();
     }
 
+    /**
+     * Comprueba si un usuario está de Vacaciones
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function estaDeVacaciones($doctrine, $USUARIO) {
+        $VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
+        if ($USUARIO->getIdEstado() === $VACACIONES) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Comprueba si un usuario tiene opción de ganar un punto de experiencia, si
+     * tiene opción le ingresa el punto de experiencia
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarNivel($doctrine, $USUARIO) {
+        $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
+        $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
+        $mina = Usuario::comprobarMinaDesactivada($doctrine, $USUARIO);
+        if($balon && $deporte && $mina){
+            Usuario::subirNivel($doctrine, $USUARIO);
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Comprueba si un usuario ha obtenido una calificación igual o superior a 
+     * un balón durante la semana
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarSiBalon($doctrine, $USUARIO) {
+        $CALIFICACIONES_VALIDAS = [];
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(3);
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(2);
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(1);
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdUsuario($USUARIO);
+        $HOY = new \DateTime('now');
+        if (count($CALIFICACIONES)) {
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
+                    if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W'))) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Comprueba si ha superado un reto deportivo esa semana
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarDeporte($doctrine, $USUARIO) {
+        $SECCION_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_DEPORTE);
+        $HOY = new \DateTime('now');
+        if (count($EJERCICIOS)) {
+            foreach ($EJERCICIOS as $EJERCICIO) {
+                $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+                    'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+                ]);
+                if (count($CALIFICACIONES)) {
+                    foreach ($CALIFICACIONES as $CALIFICACION) {
+                        if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W'))) {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Comprueba si un usuario ha desactivado la última mina
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarMinaDesactivada($doctrine, $USUARIO) {
+        $ULTIMA_MINA = Utils::ultimaMinaDesactivada($doctrine);
+        if(null === $ULTIMA_MINA){
+            return 1;
+        }
+        $MINA_DESACTIVADA = $doctrine->getRepository('AppBundle:UsuarioMina')->findOneBy([
+            'idUsuario' => $USUARIO, 'idMina' => $ULTIMA_MINA
+        ]);
+        if(null === $MINA_DESACTIVADA){
+            return 0;
+        }
+        return 1;
+    }
+    
+    /**
+     * Suma un nivel y un punto de experiencia a un usuario, si no tenía una 
+     * entrada en la tabla USUARIO_NIVEL se le crea con nivel 1 y un punto de
+     * experiencia
+     * @param type $doctrine
+     * @param type $USUARIO
+     */
+    static function subirNivel($doctrine, $USUARIO){
+        $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
+        if(null === $USUARIO_NIVEL){
+            $USUARIO_NIVEL = new \AppBundle\Entity\UsuarioNivel();
+            $USUARIO_NIVEL->setIdUsuario($USUARIO);
+            $USUARIO_NIVEL->setNivel(1);
+            $USUARIO_NIVEL->setPuntos(1);
+        } else {
+            $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel()+1);
+            $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getPuntos()+1);
+        }
+        $em = $doctrine->getManager();
+        $em->persist($USUARIO_NIVEL);
+        $em->flush();
+    }
+
 }

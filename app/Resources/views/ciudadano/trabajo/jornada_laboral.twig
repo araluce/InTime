@@ -57,16 +57,20 @@
         .panel-btn-seguir div{
             display: table-cell;
             float: none;
-            width: 1%;
+            /*width: 1%;*/
         }
         .button-tweet-panel{
             border-bottom: 2px #000000 solid;
         }
         .button-tweet-panel img{
-            width: 80%;
+            width: 100%;
         }
         #img-compartir{
             width: 30%;
+        }
+        .btn-group-tweet img{
+            height: 140px;
+            width: auto;
         }
         @media (min-width: 1200px){
             .tweet-perfil img{
@@ -92,6 +96,10 @@
             }
             .btn-group img{
                 height: 31px;
+            }
+            .btn-group-tweet img{
+                height: 70px;
+                width: auto;
             }
             .hidden-xs{
                 font-size: 20px;
@@ -181,11 +189,7 @@
                             <div class="ventana-tweets" id="principal-tweets"></div>
                         </div>
                     </div>
-                    <div class="tab-pane fade in" id="tab2">
-                        <div class="row">
-                            <div class="ventana-tweets" id="mochila-tweets-1"></div>
-                        </div>
-                    </div>
+                    <div class="tab-pane fade in" id="tab2"></div>
                     <div class="tab-pane fade in" id="tab3">
                         <div class="row">
                             <div class="ventana-tweets" id="mochila-tweets-2"></div>
@@ -282,7 +286,7 @@
                     contenido += '<legend>Tweets de @' + data.message.ALIAS + '</legend>';
                     $.each(data.message.TWEETS, function (k, v) {
                         contenido += '<div class="row">';
-                        contenido += '  <div class="col-xs-9">';
+                        contenido += '  <div class="col-xs-12">';
                         contenido += '  <div id="base_' + v.ID_STR + '">';
                         contenido += '      <input type="hidden" id="id-' + contador_tweet + '" value="' + v.ID_STR + '">';
                         contenido += '      <input type="hidden" id="alias-' + contador_tweet + '" value="' + v.ALIAS + '">';
@@ -307,7 +311,7 @@
                         if (v.FOTO) {
                             $.each(v.FOTOS, function (fk, fv) {
                                 contenido += '      <div class="col-lg-6 col-lg-offset-3">';
-                                contenido += '          <img style="widht: 100%;" src="' + fv + '" alt="media_twitter" />';
+                                contenido += '          <img style="width: 100%;" src="' + fv + '" alt="media_twitter" />';
                                 contenido += '      </div>';
                             });
                         }
@@ -326,21 +330,29 @@
                         contenido += '      </div>';
                         contenido += '  </div>';
                         contenido += '  </div>';
-                        contenido += '  <div class="col-xs-3" id="' + v.ID_STR + '">';
-                        contenido += '          <div class="btn-group-vertical panel-btn-seguir">';
-                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 1, null);">';
+                        contenido += '  <div class="col-xs-12" id="' + v.ID_STR + '">';
+                        contenido += '      <div class="btn-pref btn-group btn-group-justified btn-group-lg btn-group-tweet" role="group" >';
+                        contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                        contenido += '              <button type="button" class="btn btn-default" onclick="almacenarTweet(' + contador_tweet + ', 1, null);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Texto.png') }}" />';
                         contenido += '              </button>';
-                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 2, null);"">';
+                        contenido += '          </div>';
+                        contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                        contenido += '              <button type="button" class="btn btn-default" onclick="almacenarTweet(' + contador_tweet + ', 2, null);"">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Audiovisual.png') }}" />';
                         contenido += '              </button>';
-                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="almacenarTweet(' + contador_tweet + ', 3, null);">';
+                        contenido += '          </div>';
+                        contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                        contenido += '              <button type="button" class="btn btn-default" onclick="almacenarTweet(' + contador_tweet + ', 3, null);">';
                         contenido += '                  <img src="{{ asset('images/iconos/Twitter/Herramientas.png') }}" />';
                         contenido += '              </button>';
-                        contenido += '              <button type="button" class="btn btn-default button-tweet-panel" onclick="aniadeIdTweet(' + contador_tweet + ');">';
+                        contenido += '          </div>';
+                        contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                        contenido += '              <button type="button" class="btn btn-default" onclick="aniadeIdTweet(' + contador_tweet + ');">';
                         contenido += '                  <img id="img-compartir" src="{{ asset('images/iconos/Twitter/Compartir.png') }}" />';
                         contenido += '              </button>';
                         contenido += '          </div>';
+                        contenido += '      </div>';
                         contenido += '  </div>';
                         contenido += '</div>';
                         contador_tweet++;
@@ -379,7 +391,7 @@
                 if (v.FOTO) {
                     $.each(v.FOTOS, function (fk, fv) {
                         contenido += '      <div class="col-lg-6 col-lg-offset-3">';
-                        contenido += '          <img style="widht: 100%;" src="' + fv + '" alt="media_twitter" />';
+                        contenido += '          <img style="width: 100%;" src="' + fv + '" alt="media_twitter" />';
                         contenido += '      </div>';
                     });
                 }

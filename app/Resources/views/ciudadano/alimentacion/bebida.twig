@@ -120,7 +120,7 @@
                 <div class="btn-group" role="group">
                     <button type="button" id="terminado" class="btn btn-default btn13" href="#tab3" data-toggle="tab">
                         <span class="fa fa-archive" aria-hidden="true"></span>
-                        <div class="hidden-xs">REALIZADO</div>
+                        <div class="hidden-xs">REALIZADOS</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
@@ -377,7 +377,7 @@
             $("#image-tienda-" + id).removeClass("opacidad");
             $("#image-tienda-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del ejercicio');
+            mostrarCarga('Obteniendo información del reto');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -390,10 +390,10 @@
                     contenido += '  </div>';
                     contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
                     if (!data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO INDIVIDUAL';
+                        contenido += '      RETO INDIVIDUAL';
                     }
                     if (data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '      RETO DE DISTRITO';
                         contenido += '<div class="col-md-12" style="display:inline-block;">';
                         var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
                         var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
@@ -437,12 +437,12 @@
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12">';
                     if (!data.message.ES_DISTRITO && ya_solicitado_individual) {
-                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un ejercicio individual en curso. Antes de solicitar otro debe realizar una entrega.</p>';
+                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya tienes un reto individual en curso. Para solicitar otro debes entregar primero el anterior.</p>';
 
                     } else if (data.message.ES_DISTRITO && ya_solicitado_distrito) {
-                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un ejercicio de distrito pendiente de entrega. Al menos un ciudadano de su distrito debe entregar para poder solicitar otro.</p>';
+                        contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un reto de distrito pendiente de entrega. Al menos un ciudadano de su distrito debe entregar para poder solicitar otro.</p>';
                     } else {
-                        contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                        contenido += '      <button class="btn btn-primary detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
                         contenido += '          SOLICITAR';
                         contenido += '      </button>';
                     }
@@ -461,7 +461,7 @@
             $("#tab2 .slot").css('background-color', 'gray');
             $("#image-solicitado-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del ejercicio');
+            mostrarCarga('Obteniendo información del reto.');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -474,10 +474,10 @@
                     contenido += '  </div>';
                     contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
                     if (!data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO INDIVIDUAL';
+                        contenido += '      RETO INDIVIDUAL';
                     }
                     if (data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '      RETO DE DISTRITO';
                         contenido += '<div class="col-md-12" style="display:inline-block;">';
                         var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
                         var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
@@ -511,7 +511,7 @@
                     } else {
                         contenido += '  <div class="row">';
                         contenido += '  <div class="col-md-12 detalle-enunciado" style="color: #286090; min-height: 0px;">';
-                        contenido += '  <p>Este ejercicio debe ser solicitado por todos los miembros de su distrito para poder realizar la entrega</p>';
+                        contenido += '  <p>Este reto debe ser solicitado por todos los miembros de tu distrito para poder realizar la entrega.</p>';
                         contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
                         contenido += '  </div>';
                         contenido += '      <div class="col-md-12">';
@@ -535,7 +535,7 @@
             $("#tab3 .slot").css('background-color', 'gray');
             $("#image-terminado-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del ejercicio');
+            mostrarCarga('Obteniendo información del reto');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -548,10 +548,10 @@
                     contenido += '  </div>';
                     contenido += '  <div class="col-md-12 detalle-enunciado" style="min-height: 0px;">';
                     if (!data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO INDIVIDUAL';
+                        contenido += '      RETO INDIVIDUAL';
                     }
                     if (data.message.ES_DISTRITO) {
-                        contenido += '      EJERCICIO DE DISTRITO';
+                        contenido += '      RETO DE DISTRITO';
                         contenido += '<div class="col-md-12" style="display:inline-block;">';
                         var solicitantes = data.message.NUM_SOLICITANTES_DISTRITO;
                         var rest_soli = data.message.NUM_CIUDADANOS_DISTRITO - data.message.NUM_SOLICITANTES_DISTRITO;
@@ -597,12 +597,12 @@
                     contenido += '  <div class="col-md-12">';
                     if (!ya_solicitado_individual) {
                         if (data.message.ESTADO !== 'entregado') {
-                            contenido += '      <button class="btn detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                            contenido += '      <button class="btn btn-primary detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
                             contenido += '          VOLVER A SOLICITAR';
                         }
                         contenido += '      </button>';
                     } else {
-                        contenido += '      <button class="btn detalle-boton disabled" title="YA HAY UN EJERCICIO SOLICITADO">';
+                        contenido += '      <button class="btn btn-primary detalle-boton disabled" title="YA HAY UN RETO SOLICITADO">';
                         contenido += '          VOLVER A SOLICITAR';
                         contenido += '      </button>';
                     }

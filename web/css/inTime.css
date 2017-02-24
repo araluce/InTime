@@ -75,9 +75,9 @@
     color: #000000;
 }
 .ventana-tweets{
-    background-color: rgba(255,255,255,0.2); 
-    color: black; 
-    overflow-y: auto;
+    /*background-color: rgba(255,255,255,0.2);*/ 
+    /*color: black;*/ 
+    /*overflow-y: auto;*/
 }
 
 .panel-default, .panel{
@@ -761,7 +761,7 @@ legend{
         height: 146px;
     }
     .ventana-tweets{
-        height: 1000px;
+        /*height: 1000px;*/
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -918,7 +918,7 @@ legend{
         height: 146px;
     }
     .ventana-tweets{
-        height: 1000px;
+        /*height: 1000px;*/
     }
     .badge-alimentacion,
     .badge-aviso{
@@ -1059,7 +1059,7 @@ legend{
         height: 146px;
     }
     .ventana-tweets{
-        height: 250px;
+        /*height: 250px;*/
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
@@ -1220,7 +1220,7 @@ legend{
         font-size: 13px;
     }
     .ventana-tweets{
-        height: 350px;
+        /*height: 350px;*/
     }
     .breadcrumb{
         font-size: 17px;

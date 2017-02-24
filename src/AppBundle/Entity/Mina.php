@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Mina
  *
- * @ORM\Table(name="MINA")
+ * @ORM\Table(name="MINA", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"})})
  * @ORM\Entity
  */
 class Mina
@@ -41,6 +41,16 @@ class Mina
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idMina;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
 
 
 
@@ -121,5 +131,28 @@ class Mina
     public function getIdMina()
     {
         return $this->idMina;
+    }
+
+    /**
+     * Set idEjercicio
+     *
+     * @param \AppBundle\Entity\Ejercicio $idEjercicio
+     * @return Mina
+     */
+    public function setIdEjercicio(\AppBundle\Entity\Ejercicio $idEjercicio = null)
+    {
+        $this->idEjercicio = $idEjercicio;
+
+        return $this;
+    }
+
+    /**
+     * Get idEjercicio
+     *
+     * @return \AppBundle\Entity\Ejercicio 
+     */
+    public function getIdEjercicio()
+    {
+        return $this->idEjercicio;
     }
 }

@@ -813,18 +813,22 @@ class Guardian extends Controller {
                         $CALIFICACION->setIdEvaluador($GdT);
                         $CALIFICACION->setIdEjercicioEstado($EVALUADO);
                         $CALIFICACION->setIdCalificaciones($NOTA);
+                        $CALIFICACION->setFecha(new \DateTime('now'));
                         $em->persist($CALIFICACION);
                         $em->flush();
                         Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+                        Usuario::comprobarNivel($doctrine, $CIUDADANO);
                     }
                 }
             } else {
                 $CALIFICACION->setIdEvaluador($GdT);
                 $CALIFICACION->setIdEjercicioEstado($EVALUADO);
                 $CALIFICACION->setIdCalificaciones($NOTA);
+                $CALIFICACION->setFecha(new \DateTime('now'));
                 $em->persist($CALIFICACION);
                 $em->flush();
                 Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+                Usuario::comprobarNivel($doctrine, $CALIFICACION->getIdUsuario());
             }
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);

@@ -93,7 +93,7 @@ class AsistenciaController extends Controller {
                     . ' debido a que las horas solicitadas no están disponibles. Puede que otro ciudadano las haya solicitado'
                     . ' a la vez'), 200);
             }
-            return new JsonResponse(array('estado' => 'OK', 'message' => 'Tu solicitud de asistencia'
+            return new JsonResponse(array('estado' => 'OK', 'message' => 'Tu solicitud'
                 . ' se ha registrado correctamente y queda pendiente de aceptación por parte del GdT.'), 200);
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'), 200);

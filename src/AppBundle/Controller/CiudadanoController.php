@@ -393,93 +393,7 @@ class CiudadanoController extends Controller {
         return $this->render('ciudadano/ocio/altruismo.html.twig', $DATOS);
     }
 
-    /**
-     * @Route("/ciudadano/ocio/altruismo/getMina", name="getMina")
-     */
-    public function getMinaAction(Request $request) {
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $em = $doctrine->getManager();
-        $qb = $em->createQueryBuilder();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/getMina');
-        if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
-        }
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-        $MINAS = $doctrine->getRepository('AppBundle:Mina')->findAll();
-        if (count($MINAS)) {
-            $ahora = new \DateTime('now');
-            foreach ($MINAS as $MINA) {
-                if ($ahora <= $MINA->getFechaFinal()) {
-                    $datos = [];
-                    $datos['fecha_final'] = $MINA->getFechaFinal();
-                    $datos['ciudadanos_mina'] = null;
-                    $datos['alias'] = null;
-                    $datos['distrito'] = null;
-                    $datos['tiempo_prorroga'] = null;
-                    $query = $qb->select('um')
-                            ->from('\AppBundle\Entity\UsuarioMina', 'um')
-                            ->where('um.idMina = :IdMina')
-                            ->orderBy('um.fecha', 'DESC')
-                            ->setParameters(['IdMina' => $MINA]);
-                    $USUARIO_MINA = $query->getQuery()->getOneOrNullResult();
-
-                    if ($USUARIO->getSeudonimo() === null) {
-                        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Para participar debes tener un alias.<br>Puedes crearte uno en la sección Jugador de la página principal'), 200);
-                    }
-                    if ($USUARIO->getIdDistrito() === null) {
-                        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Para participar debes pertenecer a un distrito.<br> Solicita un distrito a tu Guardián del tiempo'), 200);
-                    }
-                    $datos['mi_distrito'] = $USUARIO->getIdDistrito()->getNombre();
-                    if ($USUARIO_MINA !== null) {
-                        $datos['alias'] = $USUARIO_MINA->getIdUsuario()->getSeudonimo();
-                        $datos['distrito'] = $USUARIO_MINA->getIdUsuario()->getIdDistrito()->getNombre();
-                        $datos['tiempo_prorroga'] = $USUARIO_MINA->getFecha();
-                    }
-                    return new JsonResponse(array('estado' => 'OK', 'datos' => $datos), 200);
-                }
-            }
-        }
-        return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Actualmente no hay minas que desactivar'), 200);
-    }
-
-    /**
-     * @Route("/ciudadano/ocio/altruismo/enviarCodigo", name="enviarCodigo")
-     */
-    public function enviarCodigoAction(Request $request) {
-        $doctrine = $this->getDoctrine();
-        $session = $request->getSession();
-        $em = $doctrine->getManager();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/enviarCodigo');
-        if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
-        }
-        if ($request->getMethod() == 'POST') {
-            $codigo = $request->request->get('codigo');
-            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-            $MINAS = $doctrine->getRepository('AppBundle:Mina')->findAll();
-            if (count($MINAS)) {
-                $ahora = new \DateTime('now');
-                foreach ($MINAS as $MINA) {
-                    if ($ahora <= $MINA->getFechaFinal()) {
-                        if ($MINA->getCodigo() === $codigo) {
-                            $USUARIO_MINA = new \AppBundle\Entity\UsuarioMina();
-                            $USUARIO_MINA->setFecha(new \DateTime('now'));
-                            $USUARIO_MINA->setIdMina($MINA);
-                            $USUARIO_MINA->setIdUsuario($USUARIO);
-                            $em->persist($USUARIO_MINA);
-                            $em->flush();
-                            Pago::pagarMina($doctrine, $USUARIO);
-                            return new JsonResponse(array('estado' => 'OK', 'message' => 'Enhorabuena! La mina ha sido desactivada'), 200);
-                        } else {
-                            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'El código es incorrecto'), 200);
-                        }
-                    }
-                }
-            }
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Actualmente no hay minas que desactivar'), 200);
-        }
-    }
+    
 
     /**
      * @Route("/ciudadano/ocio/altruismo/donarTdv/{id_usuario}/{tdv}", name="donar")
@@ -609,8 +523,14 @@ class CiudadanoController extends Controller {
             $finBloqueo->add(new \DateInterval('P5D'));
             $CUENTA->setFinbloqueo($finBloqueo);
             $em->persist($CUENTA);
+            
             $USUARIO->setIdEstado($ESTADO_VACACIONES);
+            $HOY = new \DateTime('now');
+            $DATE = date('Y-m-d H:i:s', $HOY->getTimestamp() + $tiempo);
+            $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+            $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $em->persist($USUARIO);
+            
             $em->flush();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones en marcha.')), 200);

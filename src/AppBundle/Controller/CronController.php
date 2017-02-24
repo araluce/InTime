@@ -16,6 +16,7 @@ use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Trabajo;
 use AppBundle\Utils\Distrito;
+use AppBundle\Utils\Pago;
 
 /**
  * Description of CronController
@@ -124,6 +125,8 @@ class CronController extends Controller {
         $fecha = new \DateTime('now');
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
+                // Ya está contemplado el usuario con vacaciones
+
                 if ($CIUDADANO->getTiempoSinComer() < $fecha ||
                         $CIUDADANO->getTiempoSinBeber() < $fecha) {
                     Usuario::setDefuncion($doctrine, $CIUDADANO);
@@ -174,6 +177,53 @@ class CronController extends Controller {
     }
 
     /**
+     * @Route("/cron/pagoMina", name="cronMina")
+     */
+    public function cronMinaAction(Request $request) {
+        // Cada noche después de las 00:00
+        $doctrine = $this->getDoctrine();
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+        $ULTIMA_MINA = Utils::ultimaMinaDesactivada($doctrine);
+        $MINA_ACTIVA = Utils::minaActiva($doctrine);
+        $HOY = new \DateTime('now');
+        $acertantes = 0;
+        $return = 'CRON - Hoy no ha habido mina o está activa en este momento';
+        if ($ULTIMA_MINA) {
+            if ($MINA_ACTIVA && $MINA_ACTIVA === $ULTIMA_MINA) {
+                $return = 'CRON - La mina sigue activa';
+            } else {
+                if (intval($ULTIMA_MINA->getFechaFinal()->format('d')) === intval($HOY->format('d') - 1)) {
+                    $return = 'CRON - No ha habido acertantes';
+                    $query = $doctrine->getRepository('AppBundle:UsuarioMina')->createQueryBuilder('a');
+                    $query->select('a');
+                    $query->where('a.idMina = :MINA');
+                    $query->setParameters(['MINA' => $ULTIMA_MINA]);
+                    $GANADORES = $query->getQuery()->getResult();
+                    if (count($GANADORES)) {
+                        $GANADORES_USU = [];
+                        foreach($GANADORES as $G){
+                            $GANADORES_USU[] = $G->getIdUsuario();
+                        }
+                        if (count($CIUDADANOS)) {
+                            foreach ($CIUDADANOS as $CIUDADANO) {
+                                if (in_array($CIUDADANO, $GANADORES_USU)) {
+                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO, true);
+                                    $acertantes++;
+                                } else {
+                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO);
+                                }
+                            }
+                            $return = 'CRON - ' . $acertantes . ' acertantes en la mina';
+                        }
+                    }
+                }
+            }
+        }
+        Utils::setError($doctrine, 3, $return);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $return)), 200);
+    }
+
+    /**
      * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")
      */
     public function testCiudadanos(Request $request) {
@@ -186,10 +236,10 @@ class CronController extends Controller {
             $aux['DISTRITO'] = $DISTRITO->getNombre();
             $aux['CIUDADANOS'] = [];
             if (count($CIUDADANOS)) {
-                foreach($CIUDADANOS as $CIUDADANO) {
+                foreach ($CIUDADANOS as $CIUDADANO) {
                     $aux2 = [];
                     $aux2['NOMBRE'] = $CIUDADANO->getNombre();
-                    $aux['CIUDADANOS'][] =$aux2;
+                    $aux['CIUDADANOS'][] = $aux2;
                 }
             }
             $RESPUESTA[] = $aux;
@@ -200,6 +250,5 @@ class CronController extends Controller {
 //        Utils::pretty_print($RESPUESTA);
 //        return new JsonResponse(json_encode($RESPUESTA), 200);
     }
-    
 
 }

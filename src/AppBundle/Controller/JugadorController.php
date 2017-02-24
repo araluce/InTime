@@ -89,6 +89,19 @@ class JugadorController extends Controller {
             $DATOS['info']['message'] = 'Gracias por actualizar tu información';
             $DATOS['info']['type'] = 'success';
         }
+        $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($usuario);
+        if(null !== $USUARIO_NIVEL){
+            $DATOS['NIVEL'] = $USUARIO_NIVEL->getNivel();
+            $DATOS['PUNTOS'] = $USUARIO_NIVEL->getPuntos();
+        } else {
+            $DATOS['NIVEL'] = 0;
+            $DATOS['PUNTOS'] = 0;
+        }
+        if (null !== $usuario->getIdDistrito()) {
+            $DATOS['DISTRITO'] = $usuario->getIdDistrito()->getNombre();
+        } else {
+            $DATOS['DISTRITO'] = 'Aún no tienes un distrito asignado';
+        }
         if ($usuario->getSeudonimo()) {
             $DATOS['ALIAS'] = $usuario->getSeudonimo();
         }

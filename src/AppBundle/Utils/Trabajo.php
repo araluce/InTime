@@ -86,6 +86,11 @@ class Trabajo {
      * @return true|false
      */
     static function comprobarJornadaLaboral($doctrine, $USUARIO) {
+        // Si el ciudadano está de vacaciones cobra
+        if(Usuario::estaDeVacaciones($doctrine, $USUARIO)){
+            return 1;
+        }
+        // Si no lo está se cuentan los tweets
         $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
         $query->select('COUNT(a)');
         $query->where('DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO');
