@@ -260,7 +260,7 @@ class Alimentacion {
             $diasDif = Utils::getConstante($doctrine, 'diasDifEntregas');
             $fechaEntrega = $ultimoEjercicio->getFecha();
             if ($FECHA->format("Y") === $fechaEntrega->format("Y")) {
-                if ($FECHA->format("d") - $FECHA->format("d") < $diasDif) {
+                if ($FECHA->format("d") - $fechaEntrega->format("d") < $diasDif) {
                     return 0;
                 }
             }

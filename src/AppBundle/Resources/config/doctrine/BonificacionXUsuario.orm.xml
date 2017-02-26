@@ -10,6 +10,8 @@
       <generator strategy="IDENTITY"/>
     </id>
     <field name="usado" type="boolean" column="usado" nullable="false"/>
+    <field name="contador" type="integer" column="contador" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="true"/>
     <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>

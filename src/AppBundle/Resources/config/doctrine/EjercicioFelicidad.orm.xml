@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\EjercicioFelicidad" table="EJERCICIO_FELICIDAD">
+    <indexes>
+      <index name="id_ejercicio_propuesta" columns="id_ejercicio_propuesta,id_ejercicio_entrega"/>
+      <index name="id_ejercicio_entrega" columns="id_ejercicio_entrega"/>
+      <index name="id_usuario" columns="id_usuario"/>
+      <index name="IDX_2DE39626D8F558A" columns="id_ejercicio_propuesta"/>
+    </indexes>
+    <id name="idEjercicioFelicidad" type="integer" column="id_ejercicio_felicidad">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="enunciado" type="string" column="enunciado" length="1000" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="true"/>
+    <many-to-one field="idEjercicioPropuesta" target-entity="Ejercicio">
+      <join-columns>
+        <join-column name="id_ejercicio_propuesta" referenced-column-name="id_ejercicio"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idEjercicioEntrega" target-entity="Ejercicio">
+      <join-columns>
+        <join-column name="id_ejercicio_entrega" referenced-column-name="id_ejercicio"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idUsuario" target-entity="Usuario">
+      <join-columns>
+        <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

@@ -331,7 +331,7 @@ class AlimentacionController extends Controller {
             $session = $request->getSession();
             $id_ejercicio = $request->request->get('id_ejercicio');
             $ENTREGA = $request->files->get('entrega');
-            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento/');
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/alimentacion/comida/entregarAlimento');
             if (!$status) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }

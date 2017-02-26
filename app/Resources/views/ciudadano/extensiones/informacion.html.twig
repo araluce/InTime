@@ -228,6 +228,29 @@
         .hidden-xs{
             font-size: 25px;
         }
+        .minicarta{
+            position: relative;
+        }
+        .minicarta img{
+            width: 100%;
+        }
+        .minicarta figcaption{
+            display: none;
+            position: absolute;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.77);
+            bottom: 0px;
+            color: white;
+            font-size: 25px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .minicarta:hover figcaption{
+            display: block;
+        }
+        #nivel-usuario{
+            font-size: 50px;
+        }
         @media (max-width: 760px){
             #mensaje-texto,
             .modal-title{
@@ -272,6 +295,9 @@
         @media (min-width: 760px){
             legend{
                 font-size: 35px;
+            }
+            #nivel-usuario{
+                font-size: 60px;
             }
             #mensaje-texto,
             .modal-title{
@@ -328,6 +354,7 @@
             .info-button{
                 font-size: 20px;
             }
+            #nivel-usuario,
             legend{
                 font-size: 17px;
             }
@@ -416,7 +443,7 @@
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="nivel" class="btn btn-default" href="#tab2" data-toggle="tab">
+                            <button type="button" id="nivel" class="btn btn-default" href="#tab2" data-toggle="tab" onclick="getNivelMC();">
                                 <img src="{{ asset('images/iconos/Jugador/Nivel_y_privilegios.png') }}" />
                                 <div class="hidden-xs">NIVEL</div>
                             </button>
@@ -544,9 +571,8 @@
                             </div>
                             <div class="tab-pane fade in" id="tab2">
                                 <div class="row" style="margin-top: 1%;">
-                                    <div class="col-md-12">
-                                        <legend>NIVEL: {{ NIVEL }} <span style="float: right;">XP: {{ PUNTOS }}</span></legend>
-                                    </div>
+                                    <legend id="nivel-usuario"></legend>
+                                    <div id="minicartas"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade in" id="tab3">
@@ -906,6 +932,47 @@
                 } else {
                     console.log(data);
                 }
+            });
+        }
+        function getNivelMC() {
+            ruta = '/ciudadano/info/getNivelMC';
+            $.get(ruta, function (data, status) {
+                data = jQuery.parseJSON(data);
+                if (data.estado === 'OK') {
+                    console.log(data);
+                    $("#nivel-usuario").html('NIVEL: ' + data.message.NIVEL + '<span style="float: right;">XP: ' + data.message.XP + '</span>');
+                    $("#minicartas").html('');
+                    $.each(data.message.MC, function (k, v) {
+                        contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
+                        contenido += '  <figure>';
+                        contenido += '      <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
+                        contenido += '      <figcaption>';
+                        contenido += '          <div class="row">';
+                        contenido += '          <div class="col-md-12">';
+                        contenido += '          <p>' + v.DESCRIPCION + '</p>';
+                        contenido += '          </div>';
+                        contenido += '          <div class="col-md-10 col-md-offset-2">';
+                        contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
+                        contenido += '              COMPRAR (' + v.COSTE + 'XP)';
+                        contenido += '          </button>';
+                        contenido += '          </div>';
+                        contenido += '          </div>';
+                        contenido += '      </figcaption>';
+                        contenido += '  </figure>';
+                        $("#minicartas").append(contenido);
+                    });
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function comprarMC(id) {
+            $("#modal-avisos2").click();
+            mostrarCarga('Comprobando requisitos');
+            ruta = '/ciudadano/info/comprarMC/' + id;
+            $.get(ruta, function (data, status) {
+                data = jQuery.parseJSON(data);
+                mostrarResultadoOperacion(data.message);
             });
         }
     </script>

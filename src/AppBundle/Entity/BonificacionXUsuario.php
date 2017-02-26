@@ -22,6 +22,20 @@ class BonificacionXUsuario
     /**
      * @var integer
      *
+     * @ORM\Column(name="contador", type="integer", nullable=false)
+     */
+    private $contador;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=true)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="id_bonificacion_x_usuario", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -71,6 +85,52 @@ class BonificacionXUsuario
     public function getUsado()
     {
         return $this->usado;
+    }
+
+    /**
+     * Set contador
+     *
+     * @param integer $contador
+     * @return BonificacionXUsuario
+     */
+    public function setContador($contador)
+    {
+        $this->contador = $contador;
+
+        return $this;
+    }
+
+    /**
+     * Get contador
+     *
+     * @return integer 
+     */
+    public function getContador()
+    {
+        return $this->contador;
+    }
+
+    /**
+     * Set fecha
+     *
+     * @param \DateTime $fecha
+     * @return BonificacionXUsuario
+     */
+    public function setFecha($fecha)
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    /**
+     * Get fecha
+     *
+     * @return \DateTime 
+     */
+    public function getFecha()
+    {
+        return $this->fecha;
     }
 
     /**

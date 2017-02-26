@@ -607,15 +607,15 @@ class Utils {
         $query = $doctrine->getRepository('AppBundle:Mina')->createQueryBuilder('a');
         $query->select('a');
         $query->orderBy('a.fecha', 'DESC');
-        $MINA = $query->getQuery()->getOneOrNullResult();
-        if (null === $MINA) {
+        $MINA = $query->getQuery()->getResult();
+        if (!count($MINA)) {
             return 0;
         }
         $HOY = new \DateTime('now');
-        if ($MINA->getFechaFinal() < $HOY) {
+        if ($MINA[0]->getFechaFinal() < $HOY) {
             return 0;
         }
-        return $MINA;
+        return $MINA[0];
     }
 
     /**

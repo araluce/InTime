@@ -393,33 +393,85 @@ class CiudadanoController extends Controller {
         return $this->render('ciudadano/ocio/altruismo.html.twig', $DATOS);
     }
 
-    
+    /**
+     * @Route("/ciudadano/ocio/altruismo/getCiudadanosDonar", name="getCiudadanosDonar")
+     */
+    public function getCiudadanosDonarAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/getCiudadanosDonar');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $DATOS = [];
+        $CIUDADANOS_VIVOS = Usuario::getCiudadanosVivos($doctrine);
+        if (count($CIUDADANOS_VIVOS)) {
+            $DATOS['CIUDADANOS'] = [];
+            foreach ($CIUDADANOS_VIVOS as $CIUDADANO) {
+                if ($CIUDADANO !== $USUARIO && $CIUDADANO->getSeudonimo() !== '') {
+                    $aux = [];
+                    $aux['ID'] = $CIUDADANO->getIdUsuario();
+                    $aux['ALIAS'] = $CIUDADANO->getSeudonimo();
+                    $DATOS['CIUDADANOS'][] = $aux;
+                }
+            }
+            $CARTA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(4);
+            $MI_CARTA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                'idUsuario' => $USUARIO, 'idBonificacionExtra' => $CARTA, 'usado' => 0
+            ]);
+            $DATOS['BONIFICACION'] = 0;
+            if (null !== $MI_CARTA) {
+                $DATOS['BONIFICACION'] = 1;
+            }
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Por el momento no hay ciudadanos a los que puedas donar')), 200);
+    }
 
     /**
-     * @Route("/ciudadano/ocio/altruismo/donarTdv/{id_usuario}/{tdv}", name="donar")
+     * @Route("/ciudadano/ocio/altruismo/donarTdv/{id_usuario}/{tdv}/{bonificacion}", name="donar")
      */
-    public function donarAction(Request $request, $id_usuario, $tdv) {
+    public function donarAction(Request $request, $id_usuario, $tdv, $bonificacion) {
         $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/donarTdv/' . $id_usuario . '/' . $tdv);
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
         }
-
         if (!Usuario::puedoRealizarTransaccion($doctrine, $session, $tdv)) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No tienes suficiente TdV'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes suficiente TdV.')), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        if ($USUARIO->getSeudonimo() === '') {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes tener seudonimo para poder donar.')), 200);
+        }
         $USUARIO_DESTINO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         if ($USUARIO_DESTINO === null || $USUARIO === null) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Se ha producido un error al intentar encontrar al usuario'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Se ha producido un error al intentar encontrar al usuario.')), 200);
         }
         if (Usuario::heDonadoYa($doctrine, $session, $USUARIO_DESTINO)) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() . ' anteriormente. No puedes volver a donarle TdV.'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() . ' anteriormente. No puedes volver a donarle TdV.')), 200);
         }
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, $tdv * (-1), 'Cobro - Donación a @' . $USUARIO_DESTINO->getSeudonimo());
-        Usuario::operacionSobreTdV($doctrine, $USUARIO_DESTINO, $tdv, 'Ingreso - Donación a @' . $USUARIO->getSeudonimo());
-        return new JsonResponse(array('estado' => 'OK', 'message' => 'Tdv donado'), 200);
+        if ($bonificacion) {
+            $DOS_DIAS = 172800;
+            $CARTA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(4);
+            $MI_CARTA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                'idUsuario' => $USUARIO, 'idBonificacionExtra' => $CARTA, 'usado' => 0
+            ]);
+            if (null === $MI_CARTA) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes carta de bonificación.')), 200);
+            }
+            $MI_CARTA->setUsado(1);
+            $em->persist($MI_CARTA);
+            $em->flush();
+            Usuario::operacionSobreTdV($doctrine, $USUARIO_DESTINO, $DOS_DIAS, 'Ingreso - Donación de @' . $USUARIO->getSeudonimo());
+        } else {
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tdv * (-1), 'Cobro - Donación a @' . $USUARIO_DESTINO->getSeudonimo());
+            Usuario::operacionSobreTdV($doctrine, $USUARIO_DESTINO, $tdv, 'Ingreso - Donación de @' . $USUARIO->getSeudonimo());
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tdv donado')), 200);
     }
 
     /**
@@ -450,19 +502,19 @@ class CiudadanoController extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
-        $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+        $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(9);
         if (null === $TARJETA) {
             Utils::setError($doctrine, 1, 'No se encuentra BONIFICACION_EXTRA con id 1', $USUARIO);
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
         }
         $bonificacion = false;
         $TARJETA_VACACIONES = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
-            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO
+            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO, 'usado' => 0
         ]);
         if (null !== $TARJETA_VACACIONES) {
             $bonificacion = true;
         }
-        
+
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $bonificacion)), 200);
     }
 
@@ -482,13 +534,13 @@ class CiudadanoController extends Controller {
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
             $tarjeta_experiencia = $request->request->get('tarjeta_experiencia');
             if ($tarjeta_experiencia) {
-                $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+                $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(9);
                 if (null === $TARJETA) {
                     Utils::setError($doctrine, 1, 'No se encuentra BONIFICACION_EXTRA con id 1', $USUARIO);
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
                 }
                 $TARJETA_VACACIONES = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
-                    'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO
+                    'idBonificacionExtra' => $TARJETA, 'idUsuario' => $USUARIO, 'usado' => 0
                 ]);
                 if (null === $TARJETA_VACACIONES) {
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes tarjeta de vacaciones')), 200);
@@ -517,20 +569,20 @@ class CiudadanoController extends Controller {
                 Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * ($tiempo / 2), 'Gasto - Semana de vacaciones');
             }
             $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
-            
+
             $CUENTA = $USUARIO->getIdCuenta();
             $finBloqueo = new \DateTime('now');
             $finBloqueo->add(new \DateInterval('P5D'));
             $CUENTA->setFinbloqueo($finBloqueo);
             $em->persist($CUENTA);
-            
+
             $USUARIO->setIdEstado($ESTADO_VACACIONES);
             $HOY = new \DateTime('now');
             $DATE = date('Y-m-d H:i:s', $HOY->getTimestamp() + $tiempo);
             $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $em->persist($USUARIO);
-            
+
             $em->flush();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones en marcha.')), 200);

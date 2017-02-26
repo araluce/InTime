@@ -5,27 +5,21 @@
         <title>{% if TITULO is defined %}{{ TITULO }}{% else %}InTime{% endif %}</title>
 
         <!-- CSS -->
-        <!--<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.css" />
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet"/>
-        <!--<link href="{{ asset('css/theme_glossy.css') }}" rel="stylesheet"/>-->
         <link href="{{ asset('css/freelancer.css') }}" rel="stylesheet"/>
         <link href="{{ asset('css/timeTo.css') }}" rel="stylesheet"/>
         <link href="{{ asset('css/clockpicker.css') }}" rel="stylesheet"/>
         <script src="https://use.fontawesome.com/fa9b27f1c6.js"></script>
 
-        <!-- Menu circular -->
-        <!--
-        <link href="{{ asset('css/normalize.css')}}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('css/demo.css')}}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('css/component2.css')}}" rel="stylesheet" type="text/css" />
-        <script src="{{ asset('js/modernizr-2.6.2.min.js') }}"></script>-->
 
         <link href="{{ asset('css/inTime.css')}}" rel="stylesheet" type="text/css" />
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'/>
         <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/customradio.css')}}" rel="stylesheet" type="text/css" />
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link href="{{ asset('css/style.css') }}" rel="stylesheet"/>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
@@ -108,13 +102,16 @@
 
     <div class="footer"> {% include "extension/footer.html.twig" %}</div>
     <!-- JS -->
+    
     <script src="{{ asset('js/jquery-2.2.3.min.js') }}"></script>
-    <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.min.js"></script>
+    
     <script src="{{ asset('js/fileinput.min.js') }}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <!--<script src="{{ asset('js/bootstrap.min.js') }}"></script>-->
     <script src="{{ asset('js/clockpicker.js') }}"></script>
     <script src="{{ asset('js/jquery.timeTo.js') }}"></script>
+    <script src="{{ asset('js/utils.js') }}"></script>
+
     <script>
         function responsive_screen() {
             if (window.matchMedia('(min-width: 1200px)').matches) {
@@ -132,41 +129,34 @@
         {% if ESTADO_USUARIO is defined %}
             {% if TDV is defined %}
                 {% if ESTADO_USUARIO == 'Activo' %}
-                $('#countdown-11').timeTo({
-                    //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
-                    timeTo: new Date(new Date('{{ TDV.date }}')),
-                    displayDays: 2,
-                    theme: "white",
-                    displayCaptions: true,
-                    fontSize: font_size,
-                    captionSize: 0
-                });
+                        $('#countdown-11').timeTo({
+                            //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
+                            timeTo: new Date(new Date('{{ TDV.date }}')),
+                            displayDays: 2,
+                            theme: "white",
+                            displayCaptions: true,
+                            fontSize: font_size,
+                            captionSize: 0
+                        });
                 {% endif %}
                 {% if ESTADO_USUARIO == 'Vacaciones' %}
-                $('#countdown-11').timeTo({
-                    timeTo: new Date(new Date('{{ TDV.date }}')),
-                    displayDays: 2,
-                    theme: "white",
-                    displayCaptions: true,
-                    fontSize: font_size,
-                    captionSize: 0
-                });
-                $('#countdown-11').timeTo('stop');
+                        $('#countdown-11').timeTo({
+                            timeTo: new Date(new Date('{{ TDV.date }}')),
+                            displayDays: 2,
+                            theme: "white",
+                            displayCaptions: true,
+                            fontSize: font_size,
+                            captionSize: 0
+                        });
+                        $('#countdown-11').timeTo('stop');
                 {% endif %}
             {% endif %}
-            {% if MENSAJES is defined and MENSAJES|length > 0 %}
-                $('#modal-avisos').click();
-            {% endif %}
+                    {% if MENSAJES is defined and MENSAJES|length > 0 %} $('#modal-avisos').click();{% endif %}
         {% endif %}
             });
     </script>
     {% block javascripts %}
     {% endblock %}
-
-    <!--
-    <script src="{{ asset('js/polyfills.js') }}"></script>
-    <script src="{{ asset('js/menu.js') }}"></script>-->
-    <!--<script src="http://tympanus.net/codrops/adpacks/demoad.js"></script>-->
 
 </body>
 </html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\MinaPista" table="MINA_PISTA">
+    <indexes>
+      <index name="id_mina" columns="id_mina"/>
+    </indexes>
+    <id name="idMinaPista" type="integer" column="id_mina_pista">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="pista" type="string" column="pista" length="1000" nullable="false"/>
+    <many-to-one field="idMina" target-entity="Mina">
+      <join-columns>
+        <join-column name="id_mina" referenced-column-name="id_mina"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

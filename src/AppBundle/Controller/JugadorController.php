@@ -76,7 +76,7 @@ class JugadorController extends Controller {
                 $usuario->setImagen($nombre_foto);
                 $IMAGEN->move($ruta, $nombre_foto);
             }
-            if($FECHA_NACIMIENTO !== ''){
+            if ($FECHA_NACIMIENTO !== '') {
                 $FECHA_FORMATO = \DateTime::createFromFormat('Y-m-d H:i:s', $FECHA_NACIMIENTO);
                 $usuario->setFechaNacimiento($FECHA_FORMATO);
             }
@@ -90,7 +90,7 @@ class JugadorController extends Controller {
             $DATOS['info']['type'] = 'success';
         }
         $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($usuario);
-        if(null !== $USUARIO_NIVEL){
+        if (null !== $USUARIO_NIVEL) {
             $DATOS['NIVEL'] = $USUARIO_NIVEL->getNivel();
             $DATOS['PUNTOS'] = $USUARIO_NIVEL->getPuntos();
         } else {
@@ -117,7 +117,7 @@ class JugadorController extends Controller {
         if ($usuario->getImagen()) {
             $DATOS['IMAGEN'] = $usuario->getDni() . '/' . $usuario->getImagen();
         }
-        if ($usuario->getFechaNacimiento()){
+        if ($usuario->getFechaNacimiento()) {
             $fecha = $usuario->getFechaNacimiento();
             $DATOS['FECHA_NACIMIENTO'] = $fecha->format('Y-m-d');
         }
@@ -262,7 +262,7 @@ class JugadorController extends Controller {
                     $query->where('um.idUsuario = :ID_USUARIO');
                     $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
                     $cant = $query->getQuery()->getSingleScalarResult();
-                    if($cant !== null){
+                    if ($cant !== null) {
                         $aux['CANTIDAD'] += $cant;
                     }
                 }
@@ -271,6 +271,100 @@ class JugadorController extends Controller {
             $RESPUESTA[] = $aux;
         }
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/info/getNivelMC", name="getNivelMC")
+     */
+    public function getNivelMCAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getNivelMC');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
+        $DATOS = [];
+        $DATOS['NIVEL'] = 0;
+        $DATOS['XP'] = 0;
+        if (null !== $USUARIO_NIVEL) {
+            $DATOS['NIVEL'] = $USUARIO_NIVEL->getNivel();
+            $DATOS['XP'] = $USUARIO_NIVEL->getPuntos();
+        }
+        $DATOS['MC'] = [];
+        $MINICARTAS = $doctrine->getRepository('AppBundle:BonificacionExtra')->findAll();
+        $MIS_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
+            'idUsuario' => $USUARIO, 'usado' => 0
+        ]);
+        $array_mc = [];
+        if (count($MIS_MC)) {
+            foreach ($MIS_MC as $MCU) {
+                $array_mc[] = $MCU->getIdBonificacionExtra();
+            }
+        }
+        if (count($MINICARTAS)) {
+            foreach ($MINICARTAS as $MC) {
+                if (!in_array($MC, $array_mc) && $MC->getDisponible()) {
+                    $aux = [];
+                    $aux['ID'] = $MC->getIdBonificacionExtra();
+                    $aux['TITULO'] = $MC->getBonificacion();
+                    $aux['DESCRIPCION'] = $MC->getDescripcion();
+                    $aux['IMAGEN'] = $MC->getImagen();
+                    $aux['COSTE'] = $MC->getCosteXp();
+                    $DATOS['MC'][] = $aux;
+                }
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)));
+    }
+
+    /**
+     * 
+     * @Route("/ciudadano/info/comprarMC/{idMC}", name="comprarMC")
+     */
+    public function comprarMCAction(Request $request, $idMC) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/comprarMC/' . $idMC);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
+        if (null === $USUARIO_NIVEL) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes suficientes puntos de experiencia')));
+        }
+        $MC = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra($idMC);
+        $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+            'idUsuario' => $USUARIO, 'idBonificacionExtra' => $MC
+        ]);
+        if ($MI_MC !== null) {
+            if (!$MI_MC->getUsado()) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Ya tenías comprada esta carta')));
+            }
+        }
+        if ($USUARIO_NIVEL->getPuntos() < $MC->getCosteXp()) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes suficientes puntos de experiencia')));
+        }
+        $em = $doctrine->getManager();
+        $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getPuntos() - $MC->getCosteXp());
+        $em->persist($USUARIO_NIVEL);
+        if ($MI_MC === null) {
+            $MI_MC = new \AppBundle\Entity\BonificacionXUsuario();
+        }
+        
+        $MI_MC->setFecha(new \DateTime('now'));
+        $MI_MC->setContador(0);
+        $MI_MC->setIdBonificacionExtra($MC);
+        $MI_MC->setIdUsuario($USUARIO);
+        $MI_MC->setUsado(0);
+        $em->persist($MI_MC);
+        $em->flush();
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Su compra ha sido realizada correctamente')));
     }
 
 }

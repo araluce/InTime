@@ -758,7 +758,7 @@ class Usuario {
             $USUARIO_NIVEL->setPuntos(1);
         } else {
             $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel()+1);
-            $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getPuntos()+1);
+            $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getNivel());
         }
         $em = $doctrine->getManager();
         $em->persist($USUARIO_NIVEL);

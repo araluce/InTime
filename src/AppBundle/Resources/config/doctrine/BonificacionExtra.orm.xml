@@ -5,6 +5,9 @@
       <generator strategy="IDENTITY"/>
     </id>
     <field name="bonificacion" type="string" column="bonificacion" length="100" nullable="false"/>
+    <field name="descripcion" type="string" column="descripcion" length="1000" nullable="false"/>
     <field name="imagen" type="string" column="imagen" length="100" nullable="false"/>
+    <field name="costeXp" type="integer" column="coste_xp" nullable="false"/>
+    <field name="disponible" type="boolean" column="disponible" nullable="false"/>
   </entity>
 </doctrine-mapping>

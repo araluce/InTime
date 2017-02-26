@@ -385,6 +385,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Coste de las pistas</label><br>
+                                <small>Establece el tiempo que cuesta comprar una mina</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_mina_pista" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_mina_pista" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_mina_pista" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_mina_pista" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setMina();">GUARDAR CAMBIOS</button>
                             <div id="alert-mina"></div>
                             <legend style="margin-top: 1%;">Préstamos</legend>
@@ -605,6 +643,21 @@
                 }
             });
         }
+        function getCosteMinaPista() {
+            ruta = '/guardian/ajustes/getCosteMinaPista';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_mina_pista').val(data.message.dias);
+                    $('#horas_mina_pista').val(data.message.horas);
+                    $('#minutos_mina_pista').val(data.message.minutos);
+                    $('#segundos_mina_pista').val(data.message.segundos);
+                } else {
+                    alerta = setAlert(data.message);
+                    $('#alert-mina').html(alerta);
+                }
+            });
+        }
         function getInteresPrestamo() {
             ruta = '/guardian/ajustes/getInteresPrestamo';
             $.get(ruta, function (datos, status) {
@@ -769,16 +822,24 @@
             var minutos_base_mina = parseInt($('#minutos_base_mina').val());
             var segundos_base_mina = parseInt($('#segundos_base_mina').val());
             var pago_base_mina = (((((dias_base_mina * 24) + horas_base_mina) * 60) + minutos_base_mina) * 60) + segundos_base_mina;
+            var dias_mina_pista = parseInt($('#dias_mina_pista').val());
+            var horas_mina_pista = parseInt($('#horas_mina_pista').val());
+            var minutos_mina_pista = parseInt($('#minutos_mina_pista').val());
+            var segundos_mina_pista = parseInt($('#segundos_mina_pista').val());
+            var coste_mina_pista = (((((dias_mina_pista * 24) + horas_mina_pista) * 60) + minutos_mina_pista) * 60) + segundos_mina_pista;
             
             if (pago_mina <= 0) {
                 $('#alert-mina').html(setAlert('La bonificación por desactivación de mina no puede ser 0'));
             } else if (pago_base_mina <= 0) {
                 $('#alert-mina').html(setAlert('La bonificación base por desactivación de mina no puede ser 0'));
+            } else if (coste_mina_pista <= 0) {
+                $('#alert-mina').html(setAlert('El coste por comprar una pista no puede ser 0'));
             } else {
                 ruta = '/guardian/ajustes/setMina';
                 datos = {
                     'pago_mina': pago_mina,
-                    'pago_base_mina': pago_base_mina
+                    'pago_base_mina': pago_base_mina,
+                    'coste_mina_pista': coste_mina_pista
                 };
                 $.post(ruta, datos, function (data, status) {
                     data = jQuery.parseJSON(data);
@@ -828,6 +889,7 @@
             getTestCorrecto();
             getPremioMina();
             getPremioBaseMina();
+            getCosteMinaPista();
             getInteresPrestamo();
             getTiempoMaximoPrestado();
             $(".btn-pref .btn").click(function () {

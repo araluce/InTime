@@ -54,6 +54,8 @@
                             <input type="text" class="form-control" id="codigo" placeholder="Código de la mina"/>
                             <label for="fecha" style="margin-top:1%;">Fecha tope</label>
                             <input type="datetime-local" class="form-control" id="fecha">
+                            <label for="pista" style="margin-top:1%;">Pista para la mina</label>
+                            <input type="text" class="form-control" id="pista" placeholder="Pista para la mina" />
                             <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarMina();">PUBLICAR</button>
                         </div>
                     </div>
@@ -83,13 +85,15 @@
         function publicarMina() {
             var codigo = $("#codigo").val();
             var fecha = $("#fecha").val();
+            var pista = $("#pista").val();
             if ($.trim(codigo) === '') {
                 alert('Debe insertar un código');
             } else {
                 ruta = '/guardian/mina/publicar';
                 datos = {
                     'CODIGO': codigo,
-                    'FECHA': fecha
+                    'FECHA': fecha,
+                    'PISTA': pista
                 };
                 $.post(ruta, datos, function (datos, status) {
                     data = jQuery.parseJSON(datos);

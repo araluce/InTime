@@ -189,7 +189,11 @@
                             <div class="ventana-tweets" id="principal-tweets"></div>
                         </div>
                     </div>
-                    <div class="tab-pane fade in" id="tab2"></div>
+                    <div class="tab-pane fade in" id="tab2">
+                        <div class="row">
+                            <div class="ventana-tweets" id="mochila-tweets-1"></div>
+                        </div>
+                    </div>
                     <div class="tab-pane fade in" id="tab3">
                         <div class="row">
                             <div class="ventana-tweets" id="mochila-tweets-2"></div>
@@ -441,7 +445,7 @@
             $('.btn4').height(max);
         }
         $(document).ready(function () {
-            {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
+        {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");

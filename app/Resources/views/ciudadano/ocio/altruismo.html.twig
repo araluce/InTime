@@ -88,201 +88,280 @@
         }
         function getFormularioDonar() {
             $("#mensaje-texto").empty();
-            contenido = '';
-            contenido += '<div class="row">';
-            contenido += '  <div class="col-md-12">';
-            contenido += '      <div id="texto-tdv">';
-            contenido += '          <p>Ayuda a un ciudadano en apuros</p> <small class="advertencia"><span style="color:red; font-weight: bold;">Atencion: </span> sólo puedes donar TdV una vez a una misma persona</small>';
-            contenido += '      </div>';
-            contenido += '  </div>';
-            contenido += '</div>';
-            contenido += '<div class="row">';
-            contenido += '  <div class="col-xs-12">';
-            contenido += '      <select class="custom-select" id="selector_ciudadanos">';
-            contenido += '          <option selected value="0">Selecciona la cuenta de un ciudadano</option>';
-        {% for CIUDADANO in CIUDADANOS %}contenido += '<option value="{{ CIUDADANO.idUsuario }}">@{{ CIUDADANO.seudonimo }}</option>';{% endfor %}
-                contenido += '      </select>';
-                contenido += '  </div>';
-                contenido += '</div>';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <div class="col-xs-3">';
-                contenido += '      <div class="input-group">';
-                contenido += '          <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />';
-                contenido += '          <span class="input-group-addon">d</span>';
-                contenido += '      </div>';
-                contenido += '  </div>';
-                contenido += '  <div class="col-xs-3">';
-                contenido += '      <div class="input-group">';
-                contenido += '          <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />';
-                contenido += '          <span class="input-group-addon">h</span>';
-                contenido += '      </div>';
-                contenido += '  </div>';
-                contenido += '  <div class="col-xs-3">';
-                contenido += '      <div class="input-group">';
-                contenido += '          <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />';
-                contenido += '          <span class="input-group-addon">m</span>';
-                contenido += '      </div>';
-                contenido += '  </div>';
-                contenido += '  <div class="col-xs-3">';
-                contenido += '      <div class="input-group">';
-                contenido += '          <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />';
-                contenido += '          <span class="input-group-addon">s</span>';
-                contenido += '      </div>';
-                contenido += '  </div>';
-                contenido += '</div>';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <div class="col-xs-6 col-xs-offset-3">';
-                contenido += '      <button class="btn btn-block btn-primary" onclick="donar()"> DONAR </button>';
-                contenido += '  </div>';
-                contenido += '</div>';
-                $("#mensaje-texto").append(contenido);
-            }
-            function getFormularioMinas() {
-                mostrarCarga('Buscando minas');
-                ruta = '/ciudadano/ocio/altruismo/getMina';
-                $.get(ruta, function (datos, status) {
-                    data = jQuery.parseJSON(datos);
-                    console.log(data);
-                    if (data.estado === 'OK') {
-                        mostrarResultadoOperacion(data.message);
-                        $("#mensaje-texto").empty();
-                        contenido = '';
-                        contenido += '<input type="hidden" id="id-mina" value="' + data.message.ID_MINA + '">';
-                        contenido += '<div class="advertencia">';
-                        contenido += '  <legend style="text-align: center;">PARA ESCANEAR EL CODIGO QR SE RECOMIENDA LA APP <i>i-nigma</i></legend>';
-                        contenido += '  <div class="row">';
-                        contenido += '      <div class="col-xs-3">';
-                        contenido += '          <a target="_blank" href="https://play.google.com/store/apps/details?id=com.threegvision.products.inigma.Android">Play Store</a>';
-                        contenido += '      </div>';
-                        contenido += '      <div class="col-xs-3">';
-                        contenido += '          <a target="_blank" href="https://itunes.apple.com/app/i-nigma-4-qr-datamatrix-barcode/id388923203?mt=8">iTunes</a>';
-                        contenido += '      </div>';
-                        contenido += '      <div class="col-xs-3">';
-                        contenido += '          <a target="_blank" href="https://appworld.blackberry.com/webstore/content/27049/?lang=en">BlackBerry World</a>';
-                        contenido += '      </div>';
-                        contenido += '      <div class="col-xs-3">';
-                        contenido += '          <a target="_blank" href="https://www.microsoft.com/en-us/store/p/i-nigma/9wzdncrcwnwp">Windows</a>';
-                        contenido += '      </div>';
+            ruta = '/ciudadano/ocio/altruismo/getCiudadanosDonar';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12">';
+                    contenido += '      <div id="texto-tdv">';
+                    contenido += '          <p>Ayuda a un ciudadano en apuros</p> <small class="advertencia"><span style="color:red; font-weight: bold;">Atencion: </span> sólo puedes donar TdV una vez a una misma persona</small>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      <select class="custom-select" id="selector_ciudadanos">';
+                    contenido += '          <option selected value="0">Selecciona la cuenta de un ciudadano</option>';
+                    $.each(data.message.CIUDADANOS, function (k, v) {
+                        contenido += '<option value="' + v.ID + '">@' + v.ALIAS + '</option>';
+                    });
+                    contenido += '      </select>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row" style="margin-top:2%;">';
+                    contenido += '  <div class="col-xs-3">';
+                    contenido += '      <div class="input-group">';
+                    contenido += '          <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />';
+                    contenido += '          <span class="input-group-addon">d</span>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-xs-3">';
+                    contenido += '      <div class="input-group">';
+                    contenido += '          <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />';
+                    contenido += '          <span class="input-group-addon">h</span>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-xs-3">';
+                    contenido += '      <div class="input-group">';
+                    contenido += '          <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />';
+                    contenido += '          <span class="input-group-addon">m</span>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-xs-3">';
+                    contenido += '      <div class="input-group">';
+                    contenido += '          <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />';
+                    contenido += '          <span class="input-group-addon">s</span>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    if (data.message.BONIFICACION) {
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-6">';
+                        contenido += '      <button class="btn btn-block btn-primary" onclick="donar(1)"> CARTA - DONAR 2 DIAS </button>';
+                        contenido += '  </div>';
+                        contenido += '  <div class="col-xs-6">';
+                        contenido += '      <button class="btn btn-block btn-primary" onclick="donar(0)"> DONAR </button>';
                         contenido += '  </div>';
                         contenido += '</div>';
-                        contenido += '<hr>';
+                    } else {
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-6 col-xs-offset-3">';
+                        contenido += '      <button class="btn btn-block btn-primary" onclick="donar(0)"> DONAR </button>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                    }
+                    $("#mensaje-texto").append(contenido);
+                } else {
+                    mostrarCarga('Cargando una lista de ciudadanos');
+                    mostrarResultadoOperacion(data.message);
+                }
+            });
+        }
+        function getFormularioMinas() {
+            mostrarCarga('Buscando minas');
+            ruta = '/ciudadano/ocio/altruismo/getMina';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    mostrarResultadoOperacion(data.message);
+                    $("#mensaje-texto").empty();
+                    contenido = '';
+                    contenido += '<input type="hidden" id="id-mina" value="' + data.message.ID_MINA + '">';
+                    contenido += '<div class="advertencia">';
+                    contenido += '  <legend style="text-align: center;">PARA ESCANEAR EL CODIGO QR SE RECOMIENDA LA APP <i>i-nigma</i></legend>';
+                    /*
+                     contenido += '  <div class="row">';
+                     contenido += '      <div class="col-xs-3">';
+                     contenido += '          <a target="_blank" href="https://play.google.com/store/apps/details?id=com.threegvision.products.inigma.Android">Play Store</a>';
+                     contenido += '      </div>';
+                     contenido += '      <div class="col-xs-3">';
+                     contenido += '          <a target="_blank" href="https://itunes.apple.com/app/i-nigma-4-qr-datamatrix-barcode/id388923203?mt=8">iTunes</a>';
+                     contenido += '      </div>';
+                     contenido += '      <div class="col-xs-3">';
+                     contenido += '          <a target="_blank" href="https://appworld.blackberry.com/webstore/content/27049/?lang=en">BlackBerry World</a>';
+                     contenido += '      </div>';
+                     contenido += '      <div class="col-xs-3">';
+                     contenido += '          <a target="_blank" href="https://www.microsoft.com/en-us/store/p/i-nigma/9wzdncrcwnwp">Windows</a>';
+                     contenido += '      </div>';
+                     contenido += '  </div>';
+                     */
+                    contenido += '</div>';
+                    //contenido += '<hr>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-6 advertencia">';
+                    contenido += '      Fecha de la explosión:';
+                    contenido += '  </div>';
+                    contenido += '  <div class="col-md-6 advertencia">';
+                    contenido += '      ' + data.message.FECHA_FINAL.date;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    if (!data.message.DESACTIVADA_X_MI) {
                         contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-6 advertencia">';
-                        contenido += '      Fecha de la explosion:';
-                        contenido += '  </div>';
-                        contenido += '  <div class="col-md-6 advertencia">';
-                        contenido += '      ' + data.message.FECHA_FINAL.date;
+                        contenido += '  <div class="col-md-12">';
+                        contenido += '      <div class="form-group">';
+                        contenido += '            <div class="input-group">';
+                        contenido += '                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-barcode" style="font-weight: bold;"></i></span>';
+                        contenido += '                <input type="text" class="form-control" id="codigo" placeholder="Inserte el código para desactivar la mina"/>';
+                        contenido += '            </div>';
+                        contenido += '       </div>';
                         contenido += '  </div>';
                         contenido += '</div>';
-                        if (!data.message.DESACTIVADA_X_MI) {
-                            contenido += '<div class="row">';
-                            contenido += '  <div class="col-md-12">';
-                            contenido += '      <div class="form-group">';
-                            contenido += '            <div class="input-group">';
-                            contenido += '                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-barcode" style="font-weight: bold;"></i></span>';
-                            contenido += '                <input type="text" class="form-control" id="codigo" placeholder="Inserte el código para desactivar la mina"/>';
-                            contenido += '            </div>';
-                            contenido += '       </div>';
-                            contenido += '  </div>';
-                            contenido += '</div>';
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-6 col-xs-offset-3">';
+                        contenido += '      <button class="btn btn-block btn-primary" onclick="enviarQR();"> ENVIAR CÓDIGO </button>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                    }
+                    contenido += '<hr>';
+                    if (data.message.HAY_PISTAS) {
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 advertencia">';
+                        contenido += '      Hay ' + data.message.PISTAS_RESTANTES + ' pistas disponibles (' + data.message.TENGO_PISTAS + '/' + data.message.HAY_PISTAS + ')';
+                        contenido += '  </div>';
+                        if (data.message.PISTAS_RESTANTES) {
+                            var coste = data.message.COSTE_PISTA;
+                            var coste_pista = segundosToDiasFormato(coste.dias, coste.horas, coste.minutos, coste.segundos);
                             contenido += '<div class="row" style="margin-top:2%;">';
-                            contenido += '  <div class="col-xs-6 col-xs-offset-3">';
-                            contenido += '      <button class="btn btn-block btn-primary" onclick="enviarQR();"> ENVIAR CÓDIGO </button>';
+                            contenido += '  <div class="col-xs-12">';
+                            contenido += '      Coste de la operación: ' + coste_pista;
                             contenido += '  </div>';
-                            contenido += '</div>';
-                        }
-                        if (data.message.DESACTIVADA) {
-                            contenido += '<hr>';
-                            contenido += '<legend style="text-align: center;">DESACTIVADORES</legend>';
-                            contenido += '<div class="row">';
-                            contenido += '  <div class="col-md-6 advertencia">';
-                            $.each(data.message.DESACTIVADORES, function (k, v) {
-                                contenido += '      Ciudadano: @' + v.ALIAS + '<br>';
-                            });
-                            contenido += '  </div>';
-                            contenido += '</div>';
-                            if (data.message.DESACTIVADA_X_MI) {
-                                contenido += '<div class="row" style="margin-top:2%;">';
+                            if (data.message.BONIFICACION) {
+                                contenido += '  <div class="col-xs-6">';
+                                contenido += '      <button class="btn btn-block btn-primary" onclick="comprarPista(' + data.message.ID_MINA + ',1);"> COMPRAR CON BONO </button>';
+                                contenido += '  </div>';
+                                contenido += '  <div class="col-xs-6">';
+                                contenido += '      <button class="btn btn-block btn-primary" onclick="comprarPista(' + data.message.ID_MINA + ',0);"> COMPRAR </button>';
+                                contenido += '  </div>';
+                            } else {
                                 contenido += '  <div class="col-xs-6 col-xs-offset-3">';
-                                contenido += '      <button class="btn btn-block btn-primary" onclick="location.reload();"> OK </button>';
+                                contenido += '      <button class="btn btn-block btn-primary" onclick="comprarPista(' + data.message.ID_MINA + ',0);"> COMPRAR </button>';
                                 contenido += '  </div>';
                             }
                             contenido += '</div>';
                         }
-                        $("#mensaje-texto").append(contenido);
+                        if (data.message.TENGO_PISTAS) {
+                            contenido += '  <div class="col-md-12 advertencia">';
+                            $.each(data.message.MIS_PISTAS, function (k, v) {
+                                contenido += '      <b>PISTA:</b> ' + v;
+                            });
+                            contenido += '  </div>';
+                        }
+                        contenido += '</div>';
                     } else {
-                        mostrarResultadoOperacion(data.message);
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-12 advertencia">';
+                        contenido += '      No hay pistas para esta mina';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        contenido += '</div>';
                     }
-                });
-            }
-            function donar() {
-                var id_ciudadano = $("#selector_ciudadanos").val();
-                if (id_ciudadano === "0") {
-                    mostrarResultadoOperacion('No se ha seleccionado ningun ciudadano');
-                } else {
-                    var segundos = parseInt($('#segundos').val());
-                    var minutos = parseInt($('#minutos').val());
-                    var horas = parseInt($('#horas').val());
-                    var dias = parseInt($('#dias').val());
-                    mostrarCarga('Realizando donacion');
-                    if (!Number.isInteger(segundos)
-                            || !Number.isInteger(minutos)
-                            || !Number.isInteger(horas)
-                            || !Number.isInteger(dias))
-                    {
-                        mostrarResultadoOperacion('El formato de la apuesta no es valido. Por favor, compruebe que ha introducido solo numeros positivos.');
-                    } else {
-                        var tdv = (((((dias * 24) + horas) * 60) + minutos) * 60) + segundos;
-                        ruta = '/ciudadano/ocio/altruismo/donarTdv/' + id_ciudadano + '/' + tdv;
-                        $.get(ruta, function (data, status) {
-                            console.log(data);
-                            mostrarResultadoOperacion(data.message);
+                    if (data.message.DESACTIVADA) {
+                        contenido += '<hr>';
+                        contenido += '<legend style="text-align: center;">DESACTIVADORES</legend>';
+                        contenido += '<div class="row">';
+                        contenido += '  <div class="col-md-6 advertencia">';
+                        $.each(data.message.DESACTIVADORES, function (k, v) {
+                            contenido += '      Ciudadano: @' + v.ALIAS + '<br>';
                         });
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                        if (data.message.DESACTIVADA_X_MI) {
+                            contenido += '<div class="row" style="margin-top:2%;">';
+                            contenido += '  <div class="col-xs-6 col-xs-offset-3">';
+                            contenido += '      <button class="btn btn-block btn-primary" onclick="location.reload();"> OK </button>';
+                            contenido += '  </div>';
+                        }
+                        contenido += '</div>';
                     }
+                    $("#mensaje-texto").append(contenido);
+                } else {
+                    mostrarResultadoOperacion(data.message);
                 }
+            });
+        }
+        function comprarPista(id, bono) {
+            ruta = '/ciudadano/ocio/altruismo/comprarPista';
+            datos = {'ID_MINA': id, 'BONO': bono};
+            if (bono) {
+                mostrarCarga('Comprando pista con carta de bonificación...');
+            } else {
+                mostrarCarga('Comprando pista...');
             }
-            function enviarQR() {
-                var codigo = $("#codigo").val();
-                var id_mina = $('#id-mina').val();
-                mostrarCarga('Verificando código');
-                if ($.trim(codigo) !== '') {
-                    ruta = '/ciudadano/ocio/altruismo/enviarCodigo';
-                    datos = {'CODIGO': codigo, 'ID_MINA': id_mina};
-                    $.post(ruta, datos, function (datos, status) {
-                        data = jQuery.parseJSON(datos);
-                        console.log(data);
+            $.post(ruta, datos, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                mostrarResultadoOperacion(data.message);
+            });
+        }
+        function donar(bonificacion) {
+            var id_ciudadano = $("#selector_ciudadanos").val();
+            if (id_ciudadano === "0") {
+                mostrarResultadoOperacion('No se ha seleccionado ningun ciudadano');
+            } else {
+                var segundos = parseInt($('#segundos').val());
+                var minutos = parseInt($('#minutos').val());
+                var horas = parseInt($('#horas').val());
+                var dias = parseInt($('#dias').val());
+                mostrarCarga('Realizando donacion');
+                if (!Number.isInteger(segundos)
+                        || !Number.isInteger(minutos)
+                        || !Number.isInteger(horas)
+                        || !Number.isInteger(dias))
+                {
+                    mostrarResultadoOperacion('El formato de la apuesta no es valido. Por favor, compruebe que ha introducido solo numeros positivos.');
+                } else {
+                    var tdv = (((((dias * 24) + horas) * 60) + minutos) * 60) + segundos;
+                    ruta = '/ciudadano/ocio/altruismo/donarTdv/' + id_ciudadano + '/' + tdv + '/' + bonificacion;
+                    $.get(ruta, function (data, status) {
+                        data = jQuery.parseJSON(data);
                         mostrarResultadoOperacion(data.message);
                     });
-                } else {
-                    mostrarResultadoOperacion('El campo del codigo está vacio');
                 }
             }
-            function mostrarCarga(texto) {
-                $("#mensaje-texto").empty();
-                contenido = '';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <center>';
-                contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
-                contenido += '  </center>';
-                contenido += '</div>';
-                $("#mensaje-texto").append(contenido);
+        }
+        function enviarQR() {
+            var codigo = $("#codigo").val();
+            var id_mina = $('#id-mina').val();
+            mostrarCarga('Verificando código');
+            if ($.trim(codigo) !== '') {
+                ruta = '/ciudadano/ocio/altruismo/enviarCodigo';
+                datos = {'CODIGO': codigo, 'ID_MINA': id_mina};
+                $.post(ruta, datos, function (datos, status) {
+                    data = jQuery.parseJSON(datos);
+                    mostrarResultadoOperacion(data.message);
+                });
+            } else {
+                mostrarResultadoOperacion('El campo del codigo está vacio');
             }
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
 
-            function mostrarResultadoOperacion(resultado) {
-                $("#mensaje-texto").empty();
-                contenido = '';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <center>';
-                contenido += '      ' + resultado;
-                contenido += '  </center>';
-                contenido += '</div>';
-                contenido += '<div class="row" style="margin-top:2%;">';
-                contenido += '  <div class="col-xs-12">';
-                contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
-                contenido += '  </div>';
-                contenido += '</div>';
-                //$("#modal-button-aceptar").show();
-                $("#mensaje-texto").append(contenido);
-            }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            //$("#modal-button-aceptar").show();
+            $("#mensaje-texto").append(contenido);
+        }
     </script>
 {% endblock %}

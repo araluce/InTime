@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\MinaPistaXUsuario" table="MINA_PISTA_X_USUARIO">
+    <indexes>
+      <index name="id_mina_pista" columns="id_mina_pista,id_usuario"/>
+      <index name="id_usuario" columns="id_usuario"/>
+      <index name="IDX_5096715B1F0C7C17" columns="id_mina_pista"/>
+    </indexes>
+    <id name="idMinaPistaXUsuario" type="integer" column="id_mina_pista_x_usuario">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <many-to-one field="idMinaPista" target-entity="MinaPista">
+      <join-columns>
+        <join-column name="id_mina_pista" referenced-column-name="id_mina_pista"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idUsuario" target-entity="Usuario">
+      <join-columns>
+        <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

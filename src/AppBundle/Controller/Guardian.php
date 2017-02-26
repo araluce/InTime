@@ -186,6 +186,22 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
     }
+    
+    /**
+     * @Route("/guardian/ajustes/getCosteMinaPista", name="getCosteMinaPista")
+     */
+    public function getCosteMinaPistaAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getCosteMinaPista', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $coste_mina_pista = Utils::segundosToDias(Utils::getConstante($doctrine, 'coste_pista'));
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $coste_mina_pista)), 200);
+    }
 
     /**
      * @Route("/guardian/ajustes/getPremioBaseMina", name="getPremioBaseMina")
@@ -707,6 +723,7 @@ class Guardian extends Controller {
             }
             $pago_mina = $request->request->get('pago_mina');
             $pago_base_mina = $request->request->get('pago_base_mina');
+            $coste_mina_pista = $request->request->get('coste_mina_pista');
             if ($pago_mina <= 0 || $pago_base_mina <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
@@ -720,10 +737,17 @@ class Guardian extends Controller {
                 Utils::setError($doctrine, 1, 'setJornadaLaboralAction no existe constante premio_base_mina');
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
+            $CONSTANTE_COSTE_MINA_PISTA= $doctrine->getRepository('AppBundle:Constante')->findOneByClave('coste_pista');
+            if ($CONSTANTE_COSTE_MINA_PISTA === null) {
+                Utils::setError($doctrine, 1, 'setJornadaLaboralAction no existe constante coste_pista');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
             $CONSTANTE_PAGO_MINA->setValor($pago_mina);
             $CONSTANTE_PAGO_BASE_MINA->setValor($pago_base_mina);
+            $CONSTANTE_COSTE_MINA_PISTA->setValor($coste_mina_pista);
             $em->persist($CONSTANTE_PAGO_MINA);
             $em->persist($CONSTANTE_PAGO_BASE_MINA);
+            $em->persist($CONSTANTE_COSTE_MINA_PISTA);
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
         }
@@ -790,7 +814,8 @@ class Guardian extends Controller {
             if (null === $EVALUADO || null === $CALIFICACION || null === $NOTA) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
-            $SECCION = $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion();
+            $EJERCICIO = $CALIFICACION->getIdEjercicio();
+            $SECCION = $EJERCICIO->getIdEjercicioSeccion();
             $BONIFICACION_ANTERIOR = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
                 'idEjercicio' => $CALIFICACION->getIdEjercicio(), 'idCalificacion' => $CALIFICACION->getIdCalificaciones()
             ]);
@@ -803,7 +828,6 @@ class Guardian extends Controller {
             if (null !== $BONIFICACION_ANTERIOR) {
                 Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
             }
-            $EJERCICIO = $CALIFICACION->getIdEjercicio();
             if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
                 $DISTRITO = $CALIFICACION->getIdUsuario()->getIdDistrito();
                 $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
@@ -815,6 +839,20 @@ class Guardian extends Controller {
                         $CALIFICACION->setIdCalificaciones($NOTA);
                         $CALIFICACION->setFecha(new \DateTime('now'));
                         $em->persist($CALIFICACION);
+
+                        if ($SECCION === 'comida') {
+                            $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(2);
+                            if (null !== $TARJETA) {
+                                $MI_TARJETA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                                    'idBonificacionExtra' => $TARJETA, 'idUsuario' => $CIUDADANO, 'usado' => 0
+                                ]);
+                                if (null !== $MI_TARJETA) {
+                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                                    $MI_TARJETA->setUsado(1);
+                                    $em->persist($MI_TARJETA);
+                                }
+                            }
+                        }
                         $em->flush();
                         Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
                         Usuario::comprobarNivel($doctrine, $CIUDADANO);
@@ -826,6 +864,19 @@ class Guardian extends Controller {
                 $CALIFICACION->setIdCalificaciones($NOTA);
                 $CALIFICACION->setFecha(new \DateTime('now'));
                 $em->persist($CALIFICACION);
+                if ($SECCION === 'comida') {
+                    $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(2);
+                    if (null !== $TARJETA) {
+                        $MI_TARJETA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $doctrine, $CALIFICACION->getIdUsuario(), 'usado' => 0
+                        ]);
+                        if (null !== $MI_TARJETA) {
+                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2*$BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                            $MI_TARJETA->setUsado(1);
+                            $em->persist($MI_TARJETA);
+                        }
+                    }
+                }
                 $em->flush();
                 Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
                 Usuario::comprobarNivel($doctrine, $CALIFICACION->getIdUsuario());
