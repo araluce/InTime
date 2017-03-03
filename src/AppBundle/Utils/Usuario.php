@@ -346,8 +346,8 @@ class Usuario {
         $DNIs_formato['correctos'] = [];
         $DNIs_formato['incorrectos'] = [];
 
-        $patron_dni = "/[0-9]{8}[A-Z]/";
-        $patron_nie = "/[X,Y,Z][0-9]{7}[A-Z]/";
+        $patron_dni = "/[0-9]{8}/";
+        $patron_nie = "/[X,Y,Z][0-9]{7}/";
 
         // Eliminamos espacios y separamos formatos de DNI/NIE 
         // correctos de los incorrectos

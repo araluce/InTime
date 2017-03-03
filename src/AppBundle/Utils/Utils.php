@@ -632,12 +632,33 @@ class Utils {
         if (!count($MINAS)) {
             return 0;
         }
-        foreach($MINAS as $MINA) {
+        foreach ($MINAS as $MINA) {
             if ($MINA->getFechaFinal() < $AHORA) {
                 return $MINA;
             }
         }
         return 0;
+    }
+
+    static function setEjerciciosFelicidadUsuario($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        for ($fase = 1; $fase < 5; $fase++) {
+            $EJERCICIO_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneBy([
+                'idUsuario' => $USUARIO, 'fase' => $fase
+            ]);
+            if ($EJERCICIO_FELICIDAD === null) {
+                $EJERCICIO_FELICIDAD = new \AppBundle\Entity\EjercicioFelicidad();
+                $EJERCICIO_FELICIDAD->setEnunciado('');
+                $EJERCICIO_FELICIDAD->setFase($fase);
+                $EJERCICIO_FELICIDAD->setFecha(new \DateTime('now'));
+                $EJERCICIO_FELICIDAD->setIdEjercicioEntrega(null);
+                $EJERCICIO_FELICIDAD->setIdEjercicioPropuesta(null);
+                $EJERCICIO_FELICIDAD->setIdUsuario($USUARIO);
+                $EJERCICIO_FELICIDAD->setPorcentaje(0);
+                $em->persist($EJERCICIO_FELICIDAD);
+            }
+        }
+        $em->flush();
     }
 
 }

@@ -74,15 +74,12 @@
         }
 
         .modal-box {
-            /* background: #fff; */
             cursor: default;
             display: inline-block;
             max-height: 100vh;
-            /* min-width: 100px; */
             position: relative;
             left: 20%;
-            /* text-align: left; */
-            /* z-index: 10000000001; */
+            min-width: 386.2px;
         }
 
         h4{
@@ -111,6 +108,69 @@
         .text-additional-info {
             font-size: 35px;
         }
+        @media (max-width: 760px){
+            #reto-semana,
+            #mis-sesiones{
+                font-size: 25px;
+            }
+            #mensaje-texto,
+            .modal-title{
+                font-size: 25px;
+                font-weight: inherit;
+            }
+            .advertencia{
+                font-size: 18px;
+                font-weight: lighter;
+            }
+            .modal-box {
+                min-width: 100%;
+                left: 10%;
+            }
+            .modal-box__close {
+                height: 20px;
+                width: 20px;
+                right: .75em;
+                top: .75em;
+            }
+            .rt-login-title {
+                border-bottom: 1px solid #e4e4e4;
+                min-height: 0.85em;
+            }
+            .rt-login-title,
+            .modal__content-center {
+                text-align: center;
+            }
+            .rt-login-title,
+            .rt-login-container,
+            .content-box--top, 
+            .content-box-body, 
+            .info-box,
+            .text-base-padding, 
+            .value-label-list .value-label-list__item {
+                padding: .75em;
+            }
+            .input-field input:not([type=radio]){
+                border: 2px solid #aaacaf;
+                height: 30px;
+                margin-bottom: 1%;
+            }
+            .text-additional-info {
+                font-size: 1.0rem;
+            }
+            .icon--table-header {
+                height: 20px;
+                width: 25px;
+            }
+            .modal-title{
+                font-size: 28px;
+            }
+            #mensaje-texto{
+                font-size: 25px;
+            }
+            h4{
+                font-size: 10px;
+            }
+        }
         @media (min-width: 992px){
             #reto-semana,
             #mis-sesiones{
@@ -128,6 +188,7 @@
             }
 
             .modal-box {
+                min-width: 386.2px;
                 left: 10%;
             }
             .input-field input:not([type=radio]){
@@ -167,25 +228,25 @@
                     <div class="btn-group" role="group">
                         <button type="button" id="tienda" class="btn btn-primary btn13" href="#tab1" data-toggle="tab">
                             <span class="fa fa-signal" aria-hidden="true"></span>
-                            <div class="hidden-xs">MIS SESIONES</div>
+                            <div class="titulo-xs">MIS SESIONES</div>
                         </button>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="button" id="actualizar" class="btn btn-default btn13" >
                             <span class="fa fa-refresh" aria-hidden="true"></span>
-                            <div class="hidden-xs">ACTUALIZAR</div>
+                            <div class="titulo-xs">ACTUALIZAR</div>
                         </button>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="button" id="logout" class="btn btn-default btn13" >
                             <span class="fa fa-power-off" aria-hidden="true"></span>
-                            <div class="hidden-xs">CERRAR SESIÓN</div>
+                            <div class="titulo-xs">CERRAR SESIÓN</div>
                         </button>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
                             <span class="fa fa-arrow-left" aria-hidden="true"></span>
-                            <div class="hidden-xs">ATRÁS</div>
+                            <div class="titulo-xs">ATRÁS</div>
                         </button>
                     </div>
                 </div>
@@ -207,7 +268,7 @@
         function contenidoIniciarSesion() {
             $(".modal-header").remove();
             contenido = '';
-            contenido += '<div class="modal-box js-modal-box  " style="min-width: 386.2px;">';
+            contenido += '<div class="modal-box js-modal-box" >';
             contenido += '    <button type="button" class="modal-box__close js-modal-box__close close" data-dismiss="modal">';
             contenido += '        <div data-test-name="icon" class="  icon--medium icon--blue ">';
             contenido += '            <svg viewBox="0 0 19 19" xmlns="http://www.w3.org/2000/svg"><path d="M9 7.586l7.07-7.07 1.414 1.414L10.414 9l7.07 7.07-1.414 1.414L9 10.414l-7.07 7.07L.516 16.07 7.586 9 .516 1.93 1.93.516 9 7.586" fill="#FFFFFF" stroke="white" fill-rule="evenodd"></path></svg>';
@@ -315,7 +376,6 @@
                 datos = jQuery.parseJSON(data);
                 if (datos.estado === 'OK') {
                     data = datos.message;
-                    fase = datos.message.FASE;
                     beneficio_formato = datos.message.BENEFICIO;
                     beneficio = '';
                     if (beneficio_formato.dias > 0) {
@@ -330,12 +390,10 @@
                     if (beneficio_formato.segundos > 0) {
                         beneficio += beneficio_formato.segundos + 'S ';
                     }
-                    if (fase !== null) {
-                        contenido = '';
-                        contenido += '<div class="row">';
-                        contenido += '  <legend>RETO FASE ' + fase + '<span style="float: right;">Beneficio: ' + beneficio + '</span></legend>';
-                        contenido += '</div>';
-                    }
+                    contenido = '';
+                    contenido += '<div class="row">';
+                    contenido += '  <legend>RETO DEPORTIVO<span style="float: right;">Beneficio: ' + beneficio + '</span></legend>';
+                    contenido += '</div>';
                     $("#reto-semana").append(contenido);
                     ejercicios = datos.message.EJERCICIOS;
                     $.each(ejercicios, function (k, v) {
@@ -368,12 +426,22 @@
                         contenido += '                                        </svg>';
                         contenido += '                                    </div>';
                         contenido += '                                    <div class="media__body value-label-list__label">';
-                        contenido += '                                        <h4 class="text-bold  text-no-margin">';
-                        contenido += '                                            ' + v.VELOCIDAD;
-                        contenido += '                                        </h4>';
-                        contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
-                        contenido += '                                            Velocidad media';
-                        contenido += '                                        </h3>';
+                        if (v.TIPO === 'running') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Velocidad media';
+                            contenido += '                                        </h3>';
+                        }
+                        if (v.TIPO === 'cycling') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.RITMO + ' min/km';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Ritmo medio';
+                            contenido += '                                        </h3>';
+                        }
                         contenido += '                                    </div>';
                         contenido += '                                </div>';
                         contenido += '                        </li>';
@@ -444,7 +512,6 @@
                             contenido += '                      Sesión evaluada';
                             contenido += '                  </h4>';
                             contenido += '                  <h3 class="text-additional-info  text-no-margin">';
-                            contenido += '                      Esta sesión ha sido usada para superar una fase.';
                             contenido += '                  </h3>';
                             contenido += '              </div>';
                             contenido += '          </div>';
@@ -463,23 +530,10 @@
                                 contenido += '                                            <svg viewBox="0 0 253 185" xmlns="http://www.w3.org/2000/svg"><path d="m196.19 123.9c0 29.786 24.14 53.951 53.952 53.951.674 0 1.375-.007 2.061-.056v5.76c-.686.026-1.387.031-2.061.031-32.957 0-59.687-26.727-59.687-59.685 0-32.959 26.73-59.658 59.687-59.658.674 0 1.375.014 2.061.039v5.728c-.686-.023-1.387-.038-2.061-.038-29.811 0-53.952 24.14-53.952 53.928m-31.496 25.979c0 5.949 4.824 10.782 10.78 10.782 5.946 0 10.783-4.834 10.783-10.782v-114.07l-21.563 10.451v103.62m6.687-138.75l-54.706 27.926c-5.311 2.701-7.41 9.21-4.705 14.505l27.352 53.52c2.701 5.291 9.184 7.409 14.512 4.706 5.313-2.699 7.399-9.18 4.7-14.499l-22.432-43.958 45.07-22.985c5.326-2.707 7.41-9.19 4.71-14.508-2.7-5.312-9.186-7.412-14.499-4.711m-118.8 31.797c11.894 0 21.526-9.615 21.526-21.484 0-11.903-9.632-21.516-21.526-21.516-11.856 0-21.495 9.613-21.495 21.516 0 11.869 9.638 21.484 21.495 21.484m67.1 80.969c0 32.958-26.699 59.685-59.658 59.685-32.958 0-59.685-26.727-59.685-59.685 0-31.832 24.941-57.802 56.38-59.52l25.2-12.826v-41.13c0-5.95 4.81-10.786 10.793-10.786 5.951 0 10.755 4.836 10.755 10.786v47.752c0 4.149-2.313 7.748-5.738 9.548l-8.331 4.23c18.13 10.258 30.28 29.666 30.28 51.946m-5.727 0c0-21.537-12.557-40.11-30.864-48.732l-28.06 14.294c-5.286 2.703-11.798.609-14.493-4.716-1.966-3.849-1.376-8.323 1.11-11.524-20.732 7.528-35.573 27.337-35.573 50.678 0 29.786 24.13 53.951 53.953 53.951 29.783 0 53.932-24.16 53.932-53.951" transform="translate(0 0)" fill="#8996a3" fill-rule="evenodd"/></svg>';
                                 contenido += '                                        </div>';
                             }
-                            contenido += '                  <div data-test-name="icon" title="Uiii" class="  icon--table-header ">';
-                            contenido += '                      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">';
-                            contenido += '                          <path fill="#f0ad4e" d="m454.628,374.626l-35.882-35.882c-12.002-12.003-18.745-28.281-18.745-45.255v-112.558c0-69.119-47.071-130.174-112.376-145.224 0.145-1.231 0.375-2.438 0.375-3.707 0-17.649-14.352-32-32-32s-32,14.352-32,32c0,1.247 0.229,2.432 0.368,3.643-64.287,14.435-112.369,71.712-112.369,140.355v117.491c0,16.974-6.743,33.252-18.745,45.255l-35.882,35.882c-6.002,6.001-9.373,14.141-9.373,22.628v0.024c0,19.176 15.545,34.721 34.72,34.721h109.281v16c0,35.346 28.654,64 64,64s64-28.655 64-64v-16h109.281c19.175,0 34.72-15.545 34.72-34.721v-0.024c0-8.487-3.371-16.627-9.373-22.628z"/>';
-                            contenido += '                      </svg>';
-                            contenido += '                  </div>';
-                            contenido += '              </div>';
-                            contenido += '              <div class="media__body value-label-list__label">';
-                            contenido += '                  <h4 class="text-bold  text-no-margin">';
-                            contenido += '                      Velocidad media superada';
-                            contenido += '                  </h4>';
-                            contenido += '                  <h3 class="text-additional-info  text-no-margin">';
-                            contenido += '                      La velocidad media de esta sesión se acumula con otras sesiones con velocidad media superada.';
-                            contenido += '                  </h3>';
                             contenido += '              </div>';
                             contenido += '          </div>';
                             contenido += '      </li>';
-                        } else {
+                        } else{
                             contenido += '      <li class="value-label-list__item">';
                             contenido += '          <div class="media-table ">';
                             contenido += '              <div class="media__object ">';
@@ -504,7 +558,12 @@
                             contenido += '                      Sesión descartada';
                             contenido += '                  </h4>';
                             contenido += '                  <h3 class="text-additional-info  text-no-margin">';
-                            contenido += '                      La velocidad media de esta sesión es insuficiente para esta fase.';
+                            if (v.TIPO === 'running') {
+                                contenido += '                      La velocidad media de esta sesión es insuficiente para esta fase.';
+                            }
+                            if (v.TIPO === 'cycling') {
+                                contenido += '                      El ritmo medio de esta sesión es insuficiente para esta fase.';
+                            }
                             contenido += '                  </h3>';
                             contenido += '              </div>';
                             contenido += '          </div>';
@@ -519,12 +578,22 @@
                         contenido += '                                        </svg>';
                         contenido += '                                    </div>';
                         contenido += '                                    <div class="media__body value-label-list__label">';
-                        contenido += '                                        <h4 class="text-bold  text-no-margin">';
-                        contenido += '                                            ' + v.VELOCIDAD;
-                        contenido += '                                        </h4>';
-                        contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
-                        contenido += '                                            Velocidad media';
-                        contenido += '                                        </h3>';
+                        if (v.TIPO === 'running') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Velocidad media';
+                            contenido += '                                        </h3>';
+                        }
+                        if (v.TIPO === 'cycling') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.RITMO + ' min/km';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Ritmo medio';
+                            contenido += '                                        </h3>';
+                        }
                         contenido += '                                    </div>';
                         contenido += '                                </div>';
                         contenido += '                        </li>';

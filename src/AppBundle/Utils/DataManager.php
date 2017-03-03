@@ -201,5 +201,59 @@ class DataManager {
 
         return $aux;
     }
+    
+    /**
+     * Obtiene y estructura los datos de entregas en Felicidad
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return string
+     */
+    static function getRetosFelicidad($doctrine, $USUARIO){
+        $DATOS = [];
+        $RETOS = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findByIdUsuario($USUARIO);
+        if (null !== $RETOS) {
+            foreach ($RETOS as $RETO) {
+                $aux = [];
+                $aux['FASE'] = $RETO->getFase();
+                $aux['PORCENTAJE'] = $RETO->getPorcentaje();
+                $aux['FECHA'] = $RETO->getFecha();
+                $aux['ID_RETO'] = $RETO->getIdEjercicioFelicidad();
+                $aux['DESCRIPCION'] = $RETO->getEnunciado();
+                $aux['ENTREGA'] = [];
+                $aux['PROPUESTA'] = [];
+                
+                $PROPUESTA = $RETO->getIdEjercicioPropuesta();
+                $ENTREGA = $RETO->getIdEjercicioEntrega();
+                $aux2 = [];
+                $aux2['ESTADO'] = "no_entregado";
+                if (null !== $PROPUESTA) {
+                    $aux2['ID_EJERCICIO'] = $PROPUESTA->getIdEjercicio();
+                    $CALIFICACION_PROPUESTA = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicio($PROPUESTA);
+                    $aux2['ESTADO'] = $CALIFICACION_PROPUESTA->getIdEjercicioEstado()->getEstado();
+                    $aux2['ID_CALIFICACION'] = $CALIFICACION_PROPUESTA->getIdEjercicioCalificacion();
+                    $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneByIdEjercicio($PROPUESTA);
+                    $aux2['NOMBRE_ENTREGA'] = $EJERCICIO_ENTREGA->getNombre();
+                    $aux2['FECHA'] = $EJERCICIO_ENTREGA->getFecha();
+                    $aux2['RUTA_ENTREGA'] = $USUARIO->getDni() . '/felicidad/' . $aux2['ID_CALIFICACION'] . '/' . $aux2['NOMBRE_ENTREGA'];
+                }
+                $aux['PROPUESTA'] = $aux2;
+                $aux3 = [];
+                $aux3['ESTADO'] = "no_entregado";
+                if (null !== $ENTREGA) {
+                    $aux3['ID_EJERCICIO'] = $ENTREGA->getIdEjercicio();
+                    $CALIFICACION_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicio($ENTREGA);
+                    $aux3['ESTADO'] = $CALIFICACION_ENTREGA->getIdEjercicioEstado()->getEstado();
+                    $aux3['ID_CALIFICACION'] = $CALIFICACION_ENTREGA->getIdEjercicioCalificacion();
+                    $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneByIdEjercicio($ENTREGA);
+                    $aux3['NOMBRE_ENTREGA'] = $EJERCICIO_ENTREGA->getNombre();
+                    $aux3['FECHA'] = $EJERCICIO_ENTREGA->getFecha();
+                    $aux3['RUTA_ENTREGA'] = $USUARIO->getDni() . '/felicidad/' . $aux3['ID_CALIFICACION'] . '/' . $aux3['NOMBRE_ENTREGA'];
+                }
+                $aux['ENTREGA'] = $aux3;
+                $DATOS[] = $aux;
+            }
+        }
+        return $DATOS;
+    }
 
 }

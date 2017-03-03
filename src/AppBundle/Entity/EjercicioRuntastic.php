@@ -27,6 +27,13 @@ class EjercicioRuntastic
     private $velocidad;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="ritmo", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $ritmo;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="duracion", type="integer", nullable=false)
@@ -112,6 +119,29 @@ class EjercicioRuntastic
     public function getVelocidad()
     {
         return $this->velocidad;
+    }
+
+    /**
+     * Set ritmo
+     *
+     * @param float $ritmo
+     * @return EjercicioRuntastic
+     */
+    public function setRitmo($ritmo)
+    {
+        $this->ritmo = $ritmo;
+
+        return $this;
+    }
+
+    /**
+     * Get ritmo
+     *
+     * @return float 
+     */
+    public function getRitmo()
+    {
+        return $this->ritmo;
     }
 
     /**

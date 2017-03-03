@@ -48,11 +48,11 @@ class SesionRuntastic
     private $distancia;
 
     /**
-     * @var integer
+     * @var float
      *
-     * @ORM\Column(name="paso", type="integer", nullable=false)
+     * @ORM\Column(name="ritmo", type="float", precision=10, scale=0, nullable=false)
      */
-    private $paso;
+    private $ritmo;
 
     /**
      * @var float
@@ -60,62 +60,6 @@ class SesionRuntastic
      * @ORM\Column(name="velocidad", type="float", precision=10, scale=0, nullable=false)
      */
     private $velocidad;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="kcal", type="integer", nullable=false)
-     */
-    private $kcal;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="ritmo_cardiaco_medio", type="integer", nullable=false)
-     */
-    private $ritmoCardiacoMedio;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="ritmo_cardiaco_max", type="integer", nullable=false)
-     */
-    private $ritmoCardiacoMax;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="desnivel", type="integer", nullable=false)
-     */
-    private $desnivel;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="perdida_nivel", type="integer", nullable=false)
-     */
-    private $perdidaNivel;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="superficie", type="string", length=1000, nullable=true)
-     */
-    private $superficie;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tiempo", type="string", length=1000, nullable=true)
-     */
-    private $tiempo;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="sensacion", type="string", length=1000, nullable=true)
-     */
-    private $sensacion;
 
     /**
      * @var \DateTime
@@ -261,26 +205,26 @@ class SesionRuntastic
     }
 
     /**
-     * Set paso
+     * Set ritmo
      *
-     * @param integer $paso
+     * @param float $ritmo
      * @return SesionRuntastic
      */
-    public function setPaso($paso)
+    public function setRitmo($ritmo)
     {
-        $this->paso = $paso;
+        $this->ritmo = $ritmo;
 
         return $this;
     }
 
     /**
-     * Get paso
+     * Get ritmo
      *
-     * @return integer 
+     * @return float 
      */
-    public function getPaso()
+    public function getRitmo()
     {
-        return $this->paso;
+        return $this->ritmo;
     }
 
     /**
@@ -304,190 +248,6 @@ class SesionRuntastic
     public function getVelocidad()
     {
         return $this->velocidad;
-    }
-
-    /**
-     * Set kcal
-     *
-     * @param integer $kcal
-     * @return SesionRuntastic
-     */
-    public function setKcal($kcal)
-    {
-        $this->kcal = $kcal;
-
-        return $this;
-    }
-
-    /**
-     * Get kcal
-     *
-     * @return integer 
-     */
-    public function getKcal()
-    {
-        return $this->kcal;
-    }
-
-    /**
-     * Set ritmoCardiacoMedio
-     *
-     * @param integer $ritmoCardiacoMedio
-     * @return SesionRuntastic
-     */
-    public function setRitmoCardiacoMedio($ritmoCardiacoMedio)
-    {
-        $this->ritmoCardiacoMedio = $ritmoCardiacoMedio;
-
-        return $this;
-    }
-
-    /**
-     * Get ritmoCardiacoMedio
-     *
-     * @return integer 
-     */
-    public function getRitmoCardiacoMedio()
-    {
-        return $this->ritmoCardiacoMedio;
-    }
-
-    /**
-     * Set ritmoCardiacoMax
-     *
-     * @param integer $ritmoCardiacoMax
-     * @return SesionRuntastic
-     */
-    public function setRitmoCardiacoMax($ritmoCardiacoMax)
-    {
-        $this->ritmoCardiacoMax = $ritmoCardiacoMax;
-
-        return $this;
-    }
-
-    /**
-     * Get ritmoCardiacoMax
-     *
-     * @return integer 
-     */
-    public function getRitmoCardiacoMax()
-    {
-        return $this->ritmoCardiacoMax;
-    }
-
-    /**
-     * Set desnivel
-     *
-     * @param integer $desnivel
-     * @return SesionRuntastic
-     */
-    public function setDesnivel($desnivel)
-    {
-        $this->desnivel = $desnivel;
-
-        return $this;
-    }
-
-    /**
-     * Get desnivel
-     *
-     * @return integer 
-     */
-    public function getDesnivel()
-    {
-        return $this->desnivel;
-    }
-
-    /**
-     * Set perdidaNivel
-     *
-     * @param integer $perdidaNivel
-     * @return SesionRuntastic
-     */
-    public function setPerdidaNivel($perdidaNivel)
-    {
-        $this->perdidaNivel = $perdidaNivel;
-
-        return $this;
-    }
-
-    /**
-     * Get perdidaNivel
-     *
-     * @return integer 
-     */
-    public function getPerdidaNivel()
-    {
-        return $this->perdidaNivel;
-    }
-
-    /**
-     * Set superficie
-     *
-     * @param string $superficie
-     * @return SesionRuntastic
-     */
-    public function setSuperficie($superficie)
-    {
-        $this->superficie = $superficie;
-
-        return $this;
-    }
-
-    /**
-     * Get superficie
-     *
-     * @return string 
-     */
-    public function getSuperficie()
-    {
-        return $this->superficie;
-    }
-
-    /**
-     * Set tiempo
-     *
-     * @param string $tiempo
-     * @return SesionRuntastic
-     */
-    public function setTiempo($tiempo)
-    {
-        $this->tiempo = $tiempo;
-
-        return $this;
-    }
-
-    /**
-     * Get tiempo
-     *
-     * @return string 
-     */
-    public function getTiempo()
-    {
-        return $this->tiempo;
-    }
-
-    /**
-     * Set sensacion
-     *
-     * @param string $sensacion
-     * @return SesionRuntastic
-     */
-    public function setSensacion($sensacion)
-    {
-        $this->sensacion = $sensacion;
-
-        return $this;
-    }
-
-    /**
-     * Get sensacion
-     *
-     * @return string 
-     */
-    public function getSensacion()
-    {
-        return $this->sensacion;
     }
 
     /**

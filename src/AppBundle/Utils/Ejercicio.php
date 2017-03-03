@@ -118,7 +118,14 @@ class Ejercicio {
         }
         return $RETO;
     }
-
+    
+    /**
+     * Evalua e ingresa el beneficio obtenido al superar una fase
+     * @param type $doctrine
+     * @param type $EJERCICIO
+     * @param type $USUARIO
+     * @param type $SESION
+     */
     static function evaluaFase($doctrine, $EJERCICIO, $USUARIO, $SESION) {
         $em = $doctrine->getManager();
         $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
@@ -135,9 +142,16 @@ class Ejercicio {
         $em->persist($SESION);
         $em->flush();
 
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase ' . $EJERCICIO->getEnunciado() . ' de deportes superada.');
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase de deportes superada.');
     }
-
+    
+    /**
+     * Evalua e ingresa el beneficio obtenido al superar una fase
+     * @param type $doctrine
+     * @param type $EJERCICIO
+     * @param type $USUARIO
+     * @param type $SESION
+     */
     static function evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $SESIONES) {
         $em = $doctrine->getManager();
         $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');

@@ -49,6 +49,7 @@ class JugadorController extends Controller {
             $FECHA_NACIMIENTO = str_replace("T", " ", $request->request->get('FECHA')) . "00:00:00";
 
             if ($ALIAS !== '') {
+                $ALIAS = strtolower(preg_replace('/\s+/', '', $ALIAS));
                 if (Usuario::aliasDisponible($doctrine, $session, $ALIAS)) {
                     $usuario->setSeudonimo($ALIAS);
                 }

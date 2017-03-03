@@ -220,6 +220,16 @@
             background-color: rgba(51, 122, 183,.3);
             font-size: 45px;
         }
+        .ui-listview>.ui-li-divider {
+            color: white;
+            background-color: #337ab7;
+            text-align: center;
+            padding: .5em 1.143em;
+            font-size: 55px;
+            font-weight: 700;
+            cursor: default;
+            outline: 0;
+        }
         @media (min-width: 1200px){
             .ui-btn-icon-left:after, 
             .ui-btn-icon-right:after, 
@@ -306,6 +316,13 @@
                 background-color: rgba(51, 122, 183,.3);
                 font-size: 25px;
             }
+            .ui-listview>.ui-li-divider {
+                padding: .5em 1.143em;
+                font-size: 17px;
+                font-weight: 700;
+                cursor: default;
+                outline: 0;
+            }
         }
     </style>
 {% endblock %}
@@ -316,16 +333,23 @@
             <form class="ui-filterable">
                 <input id="myFilter" data-type="search" placeholder="Buscar ciudadano">
             </form>
-            <ul data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true" id="lista-usuarios">
+            <ul data-role="listview" data-filter="true" data-input="#myFilter" id="lista-usuarios">
+                <li data-role="list-divider">CHAT COMÚN</li>
+                <li onclick="abrir_chat(null, null);">
+                    <a href="#pagetwo">EL GUETO DE FENI</a>
+                </li>
+
                 {% if DISTRITOS is not null %}
-                    {% for DISTRITO in DISTRITOS %}
+                    <li data-role="list-divider">CHAT DE DISTRITO</li>
+                        {% for DISTRITO in DISTRITOS %}
                         <li onclick="abrir_chat(null, {{ DISTRITO.getIdUsuarioDistrito() }});">
                             <a href="#pagetwo">{{ DISTRITO.getNombre() }}</a>
                         </li>
                     {% endfor %}
                 {% endif %}
                 {% if CIUDADANOS is not null %}
-                    {% for CIUDADANO in CIUDADANOS %}
+                    <li data-role="list-divider">CIUDADANOS</li>
+                        {% for CIUDADANO in CIUDADANOS %}
                         <li onclick="abrir_chat({{ CIUDADANO.getIdUsuario() }}, null);">
                             <a href="#pagetwo">
                                 {% if CIUDADANO.getImagen() is not null%}
@@ -394,13 +418,13 @@
             url = '/ciudadano/ocio/amigos/chat/getSinVer';
             $.get(url, function (datos) {
                 data = jQuery.parseJSON(datos);
-                console.log(data);
+                //console.log(data);
                 if (data.estado === 'OK') {
                     $.each(data.message, function (k, v) {
                         $('#badge-' + v.ID).html(v.NUM_MENSAJES);
-                        if(v.NUM_MENSAJES > 0){
+                        if (v.NUM_MENSAJES > 0) {
                             $('#badge-' + v.ID).show();
-                        } else{
+                        } else {
                             $('#badge-' + v.ID).hide();
                         }
                     });
@@ -416,38 +440,41 @@
                 chat_grupo_actual = id_grupo;
                 chat_actual = null;
                 var url = '/ciudadano/getChat/' + null + '/' + chat_grupo_actual + '/' + offset;
+            } else {
+                chat_actual = null;
+                chat_grupo_actual = null;
+                var url = '/ciudadano/getChatComun';
             }
-
-            if (chat_actual !== null) {
-                var url = '/ciudadano/getChat/' + chat_actual + '/' + null + '/' + offset;
-            } else if (chat_grupo_actual !== null) {
-                var url = '/ciudadano/getChat/' + null + '/' + chat_grupo_actual + '/' + offset;
-            }
-
-            if (chat_actual !== null || chat_grupo_actual !== null) {
-                $.get(url, function (data) {
-                    $('#panel-chat').empty();
-                    if (data.estado === 'OK') {
-                        //console.log(data);
-                        contenido = '';
-                        $.each(data.mensajes, function (k, v) {
-                            contenido += '<div class="col-xs-12" style="margin-top:1%;">';
-                            if (v.usuario.alias === v.usuario.mi_alias) {
-                                contenido += '<span class="mi-chat">';
-                                contenido += '<p></p>';
-                            } else {
-                                contenido += '<span class="otro-chat">';
-                                contenido += '<p><small>@' + v.usuario.alias + '</small></p>';
-                            }
-                            contenido += v.mensaje;
-                            contenido += '<p style="text-align: right;"><small>' + v.fecha.date + '</small></p>';
-                            contenido += '</span>';
-                            contenido += '</div>';
-                        });
-                        $('#panel-chat').append(contenido);
-                    }
-                    $('#panel-chat-descripcion').empty();
-                    descripcion = '';
+            $.get(url, function (data) {
+                console.log(data);
+                $('#panel-chat').empty();
+                if (data.estado === 'OK') {
+                    contenido = '';
+                    $.each(data.mensajes, function (k, v) {
+                        contenido += '<div class="col-xs-12" style="margin-top:1%;">';
+                        if (v.usuario.alias === v.usuario.mi_alias) {
+                            contenido += '<span class="mi-chat">';
+                            contenido += '<p></p>';
+                        } else {
+                            contenido += '<span class="otro-chat">';
+                            contenido += '<p><small>@' + v.usuario.alias + '</small></p>';
+                        }
+                        contenido += v.mensaje;
+                        contenido += '<p style="text-align: right;"><small>' + v.fecha.date + '</small></p>';
+                        contenido += '</span>';
+                        contenido += '</div>';
+                    });
+                    $('#panel-chat').append(contenido);
+                } else {
+                    contenido = '';
+                    contenido += '<div class="col-lg-12" style="margin-top:1%; background-color: #EBF8A4; padding: 15px; color:black;">';
+                    contenido += '' + data.message;
+                    contenido += '</div>';
+                    $('#panel-chat').append(contenido);
+                }
+                $('#panel-chat-descripcion').empty();
+                descripcion = '';
+                if (id_usuario !== null || id_grupo !== null) {
                     if (typeof data.usuario !== 'undefined') {
                         if (data.usuario.imagen !== null) {
                             descripcion += '<img src="{{ asset('images/users/') }}' + data.usuario.dni + '/' + data.usuario.imagen + '" class="img-chat">';
@@ -458,18 +485,12 @@
                     } else if (typeof data.distrito !== 'undefined') {
                         descripcion += '<h1>' + data.distrito.nombre + '</h1>';
                     }
-                    $('#panel-chat-descripcion').append(descripcion);
-                    $("#panel-chat").animate({scrollTop: $(document).height() + 1000000}, "slow");
-                });
-            } else {
-                contenido = '';
-                contenido += '<div class="col-lg-12" style="margin-top:1%;">';
-                contenido += '<span style="float:left; background-color: #EBF8A4; padding: 1%; color:black;">';
-                contenido += 'Para comenzar a chatear con amigos o tu distrito selecciona el contacto en la lista';
-                contenido += '</span>';
-                contenido += '</div>';
-                $('#panel-chat').append(contenido);
-            }
+                } else {
+                    descripcion += '<h1>EL GUETO DE FENI</h1>';
+                }
+                $('#panel-chat-descripcion').append(descripcion);
+                $("#panel-chat").animate({scrollTop: $(document).height() + 1000000}, "slow");
+            });
         }
 
         $('#enviar').click(function () {
@@ -477,13 +498,21 @@
             if ($.trim(mensaje) !== '') {
                 $('#enviar').html('Enviando...');
                 $('#mensaje').val('');
-                datos = {'id_usuario': chat_actual, 'id_distrito': chat_grupo_actual, 'mensaje': mensaje};
+                if (chat_actual !== null) {
+                    datos = {'id_usuario': chat_actual, 'id_distrito': 0, 'comun': 0, 'mensaje': mensaje};
+                } else if (chat_grupo_actual !== null) {
+                    datos = {'id_usuario': 0, 'id_distrito': chat_grupo_actual, 'comun': 0, 'mensaje': mensaje};
+                } else {
+                    datos = {'id_usuario': 0, 'id_distrito': 0, 'comun': 1, 'mensaje': mensaje};
+                }
                 $.post('/ciudadano/enviarMensajeChat', datos, function (data) {
                     if (data.estado === 'OK') {
                         if (chat_actual !== null) {
                             abrir_chat(chat_actual, null);
                         } else if (chat_grupo_actual !== null) {
                             abrir_chat(null, chat_grupo_actual);
+                        } else {
+                            abrir_chat(null, null);
                         }
                     }
                 });

@@ -9,6 +9,7 @@
     </id>
     <field name="tipo" type="string" column="tipo" length="1000" nullable="false"/>
     <field name="velocidad" type="float" column="velocidad" precision="10" scale="0" nullable="false"/>
+    <field name="ritmo" type="float" column="ritmo" precision="10" scale="0" nullable="false"/>
     <field name="duracion" type="integer" column="duracion" nullable="false"/>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
     <field name="opcional" type="boolean" column="opcional" nullable="false"/>

@@ -480,6 +480,24 @@
                             </div>
                             <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setPrestamos();">GUARDAR CAMBIOS</button>
                             <div id="alert-prestamos"></div>
+                            <legend style="margin-top: 1%;">Felicidad</legend>
+                            <div class="caja-opcion">
+                                <label for="dias_felicidad" style="margin-top:1%;">Días entre entregas: </label><br>
+                                <small>Establece el número de días que debe pasar entre el envío de la propuesta y el de las evidencias.</small>
+
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_felicidad" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">días</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-block btn-primary" style="margin-top: 1%;" onclick="setFelicidad();">GUARDAR CAMBIOS</button>
+                            <div id="alert-felicidad"></div>
                         </div>
                     </div>
                 </div>
@@ -685,6 +703,18 @@
                 }
             });
         }
+        function getFelicidad() {
+            ruta = '/guardian/ajustes/getFelicidad';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_felicidad').val(data.message);
+                } else {
+                    alerta = setAlert(data.message);
+                    $('#alert-felicidad').html(alerta);
+                }
+            });
+        }
         function setJornadaLaboral() {
             var n_tweets = parseInt($('#n_tweets').val());
             var dias_jornada = parseInt($('#dias_jornada').val());
@@ -878,6 +908,25 @@
                 });
             }
         }
+        function setFelicidad() {
+            var dias_felicidad = parseInt($('#dias_felicidad').val());
+            if (dias_felicidad <= 0) {
+                $('#alert-felicidad').html(setAlert('El valor de este campo debe ser mayor que 0'));
+            } else {
+                ruta = '/guardian/ajustes/setFelicidad';
+                datos = {
+                    'dias_felicidad': dias_felicidad
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    if(data.estado === 'OK'){
+                        $('#alert-felicidad').html(setSuccess(data.message));
+                    } else {
+                        $('#alert-felicidad').html(setAlert(data.message));
+                    }
+                });
+            }
+        }
         $(document).ready(function () {
             getNumeroTweetsDiarios();
             getPagoJornadaLaboral();
@@ -892,6 +941,7 @@
             getCosteMinaPista();
             getInteresPrestamo();
             getTiempoMaximoPrestado();
+            getFelicidad();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");

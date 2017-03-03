@@ -100,4 +100,3 @@ function segundosToDiasFormato(dias, horas, minutos, segundos) {
     }
     return result;
 }
-

@@ -14,8 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
-use AppBundle\Utils\DataManager;
-use AppBundle\Utils\Pago;
 use AppBundle\Utils\Utils;
 
 /**
@@ -31,7 +29,6 @@ class MinaController extends Controller {
     public function getMinaAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
-        $em = $doctrine->getManager();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/altruismo/getMina');
         if (!$status) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);

@@ -10,6 +10,11 @@
     font-family: "Isocteur";
     src: url("../font/ISOCTEUR.ttf");
 }
+input[type="checkbox"]{
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}
 .input-group-btn:first-child>.btn, 
 .input-group-btn:first-child>.btn-group {
     border-right-width: 0px;
@@ -697,90 +702,91 @@ legend{
     width: 1%;
 }
 
+.file-caption-main .input-group-btn button{
+    height: 85px;
+}
+.file-caption-main .input-group-btn a{
+    height: 85px;
+}
+
 /** MEDIA **/
 @media (max-width: 760px){
     #posicion-reloj{
         margin-left: 3%;
     }
     .menu img{
-        height: 170px;
+        height: 115px;
         width: auto;
     }
     .menu-principal img{
-        height: 155px;
-    }
-    #menu-jugador{
-        margin-left: 37vw;
+        height: 111px;
     }
     #fel-tra{
-        margin-top: -50%;
-        margin-left:10vw;
-        width: 70vw;
+        /*margin-top: -50%;*/
+        margin-top: 15%;
+        margin-left:17vw;
+        width: 60vw;
     }
     #oci-asi{
         margin-left:0vw;
-        width: 90vw;
+        width: 100vw;
+    }
+    #menu-jugador{
+        margin-left: 7vw;
     }
     #ali-pre{
         margin-left:15vw;
         width: 65vw;
     }
     #log-sal{
-        margin-left:25vw;
+        margin-top: 1vh;
+        margin-left:18vw;
     }
     #fondo-principal{
         top: 27vh;
         left:45vw;
     }
-
+    #menu-salir img{
+        margin-top: -9vh;
+        height: 60px;
+    }
     #menu-logo img{
-        height: 145px;
+        height: 95px;
     }
     #fondo-principal{
-        top: 70vh;
-        left:43vw;
+        top: 42vh;
+        left:48vw;
     }
     #fondo-principal img{
-        height: 180px;
+        height: 66px;
     }
     .modal-advice .modal-dialog{
         width: 85%;
-        left: 40%;
-        top: 40%;
+        left: 90%;
+        top: 55%;
     }
     .modal_tweet .modal-dialog{
-        width: 80%;
-        left: 40%;
-        top: 20%;
+        width: 85%;
+        left: 90%;
+        top: 55%;
     }
     .texto-tweet p{
         line-height: normal; 
     }
     .modal_tweet #modal_tweet_perfil img{
-        width: 146px;
-        height: 146px;
+        width: 83px;
+        height: 83px;
     }
-    .ventana-tweets{
-        /*height: 1000px;*/
+    .badge-alimentacion,
+    .badge-aviso{
+        font-size: 12px;
     }
     .contenedor-badge .badge{
         padding: 9px 12px;
     }
-    .form-control {
-        display: block;
-        width: 100%;
-        height: 45px;
-        padding: 9px 15px;
-    }
-    .file-caption-name,
-    .file-input .input-group-btn button,
-    .file-input .input-group-btn a{
-        min-height: 55px;
-        /*padding: 9px 15px;*/
-    }
     .fileinput-upload i,
     .fileinput-remove-button i{
-        font-size: 20px;
+        font-size: 12px;
     }
     .fileinput-upload,
     .fileinput-remove-button{
@@ -788,60 +794,74 @@ legend{
     }
     select {
         width: 100%;
-        height: 55px;
+        height: 47px;
         padding: 9px 15px; 
     }
     .container{
         width: 95%;
     }
-
-    .badge-aviso{
-        font-size: 20px;
-    }
     .breadcrumb{
-        font-size: 30px;
+        font-size: 17px;
     }
     .modal_tweet #modal_tweet_descripcion{
-        font-size: 26px;
+        font-size: 15px;
     }
-    .form-control,
-    .file-input .input-group-btn button,
-    .file-input .input-group-btn a,
-    .file-drop-zone-title,
-    select,
-    .btn,
-    .login-form h4{
-        font-size: 20px;
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 49px;
+        padding: 9px 15px;
     }
     .fileinput-upload i,
     .fileinput-remove-button i{
-        font-size: 20px;
+        font-size: 11px;
     }
     .fileinput-upload,
     .fileinput-remove-button{
         padding: 2px 15px;
     }
-    .texto-tweet p{
-        font-size: 45px;
-    }
     .item-carousel{
-        font-size: 95px;
-    }
-    .input-group-addon i,
-    input-group-addon span,
-    .input-group-btn span{
-        font-size: 30px;
+        font-size: 54px;
     }
     table{
-        font-size: 20px;
+        font-size: 17px;
     }
     footer{
         font-size: 20px;
     }
+    .texto-tweet p,
+    .form-control,
+    .file-input .input-group-btn button,
+    .file-input .input-group-btn a,
+    .file-drop-zone-title,
+    select,
+    .login-form h4,
     #modal-advice0 .modal-body,
     #modal-advice1 .modal-body,
     #modal-advice2 .modal-body{
-        font-size: 45px;
+        font-size: 26px;
+    }
+    .input-group-addon,
+    .input-group-btn span,
+    .fa{
+        font-size: 20px;
+    }
+    .btn {
+        font-size: 24px;
+    }
+    .flecha-select:after {
+        font:30px "Isocpeur";
+        top: -8px;
+    }
+    legend{
+        font-size: 25px;
+    }
+    .titulo-xs{
+        font-size: 15px;
+    }
+    .file-caption-main .input-group-btn a,
+    .file-caption-main .input-group-btn button {
+        height: 50px;
     }
 }
 @media (min-width: 760px){
@@ -1445,5 +1465,11 @@ legend{
         position:absolute;
         pointer-events:none;
         display:block;
+    }
+    .file-caption-main .input-group-btn button{
+        height: 50px;
+    }
+    .file-caption-main .input-group-btn a{
+        height: 50px;
     }
 }

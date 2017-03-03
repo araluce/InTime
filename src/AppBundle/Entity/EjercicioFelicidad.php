@@ -29,11 +29,35 @@ class EjercicioFelicidad
     /**
      * @var integer
      *
+     * @ORM\Column(name="fase", type="integer", nullable=false)
+     */
+    private $fase;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="porcentaje", type="integer", nullable=false)
+     */
+    private $porcentaje;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="id_ejercicio_felicidad", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idEjercicioFelicidad;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
 
     /**
      * @var \AppBundle\Entity\Ejercicio
@@ -54,16 +78,6 @@ class EjercicioFelicidad
      * })
      */
     private $idEjercicioEntrega;
-
-    /**
-     * @var \AppBundle\Entity\Usuario
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
-     * })
-     */
-    private $idUsuario;
 
 
 
@@ -114,6 +128,52 @@ class EjercicioFelicidad
     }
 
     /**
+     * Set fase
+     *
+     * @param integer $fase
+     * @return EjercicioFelicidad
+     */
+    public function setFase($fase)
+    {
+        $this->fase = $fase;
+
+        return $this;
+    }
+
+    /**
+     * Get fase
+     *
+     * @return integer 
+     */
+    public function getFase()
+    {
+        return $this->fase;
+    }
+
+    /**
+     * Set porcentaje
+     *
+     * @param integer $porcentaje
+     * @return EjercicioFelicidad
+     */
+    public function setPorcentaje($porcentaje)
+    {
+        $this->porcentaje = $porcentaje;
+
+        return $this;
+    }
+
+    /**
+     * Get porcentaje
+     *
+     * @return integer 
+     */
+    public function getPorcentaje()
+    {
+        return $this->porcentaje;
+    }
+
+    /**
      * Get idEjercicioFelicidad
      *
      * @return integer 
@@ -121,6 +181,29 @@ class EjercicioFelicidad
     public function getIdEjercicioFelicidad()
     {
         return $this->idEjercicioFelicidad;
+    }
+
+    /**
+     * Set idUsuario
+     *
+     * @param \AppBundle\Entity\Usuario $idUsuario
+     * @return EjercicioFelicidad
+     */
+    public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
+    {
+        $this->idUsuario = $idUsuario;
+
+        return $this;
+    }
+
+    /**
+     * Get idUsuario
+     *
+     * @return \AppBundle\Entity\Usuario 
+     */
+    public function getIdUsuario()
+    {
+        return $this->idUsuario;
     }
 
     /**
@@ -167,28 +250,5 @@ class EjercicioFelicidad
     public function getIdEjercicioEntrega()
     {
         return $this->idEjercicioEntrega;
-    }
-
-    /**
-     * Set idUsuario
-     *
-     * @param \AppBundle\Entity\Usuario $idUsuario
-     * @return EjercicioFelicidad
-     */
-    public function setIdUsuario(\AppBundle\Entity\Usuario $idUsuario = null)
-    {
-        $this->idUsuario = $idUsuario;
-
-        return $this;
-    }
-
-    /**
-     * Get idUsuario
-     *
-     * @return \AppBundle\Entity\Usuario 
-     */
-    public function getIdUsuario()
-    {
-        return $this->idUsuario;
     }
 }

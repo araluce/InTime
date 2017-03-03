@@ -155,7 +155,10 @@ class RuntasticController extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
         }
         $fase_min = 1000;
-        $RETO = Ejercicio::getFase($doctrine, $USUARIO);
+        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $RETO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
+//        $RETO = Ejercicio::getFase($doctrine, $USUARIO);
+        
         if ($RETO === 0) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
         }
@@ -168,13 +171,13 @@ class RuntasticController extends Controller {
         }
         $BENEFICIO = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($RETO);
         $DATOS = [];
-        $DATOS['FASE'] = intval($RETO->getEnunciado());
         $DATOS['BENEFICIO'] = Utils::segundosToDias($BENEFICIO->getBonificacion());
         $DATOS['EJERCICIOS'] = [];
         foreach ($RETOS as $R) {
             $aux = [];
             $aux['TIPO'] = $R->getTipo();
             $aux['VELOCIDAD'] = $R->getVelocidad();
+            $aux['RITMO'] = $R->getRitmo();
             $aux['DURACION'] = Utils::formatoDuracion($R->getDuracion());
             $DATOS['EJERCICIOS'][] = $aux;
         }
@@ -260,29 +263,14 @@ class RuntasticController extends Controller {
                 $SESION->setIdRuntastic($activity->id);
                 $SESION->setIdUsuarioRuntastic($UR);
                 $SESION->setTipo('cycling');
-                if ($activity->type === 'running'){
+                if ($activity->type === 'running') {
                     $SESION->setTipo('running');
                 }
                 $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
                 $SESION->setDistancia($activity->distance);
-                $SESION->setPaso($activity->pace);
+                $SESION->setRitmo($activity->pace);
                 $SESION->setVelocidad($activity->speed);
-                $SESION->setKcal($activity->kcal);
-                $SESION->setRitmoCardiacoMedio($activity->heartrate_avg);
-                $SESION->setRitmoCardiacoMax($activity->heartrate_max);
-                $SESION->setDesnivel($activity->elevation_gain);
-                $SESION->setPerdidaNivel($activity->elevation_loss);
                 $SESION->setEvaluado(0);
-
-                if ($activity->surface !== '') {
-                    $SESION->setSuperficie($activity->surface);
-                }
-                if ($activity->weather !== '') {
-                    $SESION->setTiempo($activity->weather);
-                }
-                if ($activity->feeling !== '') {
-                    $SESION->setSensacion($activity->feeling);
-                }
                 $FECHA = new \Datetime();
                 $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
                 $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
@@ -352,15 +340,13 @@ class RuntasticController extends Controller {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/test');
-        if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
-        }
+//        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/deporte/test');
+//        if (!$status) {
+//            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
+//        }
         $r = new Runtastic();
         $r->setUsername('araluce@correo.ugr.es')->setPassword('102938');
-        $semana = new \DateTime('now');
-        $week_activities = $r->getActivities($semana->format('W'));
-//        Utils::pretty_print($week_activities);
+        $week_activities = $r->getActivities();
         return new JsonResponse($week_activities, 200);
         if ($r->login()) {
             return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
@@ -400,7 +386,7 @@ class RuntasticController extends Controller {
         if ($request->getMethod() == 'POST') {
             $em = $doctrine->getManager();
             // Obtenemos todos los enunciados del formulario
-            $VELOCIDAD_BICI = $request->request->get('VELOCIDAD_BICICLETA');
+            $RITMO_BICI = $request->request->get('VELOCIDAD_BICICLETA');
             $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
             $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
             $DURACION_RUN = $request->request->get('DURACION_RUNNING');
@@ -429,28 +415,23 @@ class RuntasticController extends Controller {
             $FASE_BICI = new \AppBundle\Entity\EjercicioRuntastic();
             $FASE_BICI->setDuracion($DURACION_BICI);
             $FASE_BICI->setTipo('cycling');
-            $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+            $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
+            $FASE_BICI->setRitmo($RITMO_BICI);
             $FASE_BICI->setFecha(new \DateTime('now'));
             $FASE_BICI->setIdEjercicio($EJERCICIO);
-            if ($OBLIGATORIO) {
-                $FASE_BICI->setOpcional(0);
-            } else {
-                $FASE_BICI->setOpcional(1);
-            }
+            $FASE_BICI->setOpcional(1);
             $em->persist($FASE_BICI);
 
             $FASE_RUN = new \AppBundle\Entity\EjercicioRuntastic();
             $FASE_RUN->setDuracion($DURACION_RUN);
             $FASE_RUN->setTipo('running');
             $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
+            $FASE_RUN->setRitmo($RITMO_BICI);
             $FASE_RUN->setFecha(new \DateTime('now'));
             $FASE_RUN->setIdEjercicio($EJERCICIO);
-            if ($OBLIGATORIO) {
-                $FASE_RUN->setOpcional(0);
-            } else {
-                $FASE_RUN->setOpcional(1);
-            }
+            $FASE_RUN->setOpcional(1);
             $em->persist($FASE_RUN);
+
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Fase publicada correctamente')), 200);
         }
@@ -473,42 +454,72 @@ class RuntasticController extends Controller {
         if ($request->getMethod() == 'POST') {
             $em = $doctrine->getManager();
             // Obtenemos todos los enunciados del formulario
-            $VELOCIDAD_BICI = $request->request->get('VELOCIDAD_BICICLETA');
+            $RITMO_BICI = $request->request->get('RITMO_BICICLETA');
             $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
             $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
             $DURACION_RUN = $request->request->get('DURACION_RUNNING');
             $BENEFICIO = $request->request->get('BENEFICIO_FASE');
-            $FASE = $request->request->get('FASE');
-            $OBLIGATORIO = $request->request->get('OBLIGATORIO');
             $ID = $request->request->get('ID');
 
             $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($ID);
             if (null === $EJERCICIO) {
-                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Ejercicio no localizado')), 200);
-            }
-            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
-            $BONIFICACION->setBonificacion($BENEFICIO);
-            $em->persist($BONIFICACION);
+                $SECCION_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+                $TIPO_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioTipo')->findOneByTipo('deporte');
+                $EJERCICIO = new \AppBundle\Entity\Ejercicio();
+                $EJERCICIO->setCoste(0);
+                $EJERCICIO->setEnunciado('Deporte');
+                $EJERCICIO->setFecha(new \DateTime('now'));
+                $EJERCICIO->setIcono(null);
+                $EJERCICIO->setIdEjercicioSeccion($SECCION_DEPORTE);
+                $EJERCICIO->setIdTipoEjercicio($TIPO_DEPORTE);
+                $em->persist($EJERCICIO);
 
-            $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'cycling']);
-            $FASE_BICI->setDuracion($DURACION_BICI);
-            $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
-            if ($OBLIGATORIO) {
-                $FASE_BICI->setOpcional(0);
-            } else {
+                $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
+                $BONIFICACION->setBonificacion($BENEFICIO);
+                $BONIFICACION->setIdCalificacion($NOTA_MEDIA);
+                $BONIFICACION->setIdEjercicio($EJERCICIO);
+                $em->persist($BONIFICACION);
+
+                $FASE_BICI = new \AppBundle\Entity\EjercicioRuntastic();
+                $FASE_BICI->setDuracion($DURACION_BICI);
+                $FASE_BICI->setTipo('cycling');
+                $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
+                $FASE_BICI->setRitmo($RITMO_BICI);
+                $FASE_BICI->setFecha(new \DateTime('now'));
+                $FASE_BICI->setIdEjercicio($EJERCICIO);
                 $FASE_BICI->setOpcional(1);
-            }
-            $em->persist($FASE_BICI);
+                $em->persist($FASE_BICI);
 
-            $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'running']);
-            $FASE_RUN->setDuracion($DURACION_RUN);
-            $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
-            if ($OBLIGATORIO) {
-                $FASE_RUN->setOpcional(0);
-            } else {
+                $FASE_RUN = new \AppBundle\Entity\EjercicioRuntastic();
+                $FASE_RUN->setDuracion($DURACION_RUN);
+                $FASE_RUN->setTipo('running');
+                $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
+                $FASE_RUN->setRitmo($RITMO_BICI);
+                $FASE_RUN->setFecha(new \DateTime('now'));
+                $FASE_RUN->setIdEjercicio($EJERCICIO);
                 $FASE_RUN->setOpcional(1);
+                $em->persist($FASE_RUN);
+            } else {
+                $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+                $BONIFICACION->setBonificacion($BENEFICIO);
+                $em->persist($BONIFICACION);
+
+                $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'cycling']);
+                $FASE_BICI->setDuracion($DURACION_BICI);
+                $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
+                $FASE_BICI->setRitmo($RITMO_BICI);
+                $FASE_BICI->setOpcional(1);
+                $em->persist($FASE_BICI);
+
+                $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'running']);
+                $FASE_RUN->setDuracion($DURACION_RUN);
+                $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
+                $FASE_RUN->setRitmo($RITMO_BICI);
+                $FASE_RUN->setOpcional(1);
+                $em->persist($FASE_RUN);
             }
-            $em->persist($FASE_RUN);
+
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Fase actualizada correctamente')), 200);
         }
@@ -554,28 +565,24 @@ class RuntasticController extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
         }
         $SECCION_DEPORTES = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
-        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_DEPORTES);
-        if (!count($EJERCICIOS)) {
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($SECCION_DEPORTES);
+        if (null === $EJERCICIO) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay retos publicados')), 200);
         }
         $DATOS = [];
-        foreach ($EJERCICIOS as $EJERCICIO) {
-            $DATOS[intval($EJERCICIO->getEnunciado())] = [];
-            $aux = [];
-            $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'cycling']);
-            $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'running']);
-            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
-            $aux['ID'] = $EJERCICIO->getIdEjercicio();
-            $aux['VELOCIDAD_BICI'] = $FASE_BICI->getVelocidad();
-            $aux['DURACION_BICI'] = Utils::segundosToDias($FASE_BICI->getDuracion());
-            $aux['VELOCIDAD_RUN'] = $FASE_RUN->getVelocidad();
-            $aux['DURACION_RUN'] = Utils::segundosToDias($FASE_RUN->getDuracion());
-            $aux['BENEFICIO'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
-            $aux['OBLIGATORIO'] = 1;
-            if ($FASE_BICI->getOpcional()) {
-                $aux['OBLIGATORIO'] = 0;
-            }
-            $DATOS[intval($EJERCICIO->getEnunciado())][] = $aux;
+        $aux = [];
+        $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'cycling']);
+        $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'running']);
+        $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
+        $DATOS['ID'] = $EJERCICIO->getIdEjercicio();
+        $DATOS['RITMO_BICI'] = $FASE_BICI->getRitmo();
+        $DATOS['DURACION_BICI'] = Utils::segundosToDias($FASE_BICI->getDuracion());
+        $DATOS['VELOCIDAD_RUN'] = $FASE_RUN->getVelocidad();
+        $DATOS['DURACION_RUN'] = Utils::segundosToDias($FASE_RUN->getDuracion());
+        $DATOS['BENEFICIO'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
+        $DATOS['OBLIGATORIO'] = 1;
+        if ($FASE_BICI->getOpcional()) {
+            $DATOS['OBLIGATORIO'] = 0;
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
@@ -603,8 +610,10 @@ class RuntasticController extends Controller {
         }
         $DATOS = [];
         $DATOS['COMPARATIVA'] = 0;
-        $EJERCICIO = Ejercicio::getFase($doctrine, $USUARIO);
-        if ($EJERCICIO !== null && $EJERCICIO !== 0) {
+        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
+        //$EJERCICIO = Ejercicio::getFase($doctrine, $USUARIO);
+        if (null !== $EJERCICIO) {
             $DATOS['COMPARATIVA'] = 1;
             $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
             if (!count($RETOS)) {
@@ -614,6 +623,7 @@ class RuntasticController extends Controller {
         $DATOS['SESIONES'] = [];
         $duracion_acumulada = 0;
         $id_sesiones = [];
+        $n_sesiones = 1;
         foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
             $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
             foreach ($SESIONES_RUNTASTIC as $SESION) {
@@ -624,6 +634,7 @@ class RuntasticController extends Controller {
                     $duracion = $SESION->getDuracion();
                     $aux['DURACION'] = Utils::formatoDuracion($duracion);
                     $aux['VELOCIDAD'] = $SESION->getVelocidad();
+                    $aux['RITMO'] = $SESION->getRitmo();
                     if ($DATOS['COMPARATIVA']) {
                         $aux['VELOCIDAD_SUP'] = 0;
                         $aux['EVALUADO_FASE'] = 0;
@@ -631,14 +642,12 @@ class RuntasticController extends Controller {
                             foreach ($RETOS as $RETO) {
                                 if ($RETO->getTipo() === $aux['TIPO'] && $RETO->getVelocidad() <= $aux['VELOCIDAD']) {
                                     $aux['VELOCIDAD_SUP'] = 1;
-                                    if ($duracion >= $RETO->getDuracion()) {
+                                    $duracion_acumulada += $duracion;
+                                    $id_sesiones[] = $SESION;
+                                    if ($duracion_acumulada >= $RETO->getDuracion()) {
                                         $DATOS['EVALUADO'] = 1;
-                                        Ejercicio::evaluaFase($doctrine, $EJERCICIO, $USUARIO, $SESION);
-                                    } else {
-                                        $duracion_acumulada += $duracion;
-                                        $id_sesiones[] = $SESION;
-                                        if($duracion_acumulada >= $RETO->getDuracion()){
-                                            $DATOS['EVALUADO'] = 1;
+                                        $n_sesiones++;
+                                        if ($n_sesiones >= 3) {
                                             Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
                                         }
                                     }

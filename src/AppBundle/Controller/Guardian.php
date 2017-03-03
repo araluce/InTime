@@ -154,6 +154,22 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $disparador_apuesta)), 200);
     }
+    
+    /**
+     * @Route("/guardian/ajustes/getFelicidad", name="getFelicidadDias")
+     */
+    public function getFelicidadDiasAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getFelicidad', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $diasDifEntregasFelicidad = Utils::getConstante($doctrine, 'diasDifEntregasFelicidad');
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
+    }
 
     /**
      * @Route("/guardian/ajustes/getTestCorrecto", name="getTestCorrecto")
@@ -883,6 +899,36 @@ class Guardian extends Controller {
             }
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+    
+    /**
+     * 
+     * @Route("/guardian/ajustes/setFelicidad", name="setFelicidadDias")
+     */
+    public function setFelicidadDiasAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/setFelicidad', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $diasDifEntregasFelicidad = $request->request->get('dias_felicidad');
+            if ($diasDifEntregasFelicidad <= 0) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
+            }
+            $CONSTANTE = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('diasDifEntregasFelicidad');
+            if ($CONSTANTE === null) {
+                Utils::setError($doctrine, 1, 'setFelicidadDiasAction no existe constante diasDifEntregasFelicidad');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CONSTANTE->setValor($diasDifEntregasFelicidad);
+            $em->persist($CONSTANTE);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }

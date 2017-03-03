@@ -9,14 +9,14 @@
     <id name="idMinaPistaXUsuario" type="integer" column="id_mina_pista_x_usuario">
       <generator strategy="IDENTITY"/>
     </id>
-    <many-to-one field="idMinaPista" target-entity="MinaPista">
-      <join-columns>
-        <join-column name="id_mina_pista" referenced-column-name="id_mina_pista"/>
-      </join-columns>
-    </many-to-one>
     <many-to-one field="idUsuario" target-entity="Usuario">
       <join-columns>
         <join-column name="id_usuario" referenced-column-name="id_usuario"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idMinaPista" target-entity="MinaPista">
+      <join-columns>
+        <join-column name="id_mina_pista" referenced-column-name="id_mina_pista"/>
       </join-columns>
     </many-to-one>
   </entity>

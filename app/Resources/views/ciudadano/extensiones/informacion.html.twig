@@ -572,7 +572,10 @@
                             <div class="tab-pane fade in" id="tab2">
                                 <div class="row" style="margin-top: 1%;">
                                     <legend id="nivel-usuario"></legend>
-                                    <div id="minicartas"></div>
+                                    <div class="col-xs-12">
+                                        <button id="btn-privilegios" class="btn btn-block btn-primary" onclick="mostrarCartas();">MOSTRAR CARTAS DE PRIVILEGIOS</button>
+                                    </div>
+                                    <div id="minicartas" style="display: none;"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade in" id="tab3">
@@ -647,6 +650,10 @@
 {% block javascripts %}
     <script>
         var todoOk = true;
+        function mostrarCartas(){
+            $('#btn-privilegios').hide();
+            $('#minicartas').show();
+        }
         $(document).ready(function () {
             actualizarMovimientos();
             getClasificacionGlobal();

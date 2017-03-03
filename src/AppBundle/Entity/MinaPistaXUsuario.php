@@ -22,16 +22,6 @@ class MinaPistaXUsuario
     private $idMinaPistaXUsuario;
 
     /**
-     * @var \AppBundle\Entity\MinaPista
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\MinaPista")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_mina_pista", referencedColumnName="id_mina_pista")
-     * })
-     */
-    private $idMinaPista;
-
-    /**
      * @var \AppBundle\Entity\Usuario
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
@@ -40,6 +30,16 @@ class MinaPistaXUsuario
      * })
      */
     private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\MinaPista
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\MinaPista")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_mina_pista", referencedColumnName="id_mina_pista")
+     * })
+     */
+    private $idMinaPista;
 
 
 
@@ -51,29 +51,6 @@ class MinaPistaXUsuario
     public function getIdMinaPistaXUsuario()
     {
         return $this->idMinaPistaXUsuario;
-    }
-
-    /**
-     * Set idMinaPista
-     *
-     * @param \AppBundle\Entity\MinaPista $idMinaPista
-     * @return MinaPistaXUsuario
-     */
-    public function setIdMinaPista(\AppBundle\Entity\MinaPista $idMinaPista = null)
-    {
-        $this->idMinaPista = $idMinaPista;
-
-        return $this;
-    }
-
-    /**
-     * Get idMinaPista
-     *
-     * @return \AppBundle\Entity\MinaPista 
-     */
-    public function getIdMinaPista()
-    {
-        return $this->idMinaPista;
     }
 
     /**
@@ -97,5 +74,28 @@ class MinaPistaXUsuario
     public function getIdUsuario()
     {
         return $this->idUsuario;
+    }
+
+    /**
+     * Set idMinaPista
+     *
+     * @param \AppBundle\Entity\MinaPista $idMinaPista
+     * @return MinaPistaXUsuario
+     */
+    public function setIdMinaPista(\AppBundle\Entity\MinaPista $idMinaPista = null)
+    {
+        $this->idMinaPista = $idMinaPista;
+
+        return $this;
+    }
+
+    /**
+     * Get idMinaPista
+     *
+     * @return \AppBundle\Entity\MinaPista 
+     */
+    public function getIdMinaPista()
+    {
+        return $this->idMinaPista;
     }
 }

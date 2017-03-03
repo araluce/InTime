@@ -26,6 +26,42 @@
         .btn-block{
             font-size: 45px;
         }
+        #barraf1,
+        #barraf2,
+        #barraf3,
+        #barraf4{
+            background-color: #337ab7;
+        }
+        #por1,
+        #por2,
+        #por3{
+            border-right: 2px solid #000000;
+        }
+        #progress-legend{
+            border: 2px solid #000000;
+            border-top-width: 0px;
+            border-radius: 0px;
+            margin-top: 1%;
+        }
+        #por1,
+        #por2,
+        #por3,
+        #por4{
+            color: black;
+            background-color: #FFFFFF;
+        }
+        #tab1, #tab2{
+            font-size: 50px;
+        }
+        .progress{
+            margin-bottom: 0px;
+            height: 40px;
+            border-radius: 15px;
+        }
+        .progress-bar{
+            font-size: 24px;
+            line-height: 35px;
+        }
         @media (min-width: 1200px){
             legend{
                 font-size: 14px;
@@ -35,6 +71,16 @@
             }
             .btn-block{
                 font-size: 20px;
+            }
+            #tab1, #tab2{
+                font-size: 20px;
+            }
+            .progress{
+                height: 40px;
+            }
+            .progress-bar{
+                font-size: 24px;
+                line-height: 35px;
             }
         }
     </style>
@@ -46,14 +92,14 @@
             <div class="btn-pref btn-group btn-group-justified btn-group-lg" style="margin-bottom: 1%;" role="group" aria-label="...">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-primary btn-menu-first" href="#tab1" data-toggle="tab">
-                        <span class="fa fa-clock-o" aria-hidden="true"></span>
-                        <div class="hidden-xs">IMPORTE</div>
+                        <span class="fa fa-line-chart" aria-hidden="true"></span>
+                        <div class="hidden-xs">%</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn-menu" href="#tab2" data-toggle="tab">
-                        <span class="fa fa-refresh" aria-hidden="true"></span>
-                        <div class="hidden-xs">EN CURSO</div>
+                        <span class="fa fa-upload" aria-hidden="true"></span>
+                        <div class="hidden-xs">ARCHIVOS</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
@@ -63,16 +109,45 @@
                     </button>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="tab-content">
-                        <div class="tab-pane fade in active" id="tab1">
-                            <div class="row bordes border-radius">
-                                <input id="entrega" name="entrega" type="file" multiple class="file-loading">
+            <div class="row">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row bordes border-radius">
+                            <legend>Barra de felicidad</legend>
+                            <div class="progress">
+                                <div id="barraf1" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>                                
+                                <div id="barraf2" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>                                
+                                <div id="barraf3" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>                                
+                                <div id="barraf4" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>
+
+                                <div id="barraf1r" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>
+                                <div id="barraf2r" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>
+                                <div id="barraf3r" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>
+                                <div id="barraf4r" class="progress-bar progress-bar-info" role="progressbar" style="width:0%"></div>
                             </div>
-                            <div id="propuestas"></div>                            
+                            <div class="progress" id="progress-legend">
+                                <div class="progress-bar progress-bar-default" role="progressbar" style="width:25%" id="por1"></div>
+                                <div class="progress-bar progress-bar-default" role="progressbar" style="width:25%" id="por2"></div>
+                                <div class="progress-bar progress-bar-default" role="progressbar" style="width:25%" id="por3"></div>
+                                <div class="progress-bar progress-bar-default" role="progressbar" style="width:25%" id="por4"></div>
+                            </div>
                         </div>
-                        <div class="tab-pane fade in" id="tab2"> </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab2">
+                        <div id="propuestas"></div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab3">
+                        <div class="row bordes border-radius">
+                            <legend>Realizar una propuesta</legend>
+                            <input id="titulo-propuesta" type="text" class="form-control" placeholder="Escriba el título de la propuesta" onkeyup="actualizarFile();">
+                            <input id="entrega" name="entrega" type="file" multiple class="file-loading">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab4">
+                        <div class="row bordes border-radius">
+                            <legend>Realizar la entrega</legend>
+                            <input id="entrega-entrega" name="entrega-entrega" type="file" multiple class="file-loading">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,8 +157,19 @@
 
 {% block javascripts %}
     <script>
+        var fase_global = 0;
+        var titulo_global = '';
+        function actualizarFile(fase) {
+            titulo_global = $('#titulo-propuesta').val();
+            fase_global = fase;
+            $("#entrega").fileinput('refresh', {uploadExtraData: {"titulo": titulo_global, "ID_FASE": fase_global}});
+        }
+        function actualizarId(id) {
+            $("#entrega-entrega").fileinput('refresh', {uploadExtraData: {"ID_RETO": id}});
+        }
         $("#entrega").fileinput({
             uploadUrl: "/ciudadano/felicidad/entregarPropuesta",
+            uploadExtraData: {"titulo": titulo_global, "ID_FASE": fase_global},
             uploadAsync: true,
             maxFileCount: 1,
             showBrowse: false,
@@ -91,6 +177,21 @@
             maxFileSize: 2000
         });
         $("#entrega").on('fileuploaded', function (event, data, previewId, index) {
+            var response = data.response;
+            data = jQuery.parseJSON(response);
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion(data.message);
+        });
+        $("#entrega-entrega").fileinput({
+            uploadUrl: "/ciudadano/felicidad/entregarFelicidad",
+            uploadExtraData: {"ID_RETO": 0},
+            uploadAsync: true,
+            maxFileCount: 1,
+            showBrowse: false,
+            browseOnZoneClick: true,
+            maxFileSize: 2000
+        });
+        $("#entrega-entrega").on('fileuploaded', function (event, data, previewId, index) {
             var response = data.response;
             data = jQuery.parseJSON(response);
             $('#modal-avisos2').click();
@@ -105,15 +206,42 @@
                     $('#propuestas').html();
                     contenido = '';
                     $.each(data.message, function (k, v) {
+                        $('#por' + v.FASE).html('FASE ' + v.FASE + ': <b>' + v.PORCENTAJE + '%</b>');
+                        $('#barraf' + v.FASE).css('width', v.PORCENTAJE + '%');
+                        restante = 25 - v.PORCENTAJE;
+                        if (restante !== 25) {
+                            $('#barraf' + v.FASE + 'r').css('width', restante + '%');
+                        }
+
                         contenido += '<div class="row border-radius" style="margin-top: 1%;">';
-                        contenido += '  <legend>Propuesta<span style="float:right;">' + v.FECHA.date +'</span></legend>';
-                        contenido += '  <div class="col-md-12">';
-                        contenido += '      <b>Enunciado: </b>' + v.DESCRIPCION;
-                        contenido += '  </div>';
-                        contenido += '  <div class="col-md-12">';
-                        contenido += '      <b>Aprobada: </b> Aún no hay datos<br>';
-                        contenido += '      <b>Propuesta: </b> <a href="{{ asset('/USUARIOS/') }}'+v.PROPUESTA.RUTA_ENTREGA+'">'+v.PROPUESTA.NOMBRE_ENTREGA+'</a>';
-                        contenido += '  </div>';
+                        contenido += '  <legend>Propuesta ' + v.FASE + '</legend>';
+                        if (v.PROPUESTA.ESTADO === "entregado" || v.PROPUESTA.ESTADO === "evaluado") {
+                            contenido += '  <div class="col-md-12">';
+                            contenido += '      <b>Propuesta: </b> <a href="{{ asset('/USUARIOS/') }}' + v.PROPUESTA.RUTA_ENTREGA + '">' + v.PROPUESTA.NOMBRE_ENTREGA + '</a>';
+                            contenido += '      <br>';
+                            contenido += '      <b>Fecha y hora de entrega: ' + v.PROPUESTA.FECHA.date + '</b>';
+                            contenido += '  </div>';
+                            contenido += '<legend></legend>';
+                            if (v.ENTREGA.ESTADO === "entregado" || v.ENTREGA.ESTADO === "evaluado") {
+                                contenido += '  <div class="col-md-12">';
+                                contenido += '      <b>Evidencias: </b> <a href="{{ asset('/USUARIOS/') }}' + v.ENTREGA.RUTA_ENTREGA + '">' + v.ENTREGA.NOMBRE_ENTREGA + '</a>';
+                                contenido += '      <br>';
+                                contenido += '      <b>Fecha y hora de entrega: ' + v.ENTREGA.FECHA.date + '</b>';
+                                contenido += '  </div>';
+                            } else if (v.ENTREGA.ESTADO === "no_entregado") {
+                                contenido += '  <div class="col-md-6 col-md-offset-3">';
+                                contenido += '      <button class="btn btn-block btn-primary" href="#tab4" data-toggle="tab" onclick="actualizarId(' + v.ID_RETO + ');">';
+                                contenido += '          ENTREGAR';
+                                contenido += '      </button>';
+                                contenido += '  </div>';
+                            }
+                        } else if (v.PROPUESTA.ESTADO === "no_entregado") {
+                            contenido += '  <div class="col-md-6 col-md-offset-3">';
+                            contenido += '      <button class="btn btn-block btn-primary" href="#tab3" data-toggle="tab" onclick="actualizarFile(' + v.FASE + ');">';
+                            contenido += '          ENTREGAR PROPUESTA';
+                            contenido += '      </button>';
+                            contenido += '  </div>';
+                        }
                         contenido += '</div>';
                     });
                     $('#propuestas').html(contenido);

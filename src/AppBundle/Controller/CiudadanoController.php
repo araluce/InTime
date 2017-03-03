@@ -94,7 +94,8 @@ class CiudadanoController extends Controller {
         $qb = $em->createQueryBuilder();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/getChat/' . $id_usuario_destino . '/' . $id_grupo_destino . '/' . $offset);
         if (!$status) {
-            $JsonResponse_data["estado"] = "ERROR - No autorizado";
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "No autorizado";
         }
         $Usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
 
@@ -121,7 +122,8 @@ class CiudadanoController extends Controller {
         }
         $CHAT = $query->getQuery()->getOneOrNullResult();
         if ($CHAT === null) {
-            $JsonResponse_data["estado"] = "ERROR - No hay conversación";
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
         }
         $CHAT->setFechaUltimoMensaje(new \DateTime('now'));
@@ -138,7 +140,69 @@ class CiudadanoController extends Controller {
         $CHATS = $query->getQuery()->getResult();
 
         if (!count($CHATS)) {
-            $JsonResponse_data["estado"] = "ERROR - No hay intercambio de mensajes";
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            return new JsonResponse($JsonResponse_data, 200);
+        } else {
+            $JsonResponse_data["estado"] = "OK";
+            $JsonResponse_data['mensajes'] = [];
+            foreach ($CHATS as $CHAT) {
+                $aux['usuario'] = [];
+                $aux['usuario']['mi_alias'] = $Usuario->getSeudonimo();
+                $aux['usuario']['alias'] = $CHAT->getIdUsuario()->getSeudonimo();
+                $aux['usuario']['imagen'] = $CHAT->getIdUsuario()->getImagen();
+                $aux['usuario']['dni'] = $CHAT->getIdUsuario()->getDni();
+                $aux['mensaje'] = $CHAT->getMensaje();
+                $aux['visto'] = $CHAT->getVisto();
+                $aux['fecha'] = $CHAT->getFecha();
+                $JsonResponse_data['mensajes'][] = $aux;
+                if ($CHAT->getIdUsuario() !== $Usuario) {
+                    $CHAT->setVisto(1);
+                }
+                $em->persist($CHAT);
+            }
+            $em->flush();
+        }
+        return new JsonResponse($JsonResponse_data, 200);
+    }
+
+    /**
+     * @Route("/ciudadano/getChatComun", name="getChatComun")
+     */
+    public function getChatComunAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/getChatComun');
+        if (!$status) {
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "No autorizado";
+        }
+        $Usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+
+
+        $CHAT = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
+        if ($CHAT === null) {
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            return new JsonResponse($JsonResponse_data, 200);
+        }
+        $CHAT->setFechaUltimoMensaje(new \DateTime('now'));
+        $em->persist($CHAT);
+        $em->flush();
+
+        $query = $qb->select('cm')
+                ->from('\AppBundle\Entity\ChatMensajes', 'cm')
+                ->where('cm.idChat = :idChat')
+                ->orderBy('cm.fecha', 'ASC')
+                ->setParameters(array('idChat' => $CHAT))
+                ->setFirstResult(0);
+        $CHATS = $query->getQuery()->getResult();
+
+        if (!count($CHATS)) {
+            $JsonResponse_data["estado"] = "ERROR";
+            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
         } else {
             $JsonResponse_data["estado"] = "OK";
@@ -180,8 +244,9 @@ class CiudadanoController extends Controller {
             $Usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
             $Usuario2 = $request->request->get('id_usuario');
             $Distrito = $request->request->get('id_distrito');
+            $COMUN = $request->request->get('comun');
             $mensaje = $request->request->get('mensaje');
-            if ($Usuario2 !== "") {
+            if ($Usuario2) {
                 $receptor_usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($Usuario2);
                 $query = $qb->select('ch')
                         ->from('\AppBundle\Entity\Chat', 'ch')
@@ -189,15 +254,19 @@ class CiudadanoController extends Controller {
                         ->orWhere('ch.idUsuario1 = :receptor_usuario AND ch.idUsuario2 = :emisor')
                         ->orderBy('ch.fecha', 'ASC')
                         ->setParameters(array('emisor' => $Usuario, 'receptor_usuario' => $receptor_usuario));
-            } else if ($Distrito !== "") {
+            } else if ($Distrito) {
                 $distrito_chat = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByIdUsuarioDistrito($Distrito);
                 $query = $qb->select('ch2')
                         ->from('\AppBundle\Entity\Chat', 'ch2')
                         ->where('ch2.idDistrito = :receptor_distrito')
                         ->orderBy('ch2.fecha', 'ASC')
                         ->setParameters(array('receptor_distrito' => $distrito_chat));
+            } else if ($COMUN) {
+                $CHAT = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
             }
-            $CHAT = $query->getQuery()->getOneOrNullResult();
+            if (!$COMUN) {
+                $CHAT = $query->getQuery()->getOneOrNullResult();
+            }
             $fecha = new \DateTime('now');
 
             if ($CHAT === null) {

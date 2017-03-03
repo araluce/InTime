@@ -76,21 +76,8 @@
             <div class="col-md-12">
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="tab1">
-                        <legend>Publicar una nueva fase</legend>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <label for="ejercicio-distrito-bebida">Obligatoriedad de los ejercicios (opcionales por defecto)</label>
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        ¿Quiere marcar cada una de las opciones de esta fase como obligatorias?
-                                        <div class="material-switch pull-right">
-                                            <input id="ejercicio-obligatorio" type="checkbox"/>
-                                            <label for="ejercicio-obligatorio" class="label-primary"></label>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <legend>Fase actual</legend>
+                        <input type="hidden" id="id-ejercicio">
                         <div class="row">
                             <div class="col-lg-6">
                                 <svg viewBox="0 0 101 89" xmlns="http://www.w3.org/2000/svg"><path d="M78.67 13.62c0 1.38.24 2.7.73 3.92 1.93 4.3 5.32 6.47 10.16 6.47 1.3 0 2.67-.2 4.12-.7 4.35-1.8 6.53-5 6.53-9.6 0-1.2-.2-2.5-.7-3.9-1.9-4.1-5.2-6.2-9.9-6.2-1.3 0-2.6.25-4.1.7-4.5 1.86-6.8 5-6.8 9.48M9.2 86.58l34.62-33-7.5-7.18-34.62 33-.25.22C.5 80.56 0 81.72 0 83.1c0 2.77 1.37 4.4 4.12 4.85.48.15.9.23 1.2.23 1.46 0 2.67-.46 3.64-1.4l.24-.22m55.68-41.78c0 2.77 1.3 4.4 3.87 4.85.48.15.9.23 1.2.23h24.22c2.9 0 4.6-1.3 5.08-3.92.16-.47.24-.85.24-1.16 0-2.77-1.4-4.38-4.2-4.85-.5-.15-.9-.23-1.2-.23H75.2V29.55L64.63 39.7v4.85l.27.23m-8.3 16.4L37 65.1h-.5c-2.57.76-3.94 2.46-4.1 5.07 0 2.77 1.37 4.4 4.1 4.85.5.16.9.23 1.23.23l1.45-.23 29.3-6c2.57-.77 3.94-2.38 4.1-4.85-.16-1.54-.64-2.77-1.45-3.7l-.24-.22-21.1-20.08h-.3c-1.3-1.08-2.5-1.62-3.64-1.62-2.9 0-4.6 1.3-5.1 3.93-.16.46-.24.84-.24 1.15.16 1.7.8 3 1.94 3.93l14.08 13.6M67.3 24.7l.24.23c.97.93 2.18 1.4 3.63 1.4 2.74-.78 4.44-2.47 5.08-5.1 0-1.37-.48-2.53-1.45-3.45L57.62 1.38C56.65.5 55.44 0 53.98 0c-1.6.16-2.98.7-4.1 1.62l.23-.23-16.9 16.3H33c-.97 1.4-1.47 2.5-1.47 3.4 0 2.74 1.4 4.4 4.14 4.82.47.14.88.22 1.2.22 1.45-.17 2.74-.7 3.87-1.64L53.97 12 67.3 24.7" fill="#8996a3" fill-rule="evenodd"></path></svg>
@@ -140,7 +127,7 @@
                                                 <path d="M50.867.334C23.095.334.587 21.657.587 47.961c0 7.699 1.973 14.949 5.401 21.385a46.773 46.773 0 0 0 4.613 7.04 137.307 137.307 0 0 1 9.143-1.954c9.635-1.729 20.17-2.663 31.13-2.663 11.55 0 21.973 1.015 31.12 2.671 3.214.584 6.246 1.252 9.126 1.982a47.155 47.155 0 0 0 4.639-7.081c3.428-6.437 5.401-13.686 5.401-21.385C101.16 21.652 78.648.329 50.88.329m-2.514 44.45c-1.016.725-1.673 1.877-1.675 3.17 0 2.197 1.872 3.968 4.187 3.968 2.315 0 4.187-1.771 4.192-3.964 0-1.296-.658-2.447-1.675-3.172V27.112h-5.03v17.666M19.125 22.08c-5.68 6.247-9.345 14.181-10.03 22.89h6.168v5.954H9.096c.472 5.943 2.345 11.518 5.285 16.452 10.968-2.256 23.347-3.553 36.5-3.553 13.153 0 25.531 1.297 36.5 3.553 2.94-4.934 4.813-10.509 5.285-16.452h-5.912V44.97h5.913c-.685-8.709-4.351-16.644-10.03-22.89l-4.347 4.119-4.444-4.211 4.347-4.117c-6.595-5.38-14.973-8.852-24.17-9.501v5.844h-6.287V8.37c-9.194.649-17.572 4.121-24.17 9.501l4.347 4.117-4.444 4.211-4.347-4.119" transform="translate(0 0)" fill="#000000" fill-rule="evenodd"></path>
                                             </svg>
                                         </span>
-                                        <input type="number" id="publicar-velocidad-b" class="form-control input-number" value="0.00" min="0.00" max="100" step="0.01" />
+                                        <input type="number" id="publicar-ritmo-b" class="form-control input-number" value="0.00" min="0.00" max="100" step="0.01" />
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +183,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="publicarDeporte();">PUBLICAR</button>
+                        <button class="btn btn-block btn-default" style="margin-top: 1%;" onclick="modificarFase();">PUBLICAR</button>
                     </div>
                 </div>
             </div>
@@ -251,27 +238,29 @@
                 });
             }
         }
-        function modificarFase(id) {
-            var velocidad_b = parseFloat($("#velocidad-b"+ id).val());
-            var horas_b = parseInt($("#duracion_horas-b"+ id).val());
-            var minutos_b = parseInt($("#duracion_minutos-b"+ id).val());
-            var segundos_b = parseInt($("#duracion_segundos-b"+ id).val());
+        function modificarFase() {
+            var id = $('#id-ejercicio').val();
+            var ritmo_b = parseFloat($("#publicar-ritmo-b").val());
+            var horas_b = parseInt($("#publicar-duracion_horas-b").val());
+            var minutos_b = parseInt($("#publicar-duracion_minutos-b").val());
+            var segundos_b = parseInt($("#publicar-duracion_segundos-b").val());
             var tiempo_b = ((horas_b * 60) + minutos_b) * 60 + segundos_b;
-            var velocidad_c = parseFloat($("#velocidad-c"+ id).val());
-            var horas_c = parseInt($("#duracion_horas-c"+ id).val());
-            var minutos_c = parseInt($("#duracion_minutos-c"+ id).val());
-            var segundos_c = parseInt($("#duracion_segundos-c"+ id).val());
+            var velocidad_c = parseFloat($("#publicar-velocidad-c").val());
+            var horas_c = parseInt($("#publicar-duracion_horas-c").val());
+            var minutos_c = parseInt($("#publicar-duracion_minutos-c").val());
+            var segundos_c = parseInt($("#publicar-duracion_segundos-c").val());
             var tiempo_c = ((horas_c * 60) + minutos_c) * 60 + segundos_c;
-            var dias = parseInt($("#dias_beneficio"+ id).val());
-            var horas = parseInt($("#horas_beneficio"+ id).val());
-            var minutos = parseInt($("#minutos_beneficio"+ id).val());
-            var segundos = parseInt($("#segundos_beneficio"+ id).val());
+            var dias = parseInt($("#dias_beneficio").val());
+            var horas = parseInt($("#horas_beneficio").val());
+            var minutos = parseInt($("#minutos_beneficio").val());
+            var segundos = parseInt($("#segundos_beneficio").val());
             var tiempo = ((((dias * 24) + horas) * 60) + minutos) * 60 + segundos;
-            var obligatorio = $("#ejercicio-obligatorio"+ id +":checked").length;
-            if (isNaN(velocidad_c) || isNaN(velocidad_b)) {
-                alert("Formato incorrecto para velocidad. Ej: 2,4");
-            } else if (velocidad_c <= 0.00 || velocidad_b <= 0.00) {
-                alert('La velocidad debe ser mayor a cero');
+            
+            
+            if (isNaN(velocidad_c) || isNaN(ritmo_b)) {
+                alert("Formato incorrecto para velocidad/ritmo. Ej: 2,4");
+            } else if (velocidad_c <= 0.00 || ritmo_b <= 0.00) {
+                alert('La velocidad/ritmo debe ser mayor a cero');
             } else if (tiempo_c <= 0 || tiempo_b <= 0) {
                 alert('La sesión debe durar más de un segundo');
             } else if (tiempo <= 0) {
@@ -279,13 +268,11 @@
             } else {
                 ruta = '/guardian/ejercicios/deporte/modificarReto';
                 datos = {
-                    'VELOCIDAD_BICICLETA': velocidad_b,
+                    'RITMO_BICICLETA': ritmo_b,
                     'VELOCIDAD_RUNNING': velocidad_c,
                     'DURACION_BICICLETA': tiempo_b,
                     'DURACION_RUNNING': tiempo_c,
                     'BENEFICIO_FASE': tiempo,
-                    'FASE': contador,
-                    'OBLIGATORIO': obligatorio,
                     'ID': id
                 };
                 $.post(ruta, datos, function (data, status) {
@@ -316,31 +303,26 @@
                 datos = jQuery.parseJSON(data);
                 console.log(datos);
                 if (datos.estado === 'OK') {
+                    $("#id-ejercicio").val(datos.message.ID);
+                    $("#publicar-velocidad-c").val(datos.message.VELOCIDAD_RUN);
+                    $("#publicar-ritmo-b").val(datos.message.RITMO_BICI);
+                    $("#publicar-duracion_horas-c").val(datos.message.DURACION_RUN.horas);
+                    $("#publicar-duracion_minutos-c").val(datos.message.DURACION_RUN.minutos);
+                    $("#publicar-duracion_segundos-c").val(datos.message.DURACION_RUN.segundos);
+                    $("#publicar-duracion_horas-b").val(datos.message.DURACION_BICI.horas);
+                    $("#publicar-duracion_minutos-b").val(datos.message.DURACION_BICI.minutos);
+                    $("#publicar-duracion_segundos-b").val(datos.message.DURACION_BICI.segundos);
+                    $("#dias_beneficio").val(datos.message.BENEFICIO.dias);
+                    $("#horas_beneficio").val(datos.message.BENEFICIO.horas);
+                    $("#minutos_beneficio").val(datos.message.BENEFICIO.minutos);
+                    $("#segundos_beneficio").val(datos.message.BENEFICIO.segundos);
+                    /*
                     contenido = '';
                     $.each(datos.message, function (k, v) {
                         contenido += '<div class="row bordes border-radius" style="margin-top: 1%;">';
                         contenido += '<div class="col-lg-12">';
                         contenido += '<div class="tab-content">';
                         contenido += '  <div class="tab-pane fade in active" id="tab1">';
-                        contenido += '      <legend>FASE #' + contador + '</legend>';
-                        contenido += '      <div class="row">';
-                        contenido += '          <div class="col-lg-6">';
-                        contenido += '              <label for="ejercicio-distrito-bebida">Obligatoriedad de los retos (opcionales por defecto)</label>';
-                        contenido += '              <ul class="list-group">';
-                        contenido += '                  <li class="list-group-item">';
-                        contenido += '                      ¿Quiere marcar cada una de las opciones de esta fase como obligatorias?';
-                        contenido += '                      <div class="material-switch pull-right">';
-                        if (v[0].OBLIGATORIO) {
-                            contenido += '                          <input id="ejercicio-obligatorio' + v[0].ID + '" type="checkbox" checked/>';
-                        } else {
-                            contenido += '                          <input id="ejercicio-obligatorio' + v[0].ID + '" type="checkbox"/>';
-                        }
-                        contenido += '                          <label for="ejercicio-obligatorio' + v[0].ID + '" class="label-primary"></label>';
-                        contenido += '                      </div>';
-                        contenido += '                  </li>';
-                        contenido += '              </ul>';
-                        contenido += '          </div>';
-                        contenido += '      </div>';
                         contenido += '      <div class="row">';
                         contenido += '          <div class="col-lg-6">';
                         contenido += '              <svg viewBox="0 0 101 89" xmlns="http://www.w3.org/2000/svg"><path d="M78.67 13.62c0 1.38.24 2.7.73 3.92 1.93 4.3 5.32 6.47 10.16 6.47 1.3 0 2.67-.2 4.12-.7 4.35-1.8 6.53-5 6.53-9.6 0-1.2-.2-2.5-.7-3.9-1.9-4.1-5.2-6.2-9.9-6.2-1.3 0-2.6.25-4.1.7-4.5 1.86-6.8 5-6.8 9.48M9.2 86.58l34.62-33-7.5-7.18-34.62 33-.25.22C.5 80.56 0 81.72 0 83.1c0 2.77 1.37 4.4 4.12 4.85.48.15.9.23 1.2.23 1.46 0 2.67-.46 3.64-1.4l.24-.22m55.68-41.78c0 2.77 1.3 4.4 3.87 4.85.48.15.9.23 1.2.23h24.22c2.9 0 4.6-1.3 5.08-3.92.16-.47.24-.85.24-1.16 0-2.77-1.4-4.38-4.2-4.85-.5-.15-.9-.23-1.2-.23H75.2V29.55L64.63 39.7v4.85l.27.23m-8.3 16.4L37 65.1h-.5c-2.57.76-3.94 2.46-4.1 5.07 0 2.77 1.37 4.4 4.1 4.85.5.16.9.23 1.23.23l1.45-.23 29.3-6c2.57-.77 3.94-2.38 4.1-4.85-.16-1.54-.64-2.77-1.45-3.7l-.24-.22-21.1-20.08h-.3c-1.3-1.08-2.5-1.62-3.64-1.62-2.9 0-4.6 1.3-5.1 3.93-.16.46-.24.84-.24 1.15.16 1.7.8 3 1.94 3.93l14.08 13.6M67.3 24.7l.24.23c.97.93 2.18 1.4 3.63 1.4 2.74-.78 4.44-2.47 5.08-5.1 0-1.37-.48-2.53-1.45-3.45L57.62 1.38C56.65.5 55.44 0 53.98 0c-1.6.16-2.98.7-4.1 1.62l.23-.23-16.9 16.3H33c-.97 1.4-1.47 2.5-1.47 3.4 0 2.74 1.4 4.4 4.14 4.82.47.14.88.22 1.2.22 1.45-.17 2.74-.7 3.87-1.64L53.97 12 67.3 24.7" fill="#8996a3" fill-rule="evenodd"></path></svg>';
@@ -390,7 +372,7 @@
                         contenido += '                              <path d="M50.867.334C23.095.334.587 21.657.587 47.961c0 7.699 1.973 14.949 5.401 21.385a46.773 46.773 0 0 0 4.613 7.04 137.307 137.307 0 0 1 9.143-1.954c9.635-1.729 20.17-2.663 31.13-2.663 11.55 0 21.973 1.015 31.12 2.671 3.214.584 6.246 1.252 9.126 1.982a47.155 47.155 0 0 0 4.639-7.081c3.428-6.437 5.401-13.686 5.401-21.385C101.16 21.652 78.648.329 50.88.329m-2.514 44.45c-1.016.725-1.673 1.877-1.675 3.17 0 2.197 1.872 3.968 4.187 3.968 2.315 0 4.187-1.771 4.192-3.964 0-1.296-.658-2.447-1.675-3.172V27.112h-5.03v17.666M19.125 22.08c-5.68 6.247-9.345 14.181-10.03 22.89h6.168v5.954H9.096c.472 5.943 2.345 11.518 5.285 16.452 10.968-2.256 23.347-3.553 36.5-3.553 13.153 0 25.531 1.297 36.5 3.553 2.94-4.934 4.813-10.509 5.285-16.452h-5.912V44.97h5.913c-.685-8.709-4.351-16.644-10.03-22.89l-4.347 4.119-4.444-4.211 4.347-4.117c-6.595-5.38-14.973-8.852-24.17-9.501v5.844h-6.287V8.37c-9.194.649-17.572 4.121-24.17 9.501l4.347 4.117-4.444 4.211-4.347-4.119" transform="translate(0 0)" fill="#000000" fill-rule="evenodd"></path>';
                         contenido += '                          </svg>';
                         contenido += '                      </span>';
-                        contenido += '                      <input type="number" id="velocidad-b' + v[0].ID + '" class="form-control input-number" value="' + v[0].VELOCIDAD_BICI + '" min="0.00" max="100" step="0.01" />';
+                        contenido += '                      <input type="number" id="velocidad-b' + v[0].ID + '" class="form-control input-number" value="' + v[0].RITMO_BICI + '" min="0.00" max="100" step="0.01" />';
                         contenido += '                  </div>';
                         contenido += '              </div>';
                         contenido += '          </div>';
@@ -461,6 +443,7 @@
                         contador++;
                     });
                     $("#retos").html(contenido);
+                    */
                 }
             });
         }

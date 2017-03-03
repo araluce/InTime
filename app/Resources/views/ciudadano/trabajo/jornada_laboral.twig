@@ -6,6 +6,12 @@
 
 {% block stylesheets %}
     <style>
+        .titulo-xs{
+            display: block;
+        }
+        .separador-tweets{
+            border-top: 2px solid #000000;
+        }
         .tweet-perfil{
             padding-left: 5%; 
             padding-top: 1%;
@@ -26,9 +32,6 @@
             line-height: 40px; 
             font-weight: 400;
         }
-        .button-tweet-folders img{
-            height: 200px;
-        }
         .div-tweet-folders-mvl{
             display: block;
         }
@@ -38,7 +41,13 @@
         .btn-group img{
             height: 70px;
         }
-        .hidden-xs{
+        .panel-btn-seguir button{
+            border-width: 0px;
+        }
+        .panel-btn-seguir button img{
+            height: 100px;
+        }
+        .titulo-xs{
             font-size: 20px;
         }
         .input-group-btn .btn{
@@ -72,6 +81,53 @@
             height: 140px;
             width: auto;
         }
+        .compartir-alias{
+            font-size: 40px;
+            margin-right: 30px;
+        }
+        @media (max-width: 760px){
+            .tweet-perfil img{
+                width: 73px;
+                height: 73px;
+            }
+            .tweet-perfil p{
+                font-size: 13px;
+            }
+            .tweet-cuerpo p{
+                line-height: 22px; 
+                font-size: 16px;
+            }
+            .button-tweet-folders-comp img,
+            .button-tweet-folders img{
+                height: 75px;
+            }
+            .div-tweet-folders-mvl{
+                display: none;
+            }
+            .div-tweet-folders-comp{
+                display: block;
+            }
+            .btn-group img{
+                height: 31px;
+            }
+            .panel-btn-seguir button img{
+                height: 47px;
+            }
+            .btn-group-tweet img{
+                height: 70px;
+                width: auto;
+            }
+            .panel-seguir{
+                margin-top: 1%;
+            }
+            .compartir-alias{
+                font-size: 20px;
+                margin-right: 15px;
+            }
+            .titulo-xs{
+                font-size: 15px;
+            }
+        }
         @media (min-width: 1200px){
             .tweet-perfil img{
                 width: 73px;
@@ -97,15 +153,22 @@
             .btn-group img{
                 height: 31px;
             }
+            .panel-btn-seguir button img{
+                height: 31px;
+            }
             .btn-group-tweet img{
                 height: 70px;
                 width: auto;
             }
-            .hidden-xs{
+            .titulo-xs{
                 font-size: 20px;
             }
             .panel-seguir{
                 margin-top: 0%;
+            }
+            .compartir-alias{
+                font-size: 20px;
+                margin-right: 15px;
             }
         }
     </style>
@@ -115,7 +178,7 @@
 {% block body %}
     <div class="container">
         <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal_compartir" id="modal_compartir_button" style="display:none;"></button>
-        <div class="modal fade" id="modal_compartir">
+        <div class="modal modal-advice" id="modal_compartir">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -131,37 +194,37 @@
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-primary btn13 btn-menu-first" id="menu-primer" href="#tab1" data-toggle="tab">
                         <span class="fa fa-twitter" aria-hidden="true"></span>
-                        <div class="hidden-xs">TWITTER</div>
+                        <div class="titulo-xs">TWITTER</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn13" id="menu-segun" href="#tab2" data-toggle="tab" onclick="descargarMochila(1);">
                         <img src="{{ asset('images/iconos/Twitter/Carpeta_Texto.png') }}"/>
-                        <div class="hidden-xs">TEXTO</div>
+                        <div class="titulo-xs">TEXTO</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn13" href="#tab3" data-toggle="tab" onclick="descargarMochila(2);">
                         <img src="{{ asset('images/iconos/Twitter/Carpeta_audiovisual.png') }}"/>
-                        <div class="hidden-xs">AUDIOVISUAL</div>
+                        <div class="titulo-xs">AUDIOVISUAL</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn13" href="#tab4" data-toggle="tab" onclick="descargarMochila(3);">
                         <img src="{{ asset('images/iconos/Twitter/Carpeta_herramientas.png') }}"/>
-                        <div class="hidden-xs">HERRAMIENTAS</div>
+                        <div class="titulo-xs">HERRAMIENTAS</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn13" href="#tab5" data-toggle="tab" onclick="descargarMochila(4);">
                         <img src="{{ asset('images/iconos/Twitter/Carpeta_compartir.png') }}"/>
-                        <div class="hidden-xs">COMPARTIDOS</div>
+                        <div class="titulo-xs">COMPARTIDOS</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn4 btn-menu-last" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
-                        <div class="hidden-xs">ATRÁS</div>
+                        <div class="titulo-xs">ATRÁS</div>
                     </button>
                 </div>
             </div>
@@ -230,27 +293,37 @@
                 'alias_usu_dest': alias_usu_dest,
                 'text_tweet': tweet
             };
-            console.log(datos);
             var url = '/ciudadano/trabajo/jornada_laboral/almacenarTweet';
             $.post(url, datos, function (datos) {
                 data = jQuery.parseJSON(datos);
-                console.log(data);
-                if (data.estado !== 'OK') {
-                    alert(data.message);
-                }
+                alert(data.message);
             });
         }
         function aniadeIdTweet(id_tweet) {
-            var ruta = '/ciudadano/trabajo/jornada_laboral/getAlias';
+            var ruta = '/ciudadano/ocio/altruismo/getCiudadanosDonar';
             $.get(ruta, function (datos) {
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     contenido = '';
-                    contenido += '<input type="hidden" id="modal-id-tweet" value="' + id_tweet + '" />';
-                    contenido += '<div class="checkbox">';
-                    $.each(data.message, function (k, v) {
-                        contenido += '    <label><input type="checkbox" onclick="getUsuarioACompartir(' + v.ID + ');" name="share_list" id="share_list">' + v.ALIAS + '</label>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      <legend>Comparte este tweet con tus compañeros</legend>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      <select class="custom-select" id="selector_ciudadanos">';
+                    contenido += '          <option selected value="0">Selecciona a un ciudadano</option>';
+                    $.each(data.message.CIUDADANOS, function (k, v) {
+                        contenido += '<option value="' + v.ID + '">@' + v.ALIAS + '</option>';
                     });
+                    contenido += '      </select>';
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row" style="margin-top:2%;">';
+                    contenido += '  <div class="col-xs-6 col-xs-offset-3">';
+                    contenido += '      <button class="btn btn-block btn-primary" onclick="getUsuarioACompartir(' + id_tweet + ')"> COMPARTIR </button>';
+                    contenido += '  </div>';
                     contenido += '</div>';
                     $('#modal-usuarios').html(contenido);
                 } else {
@@ -259,9 +332,13 @@
             });
             $('#modal_compartir_button').click();
         }
-        function getUsuarioACompartir(usuario_compartir) {
-            id_tweet = $('#modal-id-tweet').val();
-            almacenarTweet(id_tweet, 4, usuario_compartir);
+        function getUsuarioACompartir(id_tweet) {
+            usuario_compartir = $("#selector_ciudadanos").val();
+            if (usuario_compartir === "0") {
+                alert('No se ha seleccionado ningun ciudadano');
+            } else {
+                almacenarTweet(id_tweet, 4, usuario_compartir);
+            }
             $('#modal_compartir').modal('toggle');
         }
         function descargarSeguidos() {
@@ -359,7 +436,7 @@
                         contenido += '      </div>';
                         contenido += '  </div>';
                         contenido += '</div>';
-                        contenido += '<hr>';
+                        contenido += '<hr class="separador-tweets">';
                         contador_tweet++;
                     });
                     $('#principal-tweets').html(contenido);
@@ -445,7 +522,7 @@
             $('.btn4').height(max);
         }
         $(document).ready(function () {
-        {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
+            {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");

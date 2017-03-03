@@ -12,16 +12,8 @@
     <field name="tipo" type="string" column="tipo" length="1000" nullable="false"/>
     <field name="duracion" type="integer" column="duracion" nullable="false"/>
     <field name="distancia" type="integer" column="distancia" nullable="false"/>
-    <field name="paso" type="integer" column="paso" nullable="false"/>
+    <field name="ritmo" type="float" column="ritmo" precision="10" scale="0" nullable="false"/>
     <field name="velocidad" type="float" column="velocidad" precision="10" scale="0" nullable="false"/>
-    <field name="kcal" type="integer" column="kcal" nullable="false"/>
-    <field name="ritmoCardiacoMedio" type="integer" column="ritmo_cardiaco_medio" nullable="false"/>
-    <field name="ritmoCardiacoMax" type="integer" column="ritmo_cardiaco_max" nullable="false"/>
-    <field name="desnivel" type="integer" column="desnivel" nullable="false"/>
-    <field name="perdidaNivel" type="integer" column="perdida_nivel" nullable="false"/>
-    <field name="superficie" type="string" column="superficie" length="1000" nullable="true"/>
-    <field name="tiempo" type="string" column="tiempo" length="1000" nullable="true"/>
-    <field name="sensacion" type="string" column="sensacion" length="1000" nullable="true"/>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
     <many-to-one field="idUsuarioRuntastic" target-entity="UsuarioRuntastic">
       <join-columns>

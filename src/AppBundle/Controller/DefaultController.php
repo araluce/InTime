@@ -41,7 +41,13 @@ class DefaultController extends Controller {
             $KEY = $request->request->get('KEY');
 
             $doctrine = $this->getDoctrine();
-            $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
+            $patronAlias = "/[@]{1}/";
+            if (preg_match($patronAlias, $DNI, $coincidencia, PREG_OFFSET_CAPTURE)) {
+                $ALIAS = strtolower(str_replace('@', '', $DNI));
+                $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($ALIAS);
+            } else {
+                $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($DNI);
+            }
 
             if ($usuario !== null && $usuario->getClave() === Usuario::encriptar($usuario, $KEY)) {
                 //Crear sesión para el usuario logueado
@@ -76,7 +82,7 @@ class DefaultController extends Controller {
         $session->remove('id_usuario');
         return new RedirectResponse('/');
     }
-    
+
     /**
      * @Route("ciudadano/trabajo/service/show_tweet/{id_mochila}", name="showTweet")
      */
@@ -123,7 +129,7 @@ class DefaultController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
-        if(!DataManager::infoUsu($doctrine, $session)){
+        if (!DataManager::infoUsu($doctrine, $session)) {
             return new RedirectResponse('/ciudadano/info');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Trabajo', $session);
@@ -140,7 +146,7 @@ class DefaultController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
-        if(!DataManager::infoUsu($doctrine, $session)){
+        if (!DataManager::infoUsu($doctrine, $session)) {
             return new RedirectResponse('/ciudadano/info');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Ocio', $session);
@@ -688,14 +694,14 @@ class DefaultController extends Controller {
      * 
      * @Route("/comprobarInformacionPersonal")
      */
-    public function comprobarInformacionAction(Request $request){
+    public function comprobarInformacionAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         return Usuario::comprobarInformacionPersonalJSON($USUARIO);
     }
-    
+
     public function inicio_usuario($usuario, $session) {
         $rol_usu = $usuario->getIdRol()->getIdRol();
 
@@ -727,4 +733,5 @@ class DefaultController extends Controller {
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
     }
+
 }
