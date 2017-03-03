@@ -206,7 +206,7 @@
                     $('#propuestas').html();
                     contenido = '';
                     $.each(data.message, function (k, v) {
-                        $('#por' + v.FASE).html('FASE ' + v.FASE + ': <b>' + v.PORCENTAJE + '%</b>');
+                        $('#por' + v.FASE).html('PROPUESTA ' + v.FASE + ': <b>' + v.PORCENTAJE + '%</b>');
                         $('#barraf' + v.FASE).css('width', v.PORCENTAJE + '%');
                         restante = 25 - v.PORCENTAJE;
                         if (restante !== 25) {

@@ -316,6 +316,7 @@
             $('#tab1').html('');
             $('#tab2').html('');
             $('#tab3').html('');
+            $('#tab5').html(''); // Limpia el feedback
             var ruta = '/ciudadano/trabajo/getEjerciciosPaga';
             $.get(ruta, function (datos) {
                 data = jQuery.parseJSON(datos);
@@ -517,16 +518,18 @@
             contenido += '           </div>';
             contenido += '       </div>';
             contenido += '   </div>';
+            getCalificacion(v.ID);
+            /*
             contenido += '   <div class="row">';
             contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" onclick="getCalificacion(' + v.ID + ');" href="#tab5" data-toggle="tab">';
             contenido += '          CALIFICACIÓN';
             contenido += '      </button>';
             contenido += '   </div>';
+            */
             contenido += '</div>';
-            $('#tab3').append(contenido);
+            //$('#tab3').append(contenido);
         }
         function getCalificacion(idEjercicio) {
-            $('#tab5').html('');
             ruta = '/ciudadano/trabajo/paga/obtenerCalificacion';
             datos = {'id_ejercicio': idEjercicio};
             $.post(ruta, datos, function (datos) {
@@ -534,12 +537,14 @@
                 if (data.estado === 'OK') {
                     console.log(data.message);
                     contenido = '';
+                    contenido += '<div class="col-lg-6">';
                     contenido += '<div class="row bordes border-radius">';
                     contenido += '<legend style="text-align: center;">' + data.message.TITULO + '</legend>';
                     contenido += '<center><img src="{{ asset('images/badges/') }}' + data.message.ICONO + '" id="img-calificacion"/></center>';
                     contenido += '<center><h1>' + data.message.TEXTO + '</h1></center>';
                     contenido += '</div>';
-                    $('#tab5').html(contenido);
+                    contenido += '</div>';
+                    $('#tab3').append(contenido);
                 } else {
 
                 }

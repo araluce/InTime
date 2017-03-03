@@ -708,6 +708,9 @@ legend{
 .file-caption-main .input-group-btn a{
     height: 85px;
 }
+.digit{
+    font-family: "Kimberley";
+}
 
 /** MEDIA **/
 @media (max-width: 760px){

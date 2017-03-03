@@ -145,11 +145,10 @@
                                 Tipo de interés aplicable: <span id="interes"></span>
                             </p>
                             <div class="row after-slider" style="margin-top: 1%;">
-                                <!--
                                 <div class="col-xs-3">
                                     <div class="row">
                                         <div class="input-group">
-                                            <input type="number" id="dias" class="form-control input-number" value="0" min="0" max="100" />
+                                            <input type="number" id="dias" class="form-control input-number digit" value="0" min="0" max="100" />
                                             <span class="input-group-addon">d</span>
                                         </div>
                                     </div>
@@ -157,7 +156,7 @@
                                 <div class="col-xs-3">
                                     <div class="row">
                                         <div class="input-group">
-                                            <input type="number" id="horas" class="form-control input-number" value="0" min="0" max="24" />
+                                            <input type="number" id="horas" class="form-control input-number digit" value="0" min="0" max="24" />
                                             <span class="input-group-addon">h</span>
                                         </div>
                                     </div>
@@ -165,7 +164,7 @@
                                 <div class="col-xs-3">
                                     <div class="row">
                                         <div class="input-group">
-                                            <input type="number" id="minutos" class="form-control input-number" value="0" min="0" max="60" />
+                                            <input type="number" id="minutos" class="form-control input-number digit" value="0" min="0" max="60" />
                                             <span class="input-group-addon">m</span>
                                         </div>
                                     </div>
@@ -173,13 +172,12 @@
                                 <div class="col-xs-3">
                                     <div class="row">
                                         <div class="input-group">
-                                            <input type="number" id="segundos" class="form-control input-number" value="0" min="0" max="60" />
+                                            <input type="number" id="segundos" class="form-control input-number digit" value="0" min="0" max="60" />
                                             <span class="input-group-addon">s</span>
                                         </div>
                                     </div>
                                 </div>
-                                -->
-
+                                <!--
                                 <div class="col-xs-3">
                                     <div class="input-group">
                                         <input type="number" id="dias" class="form-control" value="0" disabled/>
@@ -208,6 +206,7 @@
                                     </div>
                                     <input id="slider-segundos" style="margin-top: 2%;" type="number" data-slider-id="SS" data-slider-min="0" data-slider-max="59" data-slider-step="1" data-slider-value="0"/>
                                 </div>
+                                -->
                             </div>
                             <div class="row" id='botones-solicitud'> </div>
                         </div>
@@ -223,54 +222,56 @@
 
 {% block javascripts %}
     <script>
-        var dias = {'dias': 0, 'horas': 0, 'minutos': 0, 'segundos': 0};
-        var TIEMPO_MAX_PRESTADO = 0;
-        var TIEMPO_MAX_PRESTADO_FORMATO = {'dias': 0, 'horas': 0, 'minutos': 0, 'segundos': 0};
-        $("#slider-dias").slider();
-        $("#slider-dias").on("slide", function (slideEvt) {
-            dias['dias'] = slideEvt.value;
-            $("#dias").val(dias['dias']);
-            if (dias['dias'] === 7) {
-                $("#horas").val(0);
-                $("#minutos").val(0);
-                $("#segundos").val(0);
-                dias['horas'] = 0;
-                dias['minutos'] = 0;
-                dias['segundos'] = 0;
-            }
-        });
-        $("#slider-horas").slider();
-        $("#slider-horas").on("slide", function (slideEvt) {
-            if (dias['dias'] < 7) {
-                dias['horas'] = slideEvt.value;
-                $("#horas").val(dias['horas']);
-            }
-        });
-        $("#slider-minutos").slider();
-        $("#slider-minutos").on("slide", function (slideEvt) {
-            if (dias['dias'] < 7) {
-                dias['minutos'] = slideEvt.value;
-                $("#minutos").val(dias['minutos']);
-            }
-        });
-        $("#slider-segundos").slider();
-        $("#slider-segundos").on("slide", function (slideEvt) {
-            if (dias['dias'] < 7) {
-                dias['segundos'] = slideEvt.value;
-                $("#segundos").val(dias['segundos']);
-            }
-        });
+        /*
+         var dias = {'dias': 0, 'horas': 0, 'minutos': 0, 'segundos': 0};
+         var TIEMPO_MAX_PRESTADO = 0;
+         var TIEMPO_MAX_PRESTADO_FORMATO = {'dias': 0, 'horas': 0, 'minutos': 0, 'segundos': 0};
+         $("#slider-dias").slider();
+         $("#slider-dias").on("slide", function (slideEvt) {
+         dias['dias'] = slideEvt.value;
+         $("#dias").val(dias['dias']);
+         if (dias['dias'] === 7) {
+         $("#horas").val(0);
+         $("#minutos").val(0);
+         $("#segundos").val(0);
+         dias['horas'] = 0;
+         dias['minutos'] = 0;
+         dias['segundos'] = 0;
+         }
+         });
+         $("#slider-horas").slider();
+         $("#slider-horas").on("slide", function (slideEvt) {
+         if (dias['dias'] < 7) {
+         dias['horas'] = slideEvt.value;
+         $("#horas").val(dias['horas']);
+         }
+         });
+         $("#slider-minutos").slider();
+         $("#slider-minutos").on("slide", function (slideEvt) {
+         if (dias['dias'] < 7) {
+         dias['minutos'] = slideEvt.value;
+         $("#minutos").val(dias['minutos']);
+         }
+         });
+         $("#slider-segundos").slider();
+         $("#slider-segundos").on("slide", function (slideEvt) {
+         if (dias['dias'] < 7) {
+         dias['segundos'] = slideEvt.value;
+         $("#segundos").val(dias['segundos']);
+         }
+         });
+         */
         function solicitarPrestamo(bonificacion) {
+            var dias_p = parseInt($("#dias").val());
+            var horas_p = parseInt($("#horas").val());
+            var minutos_p = parseInt($("#minutos").val());
+            var segundos_p = parseInt($("#segundos").val());
             /*
-             var dias = parseInt($("#dias").val());
-             var horas = parseInt($("#horas").val());
-             var minutos = parseInt($("#minutos").val());
-             var segundos = parseInt($("#segundos").val());
+             var dias_p = dias['dias'];
+             var horas_p = dias['horas'];
+             var minutos_p = dias['minutos'];
+             var segundos_p = dias['segundos'];
              */
-            var dias_p = dias['dias'];
-            var horas_p = dias['horas'];
-            var minutos_p = dias['minutos'];
-            var segundos_p = dias['segundos'];
             tiempo = (((((dias_p * 24) + horas_p) * 60) + minutos_p) * 60 + segundos_p);
             if (tiempo <= 0) {
                 mensaje = '<div class="metronomista col-lg-4">';
@@ -304,7 +305,7 @@
                 $('#modal-avisos2').click();
             } else {
                 var ruta = '/ciudadano/prestamos/solicitarPrestamo';
-                var datos = { 'tiempo': tiempo, 'bonificacion': bonificacion };
+                var datos = {'tiempo': tiempo, 'bonificacion': bonificacion};
                 $.post(ruta, datos, function (data, status) {
                     mensaje = '<div class="metronomista col-lg-4">';
                     mensaje += '  <center><img src="{{ asset('images/generic/personajes/Metronomista.png') }}"></center>';
@@ -403,7 +404,7 @@
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
     </script>
 {% endblock %}
