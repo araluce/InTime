@@ -113,6 +113,7 @@
                         <div class="row tab-pane fade in" id="tab5">
                             <input id="entrega-distrito" name="entrega" type="file" multiple class="file-loading">
                         </div>
+                        <div class="row tab-pane fade in" id="tab6"></div>
                     </div>
                 </div>
             </div>
@@ -318,6 +319,10 @@
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
+                    arrayLinks = getEnlaces(data.message.ENUNCIADO);
+                    $.each(arrayLinks, function (k, v) {
+                        contenido += '          <p><a href="' + v + '">' + v + '</a></p>';
+                    });
                     contenido += '  </div>';
                     contenido += '</div>';
                     contenido += '<div class="row">';
@@ -351,7 +356,7 @@
                     } else if (data.message.ES_DISTRITO && ya_solicitado_distrito) {
                         contenido += '      <p class="detalle-enunciado" style="text-align:center; color: red; min-height: 0px;">Ya hay un reto de distrito pendiente de entrega. Al menos un ciudadano de su distrito debe entregar para poder solicitar otro.</p>';
                     } else {
-                        contenido += '      <button class="btn btn.primary detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                        contenido += '      <button class="btn btn-primary btn-block detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
                         contenido += '          SOLICITAR';
                         contenido += '      </button>';
                     }
@@ -403,15 +408,42 @@
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
+                    arrayLinks = getEnlaces(data.message.ENUNCIADO);
+                    $.each(arrayLinks, function (k, v) {
+                        contenido += '          <p><a href="' + v + '">' + v + '</a></p>';
+                    });
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 detalle-coste">';
+                    contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                    if (data.message.COSTE.dias !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.dias + '</span>d&nbsp;';
+                    }
+                    if (data.message.COSTE.horas !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.horas + '</span>h&nbsp;';
+                    }
+                    if (data.message.COSTE.minutos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.minutos + '</span>m&nbsp;';
+                    }
+                    if (data.message.COSTE.segundos !== 0) {
+                        contenido += '<span style="color:red;">' + data.message.COSTE.segundos + '</span>s&nbsp;';
+                    }
+                    if (!data.message.COSTE.segundos &&
+                            !data.message.COSTE.minutos &&
+                            !data.message.COSTE.horas &&
+                            !data.message.COSTE.dias) {
+                        contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                    }
                     contenido += '  </div>';
                     contenido += '</div>';
                     if (!rest_soli) {
                         contenido += '  <div class="row">';
                         contenido += '      <div class="col-md-12">';
                         if (!data.message.ES_DISTRITO) {
-                            contenido += '          <button class="btn detalle-boton" href="#tab4" data-toggle="tab" onclick="setId(' + id + ')">';
+                            contenido += '          <button class="btn btn-block btn-primary detalle-boton" href="#tab4" data-toggle="tab" onclick="setId(' + id + ')">';
                         } else {
-                            contenido += '          <button class="btn detalle-boton" href="#tab5" data-toggle="tab" onclick="setId(' + id + ')">';
+                            contenido += '          <button class="btn btn-block btn-primary detalle-boton" href="#tab5" data-toggle="tab" onclick="setId(' + id + ')">';
                         }
                         contenido += '              ENTREGAR';
                         contenido += '          </button>';
@@ -424,7 +456,7 @@
                         contenido += '  <p>Quedan ' + rest_soli + ' por solicitar</p>';
                         contenido += '  </div>';
                         contenido += '      <div class="col-md-12">';
-                        contenido += '          <button class="btn btn-primary detalle-boton" onclick="retirarSolicitud(' + id + ')">';
+                        contenido += '          <button class="btn btn-block btn-primary detalle-boton" onclick="retirarSolicitud(' + id + ')">';
                         contenido += '              RETIRAR SOLICITUD';
                         contenido += '          </button>';
                         contenido += '      </div>';
@@ -477,6 +509,10 @@
                     contenido += '<div class="row">';
                     contenido += '  <div class="col-md-12 detalle-enunciado">';
                     contenido += '      ' + data.message.ENUNCIADO;
+                    arrayLinks = getEnlaces(data.message.ENUNCIADO);
+                    $.each(arrayLinks, function (k, v) {
+                        contenido += '          <p><a href="' + v + '">' + v + '</a></p>';
+                    });
                     contenido += '  </div>';
                     contenido += '</div>';
                     contenido += '<div class="row">';
@@ -506,13 +542,18 @@
                     contenido += '  <div class="col-md-12">';
                     if (!ya_solicitado_individual) {
                         if (data.message.ESTADO !== 'entregado') {
-                            contenido += '      <button class="btn btn-primary detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
+                            contenido += '      <button class="btn btn-block btn-primary detalle-boton" onclick="solicitar(' + data.message.ID + ');">';
                             contenido += '          VOLVER A SOLICITAR';
                         }
                         contenido += '      </button>';
                     } else {
-                        contenido += '      <button class="btn btn-primary detalle-boton disabled" title="YA HAY UN RETO SOLICITADO">';
+                        contenido += '      <button class="btn btn-block btn-primary detalle-boton disabled" title="YA HAY UN RETO SOLICITADO">';
                         contenido += '          VOLVER A SOLICITAR';
+                        contenido += '      </button>';
+                    }
+                    if (data.message.ESTADO === 'evaluado') {
+                        contenido += '      <button class="btn btn-block btn-primary detalle-boton" href="#tab6" data-toggle="tab" onclick="getCalificacion(' + data.message.ID + ');">';
+                        contenido += '          VER CALIFICACIÓN';
                         contenido += '      </button>';
                     }
                     contenido += '  </div>';
@@ -531,6 +572,26 @@
             $.get(ruta, function (data, status) {
                 var respuesta = jQuery.parseJSON(data);
                 mostrarResultadoOperacion(respuesta.message);
+            });
+        }
+        function getCalificacion(idEjercicio) {
+            ruta = '/ciudadano/trabajo/alimentacion/obtenerCalificacion';
+            datos = {'id_ejercicio': idEjercicio};
+            $.post(ruta, datos, function (datos) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    console.log(data.message);
+                    contenido = '';
+                    contenido += '<div class="col-lg-12">';
+                    contenido += '<div class="row bordes border-radius">';
+                    contenido += '<center><img src="{{ asset('images/badges/') }}' + data.message.ICONO + '" id="img-calificacion"/></center>';
+                    contenido += '<center><h1>' + data.message.TEXTO + '</h1></center>';
+                    contenido += '</div>';
+                    contenido += '</div>';
+                    $('#tab6').html(contenido);
+                } else {
+                    alert(data.message);
+                }
             });
         }
         function mostrarCarga(texto) {

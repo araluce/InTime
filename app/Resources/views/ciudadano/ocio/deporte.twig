@@ -428,18 +428,18 @@
                         contenido += '                                    <div class="media__body value-label-list__label">';
                         if (v.TIPO === 'running') {
                             contenido += '                                        <h4 class="text-bold  text-no-margin">';
-                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
-                            contenido += '                                        </h4>';
-                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
-                            contenido += '                                            Velocidad media';
-                            contenido += '                                        </h3>';
-                        }
-                        if (v.TIPO === 'cycling') {
-                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
                             contenido += '                                            ' + v.RITMO + ' min/km';
                             contenido += '                                        </h4>';
                             contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
                             contenido += '                                            Ritmo medio';
+                            contenido += '                                        </h3>';
+                        }
+                        if (v.TIPO === 'cycling') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Velocidad media';
                             contenido += '                                        </h3>';
                         }
                         contenido += '                                    </div>';
@@ -559,10 +559,10 @@
                             contenido += '                  </h4>';
                             contenido += '                  <h3 class="text-additional-info  text-no-margin">';
                             if (v.TIPO === 'running') {
-                                contenido += '                      La velocidad media de esta sesión es insuficiente para esta fase.';
+                                contenido += '                      El ritmo medio de esta sesión es insuficiente para esta fase.';
                             }
                             if (v.TIPO === 'cycling') {
-                                contenido += '                      El ritmo medio de esta sesión es insuficiente para esta fase.';
+                                contenido += '                      La velocidad media de esta sesión es insuficiente para esta fase.';
                             }
                             contenido += '                  </h3>';
                             contenido += '              </div>';
@@ -580,18 +580,18 @@
                         contenido += '                                    <div class="media__body value-label-list__label">';
                         if (v.TIPO === 'running') {
                             contenido += '                                        <h4 class="text-bold  text-no-margin">';
-                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
-                            contenido += '                                        </h4>';
-                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
-                            contenido += '                                            Velocidad media';
-                            contenido += '                                        </h3>';
-                        }
-                        if (v.TIPO === 'cycling') {
-                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
                             contenido += '                                            ' + v.RITMO + ' min/km';
                             contenido += '                                        </h4>';
                             contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
                             contenido += '                                            Ritmo medio';
+                            contenido += '                                        </h3>';
+                        }
+                        if (v.TIPO === 'cycling') {
+                            contenido += '                                        <h4 class="text-bold  text-no-margin">';
+                            contenido += '                                            ' + v.VELOCIDAD + ' km/h';
+                            contenido += '                                        </h4>';
+                            contenido += '                                        <h3 class="text-additional-info  text-no-margin">';
+                            contenido += '                                            Velocidad media';
                             contenido += '                                        </h3>';
                         }
                         contenido += '                                    </div>';

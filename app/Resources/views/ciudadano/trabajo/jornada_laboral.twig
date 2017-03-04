@@ -240,7 +240,7 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="input-group panel-seguir">
-                                    <span class="input-group-addon">@</span>
+                                    <span class="input-group-addon"><a href="https://twitter.com/">@</a></span>
                                     <input type="text" class="form-control" id="input-seguir" placeholder="usuario" aria-describedby="basic-addon1">
                                     <span class="input-group-btn">
                                         <button class="btn btn-primary btn-menu-last" id="button-seguir">SEGUIR</button>
@@ -389,6 +389,10 @@
                         contenido += '      <div class="row tweet-cuerpo">';
                         contenido += '          <div class="col-xs-11">';
                         contenido += '              <p>' + v.TWEET + '</p>';
+                        arrayLinks = getEnlaces(v.TWEET); 
+                        $.each(arrayLinks, function (lk, lv) {
+                            contenido += '          <p><a href="'+lv+'">'+lv+'</a></p>';
+                        });
                         if (v.FOTO) {
                             $.each(v.FOTOS, function (fk, fv) {
                                 contenido += '      <div class="col-lg-6 col-lg-offset-3">';

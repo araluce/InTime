@@ -304,8 +304,8 @@
                 console.log(datos);
                 if (datos.estado === 'OK') {
                     $("#id-ejercicio").val(datos.message.ID);
-                    $("#publicar-velocidad-c").val(datos.message.VELOCIDAD_RUN);
-                    $("#publicar-ritmo-b").val(datos.message.RITMO_BICI);
+                    $("#publicar-velocidad-c").val(datos.message.RITMO_RUN);
+                    $("#publicar-ritmo-b").val(datos.message.VELOCIDAD_BICI);
                     $("#publicar-duracion_horas-c").val(datos.message.DURACION_RUN.horas);
                     $("#publicar-duracion_minutos-c").val(datos.message.DURACION_RUN.minutos);
                     $("#publicar-duracion_segundos-c").val(datos.message.DURACION_RUN.segundos);

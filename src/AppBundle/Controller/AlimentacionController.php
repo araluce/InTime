@@ -88,6 +88,34 @@ class AlimentacionController extends Controller {
         Alimentacion::getDatosAlimentacion($doctrine, $USUARIO, $DATOS, $SECCION);
         return $this->render('ciudadano/alimentacion/bebida.twig', $DATOS);
     }
+    
+    /**
+     * @Route("/ciudadano/trabajo/alimentacion/obtenerCalificacion", name="obtenerCalificacionAlimentacion")
+     */
+    public function obtenerCalificacionAlimentacionAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/alimentacion/obtenerCalificacion');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+            $id_ejercicio = $request->request->get('id_ejercicio');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+            if (null === $EJERCICIO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El ejercicio no existe ' . $id_ejercicio)), 200);
+            }
+            $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+            ]);
+            $DATOS = [];
+            $DATOS['ICONO'] = $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
+            $DATOS['TEXTO'] = $EJERCICIO_CALIFICACION->getIdCalificaciones()->getCorrespondenciaTexto();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han recibido datos')), 200);
+    }
 
     /**
      * 

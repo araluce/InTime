@@ -155,7 +155,6 @@ class RuntasticController extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
         }
         $fase_min = 1000;
-        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
         $RETO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
 //        $RETO = Ejercicio::getFase($doctrine, $USUARIO);
         
@@ -207,7 +206,7 @@ class RuntasticController extends Controller {
                     ->setParameters(['username' => $usuario_runtastic, 'Usuario' => $USUARIO]);
             $UR = $query->getQuery()->getResult();
             if (count($UR)) {
-                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Un ciudadano de Intime está usando actualmente esta cuenta'), 200);
+                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Un ciudadano del Gueto de Feni está usando actualmente esta cuenta'), 200);
             }
             $r = new Runtastic();
             $r->setUsername($usuario_runtastic)->setPassword($password_runtastic);
@@ -386,9 +385,9 @@ class RuntasticController extends Controller {
         if ($request->getMethod() == 'POST') {
             $em = $doctrine->getManager();
             // Obtenemos todos los enunciados del formulario
-            $RITMO_BICI = $request->request->get('VELOCIDAD_BICICLETA');
+            $VELOCIDAD_BICI = $request->request->get('VELOCIDAD_BICICLETA');
             $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
-            $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
+            $RITMO_RUN = $request->request->get('VELOCIDAD_RUNNING');
             $DURACION_RUN = $request->request->get('DURACION_RUNNING');
             $BENEFICIO = $request->request->get('BENEFICIO_FASE');
             $FASE = $request->request->get('FASE');
@@ -415,8 +414,8 @@ class RuntasticController extends Controller {
             $FASE_BICI = new \AppBundle\Entity\EjercicioRuntastic();
             $FASE_BICI->setDuracion($DURACION_BICI);
             $FASE_BICI->setTipo('cycling');
-            $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
-            $FASE_BICI->setRitmo($RITMO_BICI);
+            $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+            $FASE_BICI->setRitmo($RITMO_RUN);
             $FASE_BICI->setFecha(new \DateTime('now'));
             $FASE_BICI->setIdEjercicio($EJERCICIO);
             $FASE_BICI->setOpcional(1);
@@ -425,8 +424,8 @@ class RuntasticController extends Controller {
             $FASE_RUN = new \AppBundle\Entity\EjercicioRuntastic();
             $FASE_RUN->setDuracion($DURACION_RUN);
             $FASE_RUN->setTipo('running');
-            $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
-            $FASE_RUN->setRitmo($RITMO_BICI);
+            $FASE_RUN->setVelocidad($VELOCIDAD_BICI);
+            $FASE_RUN->setRitmo($RITMO_RUN);
             $FASE_RUN->setFecha(new \DateTime('now'));
             $FASE_RUN->setIdEjercicio($EJERCICIO);
             $FASE_RUN->setOpcional(1);
@@ -454,9 +453,9 @@ class RuntasticController extends Controller {
         if ($request->getMethod() == 'POST') {
             $em = $doctrine->getManager();
             // Obtenemos todos los enunciados del formulario
-            $RITMO_BICI = $request->request->get('RITMO_BICICLETA');
+            $VELOCIDAD_BICI = $request->request->get('RITMO_BICICLETA');
             $DURACION_BICI = $request->request->get('DURACION_BICICLETA');
-            $VELOCIDAD_RUN = $request->request->get('VELOCIDAD_RUNNING');
+            $RITMO_RUN = $request->request->get('VELOCIDAD_RUNNING');
             $DURACION_RUN = $request->request->get('DURACION_RUNNING');
             $BENEFICIO = $request->request->get('BENEFICIO_FASE');
             $ID = $request->request->get('ID');
@@ -484,8 +483,8 @@ class RuntasticController extends Controller {
                 $FASE_BICI = new \AppBundle\Entity\EjercicioRuntastic();
                 $FASE_BICI->setDuracion($DURACION_BICI);
                 $FASE_BICI->setTipo('cycling');
-                $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
-                $FASE_BICI->setRitmo($RITMO_BICI);
+                $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+                $FASE_BICI->setRitmo($RITMO_RUN);
                 $FASE_BICI->setFecha(new \DateTime('now'));
                 $FASE_BICI->setIdEjercicio($EJERCICIO);
                 $FASE_BICI->setOpcional(1);
@@ -494,8 +493,8 @@ class RuntasticController extends Controller {
                 $FASE_RUN = new \AppBundle\Entity\EjercicioRuntastic();
                 $FASE_RUN->setDuracion($DURACION_RUN);
                 $FASE_RUN->setTipo('running');
-                $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
-                $FASE_RUN->setRitmo($RITMO_BICI);
+                $FASE_RUN->setVelocidad($VELOCIDAD_BICI);
+                $FASE_RUN->setRitmo($RITMO_RUN);
                 $FASE_RUN->setFecha(new \DateTime('now'));
                 $FASE_RUN->setIdEjercicio($EJERCICIO);
                 $FASE_RUN->setOpcional(1);
@@ -507,15 +506,15 @@ class RuntasticController extends Controller {
 
                 $FASE_BICI = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'cycling']);
                 $FASE_BICI->setDuracion($DURACION_BICI);
-                $FASE_BICI->setVelocidad($VELOCIDAD_RUN);
-                $FASE_BICI->setRitmo($RITMO_BICI);
+                $FASE_BICI->setVelocidad($VELOCIDAD_BICI);
+                $FASE_BICI->setRitmo($RITMO_RUN);
                 $FASE_BICI->setOpcional(1);
                 $em->persist($FASE_BICI);
 
                 $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'running']);
                 $FASE_RUN->setDuracion($DURACION_RUN);
-                $FASE_RUN->setVelocidad($VELOCIDAD_RUN);
-                $FASE_RUN->setRitmo($RITMO_BICI);
+                $FASE_RUN->setVelocidad($RITMO_BICI);
+                $FASE_RUN->setRitmo($VELOCIDAD_RUN);
                 $FASE_RUN->setOpcional(1);
                 $em->persist($FASE_RUN);
             }
@@ -575,9 +574,9 @@ class RuntasticController extends Controller {
         $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $EJERCICIO, 'tipo' => 'running']);
         $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
         $DATOS['ID'] = $EJERCICIO->getIdEjercicio();
-        $DATOS['RITMO_BICI'] = $FASE_BICI->getRitmo();
+        $DATOS['VELOCIDAD_BICI'] = $FASE_BICI->getVelocidad();
         $DATOS['DURACION_BICI'] = Utils::segundosToDias($FASE_BICI->getDuracion());
-        $DATOS['VELOCIDAD_RUN'] = $FASE_RUN->getVelocidad();
+        $DATOS['RITMO_RUN'] = $FASE_RUN->getRitmo();
         $DATOS['DURACION_RUN'] = Utils::segundosToDias($FASE_RUN->getDuracion());
         $DATOS['BENEFICIO'] = Utils::segundosToDias($BONIFICACION->getBonificacion());
         $DATOS['OBLIGATORIO'] = 1;

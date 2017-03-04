@@ -12,9 +12,7 @@ and open the template in the editor.
     text-transform: uppercase;
 }
 .detalle-coste,
-.tablon-progreso,
-.btn,
-.detalle-boton{
+.tablon-progreso{
     font-family: 'Kimberley';
 }
 .btn-pref .hidden-xs{
@@ -135,20 +133,17 @@ and open the template in the editor.
     margin-right: 3%;
     margin-bottom: 1%;
 }
-.detalle-boton{
+/*.detalle-boton{
     width: 98%;
     margin: 1%;
-}
-.boton-entrega,
-.detalle-boton{
+}*/
+.boton-entrega{
     font-size: 20px;
     border: 2px solid #000000;
     background-color: #FFFFFF;
 }
 .boton-entrega:hover,
-.boton-entrega:focus,
-.detalle-boton:hover,
-.detalle-boton:focus{
+.boton-entrega:focus{
     color: #FFFFFF;
     background-color:#000000;
 }

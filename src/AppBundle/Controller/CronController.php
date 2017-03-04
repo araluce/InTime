@@ -26,7 +26,7 @@ use AppBundle\Utils\Pago;
 class CronController extends Controller {
 
     /**
-     * @Route("/cron/jornadaLaboral", name="jornadaLaboral")
+     * @Route("/cron/jornadaLaboral", name="cronJornadaLaboral")
      */
     public function cronJornadaLaboralAction(Request $request) {
         $doctrine = $this->getDoctrine();
@@ -50,7 +50,7 @@ class CronController extends Controller {
     }
 
     /**
-     * @Route("/cron/checkTdV", name="checkTdV")
+     * @Route("/cron/checkTdV", name="cronCheckTdV")
      */
     public function checkTdVAction(Request $request) {
         $doctrine = $this->getDoctrine();
@@ -88,7 +88,7 @@ class CronController extends Controller {
     }
 
     /**
-     * @Route("/cron/cobrarCuotaPrestamo", name="cobrarCuotaPrestamo")
+     * @Route("/cron/cobrarCuotaPrestamo", name="cronCobrarCuotaPrestamo")
      */
     public function cobrarCuotaPrestamoAction(Request $request) {
         $doctrine = $this->getDoctrine();
@@ -115,7 +115,7 @@ class CronController extends Controller {
     }
 
     /**
-     * @Route("/cron/comprobarAlimentacion", name="comprobarAlimentacion")
+     * @Route("/cron/comprobarAlimentacion", name="cronComprobarAlimentacion")
      */
     public function comprobarAlimentacionAction(Request $request) {
         $doctrine = $this->getDoctrine();
@@ -126,7 +126,6 @@ class CronController extends Controller {
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 // Ya está contemplado el usuario con vacaciones
-
                 if ($CIUDADANO->getTiempoSinComer() < $fecha ||
                         $CIUDADANO->getTiempoSinBeber() < $fecha) {
                     Usuario::setDefuncion($doctrine, $CIUDADANO);
@@ -144,7 +143,7 @@ class CronController extends Controller {
     }
 
     /**
-     * @Route("/cron/comprobarVacaciones", name="comprobarVacaciones")
+     * @Route("/cron/comprobarVacaciones", name="cronComprobarVacaciones")
      */
     public function comprobarVacacionesAction(Request $request) {
         $doctrine = $this->getDoctrine();

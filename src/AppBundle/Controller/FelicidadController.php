@@ -314,5 +314,50 @@ class FelicidadController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
+    /**
+     * 
+     * @Route("/guardian/ejercicios/felicidad", name="felicidadGuardian")
+     */
+    public function felicidadGuardianAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/felicidad', true);
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $DATOS['TITULO'] = 'Felicidad';
+        return $this->render('guardian/ejercicios/ejerciciosFelicidad.twig', $DATOS);
+    }
+    
+    /**
+     * 
+     * @Route("/guardian/ejercicios/felicidad/calificar", name="setCalificacionFelicidad")
+     */
+    public function setCalificacionFelicidadAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/felicidad/calificar', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $idFelicidad = $request->request->get('idFelicidad');
+            $porcentaje = $request->request->get('porcentaje');
+            $EJERCICIO_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneByIdEjercicioFelicidad($idFelicidad);
+            if(null === $EJERCICIO_FELICIDAD){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ejercicio')), 200);
+            }
+            $BONIFICACION = Utils::getConstante($doctrine, 'felicidadBonificacion'.$porcentaje);
+            Usuario::operacionSobreTdV($doctrine, $EJERCICIO_FELICIDAD->getIdUsuario(), $BONIFICACION, 'Ingreso - Felicidad');
+            $EJERCICIO_FELICIDAD->setPorcentaje($porcentaje);
+            $em->persist($EJERCICIO_FELICIDAD);
+            $em->flush();
+            
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
 
 }

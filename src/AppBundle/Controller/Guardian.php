@@ -154,7 +154,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $disparador_apuesta)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidad", name="getFelicidadDias")
      */
@@ -167,6 +167,54 @@ class Guardian extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
         }
         $diasDifEntregasFelicidad = Utils::getConstante($doctrine, 'diasDifEntregasFelicidad');
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getFelicidadBonificacion5", name="getFelicidadBonificacion5")
+     */
+    public function getFelicidadBonificacion5Action(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getFelicidadBonificacion5', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $diasDifEntregasFelicidad = Utils::segundosToDias(Utils::getConstante($doctrine, 'felicidadBonificacion5'));
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getFelicidadBonificacion15", name="getFelicidadBonificacion15")
+     */
+    public function getFelicidadBonificacion15Action(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getFelicidadBonificacion15', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $diasDifEntregasFelicidad = Utils::segundosToDias(Utils::getConstante($doctrine, 'felicidadBonificacion15'));
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/ajustes/getFelicidadBonificacion25", name="getFelicidadBonificacion25")
+     */
+    public function getFelicidadBonificacion25Action(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getFelicidadBonificacion25', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $diasDifEntregasFelicidad = Utils::segundosToDias(Utils::getConstante($doctrine, 'felicidadBonificacion25'));
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
@@ -202,7 +250,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getCosteMinaPista", name="getCosteMinaPista")
      */
@@ -291,7 +339,7 @@ class Guardian extends Controller {
     }
 
     /**
-     * @Route("/guardian/alimentacion/getEjerciciosAlimentacion", name="getEjerciciosAlimentacion")
+     * @Route("/guardian/alimentacion/getEjerciciosAlimentacion", name="getEjerciciosAlimentacionGuardian")
      */
     public function getEjerciciosAlimentacionGuardianAction(Request $request) {
         $doctrine = $this->getDoctrine();
@@ -303,7 +351,7 @@ class Guardian extends Controller {
         $SECCION_COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
         $SECCION_BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
         if (null === $SECCION_COMIDA || null === $SECCION_BEBIDA) {
-            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe la seccion paga_extra');
+            Utils::setError($doctrine, 1, 'getEjerciciosPagaAction - No existe la seccion comida o bebida');
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
         }
         $EJERCICIOS = [];
@@ -340,6 +388,63 @@ class Guardian extends Controller {
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/felicidad/getEjerciciosFelicidad", name="getEjerciciosFelicidadGuardian")
+     */
+    public function getEjerciciosFelicidadGuardianAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/felicidad/getEjerciciosFelicidad', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $EJERCICIOS_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findAll();
+        if (!count($EJERCICIOS_FELICIDAD)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay entregas en Felicidad')), 200);
+        }
+        $EJERCICIOS = [];
+        foreach ($EJERCICIOS_FELICIDAD as $F) {
+            $aux['PORCENTAJE'] = $F->getPorcentaje();
+            $aux['ID'] = $F->getIdEjercicioFelicidad();
+            $aux['PROPUESTO'] = 0;
+            $aux['ENTREGADO'] = 0;
+
+            $CIUDADANO = $F->getIdUsuario();
+            $aux['CIUDADANO'] = [];
+            $aux['CIUDADANO']['NOMBRE'] = $CIUDADANO->getNombre();
+            $aux['CIUDADANO']['APELLIDOS'] = $CIUDADANO->getApellidos();
+            $aux['CIUDADANO']['DNI'] = $CIUDADANO->getDni();
+            $aux['CIUDADANO']['ALIAS'] = $CIUDADANO->getSeudonimo();
+
+            $PROPUESTA = $F->getIdEjercicioPropuesta();
+            $ENTREGA_F = $F->getIdEjercicioEntrega();
+            if (null !== $PROPUESTA) {
+                $aux['PROPUESTO'] = 1;
+                $aux['PROPUESTA'] = [];
+                $aux['PROPUESTA']['FECHA'] = $PROPUESTA->getFecha();
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicio($PROPUESTA);
+                $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneByIdEjercicio($PROPUESTA);
+                $aux['PROPUESTA']['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['PROPUESTA']['RUTA'] = $aux['CIUDADANO']['DNI'] . '/felicidad/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['PROPUESTA']['NOMBRE'];
+            }
+            
+            if ($aux['PROPUESTO'] && null !== $ENTREGA_F) {
+                $aux['ENTREGADO'] = 1;
+                $aux['ENTREGA'] = [];
+                $aux['ENTREGA']['FECHA'] = $ENTREGA_F->getFecha();
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicio($ENTREGA_F);
+                $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneByIdEjercicio($ENTREGA_F);
+                $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['ENTREGA']['RUTA'] = $aux['CIUDADANO']['DNI'] . '/felicidad/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['ENTREGA']['NOMBRE'];
+            }
+
+            if ($aux['PROPUESTO']) {
+                $EJERCICIOS[] = $aux;
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $EJERCICIOS)), 200);
     }
 
     /**
@@ -753,7 +858,7 @@ class Guardian extends Controller {
                 Utils::setError($doctrine, 1, 'setJornadaLaboralAction no existe constante premio_base_mina');
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
-            $CONSTANTE_COSTE_MINA_PISTA= $doctrine->getRepository('AppBundle:Constante')->findOneByClave('coste_pista');
+            $CONSTANTE_COSTE_MINA_PISTA = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('coste_pista');
             if ($CONSTANTE_COSTE_MINA_PISTA === null) {
                 Utils::setError($doctrine, 1, 'setJornadaLaboralAction no existe constante coste_pista');
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
@@ -887,7 +992,7 @@ class Guardian extends Controller {
                             'idBonificacionExtra' => $TARJETA, 'idUsuario' => $doctrine, $CALIFICACION->getIdUsuario(), 'usado' => 0
                         ]);
                         if (null !== $MI_TARJETA) {
-                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2*$BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
                             $MI_TARJETA->setUsado(1);
                             $em->persist($MI_TARJETA);
                         }
@@ -902,7 +1007,7 @@ class Guardian extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ajustes/setFelicidad", name="setFelicidadDias")
@@ -927,6 +1032,43 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($diasDifEntregasFelicidad);
             $em->persist($CONSTANTE);
+            
+            $felicidadBonificacion5 = $request->request->get('b5');
+            if ($felicidadBonificacion5 <= 0) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
+            }
+            $CONSTANTE = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('felicidadBonificacion5');
+            if ($CONSTANTE === null) {
+                Utils::setError($doctrine, 1, 'setFelicidadDiasAction no existe constante felicidadBonificacion5');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CONSTANTE->setValor($felicidadBonificacion5);
+            $em->persist($CONSTANTE);
+            
+            $felicidadBonificacion15 = $request->request->get('b15');
+            if ($felicidadBonificacion15 <= 0) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
+            }
+            $CONSTANTE = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('felicidadBonificacion15');
+            if ($CONSTANTE === null) {
+                Utils::setError($doctrine, 1, 'setFelicidadDiasAction no existe constante felicidadBonificacion15');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CONSTANTE->setValor($felicidadBonificacion15);
+            $em->persist($CONSTANTE);
+            
+            $felicidadBonificacion25 = $request->request->get('b25');
+            if ($felicidadBonificacion25 <= 0) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
+            }
+            $CONSTANTE = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('felicidadBonificacion25');
+            if ($CONSTANTE === null) {
+                Utils::setError($doctrine, 1, 'setFelicidadDiasAction no existe constante felicidadBonificacion25');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CONSTANTE->setValor($felicidadBonificacion25);
+            $em->persist($CONSTANTE);
+            
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
         }

@@ -86,17 +86,35 @@ function segundosToDias(segundos) {
  */
 function segundosToDiasFormato(dias, horas, minutos, segundos) {
     var result = '';
-    if(dias){
-        result += dias + 'd '; 
+    if (dias) {
+        result += dias + 'd ';
     }
-    if(horas){
-        result += horas + 'h '; 
+    if (horas) {
+        result += horas + 'h ';
     }
-    if(minutos){
-        result += minutos + 'm '; 
+    if (minutos) {
+        result += minutos + 'm ';
     }
-    if(segundos){
-        result += segundos + 's '; 
+    if (segundos) {
+        result += segundos + 's ';
     }
     return result;
+}
+
+function getEnlaces(text) {
+    var source = (text || '').toString();
+    var urlArray = [];
+    var url;
+    var matchArray;
+
+    // Regular expression to find FTP, HTTP(S) and email URLs.
+    var regexToken = /(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+    // Iterate through any URLs in the text.
+    while ((matchArray = regexToken.exec(source)) !== null)
+    {
+        var token = matchArray[0];
+        urlArray.push(token);
+    }
+    return urlArray;
 }

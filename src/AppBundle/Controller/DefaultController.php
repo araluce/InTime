@@ -237,7 +237,33 @@ class DefaultController extends Controller {
             return new RedirectResponse('/');
         }
         $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
-        $DATOS['JUGADORES'] = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL);
+        $JUGADORES = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL);
+        $DATOS['JUGADORES'] = [];
+        if(count($JUGADORES)){
+            foreach($JUGADORES as $JUGADOR){
+                $aux = [];
+                $aux['NOMBRE'] = $JUGADOR->getNombre();
+                $aux['APELLIDOS'] = $JUGADOR->getApellidos();
+                $aux['DNI'] = $JUGADOR->getDni();
+                $aux['ALIAS'] = $JUGADOR->getSeudonimo();
+                $aux['EMAIL'] = $JUGADOR->getEmail();
+                $aux['ESTADO'] = $JUGADOR->getIdEstado()->getDescripcion();
+                $aux['DISTRITO'] = null;
+                if(null !== $JUGADOR->getIdDistrito()){
+                    $aux['DISTRITO'] = $JUGADOR->getIdDistrito()->getNombre();
+                }
+                $AHORA = new \DateTime('now');
+                $TDV = $JUGADOR->getIdCuenta()->getTdv();
+                $RESTANTE = $TDV->getTimestamp() - $AHORA->getTimestamp();
+                $aux['TDV'] = Utils::segundosToDias(0);
+                $aux['TDV_RED'] = 1;
+                if($RESTANTE > 0){
+                    $aux['TDV_RED'] = 0;
+                    $aux['TDV'] = Utils::segundosToDias($RESTANTE);
+                }
+                $DATOS['JUGADORES'][] = $aux;
+            }
+        }
         $DATOS['TITULO'] = 'Gestión de distritos';
         $DATOS['SECCION'] = 'CIUDADANOS';
         //\AppBundle\Utils\Utils::pretty_print($DATOS);

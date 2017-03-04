@@ -157,14 +157,18 @@
                                 <tbody>
                                     {% for JUGADOR in JUGADORES %}
                                         <tr>
-                                            <td>{{ JUGADOR.getDni() }}</td>
-                                            <td>{% if JUGADOR.getIdDistrito() is not null %}{{ JUGADOR.getIdDistrito().getNombre() }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</td>
-                                            <td>{{ JUGADOR.getSeudonimo() }}</td>
-                                            <td>{{ JUGADOR.getNombre() }}</td>
-                                            <td>{{ JUGADOR.getApellidos() }}</td>
-                                            <td>{{ JUGADOR.getEmail() }}</td>
-                                            <td>{{ JUGADOR.getIdCuenta().getTdv().date }}</td>
-                                            <td title="{{ JUGADOR.getIdEstado().getDescripcion() }}">{{ JUGADOR.getIdEstado().getNombre() }}</td>
+                                            <td>{{ JUGADOR.DNI }}</td>
+                                            <td>{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</td>
+                                            <td>{{ JUGADOR.ALIAS }}</td>
+                                            <td>{{ JUGADOR.NOMBRE }}</td>
+                                            <td>{{ JUGADOR.APELLIDOS }}</td>
+                                            <td>{{ JUGADOR.EMAIL }}</td>
+                                            {% if JUGADOR.TDV_RED %}
+                                                <td style="color:red; font-weight: bold;">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</td>
+                                            {% else %}
+                                                <td style="color:green; font-weight: bold;">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</td>
+                                            {% endif %}
+                                            <td title="{{ JUGADOR.ESTADO }}">{{ JUGADOR.ESTADO }}</td>
                                             <td><span class="fa fa-user-o"></span></td>
                                         </tr>
                                     {% endfor %}
