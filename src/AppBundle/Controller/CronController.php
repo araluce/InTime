@@ -92,10 +92,12 @@ class CronController extends Controller {
      */
     public function cobrarCuotaPrestamoAction(Request $request) {
         $doctrine = $this->getDoctrine();
+        $prestamo = "prestamo";
         $em = $doctrine->getManager();
         $query = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->createQueryBuilder('a');
         $query->select('a');
-        $query->where('a.restante > 0 AND a.motivo = "prestamo"');
+        $query->where('a.restante > 0 AND a.motivo = :PRESTAMO');
+        $query->setParameters(["PRESTAMO" => $prestamo]);
         $PRESTAMOS = $query->getQuery()->getResult();
         $recaudado = 0;
         foreach ($PRESTAMOS as $PRESTAMO) {
@@ -123,11 +125,15 @@ class CronController extends Controller {
         $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
         $contador = 0;
         $fecha = new \DateTime('now');
+        $intervaloComida = Utils::getConstante($doctrine, "tiempo_acabar_de_comer");
+        $intervaloBebida = Utils::getConstante($doctrine, "tiempo_acabar_de_beber");
+        $topeComida = $fecha->getTimestamp() ;
+        $topeBebida = $fecha->getTimestamp() ;
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 // Ya está contemplado el usuario con vacaciones
-                if ($CIUDADANO->getTiempoSinComer() < $fecha ||
-                        $CIUDADANO->getTiempoSinBeber() < $fecha) {
+                if ($CIUDADANO->getTiempoSinComer()->getTimestamp() + $intervaloComida < $topeComida ||
+                        $CIUDADANO->getTiempoSinBeber()->getTimestamp() + $intervaloBebida < $topeBebida) {
                     Usuario::setDefuncion($doctrine, $CIUDADANO);
                     $contador++;
                 }
