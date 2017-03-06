@@ -237,8 +237,8 @@ class ApuestaController extends Controller {
             $APUESTAS_GANADORAS = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
             if (count($APUESTAS_GANADORAS)) {
                 $DISPARADOR_APUESTAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta')->getValor();
-                $GANANCIAS = round(($RECAUDACION * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
                 foreach ($APUESTAS_GANADORAS as $A) {
+                    $GANANCIAS = round(($A->getTdvApostado() * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
                     Usuario::operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
                 }
             }

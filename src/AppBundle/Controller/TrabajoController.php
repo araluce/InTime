@@ -632,6 +632,14 @@ class TrabajoController extends Controller {
                 $em->persist($EJERCICIO_RESPUESTA);
             }
             $em->flush();
+            
+            $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+            $PENALIZACION = Utils::getConstante($doctrine, 'test_incorrecto');
+            if(count($CIUDADANOS)){
+                foreach($CIUDADANOS as $CIUDADANO){
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1)*$PENALIZACION, 'Cobro - Inspección de trabajo');
+                }
+            }
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));

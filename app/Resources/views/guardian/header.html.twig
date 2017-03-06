@@ -11,7 +11,7 @@
                         <div class="modal-content {{ info.type }}">
                             <div class="modal-header panel-heading">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" style="color:white;">Resultado</h4>
+                                <h4 class="modal-title">Resultado</h4>
                             </div>
                             <div class="modal-body">
                                 {% if 'danger' in info.type %}
@@ -26,19 +26,19 @@
 
                                 <div class="col-sm-6" style="float: right">
                                     {% if info.message is defined%}
-                                        <p style="color: white;">{{ info.message }}</p>
+                                        <p>{{ info.message }}</p>
                                     {%endif%}
                                     {% if info.correctos is defined%}
                                         <h5 style="color:green;"><strong>Usuarios registrados</strong></h5>
-                                        <p style="color: white;">{{ info.correctos }}</p>
+                                        <p>{{ info.correctos }}</p>
                                     {%endif%}
                                     {% if info.incorrectos is defined%}
                                         <h5 style="color:red;"><strong>Formato no válido</strong></h5>
-                                        <p style="color: white;">{{ info.incorrectos }}</p>
+                                        <p>{{ info.incorrectos }}</p>
                                     {%endif%}
                                     {% if info.repetidos is defined%}
                                         <h5 style="color:orangered;"><strong>Usuarios que ya existian</strong></h5>
-                                        <p style="color: white;">{{ info.repetidos }}</p>
+                                        <p>{{ info.repetidos }}</p>
                                     {%endif%}
                                 </div>
                             </div>

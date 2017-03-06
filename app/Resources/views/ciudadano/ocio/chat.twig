@@ -460,6 +460,10 @@
                             contenido += '<p><small>@' + v.usuario.alias + '</small></p>';
                         }
                         contenido += v.mensaje;
+                        arrayLinks = getEnlaces(v.mensaje);
+                        $.each(arrayLinks, function (lk, lv) {
+                            contenido += '          <p><a href="' + lv + '">' + lv + '</a></p>';
+                        });
                         contenido += '<p style="text-align: right;"><small>' + v.fecha.date + '</small></p>';
                         contenido += '</span>';
                         contenido += '</div>';
@@ -469,6 +473,10 @@
                     contenido = '';
                     contenido += '<div class="col-lg-12" style="margin-top:1%; background-color: #EBF8A4; padding: 15px; color:black;">';
                     contenido += '' + data.message;
+                    arrayLinks = getEnlaces(data.message);
+                    $.each(arrayLinks, function (k, v) {
+                        contenido += '          <p><a href="' + v + '">' + v + '</a></p>';
+                    });
                     contenido += '</div>';
                     $('#panel-chat').append(contenido);
                 }

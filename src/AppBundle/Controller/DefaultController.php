@@ -157,10 +157,12 @@ class DefaultController extends Controller {
      * @Route("/ciudadano/ocio/amigos", name="amigos")
      */
     public function amigos_ciudadanoAction(Request $request) {
-
-
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/alimentacion/getEjerciciosAlimentacion', true);
+        if ($status) {
+            return new RedirectResponse('/');
+        }
         $status = Usuario::compruebaUsuario($doctrine, $session, '/coidadano/ocio/amigos');
         if (!$status) {
             return new RedirectResponse('/');

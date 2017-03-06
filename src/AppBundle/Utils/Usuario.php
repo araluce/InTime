@@ -386,17 +386,14 @@ class Usuario {
         $cuenta->setTdv($TDV_formato);
         $em->persist($cuenta);
         $em->flush();
-
         $usuario = new \AppBundle\Entity\Usuario();
         $usuario->setDni($DNI);
         $usuario->setIdRol($doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador'));
         $usuario->setCertificado('');
         $usuario->setIdEstado($doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Inactivo'));
         $usuario->setIdCuenta($cuenta);
-        $usuario->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
-        $usuario->setTiempoSinComerDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
-        $usuario->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
-        $usuario->setTiempoSinBeberDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA));
+        $usuario->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA->format('Y-m-d H:i:s')));
+        $usuario->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $FECHA->format('Y-m-d H:i:s')));
         $em->persist($usuario);
         $em->flush();
 

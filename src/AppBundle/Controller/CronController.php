@@ -212,10 +212,10 @@ class CronController extends Controller {
                         if (count($CIUDADANOS)) {
                             foreach ($CIUDADANOS as $CIUDADANO) {
                                 if (in_array($CIUDADANO, $GANADORES_USU)) {
-                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO, true);
+                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO, count($GANADORES), true);
                                     $acertantes++;
                                 } else {
-                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO);
+                                    Pago::pagarMina($doctrine, $ULTIMA_MINA, $CIUDADANO, count($GANADORES));
                                 }
                             }
                             $return = 'CRON - ' . $acertantes . ' acertantes en la mina';

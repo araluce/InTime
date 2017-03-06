@@ -234,6 +234,22 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
     }
+    
+    /**
+     * @Route("/guardian/ajustes/getTestIncorrecto", name="getTestIncorrecto")
+     */
+    public function getTestIncorrectoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/getTestIncorrecto', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $pago_jornada = Utils::segundosToDias(Utils::getConstante($doctrine, 'test_incorrecto'));
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
+    }
 
     /**
      * @Route("/guardian/ajustes/getPremioMina", name="getPremioMina")
@@ -823,6 +839,18 @@ class Guardian extends Controller {
             }
             $CONSTANTE_INSP->setValor($pago_inspeccion);
             $em->persist($CONSTANTE_INSP);
+            
+            $penalizacion_paga = $request->request->get('test_incorrecto');
+            if ($penalizacion_paga <= 0) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
+            }
+            $CONSTANTE_P = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('test_incorrecto');
+            if ($CONSTANTE_P === null) {
+                Utils::setError($doctrine, 1, 'setJornadaLaboralAction no existe constante test_incorrecto');
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CONSTANTE_P->setValor($penalizacion_paga);
+            $em->persist($CONSTANTE_P);
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
         }
