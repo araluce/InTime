@@ -10,30 +10,17 @@
             margin: 0;
             padding: 0;
             position: relative;
-
-            /*Diseño flexible*/
-            /*display: -ms-flex;
-            display: -webkit-flex;
-            display: flex;*/
         }
         .portfolio-item {
             background-color: white;
             border: 1px solid #ccc;
             position: relative;
             z-index: 10;
-
-            /*Diseño flexible*/
-            /*display: -ms-flex;
-            display: -webkit-flex;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;*/
         }
         .portfolio-item img {
             margin: 0;
             padding: 5%;
             width: 100%;
-            /*height: 300px;*/
         }
         .single-portfolio:hover .details-social,
         .single-portfolio:hover .details-author
@@ -304,9 +291,9 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default btn13" onclick="location.reload();">
+                    <button type="button" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
                         <span class="fa fa-refresh" aria-hidden="true"></span>
-                        <div class="hidden-xs">ACTUALIZAR</div>
+                        <div class="hidden-xs">PUBLICAR</div>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
@@ -319,10 +306,17 @@
         </div>
         <div class="row bordes" style="margin-top: 1%;">
             <div class="col-md-12">
-                <div class="row" style="margin-bottom: 2%;">
-                    <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row" id="photo-grid"></div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab2">
+                        <div class="row" style="margin-bottom: 2%;">
+                            <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
+                        </div>
+                    </div>
                 </div>
-                <div class="row" id="photo-grid"></div>
+
             </div>
         </div>
     </div>
@@ -331,6 +325,7 @@
 {% block javascripts %}
     <script>
         function getPhotos() {
+            $('#photo-grid').html('');
             ruta = '/ciudadano/obtenerFotos';
             $.get(ruta, function (data, status) {
                 if (data.estado === 'OK') {
@@ -351,8 +346,16 @@
                         contenido += '      <img class="img-responsive" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
                         contenido += '      </center>';
                         contenido += '      <figcaption class="portfolio-details details-social">';
-                        contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', "1");">' + v.likes + '</span>';
-                        contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', "0");">' + v.dislikes + '</span>';
+                        if (v.mi_like) {
+                            contenido += '          <span class="fa fa-thumbs-up like" style="color:green;" onclick="reaccion(' + v.id + ', 1);">' + v.likes + '</span>';
+                        } else {
+                            contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', 1);">' + v.likes + '</span>';
+                        }
+                        if (v.mi_dislike) {
+                            contenido += '          <span class="fa fa-thumbs-down dislike" style="color:red;" onclick="reaccion(' + v.id + ', 0);">' + v.dislikes + '</span>';
+                        } else {
+                            contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', 0);">' + v.dislikes + '</span>';
+                        }
                         contenido += '      </figcaption>';
                         contenido += '  </figure>';
                         contenido += '</div>';
@@ -362,9 +365,6 @@
                 }
             });
         }
-        $('#actualizar').click(function () {
-            descargarInformacionSesiones();
-        });
         $("#input-711").fileinput({
             uploadUrl: "/ciudadano/subirImagenAlbum",
             uploadAsync: true,
@@ -375,18 +375,30 @@
             allowedFileTypes: ['image'],
             maxFileSize: 2000
         });
+        $("#input-711").on('fileuploaded', function (event, data, previewId, index) {
+            var response = data.response;
+            data = jQuery.parseJSON(response);
+            alert(data.message);
+            if (data.estado === 'OK') {
+                getPhotos();
+            }
+        });
         $('.file-caption-name').height($('.fileinput-remove').height());
         function reaccion(foto_id, like) {
             var url = '/ciudadano/ocio/amigos/fotos/like/' + foto_id + '/' + like;
             $.get(url, function (data) {
                 console.log(data);
                 if (data.estado === 'OK') {
-                    location.reload();
+                    getPhotos();
                 }
             });
         }
         $(document).ready(function () {
             getPhotos();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
             {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
     </script>

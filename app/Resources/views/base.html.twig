@@ -102,10 +102,10 @@
 
     <div class="footer"> {% include "extension/footer.html.twig" %}</div>
     <!-- JS -->
-    
+
     <script src="{{ asset('js/jquery-2.2.3.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.min.js"></script>
-    
+
     <script src="{{ asset('js/fileinput.min.js') }}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="{{ asset('js/clockpicker.js') }}"></script>
@@ -128,10 +128,13 @@
             var font_size = responsive_screen();
         {% if ESTADO_USUARIO is defined %}
             {% if TDV is defined %}
+                    // Se da un formato específico para soporte de Android/Iphone
+                    var arr = "{{TDV.date}}".split(/[- :]/),
+                            tdvFormato = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
                 {% if ESTADO_USUARIO == 'Activo' %}
                         $('#countdown-11').timeTo({
                             //timeTo: new Date(new Date('Wed Nov 30 2016 09:00:00 GMT+0100 (CET)')),
-                            timeTo: new Date(new Date('{{ TDV.date }}')),
+                            timeTo: new Date(new Date(tdvFormato)),
                             displayDays: 2,
                             theme: "white",
                             displayCaptions: true,
@@ -141,7 +144,7 @@
                 {% endif %}
                 {% if ESTADO_USUARIO == 'Vacaciones' %}
                         $('#countdown-11').timeTo({
-                            timeTo: new Date(new Date('{{ TDV.date }}')),
+                            timeTo: new Date(new Date(tdvFormato)),
                             displayDays: 2,
                             theme: "white",
                             displayCaptions: true,

@@ -57,25 +57,18 @@ class Trabajo {
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
         ]);
         $em = $doctrine->getManager();
-
+        $resp = Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
         if ($EJERCICIO_CALIFICACION === null) {
-            $resp = Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
-            $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
-            $EJERCICIO_CALIFICACION->setIdEjercicio($EJERCICIO);
-            $EJERCICIO_CALIFICACION->setIdEjercicioEstado($ESTADO_SOLICITADO);
-            $EJERCICIO_CALIFICACION->setFecha($FECHA);
-            $em->persist($EJERCICIO_CALIFICACION);
-            $em->flush();
-            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra comida');
-
-            return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
-        } else {
-            return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' =>
-                'Este ejercicio ya había sido solicitado, entregado o evaluado'), 200);
         }
-
-        return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => 'Ejercicio solicitado correctamente'), 200);
+        $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
+        $EJERCICIO_CALIFICACION->setIdEjercicio($EJERCICIO);
+        $EJERCICIO_CALIFICACION->setIdEjercicioEstado($ESTADO_SOLICITADO);
+        $EJERCICIO_CALIFICACION->setFecha($FECHA);
+        $em->persist($EJERCICIO_CALIFICACION);
+        $em->flush();
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra comida');
+        return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
     }
 
     /**
@@ -87,15 +80,20 @@ class Trabajo {
      */
     static function comprobarJornadaLaboral($doctrine, $USUARIO) {
         // Si el ciudadano está de vacaciones cobra
-        if(Usuario::estaDeVacaciones($doctrine, $USUARIO)){
+        if (Usuario::estaDeVacaciones($doctrine, $USUARIO)) {
             return 1;
         }
         // Si no lo está se cuentan los tweets
         $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
         $query->select('COUNT(a)');
-        $query->where('DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO');
+//        $query->where('DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO');
+        $query->where("DATE_DIFF(DATE_ADD(CURRENT_DATE(), '-1', 'day'), a.fecha) = 0 AND a.idUsuario = :USUARIO");
         $query->setParameters(['USUARIO' => $USUARIO]);
         $N_TUITS = $query->getQuery()->getSingleScalarResult();
+//        $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('b');
+//        $query->select("DATE_ADD(CURRENT_DATE(),'-1','day')");
+//        $N_TUITS = $query->getQuery()->getResult();
+//        Utils::pretty_print($N_TUITS);
         $TWEETS_X_DIA = Utils::getConstante($doctrine, 'jornada_laboral_tweets');
         if ($N_TUITS >= $TWEETS_X_DIA) {
             return 1;
@@ -151,7 +149,7 @@ class Trabajo {
         $CALIFICACION->setFecha(new \DateTime('now'));
         $CALIFICACION->setIdEjercicio($EJERCICIO);
         $CALIFICACION->setIdUsuario($USUARIO);
-        
+
         $CALIFICACION->setIdCalificaciones(null);
         if ($nota) {
             $CALIFICACION->setIdEvaluador($USUARIO_GUARDIAN);

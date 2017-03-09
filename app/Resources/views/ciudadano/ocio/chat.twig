@@ -336,7 +336,10 @@
             <ul data-role="listview" data-filter="true" data-input="#myFilter" id="lista-usuarios">
                 <li data-role="list-divider">CHAT COMÚN</li>
                 <li onclick="abrir_chat(null, null);">
-                    <a href="#pagetwo">EL GUETO DE FENI</a>
+                    <a href="#pagetwo">
+                        EL GUETO DE FENI
+                        <span class="badge" id="badge-gueto" style="display: none;">0</span>
+                    </a>
                 </li>
 
                 {% if DISTRITOS is not null %}
@@ -362,7 +365,7 @@
                                          class="img-chat"/>
                                 {% endif %}
                                 {{ CIUDADANO.getSeudonimo() }}
-                                <span class="badge" id="badge-{{ CIUDADANO.getIdUsuario() }}">0</span>
+                                <span class="badge" id="badge-{{ CIUDADANO.getIdUsuario() }}" style="display: none;">0</span>
                             </a>
                         </li>
                     {% endfor %}
@@ -412,15 +415,15 @@
             setInterval(function () {
                 obtenerMensajesNoVistos();
                 abrir_chat(chat_actual, chat_grupo_actual);
-            }, 6000);
+            }, 30000);
         });
         function obtenerMensajesNoVistos() {
             url = '/ciudadano/ocio/amigos/chat/getSinVer';
             $.get(url, function (datos) {
                 data = jQuery.parseJSON(datos);
-                //console.log(data);
+                console.log(data);
                 if (data.estado === 'OK') {
-                    $.each(data.message, function (k, v) {
+                    $.each(data.message.CIUDADANOS, function (k, v) {
                         $('#badge-' + v.ID).html(v.NUM_MENSAJES);
                         if (v.NUM_MENSAJES > 0) {
                             $('#badge-' + v.ID).show();
@@ -428,6 +431,10 @@
                             $('#badge-' + v.ID).hide();
                         }
                     });
+                    if(data.message.GUETO.NUM_MENSAJES){
+                        $("#badge-gueto").html(data.message.GUETO.NUM_MENSAJES);
+                        $("#badge-gueto").show();
+                    }
                 }
             });
         }
@@ -446,7 +453,7 @@
                 var url = '/ciudadano/getChatComun';
             }
             $.get(url, function (data) {
-                console.log(data);
+                //console.log(data);
                 $('#panel-chat').empty();
                 if (data.estado === 'OK') {
                     contenido = '';
@@ -514,6 +521,7 @@
                     datos = {'id_usuario': 0, 'id_distrito': 0, 'comun': 1, 'mensaje': mensaje};
                 }
                 $.post('/ciudadano/enviarMensajeChat', datos, function (data) {
+                    console.log(data);
                     if (data.estado === 'OK') {
                         if (chat_actual !== null) {
                             abrir_chat(chat_actual, null);

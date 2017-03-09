@@ -64,10 +64,34 @@
                                 Censo
                             </li>
                         </a>
+                        
+                        <a href="/guardian/asistencia">
+                            <li class="list-group-item">
+                                Citas
+                                {% if CITAS is defined %}
+                                    {% if CITAS > 0 %}
+                                        <span class="badge badge-aviso2">
+                                            {{ CITAS }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                        </a>
                         <a href="/ciudadano/ocio/amigos/chat">
                             <li class="list-group-item">
-                                <span class="badge">14</span>
                                 Chat
+                                {% if CHAT is defined %}
+                                    {% if CHAT > 0 %}
+                                        <span class="badge badge-aviso2">
+                                            {{ CHAT }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                        </a>
+                        <a href="/ciudadano/ocio/amigos/fotos">
+                            <li class="list-group-item">
+                                Galería
                             </li>
                         </a>
                         <a href="/guardian/apuestas/proponer">
@@ -82,6 +106,13 @@
                         <a href="/guardian/ejercicios/alimentacion">
                             <li class="list-group-item">
                                 Alimentación
+                                {% if ALIMENTACION is defined %}
+                                    {% if ALIMENTACION > 0 %}
+                                        <span class="badge badge-aviso2">
+                                            {{ ALIMENTACION }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
                             </li>
                         </a>
                         <a href="/guardian/ejercicios/deporte">
@@ -97,6 +128,13 @@
                         <a href="/guardian/ejercicios/paga">
                             <li class="list-group-item">
                                 Paga extra
+                                {% if PAGA is defined %}
+                                    {% if PAGA > 0 %}
+                                        <span class="badge badge-aviso2">
+                                            {{ PAGA }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
                             </li>
                         </a>
                         <a href="/guardian/mina">
@@ -107,6 +145,13 @@
                         <a href="/guardian/ejercicios/felicidad">
                             <li class="list-group-item">
                                 Felicidad
+                                {% if FELICIDAD is defined %}
+                                    {% if FELICIDAD > 0 %}
+                                        <span class="badge badge-aviso2">
+                                            {{ FELICIDAD }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
                             </li>
                         </a>
                     </ul>
@@ -171,7 +216,7 @@
                     theme: "white",
                     displayCaptions: true,
                     fontSize: responsive_screen(),
-                    start:             {% if estado == 4 %} false{% else %}{% if estado == 2 %}
+                    start:               {% if estado == 4 %} false{% else %}{% if estado == 2 %}
                             true{% endif %}{% endif %},
                     captionSize: 10
                 }, function () {
@@ -191,7 +236,7 @@
                     theme: "white",
                     displayCaptions: true,
                     fontSize: 18,
-                    start:             {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
+                    start:               {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
                     captionSize: 10
                 }, function () {
                     $('#countdown-2').timeTo("stop");

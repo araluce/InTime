@@ -34,5 +34,7 @@ and open the template in the editor.
 
 .schedule-rows td[data-disabled] { opacity: 0.55; }
 .schedule-rows td[data-occupied] { background-color: #c9302c; }
+.schedule-rows td[data-cita] { background-color: #f0ad4e; }
+.schedule-rows td[data-aceptado] { background-color: #5cb85c; }
 
 

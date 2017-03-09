@@ -254,6 +254,9 @@ class RuntasticController extends Controller {
         $response['Uid'] = $r->getUid();
 
         $week_activities = $r->getActivities();
+        if(!count($week_activities)){
+            return new JsonResponse(['estatus' => 'ERROR', 'message' => 'Actualizar falló. No se han recibido datos de Runtastic, vuelve a intentarlo de nuevo.'], 200);
+        }
 //        return new JsonResponse($week_activities, 200);
 //        return new JsonResponse(array('estado' => 'ERROR', 'message' => $SESIONES), 200);
         foreach ($week_activities as $activity) {
@@ -404,7 +407,7 @@ class RuntasticController extends Controller {
             $EJERCICIO->setIdTipoEjercicio($TIPO_DEPORTE);
             $em->persist($EJERCICIO);
 
-            $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+            $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
             $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
             $BONIFICACION->setBonificacion($BENEFICIO);
             $BONIFICACION->setIdCalificacion($NOTA_MEDIA);
@@ -473,7 +476,7 @@ class RuntasticController extends Controller {
                 $EJERCICIO->setIdTipoEjercicio($TIPO_DEPORTE);
                 $em->persist($EJERCICIO);
 
-                $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                $NOTA_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
                 $BONIFICACION = new \AppBundle\Entity\EjercicioBonificacion();
                 $BONIFICACION->setBonificacion($BENEFICIO);
                 $BONIFICACION->setIdCalificacion($NOTA_MEDIA);
@@ -513,8 +516,8 @@ class RuntasticController extends Controller {
 
                 $FASE_RUN = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findOneBy(['idEjercicio' => $ID, 'tipo' => 'running']);
                 $FASE_RUN->setDuracion($DURACION_RUN);
-                $FASE_RUN->setVelocidad($RITMO_BICI);
-                $FASE_RUN->setRitmo($VELOCIDAD_RUN);
+                $FASE_RUN->setVelocidad($VELOCIDAD_BICI);
+                $FASE_RUN->setRitmo($RITMO_RUN);
                 $FASE_RUN->setOpcional(1);
                 $em->persist($FASE_RUN);
             }
@@ -637,9 +640,18 @@ class RuntasticController extends Controller {
                     if ($DATOS['COMPARATIVA']) {
                         $aux['VELOCIDAD_SUP'] = 0;
                         $aux['EVALUADO_FASE'] = 0;
+                        $aux['RETO'] = [];
                         if (!$SESION->getEvaluado()) {
                             foreach ($RETOS as $RETO) {
-                                if ($RETO->getTipo() === $aux['TIPO'] && $RETO->getVelocidad() <= $aux['VELOCIDAD']) {
+                                $aux2 = [];
+                                $aux2['TIPO'] = $RETO->getTipo();
+                                $aux2['VELOCIDAD'] = $RETO->getVelocidad();
+                                $aux2['RITMO'] = $RETO->getRitmo();
+                                $aux['RETO'][] = $aux2;
+//                                if ($RETO->getTipo() === $aux['TIPO'] && $RETO->getVelocidad() <= $aux['VELOCIDAD']) {
+//                                return new JsonResponse(json_encode(array(($RETO->getTipo() === 'running' && $RETO->getRitmo() >= $aux['RITMO']) )), 200);
+                                if (($aux2['TIPO'] === $aux['TIPO'] && $aux['TIPO'] === 'running' && $aux2['RITMO'] >= $aux['RITMO']) ||
+                                        ($aux2['TIPO'] === $aux['TIPO'] && $aux['TIPO'] === 'cycling' && $aux2['VELOCIDAD'] <= $aux['VELOCIDAD'])) {
                                     $aux['VELOCIDAD_SUP'] = 1;
                                     $duracion_acumulada += $duracion;
                                     $id_sesiones[] = $SESION;

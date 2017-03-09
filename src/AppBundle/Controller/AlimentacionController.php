@@ -37,7 +37,7 @@ class AlimentacionController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
-        if(!DataManager::infoUsu($doctrine, $session)){
+        if (!DataManager::infoUsu($doctrine, $session)) {
             return new RedirectResponse('/ciudadano/info');
         }
         $DATOS = DataManager::setDefaultData($doctrine, 'Alimentación', $session);
@@ -88,7 +88,7 @@ class AlimentacionController extends Controller {
         Alimentacion::getDatosAlimentacion($doctrine, $USUARIO, $DATOS, $SECCION);
         return $this->render('ciudadano/alimentacion/bebida.twig', $DATOS);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/alimentacion/obtenerCalificacion", name="obtenerCalificacionAlimentacion")
      */
@@ -135,7 +135,7 @@ class AlimentacionController extends Controller {
         }
         $TSC_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_comer');
         $respuesta = Alimentacion::porcetajeEnergia($tsc, $TSC_DEFECTO);
-        if($respuesta['porcentaje'] <= 0){
+        if ($respuesta['porcentaje'] <= 0) {
             Usuario::setDefuncion($doctrine, $USUARIO);
         }
         return new JsonResponse(json_encode($respuesta), 200);
@@ -159,7 +159,7 @@ class AlimentacionController extends Controller {
         }
         $TSB_DEFECTO = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('tiempo_acabar_de_beber');
         $respuesta = Alimentacion::porcetajeEnergia($tsb, $TSB_DEFECTO);
-        if($respuesta['porcentaje'] <= 0){
+        if ($respuesta['porcentaje'] <= 0) {
             Usuario::setDefuncion($doctrine, $USUARIO);
         }
         return new JsonResponse(json_encode($respuesta), 200);
@@ -333,7 +333,7 @@ class AlimentacionController extends Controller {
         $resp['ES_DISTRITO'] = Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO);
         if ($resp['ES_DISTRITO']) {
             $resp['NUM_SOLICITANTES_DISTRITO'] = Alimentacion::numeroSolicitantes($doctrine, $EJERCICIO, $USUARIO->getIdDistrito());
-            $resp['NUM_CIUDADANOS_DISTRITO'] = count(Distrito::getCiudadanosDistrito($doctrine, $USUARIO->getIdDistrito()));
+            $resp['NUM_CIUDADANOS_DISTRITO'] = count(Distrito::getCiudadanosVivosDistrito($doctrine, $USUARIO->getIdDistrito()));
         }
         $resp['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
         $resp['ICONO'] = null;
@@ -372,24 +372,29 @@ class AlimentacionController extends Controller {
             $SECCION = $EJERCICIO->getIdEjercicioSeccion();
             if ($ENTREGA !== null) {
                 if ($ENTREGA->getClientSize() < $ENTREGA->getMaxFilesize()) {
-                    $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                    $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
                     if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
                         $DISTRITO = $USUARIO->getIdDistrito();
-                        if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
-                            $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
-                            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                        $DATOS_REENTREGA = Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $DISTRITO);
+                        if (!$DATOS_REENTREGA) {
+                            if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
+                                $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                            }
                         }
                         $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
-//                        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => count($CIUDADANOS))), 200);
                         if (count($CIUDADANOS)) {
                             foreach ($CIUDADANOS as $CIUDADANO) {
                                 $RESULTADOS = Utils::setNota($doctrine, $CIUDADANO, $EJERCICIO, $CALIFICACION_MEDIA);
                             }
                         }
                     } else {
-                        if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, null)) {
-                            $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
-                            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                        $DATOS_REENTREGA = Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, null);
+                        if (!$DATOS_REENTREGA) {
+                            if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, null)) {
+                                $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                            }
                         }
                         $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
                     }
@@ -403,22 +408,26 @@ class AlimentacionController extends Controller {
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
-                    $nombre_entrega = $ENTREGA->getClientOriginalName();
+                    $nombre_entrega = Utils::replaceAccented($ENTREGA->getClientOriginalName());
                     $ENTREGA->move($ruta, $nombre_entrega);
-                    $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                        'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                    ]);
+                    if (!$DATOS_REENTREGA) {
+                        $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                            'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+                        ]);
+                    } else {
+                        $EJERCICIO_ENTREGA = $DATOS_REENTREGA;
+                    }
                     if ($EJERCICIO_ENTREGA === null) {
                         $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
                     }
                     $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
                     $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                    $EJERCICIO_ENTREGA->setNombre($ENTREGA->getClientOriginalName());
+                    $EJERCICIO_ENTREGA->setNombre(Utils::replaceAccented($ENTREGA->getClientOriginalName()));
                     $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
                     $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                     $em->persist($EJERCICIO_ENTREGA);
                     $em->flush();
-                    return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio entregado correctamente')), 200);
+                    return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto entregado correctamente')), 200);
                 }
                 $respuesta = 'El archivo que intenta subir supera el tamaño máximo permitido.'
                         . '<br>Tu archivo: ' . $ENTREGA->getClientSize() / 1024

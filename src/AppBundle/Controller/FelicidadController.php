@@ -117,7 +117,7 @@ class FelicidadController extends Controller {
                     $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
                     $em->persist($EJERCICIO_CALIFICACION);
 
-                    $nombre_entrega = $ENTREGA->getClientOriginalName();
+                    $nombre_entrega = Utils::replaceAccented($ENTREGA->getClientOriginalName());
                     $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
                     $EJERCICIO_ENTREGA->setFecha($HOY);
                     $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
@@ -237,7 +237,7 @@ class FelicidadController extends Controller {
                     } else {
                         $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
                     }
-                    $nombre_entrega = $ENTREGA->getClientOriginalName();
+                    $nombre_entrega = Utils::replaceAccented($ENTREGA->getClientOriginalName());
                     $EJERCICIO_ENTREGA->setFecha($HOY);
                     $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
                     $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);

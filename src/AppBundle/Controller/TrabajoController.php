@@ -64,9 +64,9 @@ class TrabajoController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/trabajo/jornada_laboral/descargarTuits/{usuario_tw}", name="descargarTuits")
+     * @Route("/ciudadano/trabajo/jornada_laboral/descargarTuits/{usuario_tw}/{offset}", name="descargarTuits")
      */
-    public function descargarTuitsAction(Request $request, $usuario_tw) {
+    public function descargarTuitsAction(Request $request, $usuario_tw, $offset) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/descargarTuits/' . $usuario_tw);
@@ -75,10 +75,9 @@ class TrabajoController extends Controller {
         }
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        $count = 10;
         $SEGUIDOS = 0;
         if (isset($usuario_tw)) {
-            $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $usuario_tw, $count);
+            $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $usuario_tw, $offset);
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
@@ -114,7 +113,7 @@ class TrabajoController extends Controller {
         if ($request->getMethod() == 'POST') {
             $doctrine = $this->getDoctrine();
             $session = $request->getSession();
-            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/seguir');
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/almacenarTweet');
             if (!$status) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
             }
@@ -139,6 +138,39 @@ class TrabajoController extends Controller {
 
             Twitter::almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usuario, $alias_usu_dest, $fecha, $doctrine);
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tweet almacenado correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+    
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/eliminarTweet", name="eliminarTweet")
+     */
+    public function eliminarTweet(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/eliminarTweet');
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+            $id_tweet = $request->request->get('id_tweet');
+            $id_mochila = $request->request->get('id_mochila');
+            $TIPO_TWEET = $doctrine->getRepository('AppBundle:TipoTweet')->findOneById($id_mochila);
+            if(null === $TIPO_TWEET){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $mochilaEliminar = $doctrine->getRepository('AppBundle:MochilaTweets')->findOneBy([
+                'idTweet' => $id_tweet, 'idUsuario' => $USUARIO, 'idTipoTweet' => $TIPO_TWEET
+            ]);
+            if(null !== $mochilaEliminar){
+                $em->remove($mochilaEliminar);
+                $em->flush();
+                return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tweet eliminado correctamente')), 200);
+            }
+            
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha encontrado el tweet: ' . $id_mochila)), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
@@ -489,12 +521,12 @@ class TrabajoController extends Controller {
                 if (!file_exists($ruta)) {
                     mkdir($ruta, 0777, true);
                 }
-                $nombre_entrega = $ENTREGA->getClientOriginalName();
+                $nombre_entrega = Utils::replaceAccented($ENTREGA->getClientOriginalName());
                 $UPLOAD = $ENTREGA->move($ruta, $nombre_entrega);
                 if ($ENTREGA->getError()) {
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $ENTREGA->getErrorMessage())), 200);
                 }
-                $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+                $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
                 $RESULTADOS = Utils::setNota($doctrine, $USUARIO, $EJERCICIO, $CALIFICACION_MEDIA);
 
                 $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
@@ -505,7 +537,7 @@ class TrabajoController extends Controller {
                 }
                 $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
                 $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
-                $EJERCICIO_ENTREGA->setNombre($ENTREGA->getClientOriginalName());
+                $EJERCICIO_ENTREGA->setNombre($nombre_entrega);
                 $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
                 $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
                 $em->persist($EJERCICIO_ENTREGA);
@@ -514,7 +546,7 @@ class TrabajoController extends Controller {
                 $EJERCICIO_CALIFICACION->setIdEjercicioEstado($ESTADO_ENTREGADO);
                 $em->persist($EJERCICIO_CALIFICACION);
                 $em->flush();
-                return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio entregado correctamente')), 200);
+                return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto entregado correctamente')), 200);
             }
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El archivo supera el límite máximo permitido')), 200);
         }

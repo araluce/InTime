@@ -281,6 +281,8 @@
 {% block javascripts %}
     <script>
         var usuario_compartir = 0;
+        var contador_mochila = 0;
+        var offset = 10;
         function almacenarTweet(id_tweet, tipo_tweet, alias_usu_dest) {
             var id = id_tweet;
             var alias = $('#alias-' + id).val();
@@ -359,9 +361,11 @@
         }
         function descargarTuits(id) {
             var contador_tweet = 0;
-            var ruta = '/ciudadano/trabajo/jornada_laboral/descargarTuits/' + id;
+            var ruta = '/ciudadano/trabajo/jornada_laboral/descargarTuits/' + id + '/' + offset;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
+                console.log(data);
+                //exit(0);
                 if (data.estado === 'OK') {
                     contenido = '';
                     contenido += '<legend>Tweets de @' + data.message.ALIAS + '</legend>';
@@ -389,9 +393,9 @@
                         contenido += '      <div class="row tweet-cuerpo">';
                         contenido += '          <div class="col-xs-11">';
                         contenido += '              <p>' + v.TWEET + '</p>';
-                        arrayLinks = getEnlaces(v.TWEET); 
+                        arrayLinks = getEnlaces(v.TWEET);
                         $.each(arrayLinks, function (lk, lv) {
-                            contenido += '          <p><a href="'+lv+'">'+lv+'</a></p>';
+                            contenido += '          <p><a href="' + lv + '">' + lv + '</a></p>';
                         });
                         if (v.FOTO) {
                             $.each(v.FOTOS, function (fk, fv) {
@@ -443,6 +447,16 @@
                         contenido += '<hr class="separador-tweets">';
                         contador_tweet++;
                     });
+                    contenido += '  <div class="col-xs-12">';
+                    contenido += '      <div class="btn-pref btn-group btn-group-justified btn-group-lg btn-group-tweet" role="group" >';
+                    contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                    contenido += '              <button type="button" class="btn btn-default" id="cargarMas" seguidor="' + id + '" onclick="cargarMas();">';
+                    contenido += '                  <span class="fa fa-caret-square-o-down" aria-hidden="true"></span>';
+                    contenido += '                  <div class="titulo-xs" style="display: inline-block;">VER MÁS</div>';
+                    contenido += '              </button>';
+                    contenido += '          </div>';
+                    contenido += '      </div>';
+                    contenido += '  </div>';
                     $('#principal-tweets').html(contenido);
                 } else {
                     alert(data.message);
@@ -450,6 +464,7 @@
             });
         }
         function descargarMochila(id_tipo) {
+            contador_mochila = 0;
             var ruta = '/ciudadano/trabajo/jornada_laboral/mostrarMochila/' + id_tipo;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -459,6 +474,7 @@
         }
 
         function mostrarMochila(id_tipo, TWEETS) {
+            contador_mochila=0;
             contenido = '';
             $.each(TWEETS, function (k, v) {
                 contenido += '<div class="row">';
@@ -495,9 +511,34 @@
                 contenido += '          </div>';
                 contenido += '      </div>';
                 contenido += '  </div>';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <div class="btn-pref btn-group btn-group-justified btn-group-lg btn-group-tweet" role="group" >';
+                contenido += '          <div class="btn-group panel-btn-seguir" role="group">';
+                contenido += '              <button type="button" class="btn btn-default" id="m' + contador_mochila + '-'+id_tipo+'" onclick="eliminarTweet(' + id_tipo + ',' + contador_mochila + ');" idTweet="' + v.ID_STR + '">';
+                contenido += '                  <span class="fa fa-trash" aria-hidden="true"></span>';
+                contenido += '                  <div class="titulo-xs" style="display: inline-block;">ELIMINAR</div>';
+                contenido += '              </button>';
+                contenido += '          </div>';
+                contenido += '      </div>';
+                contenido += '  </div>';
                 contenido += '</div>';
+                contador_mochila++;
             });
             $('#mochila-tweets-' + id_tipo).html(contenido);
+        }
+        function eliminarTweet(id_mochila, id_id_tweet) {
+            var id_tweet = $("#m" + id_id_tweet + "-" + id_mochila).attr('idTweet');
+            var datos = {
+                'id_tweet': id_tweet,
+                'id_mochila': id_mochila
+            };
+            var url = '/ciudadano/trabajo/jornada_laboral/eliminarTweet';
+            $.post(url, datos, function (datos) {
+                data = jQuery.parseJSON(datos);
+                alert(data.message);
+                location.reload();
+
+            });
         }
         $('#button-seguir').click(function () {
             var seguir = $('#input-seguir').val();
@@ -525,6 +566,12 @@
             $('.btn13').height(max);
             $('.btn4').height(max);
         }
+        function cargarMas(){
+            var seguidor = $("#cargarMas").attr('seguidor'); 
+            offset += 10;
+            console.log(seguidor);
+            descargarTuits(seguidor);
+        }
         $(document).ready(function () {
             {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
@@ -535,6 +582,7 @@
             $('#selector_tuits').on('change', function () {
                 var seguidor = this.value;
                 if (seguidor !== '0') {
+                    offset = 10;
                     descargarTuits(seguidor);
                 }
             });

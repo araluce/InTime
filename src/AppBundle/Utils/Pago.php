@@ -40,7 +40,7 @@ class Pago {
         $PREMIO_BASE = Utils::getConstante($doctrine, "premio_base_mina");
         if($ganador){
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $PREMIO/$n_ganadores, 'Ingreso - Premio desactivación de mina');
-            $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+            $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
             $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
             $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
             $CALIFICACION->setFecha(new \DateTime('now'));

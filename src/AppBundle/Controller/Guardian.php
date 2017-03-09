@@ -343,6 +343,7 @@ class Guardian extends Controller {
         foreach ($EJERCICIOS as $EJERCICIO) {
             $aux = [];
             $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+            $aux['COSTE'] = Utils::segundosToDias($EJERCICIO->getCoste());
             $aux['ID'] = $EJERCICIO->getIdEjercicio();
             $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
                 'idEjercicio' => $EJERCICIO, 'idEjercicioEstado' => $ENTREGADO
@@ -394,7 +395,9 @@ class Guardian extends Controller {
             if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
                 $aux['DISTRITO'] = 1;
             }
+            $coste = Utils::segundosToDias($EJERCICIO->getCoste());
             $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+            $aux['COSTE'] = $coste;
             $aux['ID'] = $EJERCICIO->getIdEjercicio();
             $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
                 'idEjercicio' => $EJERCICIO, 'idEjercicioEstado' => $ENTREGADO
@@ -610,7 +613,7 @@ class Guardian extends Controller {
             foreach ($DISTRITOS as $DISTRITO) {
                 $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
                 $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
-                if (count($CIUDADANOS && count($ENTREGAS))) {
+                if (count($CIUDADANOS) && count($ENTREGAS)) {
                     $CALIFICACION2 = null;
                     foreach ($ENTREGAS as $ENTREGA) {
                         $CIUDADANO = $ENTREGA->getIdUsuario();

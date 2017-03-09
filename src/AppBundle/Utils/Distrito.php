@@ -22,7 +22,7 @@ class Distrito {
      * @return type
      */
     static function getCiudadanosDistrito($doctrine, $DISTRITO){
-        $USUARIOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+        $USUARIOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
         return $USUARIOS;
     }
     

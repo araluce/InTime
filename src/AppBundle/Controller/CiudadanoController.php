@@ -17,6 +17,7 @@ use AppBundle\Utils\Usuario;
 use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Pago;
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Distrito;
 
 /**
  * Description of CiudadanoController
@@ -71,16 +72,21 @@ class CiudadanoController extends Controller {
         $DATOS = [];
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
         $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
+        $DATOS['CIUDADANOS'] = [];
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 if ($CIUDADANO->getSeudonimo() !== null) {
                     $aux = [];
                     $aux['ID'] = $CIUDADANO->getIdUsuario();
                     $aux['NUM_MENSAJES'] = Usuario::numeroMensajesChat($doctrine, $USUARIO, $CIUDADANO);
-                    $DATOS[] = $aux;
+                    $DATOS['CIUDADANOS'][] = $aux;
                 }
             }
         }
+        $DATOS['GUETO'] = [];
+        $DATOS['GUETO']['ID'] = 0;
+        $DATOS['GUETO']['NUM_MENSAJES'] = Usuario::numeroMensajesChat($doctrine, $USUARIO, null, true);
+
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
@@ -123,8 +129,14 @@ class CiudadanoController extends Controller {
         $CHAT = $query->getQuery()->getOneOrNullResult();
         if ($CHAT === null) {
             $JsonResponse_data["estado"] = "ERROR";
-            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            $JsonResponse_data["message"] = "<center>Sé el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
+        }
+        $CHAT_SIN_VER = $doctrine->getRepository('AppBundle:ChatSinVer')->findOneBy([
+            'idUsuario' => $Usuario, 'idChat' => $CHAT
+        ]);
+        if (null !== $CHAT_SIN_VER) {
+            $em->remove($CHAT_SIN_VER);
         }
         $CHAT->setFechaUltimoMensaje(new \DateTime('now'));
         $em->persist($CHAT);
@@ -141,7 +153,7 @@ class CiudadanoController extends Controller {
 
         if (!count($CHATS)) {
             $JsonResponse_data["estado"] = "ERROR";
-            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            $JsonResponse_data["message"] = "<center>Sé el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
         } else {
             $JsonResponse_data["estado"] = "OK";
@@ -185,8 +197,14 @@ class CiudadanoController extends Controller {
         $CHAT = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
         if ($CHAT === null) {
             $JsonResponse_data["estado"] = "ERROR";
-            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            $JsonResponse_data["message"] = "<center>Sé el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
+        }
+        $CHAT_SIN_VER = $doctrine->getRepository('AppBundle:ChatSinVer')->findOneBy([
+            'idUsuario' => $Usuario, 'idChat' => $CHAT
+        ]);
+        if (null !== $CHAT_SIN_VER) {
+            $em->remove($CHAT_SIN_VER);
         }
         $CHAT->setFechaUltimoMensaje(new \DateTime('now'));
         $em->persist($CHAT);
@@ -202,7 +220,7 @@ class CiudadanoController extends Controller {
 
         if (!count($CHATS)) {
             $JsonResponse_data["estado"] = "ERROR";
-            $JsonResponse_data["message"] = "<center>Se el primero en saludar<center>";
+            $JsonResponse_data["message"] = "<center>Sé el primero en saludar<center>";
             return new JsonResponse($JsonResponse_data, 200);
         } else {
             $JsonResponse_data["estado"] = "OK";
@@ -294,9 +312,26 @@ class CiudadanoController extends Controller {
             $MENSAJE->setMensaje($mensaje);
             $MENSAJE->setFecha($fecha);
             $MENSAJE->setVisto(0);
-
             $em->persist($MENSAJE);
             $em->flush();
+
+            if (isset($receptor_usuario)) {
+                Usuario::setChatSinVer($doctrine, $receptor_usuario, $CHAT);
+            } else if (isset($distrito_chat)) {
+                $CIUDADANOS = Distrito::getCiudadanosActivosDistrito($doctrine, $distrito_chat);
+                if (count($CIUDADANOS)) {
+                    foreach ($CIUDADANOS as $CIUDADANO) {
+                        Usuario::setChatSinVer($doctrine, $CIUDADANO, $CHAT);
+                    }
+                }
+            } else {
+                $USUARIOS = $doctrine->getRepository('AppBundle:Usuario')->findAll();
+                if (count($USUARIOS)) {
+                    foreach ($USUARIOS as $USUARIO) {
+                        Usuario::setChatSinVer($doctrine, $USUARIO, $CHAT);
+                    }
+                }
+            }
 
             return new JsonResponse(array('estado' => 'OK', 'message' => 'El mesaje ha sido enviado correctamente'), 200);
         }
@@ -326,12 +361,11 @@ class CiudadanoController extends Controller {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
-        $UsuarioClass = new \AppBundle\Utils\Usuario();
-        $status = $UsuarioClass->compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos');
         if (!$status) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
         }
-
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
         $query = $qb->select('f')
                 ->from('\AppBundle\Entity\AlbumFoto', 'f')
                 ->orderBy('f.fecha', 'DESC');
@@ -346,10 +380,19 @@ class CiudadanoController extends Controller {
                 $aux['imagen'] = $FOTO->getImagen();
                 $aux['id'] = $FOTO->getIdAlbumFoto();
                 $REACCIONES = $doctrine->getRepository('AppBundle:FotoReaccion')->findByIdAlbumFoto($FOTO);
+                $aux['mi_like'] = 0;
+                $aux['mi_dislike'] = 0;
                 $aux['likes'] = 0;
                 $aux['dislikes'] = 0;
                 if (count($REACCIONES)) {
                     foreach ($REACCIONES AS $REACCION) {
+                        if ($REACCION->getIdUsuario() === $USUARIO) {
+                            if ($REACCION->getLikeSocial()) {
+                                $aux['mi_like'] = 1;
+                            } else {
+                                $aux['mi_dislike'] = 1;
+                            }
+                        }
                         if ($REACCION->getLikeSocial()) {
                             $aux['likes'] ++;
                         } else {
@@ -373,7 +416,7 @@ class CiudadanoController extends Controller {
         $em = $doctrine->getManager();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/subirImagenAlbum');
         if (!$status) {
-            return new JsonResponse(array('estado' => 'ERROR - Permiso denegado'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'ERROR - Permiso denegado')), 200);
         }
         if ($request->getMethod() == 'POST') {
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
@@ -391,15 +434,16 @@ class CiudadanoController extends Controller {
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
-                    $nombre_foto = $IMG->getIdAlbumFoto() . '.' . $IMAGEN->getClientOriginalExtension();
+                    $nombre_foto = Utils::replaceAccented($IMG->getIdAlbumFoto() . '.' . $IMAGEN->getClientOriginalExtension());
                     $IMG->setImagen($nombre_foto);
                     $em->persist($IMG);
                     $em->flush();
                     $IMAGEN->move($ruta, $nombre_foto);
                 }
             }
-            return new JsonResponse(array('estado' => 'OK'), 200);
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Imagen publicada correctamente')), 200);
         }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
 
     /**

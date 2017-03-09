@@ -154,8 +154,8 @@ class Usuario {
 
         // Si se pide acceso admin
         if ($admin) {
-            // Si el usuario no es administrador se le envía fuera y se almacena el intento de acceso en el log
-            if ($usuario->getIdRol()->getIdRol() !== 2) {
+            // Si el usuario no es GdT/admin se le envía fuera y se almacena el intento de acceso en el log
+            if ($usuario->getIdRol()->getIdRol() !== 2 && $usuario->getIdRol()->getIdRol() !== 5) {
                 return 0;
             }
         }
@@ -563,23 +563,36 @@ class Usuario {
      * @param type $USUARIO_CHAT
      * @return int
      */
-    static function numeroMensajesChat($doctrine, $YO, $USUARIO_CHAT) {
-        $em = $doctrine->getManager();
-        $qb = $em->createQueryBuilder();
-        $query = $qb->select('c1')
-                ->from('\AppBundle\Entity\Chat', 'c1')
-                ->where('c1.idUsuario1 = :emisor AND c1.idUsuario2 = :receptor_usuario')
-                ->orWhere('c1.idUsuario1 = :receptor_usuario AND c1.idUsuario2 = :emisor')
-                ->orderBy('c1.fecha', 'ASC')
-                ->setParameters(array('emisor' => $YO, 'receptor_usuario' => $USUARIO_CHAT));
-        $CHAT = $query->getQuery()->getOneOrNullResult();
+    static function numeroMensajesChat($doctrine, $YO, $USUARIO_CHAT, $gueto = false) {
+        if (!$gueto) {
+            $em = $doctrine->getManager();
+            $qb = $em->createQueryBuilder();
+            $query = $qb->select('c1')
+                    ->from('\AppBundle\Entity\Chat', 'c1')
+                    ->where('c1.idUsuario1 = :emisor AND c1.idUsuario2 = :receptor_usuario')
+                    ->orWhere('c1.idUsuario1 = :receptor_usuario AND c1.idUsuario2 = :emisor')
+                    ->orderBy('c1.fecha', 'ASC')
+                    ->setParameters(array('emisor' => $YO, 'receptor_usuario' => $USUARIO_CHAT));
+            $CHAT = $query->getQuery()->getOneOrNullResult();
+        } else {
+            $CHAT = $doctrine->getRepository('AppBundle:Chat')->findOneBy([
+                'idUsuario1' => null, 'idUsuario2' => null
+            ]);
+        }
         if ($CHAT !== null) {
-            $query = $qb->select('cm')
-                    ->from('\AppBundle\Entity\ChatMensajes', 'cm')
-                    ->where('cm.idChat = :idChat AND cm.visto = 0')
-                    ->setParameters(array('idChat' => $CHAT));
-            $n_mensajes = $query->getQuery()->getResult();
-            return count($n_mensajes);
+            $MENSAJES_SIN_VER = $doctrine->getRepository('AppBundle:ChatSinVer')->findOneBy([
+                'idUsuario' => $YO, 'idChat' => $CHAT
+            ]);
+            if (null === $MENSAJES_SIN_VER) {
+                return 0;
+            }
+            return $MENSAJES_SIN_VER->getCantidad();
+//            $query = $qb->select('cm')
+//                    ->from('\AppBundle\Entity\ChatMensajes', 'cm')
+//                    ->where('cm.idChat = :idChat AND cm.visto = 0')
+//                    ->setParameters(array('idChat' => $CHAT));
+//            $n_mensajes = $query->getQuery()->getResult();
+//            return count($n_mensajes);
         }
         return 0;
     }
@@ -659,7 +672,7 @@ class Usuario {
         $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $mina = Usuario::comprobarMinaDesactivada($doctrine, $USUARIO);
-        if($balon && $deporte && $mina){
+        if ($balon && $deporte && $mina) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
         }
@@ -727,18 +740,18 @@ class Usuario {
      */
     static function comprobarMinaDesactivada($doctrine, $USUARIO) {
         $ULTIMA_MINA = Utils::ultimaMinaDesactivada($doctrine);
-        if(null === $ULTIMA_MINA){
+        if (null === $ULTIMA_MINA) {
             return 1;
         }
         $MINA_DESACTIVADA = $doctrine->getRepository('AppBundle:UsuarioMina')->findOneBy([
             'idUsuario' => $USUARIO, 'idMina' => $ULTIMA_MINA
         ]);
-        if(null === $MINA_DESACTIVADA){
+        if (null === $MINA_DESACTIVADA) {
             return 0;
         }
         return 1;
     }
-    
+
     /**
      * Suma un nivel y un punto de experiencia a un usuario, si no tenía una 
      * entrada en la tabla USUARIO_NIVEL se le crea con nivel 1 y un punto de
@@ -746,19 +759,36 @@ class Usuario {
      * @param type $doctrine
      * @param type $USUARIO
      */
-    static function subirNivel($doctrine, $USUARIO){
+    static function subirNivel($doctrine, $USUARIO) {
         $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
-        if(null === $USUARIO_NIVEL){
+        if (null === $USUARIO_NIVEL) {
             $USUARIO_NIVEL = new \AppBundle\Entity\UsuarioNivel();
             $USUARIO_NIVEL->setIdUsuario($USUARIO);
             $USUARIO_NIVEL->setNivel(1);
             $USUARIO_NIVEL->setPuntos(1);
         } else {
-            $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel()+1);
+            $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel() + 1);
             $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getNivel());
         }
         $em = $doctrine->getManager();
         $em->persist($USUARIO_NIVEL);
+        $em->flush();
+    }
+
+    static function setChatSinVer($doctrine, $USUARIO, $CHAT) {
+        $em = $doctrine->getManager();
+        $CHAT_SIN_VER = $doctrine->getRepository('AppBundle:ChatSinVer')->findOneBy([
+            'idUsuario' => $USUARIO, 'idChat' => $CHAT
+        ]);
+        if (null !== $CHAT_SIN_VER) {
+            $CHAT_SIN_VER->setCantidad($CHAT_SIN_VER->getCantidad() + 1);
+        } else {
+            $CHAT_SIN_VER = new \AppBundle\Entity\ChatSinVer();
+            $CHAT_SIN_VER->setIdChat($CHAT);
+            $CHAT_SIN_VER->setIdUsuario($USUARIO);
+            $CHAT_SIN_VER->setCantidad(1);
+        }
+        $em->persist($CHAT_SIN_VER);
         $em->flush();
     }
 

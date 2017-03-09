@@ -31,9 +31,9 @@ class Utils {
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
         ]);
-        if ($EJERCICIO_CALIFICACION !== null) {
-            // Ejercicio ya calificado, se resta el TdV ganado con el y se le
-            //ingresa el TdV por defecto.
+        if(null !== $EJERCICIO_CALIFICACION){
+            // Si este ejercicio ya había sido calificacdo, se resta el TdV anterior
+            // y se le asigna el TdV por defecto hasta que el GdT lo califique
             if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
                 $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
                     'idEjercicio' => $id_ejercicio, 'idCalificacion' => $EJERCICIO_CALIFICACION->getIdCalificaciones()
@@ -659,6 +659,35 @@ class Utils {
             }
         }
         $em->flush();
+    }
+
+    /**
+     * Elimina acentos de una cadena
+     * @param type $string
+     * @return type
+     */
+    static function replaceAccented($string) {
+        $result = strtolower($string);
+
+        $unwanted_array = array('Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+            'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
+            'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+            'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
+        $result = strtr($result, $unwanted_array);
+        return $result;
+    }
+    
+    static function esCitaAntigua($CITA){
+        $hoy = new \DateTime('now');
+        $dia_str = strtolower($CITA->getDia());
+
+        $conversores = array('lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5);
+        $dia_int = strtr($dia_str, $conversores);
+        if(intval($dia_int) < intval($hoy->format('w'))){
+            return 1;
+        }
+        return 0;
     }
 
 }

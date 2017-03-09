@@ -31,7 +31,8 @@ class Twitter {
         $tweets = [];
         $tweets['ALIAS'] = strtolower($usuario_tw);
         $tweets['TWEETS'] = Twitter::tweetsFormato($tweetsSinFormato);
-
+        
+//        return $tweetsSinFormato;
         return $tweets;
     }
 
@@ -149,7 +150,14 @@ class Twitter {
                 $em->persist($tweet);
                 $em->flush();
             }
-
+            
+            $mochila_anterior = $doctrine->getRepository('AppBundle:MochilaTweets')->findOneBy([
+                'idUsuario' => $id_usu, 'idUsuarioDestino' => $id_usu_des, 'idTweet' => $id_tweet
+            ]);
+            if(null !== $mochila_anterior){
+                $em->remove($mochila_anterior);
+                $em->flush();
+            }
             $mochila = $doctrine->getRepository('AppBundle:MochilaTweets')->findByIdTweet($id_tweet);
             $existe = false;
             if ($mochila) {

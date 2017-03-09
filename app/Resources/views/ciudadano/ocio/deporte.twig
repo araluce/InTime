@@ -323,7 +323,6 @@
             mostrarCarga('Descargando información de las sesiones');
             ruta = '/ciudadano/ocio/deporte/actualizarInfo';
             $.get(ruta, function (data, status) {
-                console.log(data);
                 mostrarResultadoOperacion(data.message);
             });
         }
@@ -478,9 +477,10 @@
             var ruta = '/ciudadano/ocio/deporte/getMisSesiones';
             $.get(ruta, function (data, status) {
                 datos = jQuery.parseJSON(data);
+                console.log(datos);
                 if (datos.estado === 'OK') {
                     data = datos.message;
-                    console.log(datos);
+                    
                     sesiones = datos.message.SESIONES;
                     $.each(sesiones, function (k, v) {
                         contenido = '';

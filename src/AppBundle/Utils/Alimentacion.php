@@ -243,7 +243,8 @@ class Alimentacion {
 
     /**
      * Separación entre entregas por secciones. Esta función nos dice si un 
-     * ejercicio puede ser entregado si el último ejercicio de su sección 
+     * ejercicio puede ser entregado si el último ejercicio entregado de su 
+     * sección está dentro del tiempo establecido por el valor 'diasDifEntregas'
      * @param type $doctrine
      * @param type $SECCION
      * @param type $USUARIO
@@ -254,15 +255,16 @@ class Alimentacion {
         if ($DISTRITO === null) {
             $ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO);
         } else {
-            $ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO, $USUARIO->getIdDistrito());
+            return 1;
+            //$ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO, $USUARIO->getIdDistrito());
         }
         if ($ultimoEjercicio) {
             $diasDif = Utils::getConstante($doctrine, 'diasDifEntregas');
             $fechaEntrega = $ultimoEjercicio->getFecha();
-            if ($FECHA->format("Y") === $fechaEntrega->format("Y")) {
-                if ($FECHA->format("d") - $fechaEntrega->format("d") < $diasDif) {
-                    return 0;
-                }
+            $DIFERENCIA_SEGUNDOS = $FECHA->getTimestamp() - $fechaEntrega->getTimestamp();
+            $DIFERENCIA = (($DIFERENCIA_SEGUNDOS/60)/60)/24;
+            if ($DIFERENCIA < $diasDif) {
+                return 0;
             }
         }
         return 1;

@@ -36,12 +36,6 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" id="proceso" class="btn btn-default btn-menu" href="#tab2" data-toggle="tab" onclick="misCitas();">
-                        <span class="fa fa-ticket" aria-hidden="true"></span>
-                        <div class="hidden-xs">MIS CITAS</div>
-                    </button>
-                </div>
-                <div class="btn-group" role="group">
                     <button type="button" id="exit" class="btn btn-default btn-menu-last" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
                         <div class="hidden-xs">ATRÁS</div>
@@ -50,40 +44,15 @@
             </div>
             <div class="col-md-12">
                 <div class="tab-content">
-
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row border-radius" style="margin-top: 1%;">
                             <div class="col-lg-6">
                                 <div id="day-schedule"></div>
                             </div>
                             <div class="col-lg-6">
-                                <div class="form-group" style="margin-top: 3%;">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" class="form-control" id="dia" placeholder="Día" disabled/>
-                                        </div>
-                                        <div class="input-group" style="margin-top: 1%;">
-                                            <span class="input-group-addon"><i class="fa fa-money"></i></span>
-                                            <input type="text" class="form-control" id="coste" placeholder="Coste" disabled/>
-                                        </div>
-                                        <textarea class="form-control" style="margin-top: 1%;" id="horas" NAME="horas" rows="1" placeholder="Horas" disabled></textarea>
-                                        <textarea class="form-control" style="margin-top: 1%;" id="motivo" rows="3" placeholder="Escriba el motivo de la cita"></textarea>
-                                    </div>
-                                    <div class="row" style="margin-top: 3%;">
-                                        <div class="col-xs-4 col-xs-offset-4">
-                                            <button  class="btn btn-primary btn-default btn-block info-button" id="solicitar">
-                                                Solicitar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="panel-cita"></div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="tab-pane fade in" id="tab2">
-                        <div id="mis-solicitudes"></div>
                     </div>
                 </div>
             </div>
@@ -115,18 +84,20 @@
                     dia = aux['dia'];
                     resultados = [];
                     horas = [];
-                    $('#dia').val('');
                 }
                 horas.push(v.getAttribute("data-time"));
                 resultados.push(aux);
             });
-            imprimirResultados();
+            mostrarBloqueo();
         });
         $(".time-slot").on('click', function () {
             var hora = $(this)[0].attributes[1].value;
             var dia_slot = $(this)[0].attributes[2].value;
             var index = 0;
             var dia_seleccionado = $(this)[0].attributes[2].value;
+            var ocupado = $(this).attr('data-occupied');
+            var cita = $(this).attr('data-cita');
+            var aceptado = $(this).attr('data-aceptado');
             if (dia !== dia_seleccionado) {
                 $('td[data-selected="selected"]').each(function () {
                     $(this).removeAttr('data-selected');
@@ -149,88 +120,220 @@
                     index++;
                 });
             }
-            imprimirResultados();
-        });
-        function imprimirResultados() {
-            $('#dia').val(diaToString(dia));
-            $('#dia_id').val(dia);
-            var contador = 0;
-            $.each(horas, function (k, v) {
-                if (typeof v !== 'undefined') {
-                    contador++;
-                }
-            });
-            if (contador === 0) {
-                $('#coste').val('');
-                $('#dia').val('');
+            if (cita === "cita" || ocupado === "occupied" || aceptado === "aceptado") {
+                mostrarSolicitudCita(hora, diaToString(dia_seleccionado));
             } else {
-                $('#coste').val(contador * 15 + 'minutos');
+                mostrarBloqueo();
             }
+        });
+        function mostrarBloqueo() {
             t = '';
             $.each(resultados, function (k, v) {
                 if (typeof v !== 'undefined') {
                     t += v.hora + ' ';
                 }
             });
-            $('#horas').html(t);
+
+            $("#panel-cita").html('');
+            contenido = '';
+            contenido += '<div class="form-group" style="margin-top: 3%;">';
+            contenido += '  <legend>Bloquear horas</legend>';
+            contenido += '  <div class="row">';
+            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>DIA: ' + diaToString(dia) + '</textarea>';
+            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>HORAS:' + t + '</textarea>';
+            contenido += '  </div>';
+            contenido += '  <div class="row" style="margin-top: 3%;">';
+            contenido += '      <div class="col-xs-4 col-xs-offset-4">';
+            contenido += '          <button class="btn btn-primary btn-default btn-block info-button" onclick="bloquear();">';
+            contenido += '              BLOQUEAR';
+            contenido += '          </button>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#panel-cita").html(contenido);
         }
-        function diaToString(id) {
-            switch (id) {
-                case '0':
-                    return 'Lunes';
-                case '1':
-                    return 'Martes';
-                case '2':
-                    return 'Miercoles';
-                case '3':
-                    return 'Jueves';
-                case '4':
-                    return 'Viernes';
-                case '5':
-                    return 'Sabado';
-                case '6':
-                    return 'Domingo';
-                default:
-                    return '';
-            }
+
+        function mostrarSolicitudCita(hora, dia) {
+            ruta = '/guardian/asistencia/getCitaInfo';
+            datos = {'dia': dia, 'hora': hora};
+            $.post(ruta, datos, function (datos) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    $("#panel-cita").html('');
+                    contenido = '';
+                    if (!data.message.ADMIN) {
+                        if (!data.message.ESTADO) {
+                            contenido += '<div class="form-group" style="margin-top: 3%;">';
+                            contenido += '  <div class="row">';
+                            contenido += '      <legend style="color: red;">Solicitud de asistencia</legend>;'
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>' + data.message.DIA + ' - ' + data.message.HORA + '</textarea>';
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>' + data.message.NOMBRE + ' ' + data.message.APELLIDOS + ' ' + data.message.DNI + '</textarea>';
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="3" id="no-aceptar">' + data.message.MOTIVO + '</textarea>';
+                            contenido += '  </div>';
+                            contenido += '  <div class="row" style="margin-top: 3%;">';
+                            contenido += '      <div class="col-xs-5">';
+                            contenido += '          <button  class="btn btn-primary btn-default btn-block info-button" id="btn-aceptar" data-day="' + data.message.DIA + '" data-hour="' + data.message.HORA + '" onclick="aceptarCita();">';
+                            contenido += '              ACEPTAR';
+                            contenido += '          </button>';
+                            contenido += '      </div>';
+                            contenido += '      <div class="col-xs-5 col-xs-offset-2">';
+                            contenido += '          <button  class="btn btn-primary btn-danger btn-block info-button" id="btn-no-aceptar" data-day="' + data.message.DIA + '" data-hour="' + data.message.HORA + '" onclick="anularCita(0);">';
+                            contenido += '              NO ACEPTAR';
+                            contenido += '          </button>';
+                            contenido += '      </div>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                        } else {
+                            contenido += '<div class="form-group" style="margin-top: 3%;">';
+                            contenido += '  <div class="row">';
+                            contenido += '      <legend style="color: green;">Asistencia aceptada</legend>;'
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>' + data.message.DIA + ' - ' + data.message.HORA + '</textarea>';
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>' + data.message.NOMBRE + ' ' + data.message.APELLIDOS + ' ' + data.message.DNI + '</textarea>';
+                            contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="3" id="motivo-anular" >' + data.message.MOTIVO + '</textarea>';
+                            contenido += '  </div>';
+                            contenido += '  <div class="row" style="margin-top: 3%;">';
+                            contenido += '      <div class="col-xs-5">';
+                            contenido += '          <button  class="btn btn-primary btn-primary btn-block info-button" id="btn-remunerar" data-day="' + data.message.DIA + '" data-hour="' + data.message.HORA + '" onclick="remunerar();">';
+                            contenido += '              DEVOLVER';
+                            contenido += '          </button>';
+                            contenido += '      </div>';
+                            contenido += '      <div class="col-xs-5 col-xs-offset-2">';
+                            contenido += '          <button  class="btn btn-primary btn-danger btn-block info-button" id="btn-anular" data-day="' + data.message.DIA + '" data-hour="' + data.message.HORA + '" onclick="anularCita(1);">';
+                            contenido += '              ANULAR';
+                            contenido += '          </button>';
+                            contenido += '      </div>';
+                            contenido += '  </div>';
+                            contenido += '</div>';
+                        }
+                    } else {
+                        contenido += '<div class="form-group" style="margin-top: 3%;">';
+                        contenido += '  <div class="row">';
+                        contenido += '      <legend>Bloqueado por el GdT</legend>;'
+                        contenido += '      <textarea class="form-control" style="margin-top: 1%;" rows="1" disabled>' + data.message.DIA + ' - ' + data.message.HORA + '</textarea>';
+                        contenido += '  </div>';
+                        contenido += '  <div class="row" style="margin-top: 3%;">';
+                        contenido += '      <input type="hidden" id="dia-bloqueado" value="' + data.message.DIA + '">';
+                        contenido += '      <input type="hidden" id="hora-bloqueada" value="' + data.message.HORA + '">';
+                        contenido += '      <div class="col-xs-4 col-xs-offset-4">';
+                        contenido += '          <button  class="btn btn-primary btn-default btn-block info-button" onclick="desbloquear();">';
+                        contenido += '              DESBLOQUEAR';
+                        contenido += '          </button>';
+                        contenido += '      </div>';
+                        contenido += '  </div>';
+                        contenido += '</div>';
+                    }
+                    $("#panel-cita").html(contenido);
+                }
+            });
         }
-        $("#solicitar").on('click', function () {
-            var dia_post = diaToString(dia);
-            var horas_post = horas;
-            var motivo = $("#motivo").val();
+        function aceptarCita() {
+            var dia_post = $("#btn-aceptar").attr("data-day");
+            var hora_post = $("#btn-aceptar").attr("data-hour");
             $('#modal-avisos2').click();
-            mostrarCarga('Estudiando solicitud...');
-            if (dia_post === '' || !horas_post.length) {
+            mostrarCarga('Comunicando con el sistema...');
+            if (dia_post === '' || hora_post === '') {
                 mostrarResultadoOperacion('Debes elegir un día en el horario.');
-            } else if ($.trim(motivo) === '') {
-                mostrarResultadoOperacion('Especifica el motivo de la asistencia.');
             } else {
-                mostrarCarga('Verificando disponibilidad de la asistencia...');
-                ruta = '/ciudadano/asistencia/solicitar';
-                datos = {'dia': dia_post, 'horas': horas_post, 'motivo': motivo};
+                mostrarCarga('Aceptando cita...');
+                ruta = '/guardian/asistencia/aceptarCita';
+                datos = {'dia': dia_post, 'hora': hora_post};
                 $.post(ruta, datos, function (data, status) {
                     mostrarResultadoOperacion(data.message);
                 });
             }
-        });
-        function obtenerCitas() {
-            ruta = '/ciudadano/asistencia/obtenerCitasPendientes';
-            $.get(ruta, function (data, status) {
-                horario = data.message;
-                console.log(data.message);
-                $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
-            });
-            ruta = '/ciudadano/asistencia/obtenerCitasAceptadas';
-            $.get(ruta, function (data, status) {
-                horario = data.message;
-                console.log(data.message);
-                $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
-            });
+        }
+        function remunerar() {
+            dia_post = $("#btn-remunerar").attr("data-day");
+            hora_post = $("#btn-remunerar").attr("data-hour");
+            $('#modal-avisos2').click();
+            mostrarCarga('Comunicando con el sistema...');
+            if (dia_post === '' || hora_post === '') {
+                mostrarResultadoOperacion('Debes elegir un día en el horario.');
+            } else {
+                mostrarCarga('Remunerando...');
+                ruta = '/guardian/asistencia/remunerarCita';
+                datos = {'dia': dia_post, 'hora': hora_post};
+                $.post(ruta, datos, function (data, status) {
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+        }
+        function anularCita(seccion) {
+            if (seccion) {
+                dia_post = $("#btn-anular").attr("data-day");
+                hora_post = $("#btn-anular").attr("data-hour");
+                motivo_anular = $("#motivo-anular").val();
+            } else {
+                dia_post = $("#btn-no-aceptar").attr("data-day");
+                hora_post = $("#btn-no-aceptar").attr("data-hour");
+                motivo_anular = $("#no-aceptar").val();
+            }
+            $('#modal-avisos2').click();
+            mostrarCarga('Comunicando con el sistema...');
+            if (dia_post === '' || hora_post === '') {
+                mostrarResultadoOperacion('Debes elegir un día en el horario.');
+            } else {
+                mostrarCarga('Anulando cita...');
+                ruta = '/guardian/asistencia/anularCita';
+                datos = {'dia': dia_post, 'hora': hora_post, 'motivo': motivo_anular};
+                $.post(ruta, datos, function (data, status) {
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+        }
+        function desbloquear() {
+            var hora_post = $('#hora-bloqueada').val();
+            var dia_post = $('#dia-bloqueado').val();
+            $('#modal-avisos2').click();
+            mostrarCarga('Comunicando con el sistema...');
+            if (dia_post === '' || hora_post === '') {
+                mostrarResultadoOperacion('Debes elegir un día en el horario.');
+            } else {
+                mostrarCarga('Desbloqueando...');
+                ruta = '/guardian/asistencia/desbloquear';
+                datos = {'dia': dia_post, 'hora': hora_post};
+                $.post(ruta, datos, function (data, status) {
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+        }
+        function bloquear() {
+            var dia_post = diaToString(dia);
+            var horas_post = horas;
+            $('#modal-avisos2').click();
+            mostrarCarga('Bloqueando días...');
+            if (dia_post === '' || !horas_post.length) {
+                mostrarResultadoOperacion('Debes elegir un día en el horario.');
+            } else {
+                mostrarCarga('Verificando disponibilidad del Bloqueo...');
+                ruta = '/guardian/asistencia/bloquear';
+                datos = {'dia': dia_post, 'horas': horas_post};
+                $.post(ruta, datos, function (data, status) {
+                    mostrarResultadoOperacion(data.message);
+                });
+            }
+        }
+        function obtenerBloqueados() {
             ruta = '/ciudadano/asistencia/obtenerOcupados';
             $.get(ruta, function (data, status) {
                 horario = data.message;
-                console.log(data.message);
                 $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
+            });
+        }
+        function obtenerCitasPendientes() {
+            ruta = '/ciudadano/asistencia/obtenerCitasPendientes';
+            $.get(ruta, function (data, status) {
+                horario = data.message;
+                $("#day-schedule").data('artsy.dayScheduleSelector').deserializeCitado(jQuery.parseJSON(horario));
+            });
+        }
+        function obtenerCitasAceptadas() {
+            ruta = '/ciudadano/asistencia/obtenerCitasAceptadas';
+            $.get(ruta, function (data, status) {
+                horario = data.message;
+                console.log(horario);
+                $("#day-schedule").data('artsy.dayScheduleSelector').deserializeAceptado(jQuery.parseJSON(horario));
             });
         }
         function misCitas() {
@@ -316,8 +419,6 @@
                             contenido += '  <div class="col-lg-6">';
                             contenido += '      <p>Estado: Cita anulada por el sistema.</p>';
                             contenido += '      <p>Motivo de la cancelación: No se ha obtenido respuesta</p>';
-                            contenido += '      <p>Día: ' + v.DIA + '</p>';
-                            contenido += '      <p>Hora: ' + v.HORA + '</p>';
                             contenido += '      <p><del>Importe: ' + v.COSTE + 'm.</del></p>';
                             contenido += '  </div>';
                             contenido += '</div>';
@@ -384,13 +485,35 @@
         function cerrarModal() {
             $('#modal-advice2').modal('toggle');
         }
+        function diaToString(id) {
+            switch (id) {
+                case '0':
+                    return 'Lunes';
+                case '1':
+                    return 'Martes';
+                case '2':
+                    return 'Miercoles';
+                case '3':
+                    return 'Jueves';
+                case '4':
+                    return 'Viernes';
+                case '5':
+                    return 'Sabado';
+                case '6':
+                    return 'Domingo';
+                default:
+                    return '';
+            }
+        }
         $(document).ready(function () {
-            obtenerCitas();
+            obtenerCitasPendientes();
+            obtenerCitasAceptadas();
+            obtenerBloqueados();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
-            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
     </script>
 

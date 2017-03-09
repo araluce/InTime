@@ -114,16 +114,14 @@ class DataManager {
 //        \AppBundle\Utils\Utils::pretty_print($DATOS);
         return $DATOS;
     }
-    
+
     static function infoUsu($doctrine, $session) {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        if($USUARIO->getNombre() === '' || $USUARIO->getApellidos() === '' || $USUARIO->getSeudonimo() === ''
-                || $USUARIO->getFechaNacimiento() === ''){
+        if ($USUARIO->getNombre() === '' || $USUARIO->getApellidos() === '' || $USUARIO->getSeudonimo() === '' || $USUARIO->getFechaNacimiento() === '') {
             return 0;
         }
-        if($USUARIO->getNombre() === null || $USUARIO->getApellidos() === null || $USUARIO->getSeudonimo() === null
-                || $USUARIO->getFechaNacimiento() === null){
+        if ($USUARIO->getNombre() === null || $USUARIO->getApellidos() === null || $USUARIO->getSeudonimo() === null || $USUARIO->getFechaNacimiento() === null) {
             return 0;
         }
         return 1;
@@ -136,6 +134,7 @@ class DataManager {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 $contador += Usuario::numeroMensajesChat($doctrine, $USUARIO, $CIUDADANO);
             }
+            $contador += Usuario::numeroMensajesChat($doctrine, $USUARIO, null, true);
         }
         return $contador;
     }
@@ -148,7 +147,6 @@ class DataManager {
         $EJERCICIO_CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
         ]);
-        $CALIFICACION = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
         $EJERCICIO_BENEFICIO = Utils::getConstante($doctrine, 'test_correcto');
         $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
         $aux['BENEFICIO'] = Utils::segundosToDias($EJERCICIO_BENEFICIO);
@@ -158,7 +156,7 @@ class DataManager {
         $aux['ELEGIBLE'] = true;
         if ($EJERCICIO_CALIFICACIONES !== null) {
             $aux['ELEGIBLE'] = false;
-            if($EJERCICIO_CALIFICACIONES->getIdEvaluador()->getIdRol()->getNombre() === 'Guardián'){
+            if ($EJERCICIO_CALIFICACIONES->getIdEvaluador()->getIdRol()->getNombre() === 'Guardián') {
                 $aux['CORRECTO'] = true;
             } else {
                 $aux['CORRECTO'] = false;
@@ -201,14 +199,14 @@ class DataManager {
 
         return $aux;
     }
-    
+
     /**
      * Obtiene y estructura los datos de entregas en Felicidad
      * @param type $doctrine
      * @param type $USUARIO
      * @return string
      */
-    static function getRetosFelicidad($doctrine, $USUARIO){
+    static function getRetosFelicidad($doctrine, $USUARIO) {
         $DATOS = [];
         $RETOS = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findByIdUsuario($USUARIO);
         if (null !== $RETOS) {
@@ -221,7 +219,7 @@ class DataManager {
                 $aux['DESCRIPCION'] = $RETO->getEnunciado();
                 $aux['ENTREGA'] = [];
                 $aux['PROPUESTA'] = [];
-                
+
                 $PROPUESTA = $RETO->getIdEjercicioPropuesta();
                 $ENTREGA = $RETO->getIdEjercicioEntrega();
                 $aux2 = [];
@@ -254,6 +252,101 @@ class DataManager {
             }
         }
         return $DATOS;
+    }
+
+    static function getCitasPendientesGuardian($doctrine) {
+        $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
+        $fecha = new \DateTime('now');
+        $DATOS = 0;
+
+        $TUTORIAS = $doctrine->getRepository('AppBundle:UsuarioTutoria')->findAll();
+        if (count($TUTORIAS)) {
+            foreach ($TUTORIAS as $TUTORIA) {
+                if ($TUTORIA->getFechaSolicitud()->format("W") === $fecha->format("W") &&
+                        $TUTORIA->getEstado() === 0 &&
+                        $TUTORIA->getIdUsuario()->getIdRol() !== $ROL_GDT) {
+                    $DATOS++;
+                }
+            }
+        }
+        return $DATOS;
+    }
+
+    static function numEntregasAlimentacionGuardian($doctrine) {
+        $cont = 0;
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();
+        $COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
+        $BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
+        $ESTADO_ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
+        $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
+        // El array nos sirve cuando un distrito reentrega y es otro usuario del distrito quien entrega
+        $array_ids_ejercicios = [];
+        if (count($ENTREGAS)) {
+            foreach ($ENTREGAS as $ENTREGA) {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicioEstado' => $ESTADO_ENTREGADO, 'idEvaluador' => $SISTEMA, 'idEjercicio' => $ENTREGA->getIdEjercicio()
+                ]);
+                if (null !== $CALIFICACION && !in_array($CALIFICACION->getIdEjercicio(), $array_ids_ejercicios) && ($CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $COMIDA || $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $BEBIDA)) {
+                    $array_ids_ejercicios[] = $CALIFICACION->getIdEjercicio();
+                    $cont++;
+                }
+            }
+        }
+        return $cont;
+    }
+
+    static function numEntregasPagaGuardian($doctrine) {
+        $cont = 0;
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();
+        $PAGA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('paga_extra');
+        $ESTADO_ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
+        $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
+        $array_ids_ejercicios = [];
+        if (count($ENTREGAS)) {
+            foreach ($ENTREGAS as $ENTREGA) {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicioEstado' => $ESTADO_ENTREGADO, 'idEvaluador' => $SISTEMA, 'idEjercicio' => $ENTREGA->getIdEjercicio()
+                ]);
+                if (null !== $CALIFICACION && !in_array($CALIFICACION->getIdEjercicio(), $array_ids_ejercicios) && $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $PAGA) {
+                    $array_ids_ejercicios[] = $CALIFICACION->getIdEjercicio();
+                    $cont++;
+                }
+            }
+        }
+        return $cont;
+    }
+
+    static function numEntregasFelicidadGuardian($doctrine) {
+        $cont = 0;
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();
+        $ESTADO_ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        $EJERCICIOS_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findAll();
+        $arrays_ids_a_buscar = [];
+        if (count($EJERCICIOS_FELICIDAD)) {
+            foreach ($EJERCICIOS_FELICIDAD as $EF) {
+                if (null !== $EF->getIdEjercicioEntrega()) {
+                    $arrays_ids_a_buscar[] = $EF->getIdEjercicioEntrega()->getIdEjercicio();
+                }
+            }
+        }
+        if (count($ENTREGAS)) {
+            foreach ($ENTREGAS as $ENTREGA) {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicioEstado' => $ESTADO_ENTREGADO, 'idCalificaciones' => null, 'idEvaluador' => null, 'idEjercicio' => $ENTREGA->getIdEjercicio()
+                ]);
+                if (null !== $CALIFICACION && in_array($CALIFICACION->getIdEjercicio()->getIdEjercicio(), $arrays_ids_a_buscar)) {
+                    $F = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneByIdEjercicioEntrega($CALIFICACION->getIdEjercicio());
+                    if (null !== $F) {
+                        if (!$F->getPorcentaje()) {
+                            $cont++;
+                        }
+                    }
+                }
+            }
+        }
+        return $cont;
     }
 
 }

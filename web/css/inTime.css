@@ -391,6 +391,11 @@ legend{
     top: 0px;
     left: 0px;
 }
+.badge-aviso2{
+    background-color: #E0B831;
+    font-size: 14px;
+    font-weight: 600;
+}
 
 .resultados-titulo{
     text-transform: uppercase;
@@ -781,7 +786,8 @@ legend{
         height: 83px;
     }
     .badge-alimentacion,
-    .badge-aviso{
+    .badge-aviso,
+    .badge-aviso2{
         font-size: 12px;
     }
     .contenedor-badge .badge{
@@ -944,7 +950,8 @@ legend{
         /*height: 1000px;*/
     }
     .badge-alimentacion,
-    .badge-aviso{
+    .badge-aviso,
+    .badge-aviso2{
         font-size: 40px;
     }
     .contenedor-badge .badge{
@@ -1129,7 +1136,8 @@ legend{
         width: 95%;
     }
 
-    .badge-aviso{
+    .badge-aviso,
+    .badge-aviso2{
         font-size: 20px;
     }
     .breadcrumb{
@@ -1219,7 +1227,8 @@ legend{
     .texto-tweet{
         font-size: 16px;
     }
-    .badge-aviso{
+    .badge-aviso,
+    .badge-aviso2{
         font-size: 14px;
         font-weight: 600;
     }

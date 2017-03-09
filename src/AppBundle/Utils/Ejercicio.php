@@ -8,6 +8,8 @@
 
 namespace AppBundle\Utils;
 
+use AppBundle\Utils\Distrito;
+
 /**
  * Description of Ejercicio
  *
@@ -118,7 +120,7 @@ class Ejercicio {
         }
         return $RETO;
     }
-    
+
     /**
      * Evalua e ingresa el beneficio obtenido al superar una fase
      * @param type $doctrine
@@ -144,7 +146,7 @@ class Ejercicio {
 
         Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase de deportes superada.');
     }
-    
+
     /**
      * Evalua e ingresa el beneficio obtenido al superar una fase
      * @param type $doctrine
@@ -171,6 +173,43 @@ class Ejercicio {
         $em->flush();
 
         Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase ' . $EJERCICIO->getEnunciado() . ' de deportes superada.');
+    }
+
+    /**
+     * Nos devuelve la primera entrega de un ejercicio, 0 si nunca ha sido
+     * entregado el ejercicio
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $EJERCICIO
+     * @param type $DISTRITO
+     * @return int
+     */
+    static function datosReentrega($doctrine, $USUARIO, $EJERCICIO, $DISTRITO) {
+        $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+            'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
+        ]);
+        if (null === $ENTREGA) {
+            if (null === $DISTRITO) {
+                // El usuario no ha realizado ninguna entrega de este ejercicio
+                // y no hay entregas de otros usuarios del mismo distrito
+                // => No es reentrega, es una entrega nueva
+                return 0;
+            }
+            // Como es de distrito y no lo he entregado yo buscamos al que
+            // entregó la primera vez
+            $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
+            if (!count($CIUDADANOS)) {
+                return 0;
+            }
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                    'idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO
+                ]);
+                if(null !== $ENTREGA){
+                    return $ENTREGA;
+                }
+            }
+        }
     }
 
 }

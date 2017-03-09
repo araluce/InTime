@@ -64,7 +64,7 @@ class JugadorController extends Controller {
                 $usuario->setEmail($EMAIL);
             }
             if ($CLAVE !== '') {
-                $usuario->setClave($this->encriptar($usuario, $CLAVE));
+                $usuario->setClave(Usuario::encriptar($usuario, $CLAVE));
             }
             if (!is_null($IMAGEN)) {
                 $ruta = 'images/users/' . $usuario->getDni();

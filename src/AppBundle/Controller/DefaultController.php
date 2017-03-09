@@ -13,6 +13,7 @@ use AppBundle\Utils\Utils;
 use AppBundle\Utils\Twitter;
 use AppBundle\Utils\Trabajo;
 use AppBundle\Utils\Ejercicio;
+use AppBundle\Runtastic\Runtastic;
 
 class DefaultController extends Controller {
 
@@ -733,18 +734,24 @@ class DefaultController extends Controller {
     public function inicio_usuario($usuario, $session) {
         $rol_usu = $usuario->getIdRol()->getIdRol();
 
-        if ($rol_usu === 1) {
+        if ($rol_usu === 1 || $rol_usu === 5) {
 
             $render = $this->inicio_ciudadano($usuario, $session);
         }
         if ($rol_usu === 2) {
-            $render = $this->inicio_guardian();
+            $render = $this->inicio_guardian($usuario);
         }
         return $render;
     }
 
-    public function inicio_guardian() {
+    public function inicio_guardian($USUARIO) {
+        $doctrine = $this->getDoctrine();
         $DATOS = ['TITULO' => 'InTime - Guardián del Tiempo'];
+        $DATOS['CHAT'] = DataManager::chatsPendientes($this->getDoctrine(), $USUARIO);
+        $DATOS['CITAS'] = DataManager::getCitasPendientesGuardian($doctrine);
+        $DATOS['ALIMENTACION'] = DataManager::numEntregasAlimentacionGuardian($doctrine);
+        $DATOS['PAGA'] = DataManager::numEntregasPagaGuardian($doctrine);
+        $DATOS['FELICIDAD'] = DataManager::numEntregasFelicidadGuardian($doctrine);
         return $this->render('guardian/guardian.html.twig', $DATOS);
     }
 
@@ -760,6 +767,89 @@ class DefaultController extends Controller {
             $DATOS = DataManager::setDefaultData($doctrine, 'InTime - Desconocido', $session);
         }
         return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
+    }
+    
+    /**
+     * @Route("/testEncriptar/{id_usuario}/{dni}", name="testEncriptar")
+     */
+    public function testEncriptarAction(Request $request, $id_usuario, $dni) {
+        $clave = sha1($id_usuario . $dni);
+        Utils::pretty_print($clave);
+    }
+
+    /**
+     * @Route("/testAcentos/{string}", name="testAcentos")
+     */
+    public function testAcentosAction(Request $request, $string) {
+        $fecha = new \DateTime('now');
+        //Utils::pretty_print(Utils::replaceAccented($string));
+        $hoy = new \DateTime('now');
+        $dia_str = strtolower('Viernes');
+
+        $conversores = array('lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5);
+        $dia_int = strtr($dia_str, $conversores);
+        Utils::pretty_print("dia_int(".$dia_int.") < hoy(".$hoy->format('w').")");
+        if(intval($dia_int) < intval($hoy->format('w'))){
+            return 1;
+        }
+        return 0;
+    }
+    
+    /**
+     * @Route("/actualizarRuntastic/{alias}", name="actualizarRuntastic")
+     */
+    public function actualizarRuntasticAction(Request $request, $alias) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
+        $query = $qb->select('ur')
+                ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
+                ->where('ur.idUsuario = :Usuario AND ur.activo = 1')
+                ->setParameters(['Usuario' => $USUARIO]);
+        $UR = $query->getQuery()->getOneOrNullResult();
+
+        if ($UR === null) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
+        }
+
+        $r = new Runtastic();
+        $r->setUsername($UR->getUsername())->setPassword($UR->getPassword());
+        $query = $qb->select('sr.idRuntastic')
+                ->from('\AppBundle\Entity\SesionRuntastic', 'sr')
+                ->where('sr.idUsuarioRuntastic = :idUsuarioRuntastic')
+                ->setParameters(['idUsuarioRuntastic' => $UR]);
+        $SESIONES = $query->getQuery()->getResult();
+        $response['usuario'] = $r->getUsername();
+        $response['Uid'] = $r->getUid();
+
+        $week_activities = $r->getActivities();
+        if(!count($week_activities)){
+            return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han descargado los datos, vuelva a actualizar'], 200);
+        }
+        foreach ($week_activities as $activity) {
+            if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
+                $SESION = new \AppBundle\Entity\SesionRuntastic();
+                $SESION->setIdRuntastic($activity->id);
+                $SESION->setIdUsuarioRuntastic($UR);
+                $SESION->setTipo('cycling');
+                if ($activity->type === 'running') {
+                    $SESION->setTipo('running');
+                }
+                $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
+                $SESION->setDistancia($activity->distance);
+                $SESION->setRitmo($activity->pace);
+                $SESION->setVelocidad($activity->speed);
+                $SESION->setEvaluado(0);
+                $FECHA = new \Datetime();
+                $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
+                $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
+                $SESION->setFecha($FECHA);
+                $em->persist($SESION);
+            }
+        }
+        $em->flush();
+        return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
     }
 
 }

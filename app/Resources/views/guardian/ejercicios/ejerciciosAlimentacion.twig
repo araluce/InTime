@@ -320,7 +320,6 @@
             ruta = '/guardian/alimentacion/getEjerciciosAlimentacion';
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
-                //console.log(data);
                 if (data.estado === 'OK') {
                     mostrarEjercicios(data.message);
                 } else {
@@ -340,6 +339,27 @@
                 }
                 contenido += '   <div class="col-lg-12">';
                 contenido += '      ' + v.ENUNCIADO;
+                contenido += '  </div>';
+                contenido += '  <div class="col-md-12">';
+                contenido += '      <span class="fa fa-money"> </span>&nbsp;';
+                if (v.COSTE.dias !== 0) {
+                    contenido += '<span style="color:red;">' + v.COSTE.dias + '</span>d&nbsp;';
+                }
+                if (v.COSTE.horas !== 0) {
+                    contenido += '<span style="color:red;">' + v.COSTE.horas + '</span>h&nbsp;';
+                }
+                if (v.COSTE.minutos !== 0) {
+                    contenido += '<span style="color:red;">' + v.COSTE.minutos + '</span>m&nbsp;';
+                }
+                if (v.COSTE.segundos !== 0) {
+                    contenido += '<span style="color:red;">' + v.COSTE.segundos + '</span>s&nbsp;';
+                }
+                if (!v.COSTE.segundos &&
+                        !v.COSTE.minutos &&
+                        !v.COSTE.horas &&
+                        !v.COSTE.dias) {
+                    contenido += '<span style="color:green;">gratis</span>&nbsp;';
+                }
                 contenido += '  </div>';
                 if (v.ENTREGAS_PENDIENTES) {
                     contenido += '  <div class="col-lg-12">';
