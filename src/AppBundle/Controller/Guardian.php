@@ -170,7 +170,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidadBonificacion5", name="getFelicidadBonificacion5")
      */
@@ -186,7 +186,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidadBonificacion15", name="getFelicidadBonificacion15")
      */
@@ -202,7 +202,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidadBonificacion25", name="getFelicidadBonificacion25")
      */
@@ -234,7 +234,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $pago_jornada)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getTestIncorrecto", name="getTestIncorrecto")
      */
@@ -448,7 +448,7 @@ class Guardian extends Controller {
                 $aux['PROPUESTA']['NOMBRE'] = $ENTREGA->getNombre();
                 $aux['PROPUESTA']['RUTA'] = $aux['CIUDADANO']['DNI'] . '/felicidad/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['PROPUESTA']['NOMBRE'];
             }
-            
+
             if ($aux['PROPUESTO'] && null !== $ENTREGA_F) {
                 $aux['ENTREGADO'] = 1;
                 $aux['ENTREGA'] = [];
@@ -842,7 +842,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE_INSP->setValor($pago_inspeccion);
             $em->persist($CONSTANTE_INSP);
-            
+
             $penalizacion_paga = $request->request->get('test_incorrecto');
             if ($penalizacion_paga <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -977,13 +977,14 @@ class Guardian extends Controller {
             if (null === $BONIFICACION) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
-            if (null !== $BONIFICACION_ANTERIOR) {
-                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
-            }
+
             if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
                 $DISTRITO = $CALIFICACION->getIdUsuario()->getIdDistrito();
                 $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
                 foreach ($CIUDADANOS as $CIUDADANO) {
+                    if (null !== $BONIFICACION_ANTERIOR) {
+                        Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+                    }
                     $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy(['idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO]);
                     if (null !== $CALIFICACION) {
                         $CALIFICACION->setIdEvaluador($GdT);
@@ -1011,6 +1012,9 @@ class Guardian extends Controller {
                     }
                 }
             } else {
+                if (null !== $BONIFICACION_ANTERIOR) {
+                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+                }
                 $CALIFICACION->setIdEvaluador($GdT);
                 $CALIFICACION->setIdEjercicioEstado($EVALUADO);
                 $CALIFICACION->setIdCalificaciones($NOTA);
@@ -1063,7 +1067,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($diasDifEntregasFelicidad);
             $em->persist($CONSTANTE);
-            
+
             $felicidadBonificacion5 = $request->request->get('b5');
             if ($felicidadBonificacion5 <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -1075,7 +1079,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion5);
             $em->persist($CONSTANTE);
-            
+
             $felicidadBonificacion15 = $request->request->get('b15');
             if ($felicidadBonificacion15 <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -1087,7 +1091,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion15);
             $em->persist($CONSTANTE);
-            
+
             $felicidadBonificacion25 = $request->request->get('b25');
             if ($felicidadBonificacion25 <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -1099,7 +1103,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion25);
             $em->persist($CONSTANTE);
-            
+
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
         }

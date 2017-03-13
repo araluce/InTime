@@ -377,6 +377,7 @@ class AlimentacionController extends Controller {
                         $DISTRITO = $USUARIO->getIdDistrito();
                         $DATOS_REENTREGA = Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $DISTRITO);
                         if (!$DATOS_REENTREGA) {
+                            // Revisar primera tiempo entre entregas para las que no son reentregas
                             //if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
                             //    $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
                             //    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
