@@ -77,13 +77,13 @@ class CronController extends Controller {
      */
     public function pagarFinDeSemanaAction(Request $request) {
         $doctrine = $this->getDoctrine();
-        Utils::setError($doctrine, 3, 'CRON - Pago fines de semana');
-        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
-        if (count($CIUDADANOS)) {
-            foreach ($CIUDADANOS as $CIUDADANO) {
-                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, 172800, 'Ajuste - Fin de semana');
-            }
-        }
+//        Utils::setError($doctrine, 3, 'CRON - Pago fines de semana');
+//        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+//        if (count($CIUDADANOS)) {
+//            foreach ($CIUDADANOS as $CIUDADANO) {
+//                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, 172800, 'Ajuste - Fin de semana');
+//            }
+//        }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 

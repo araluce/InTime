@@ -749,6 +749,7 @@ class DefaultController extends Controller {
         $DATOS = ['TITULO' => 'InTime - Guardián del Tiempo'];
         $DATOS['CHAT'] = DataManager::chatsPendientes($this->getDoctrine(), $USUARIO);
         $DATOS['CITAS'] = DataManager::getCitasPendientesGuardian($doctrine);
+        $DATOS['CITAS_HOY'] = DataManager::getCitasDeHoyGuardian($doctrine);
         $DATOS['ALIMENTACION'] = DataManager::numEntregasAlimentacionGuardian($doctrine);
         $DATOS['PAGA'] = DataManager::numEntregasPagaGuardian($doctrine);
         $DATOS['FELICIDAD'] = DataManager::numEntregasFelicidadGuardian($doctrine);

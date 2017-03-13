@@ -678,16 +678,47 @@ class Utils {
         return $result;
     }
     
+    /**
+     * Indica si una cita es anterior al día actual
+     * @param type $CITA
+     * @return int
+     */
     static function esCitaAntigua($CITA){
         $hoy = new \DateTime('now');
-        $dia_str = strtolower($CITA->getDia());
-
-        $conversores = array('lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5);
-        $dia_int = strtr($dia_str, $conversores);
+        $dia_int = Utils::diaStringToInt($CITA->getDia());
         if(intval($dia_int) < intval($hoy->format('w'))){
             return 1;
         }
         return 0;
+    }
+    
+    /**
+     * Indica si el día de una cita es el actual
+     * @param type $CITA
+     * @return int
+     */
+    static function esCitaDeHoy($CITA){
+        $hoy = new \DateTime('now');
+        $dia_int = Utils::diaStringToInt($CITA->getDia());
+        if(intval($dia_int) === intval($hoy->format('w'))){
+            return 1;
+        }
+        return 0;
+    }
+    
+    /**
+     * Convierte un día en String (Lunes, Martes, Miercoles, Jueves, Viernes)
+     * a un día en int (1, 2, 3, 4, 5)
+     * @param type $diaString
+     * @return int
+     */
+    static function diaStringToInt($diaString){
+        $dia_str = strtolower($diaString);
+
+        $conversores = array('lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5);
+        $dia_int = strtr($dia_str, $conversores);
+        
+        return $dia_int;
     }
 
 }

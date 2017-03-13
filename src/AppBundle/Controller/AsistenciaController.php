@@ -409,14 +409,11 @@ class AsistenciaController extends Controller {
             }
             if (count($TUTORIAS)) {
                 foreach ($TUTORIAS as $TUTORIA) {
-                    if ($TUTORIA->getFechaSolicitud()->format("W") === $fecha->format("W") &&
-                            $TUTORIA->getDia() === $dia &&
-                            in_array($TUTORIA->getHora(), $horas) &&
-                            $TUTORIA->getEstado() === 0) {
+                    if ($TUTORIA->getFechaSolicitud()->format("W") === $fecha->format("W") && $TUTORIA->getDia() === $dia && in_array($TUTORIA->getHora(), $horas) && $TUTORIA->getEstado() === 0) {
                         // Anulamos una cita solicitada
-                        $TURORIA->setEstado(3);
-                        $TURORIA->setMotivo('A esta hora no me viene bien. Puedes solicitar otra hora.');
-                        $em->persist($TURORIA);
+                        $TUTORIA->setEstado(3);
+                        $TUTORIA->setMotivo('A esta hora no me viene bien. Puedes solicitar otra hora.');
+                        $em->persist($TUTORIA);
                         $em->flush();
                     }
                 }

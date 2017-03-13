@@ -8,6 +8,9 @@
 
 {% block stylesheets %}
     <style>
+        .aviso-azul{
+            background-color: #337ab7;
+        }
         .list-group a{
             font-size: 45px;
             text-decoration: none !important;
@@ -72,6 +75,13 @@
                                     {% if CITAS > 0 %}
                                         <span class="badge badge-aviso2">
                                             {{ CITAS }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                                {% if CITAS_HOY is defined %}
+                                    {% if CITAS_HOY > 0 %}
+                                        <span class="badge badge-aviso2 aviso-azul">
+                                            {{ CITAS_HOY }}
                                         </span>
                                     {% endif %}
                                 {% endif %}

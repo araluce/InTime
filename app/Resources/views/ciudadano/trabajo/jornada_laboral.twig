@@ -193,7 +193,7 @@
             <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-primary btn13 btn-menu-first" id="menu-primer" href="#tab1" data-toggle="tab">
-                        <span class="fa fa-twitter" aria-hidden="true"></span>
+                        <span class="fa fa-twitter" aria-hidden="true" id="contador-tweets"></span>
                         <div class="titulo-xs">TWITTER</div>
                     </button>
                 </div>
@@ -299,6 +299,7 @@
             $.post(url, datos, function (datos) {
                 data = jQuery.parseJSON(datos);
                 alert(data.message);
+                getNumTweetsHoy();
             });
         }
         function aniadeIdTweet(id_tweet) {
@@ -540,6 +541,16 @@
 
             });
         }
+        function getNumTweetsHoy() {
+            var url = '/ciudadano/trabajo/jornada_laboral/getNumeroTweetsSemana';
+            $.get(url, function (datos) {
+                data = jQuery.parseJSON(datos);
+                if(data.estado === 'OK'){
+                    var numTweets = data.message;
+                    $('#contador-tweets').html(numTweets);
+                }
+            });
+        }
         $('#button-seguir').click(function () {
             var seguir = $('#input-seguir').val();
             if ($.trim(seguir) !== '') {
@@ -575,6 +586,7 @@
         $(document).ready(function () {
             {% if info.message is defined or info.type is defined %} $('#box_modal_result').click();{% endif %}
             descargarSeguidos();
+            getNumTweetsHoy();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
                 $(this).removeClass("btn-default").addClass("btn-primary");

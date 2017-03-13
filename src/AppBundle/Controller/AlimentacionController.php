@@ -377,10 +377,10 @@ class AlimentacionController extends Controller {
                         $DISTRITO = $USUARIO->getIdDistrito();
                         $DATOS_REENTREGA = Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $DISTRITO);
                         if (!$DATOS_REENTREGA) {
-                            if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
-                                $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
-                                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
-                            }
+                            //if (!Alimentacion::tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO)) {
+                            //    $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregas');
+                            //    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo mínimo entre entregas: ' . $tiempoEntreEntregas)), 200);
+                            //}
                         }
                         $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
                         if (count($CIUDADANOS)) {

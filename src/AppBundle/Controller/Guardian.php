@@ -999,7 +999,7 @@ class Guardian extends Controller {
                                     'idBonificacionExtra' => $TARJETA, 'idUsuario' => $CIUDADANO, 'usado' => 0
                                 ]);
                                 if (null !== $MI_TARJETA) {
-                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
                                     $MI_TARJETA->setUsado(1);
                                     $em->persist($MI_TARJETA);
                                 }

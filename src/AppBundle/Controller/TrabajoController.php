@@ -490,6 +490,29 @@ class TrabajoController extends Controller {
         Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra de ejercicio en Paga extra');
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio solicitado correctamente')), 200);
     }
+    
+    /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/getNumeroTweetsSemana", name="getNumeroTweetsSemana")
+     */
+    public function getNumeroTweetsSemana(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada/getNumeroTweetsSemana');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        
+        $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
+        $query->select('COUNT(a)');
+        $query->where("DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO");
+        $query->setParameters(['USUARIO' => $USUARIO]);
+        $N_TUITS = $query->getQuery()->getSingleScalarResult();
+        
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $N_TUITS)), 200);
+    }
 
     /**
      * @Route("/ciudadano/trabajo/paga/entregarPaga", name="entregarPaga")
@@ -754,5 +777,7 @@ class TrabajoController extends Controller {
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));
     }
+    
+    
 
 }

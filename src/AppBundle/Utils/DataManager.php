@@ -271,6 +271,25 @@ class DataManager {
         }
         return $DATOS;
     }
+    
+    static function getCitasDeHoyGuardian($doctrine) {
+        $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
+        $fecha = new \DateTime('now');
+        $DATOS = 0;
+
+        $TUTORIAS = $doctrine->getRepository('AppBundle:UsuarioTutoria')->findAll();
+        if (count($TUTORIAS)) {
+            foreach ($TUTORIAS as $TUTORIA) {
+                if ($TUTORIA->getFechaSolicitud()->format("W") === $fecha->format("W") &&
+                        Utils::esCitaDeHoy($TUTORIA) &&
+                        $TUTORIA->getEstado() === 1 &&
+                        $TUTORIA->getIdUsuario()->getIdRol() !== $ROL_GDT) {
+                    $DATOS++;
+                }
+            }
+        }
+        return $DATOS;
+    }
 
     static function numEntregasAlimentacionGuardian($doctrine) {
         $cont = 0;
