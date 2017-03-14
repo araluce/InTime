@@ -824,11 +824,14 @@ class DefaultController extends Controller {
         $response['usuario'] = $r->getUsername();
         $response['Uid'] = $r->getUid();
 
-        $week_activities = $r->getActivities();
+        $hoy = new \DateTime('now');
+        $week_activities = $r->getActivities(null, $hoy->format('m') - 1);
+        Utils::pretty_print($hoy->format('m') - 1);
         if(!count($week_activities)){
             return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han descargado los datos, vuelva a actualizar'], 200);
         }
         foreach ($week_activities as $activity) {
+            Utils::pretty_print($activity);
             if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
                 $SESION = new \AppBundle\Entity\SesionRuntastic();
                 $SESION->setIdRuntastic($activity->id);
@@ -850,6 +853,7 @@ class DefaultController extends Controller {
             }
         }
         $em->flush();
+        
         return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
     }
 

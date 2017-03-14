@@ -345,21 +345,19 @@ class AsistenciaController extends Controller {
             if (!count($CITAS)) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ninguna cita')), 200);
             }
-
+            $GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
             $HOY = new \DateTime('now');
             $ESTA_SEMANA = $HOY->format('W');
             $CITA = null;
             foreach ($CITAS as $C) {
-                if ($C->getFechaSolicitud()->format('W') === $ESTA_SEMANA &&
+                if (($C->getIdUsuario()->getIdRol() === $GDT || $C->getIdUsuario()->getIdRol() !== $GDT && $C->getFechaSolicitud()->format('W') === $ESTA_SEMANA) &&
                         ($C->getEstado() === 0 || $C->getEstado() === 1)) {
                     $CITA = $C;
                 }
             }
             if (null === $CITA) {
-                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ninguna cita')), 200);
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ninguna cita e0e1')), 200);
             }
-
-            $GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
 
             $DATOS = [];
 
@@ -482,7 +480,7 @@ class AsistenciaController extends Controller {
             $dia = $request->request->get('dia');
             $hora = $request->request->get('hora');
             $TUTORIA = $doctrine->getRepository('AppBundle:UsuarioTutoria')->findOneBy([
-                'dia' => $dia, 'hora' => $hora
+                'dia' => $dia, 'hora' => $hora, 'estado' => 0
             ]);
             $USUARIO = $TUTORIA->getIdUsuario();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $TUTORIA->getCoste(), 'Cobro - Asistencia');

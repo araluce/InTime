@@ -1110,4 +1110,116 @@ class Guardian extends Controller {
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
 
+    /**
+     * @Route("/guardian/directorio/getInfoBasica/{dni}", name="getInfoBasicaGuardian")
+     */
+    public function getInfoBasicaGuardianAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/directorio/getInfoBasica/' . $dni, true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        if (null === $USUARIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ciudadano')), 200);
+        }
+
+        $DATOS = [];
+
+        $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
+        if (null !== $USUARIO_NIVEL) {
+            $DATOS['NIVEL'] = $USUARIO_NIVEL->getNivel();
+            $DATOS['PUNTOS'] = $USUARIO_NIVEL->getPuntos();
+        } else {
+            $DATOS['NIVEL'] = 0;
+            $DATOS['PUNTOS'] = 0;
+        }
+        if (null !== $USUARIO->getIdDistrito()) {
+            $DATOS['DISTRITO'] = $USUARIO->getIdDistrito()->getNombre();
+        } else {
+            $DATOS['DISTRITO'] = 'Aún no tiene un distrito asignado';
+        }
+        $DATOS['ALIAS'] = 'Sin alias';
+        if ($USUARIO->getSeudonimo()) {
+            $DATOS['ALIAS'] = $USUARIO->getSeudonimo();
+        }
+        $DATOS['NOMBRE'] = 'Sin nombre';
+        if ($USUARIO->getNombre()) {
+            $DATOS['NOMBRE'] = $USUARIO->getNombre();
+        }
+        $DATOS['APELLIDOS'] = 'Sin apellidos';
+        if ($USUARIO->getApellidos()) {
+            $DATOS['APELLIDOS'] = $USUARIO->getApellidos();
+        }
+        $DATOS['EMAIL'] = 0;
+        if ($USUARIO->getEmail()) {
+            $DATOS['EMAIL'] = $USUARIO->getEmail();
+        }
+        $DATOS['IMAGEN'] = 0;
+        if ($USUARIO->getImagen()) {
+            $DATOS['IMAGEN'] = $USUARIO->getDni() . '/' . $USUARIO->getImagen();
+        }
+        $DATOS['FECHA_NACIMIENTO'] = 0;
+        if ($USUARIO->getFechaNacimiento()) {
+            $fecha = $USUARIO->getFechaNacimiento();
+            $DATOS['FECHA_NACIMIENTO'] = $fecha->format('Y-m-d');
+        }
+        $AHORA = new \DateTime('now');
+        $TDV = $USUARIO->getIdCuenta()->getTdv();
+        $RESTANTE = $TDV->getTimestamp() - $AHORA->getTimestamp();
+        $DATOS['TDV'] = Utils::segundosToDias($RESTANTE);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/directorio/getDirectorio/{dni}", name="directorioGuardian")
+     */
+    public function directorioGuardianAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/directorio/' . $dni);
+        if (!$status) {
+            return new RedirectResponse('/');
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        if (null === $USUARIO) {
+            return new RedirectResponse('/');
+        }
+
+        $DATOS = [];
+        $DATOS['TITULO'] = 'Informacion';
+        $DATOS['DNI'] = $USUARIO->getDni();
+        return $this->render('guardian/directorio.twig', $DATOS);
+    }
+
+    /**
+     * @Route("/guardian/directorio/modificarTdV", name="modificarTdVGuardian")
+     */
+    public function modificarTdVAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/directorio/modificarTdV', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        if ($request->getMethod() == 'POST') {
+            $TDV = str_replace("T", " ", $request->request->get('tdv')) . ":00";
+            $dni = $request->request->get('dni');
+            $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+            if (null === $USUARIO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ciudadano')), 200);
+            }
+            $CUENTA = $USUARIO->getIdCuenta();
+            $TDV_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV);
+            $CUENTA->setTdv($TDV_formato);
+            $em->persist($CUENTA);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'TdV modificado')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha enviado ningún dato')), 200);
+    }
+
 }

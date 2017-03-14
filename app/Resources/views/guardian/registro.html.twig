@@ -105,7 +105,7 @@
                                 <form id="form" method="post" action="/guardian/censo/registro" >
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <legend><i class="fa fa-heartbeat"></i> Tiempo de vida</legend>
+                                            <legend><i class="fa fa-heartbeat"></i>&nbsp;Tiempo de vida</legend>
                                             <div class="left-inner-addon ">
                                                 <i class="fa fa-calendar"></i>
                                                 <input class="form-control" type="datetime-local" name="TDV">
@@ -169,7 +169,7 @@
                                                 <td style="color:green; font-weight: bold;">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</td>
                                             {% endif %}
                                             <td title="{{ JUGADOR.ESTADO }}">{{ JUGADOR.ESTADO }}</td>
-                                            <td><span class="fa fa-user-o"></span></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}"><span class="fa fa-user-o"></span></a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

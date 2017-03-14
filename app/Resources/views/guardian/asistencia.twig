@@ -158,6 +158,7 @@
             datos = {'dia': dia, 'hora': hora};
             $.post(ruta, datos, function (datos) {
                 data = jQuery.parseJSON(datos);
+                console.log(data);
                 if (data.estado === 'OK') {
                     $("#panel-cita").html('');
                     contenido = '';
@@ -316,7 +317,7 @@
         function obtenerBloqueados() {
             ruta = '/ciudadano/asistencia/obtenerOcupados';
             $.get(ruta, function (data, status) {
-                console.log(horario);
+                //console.log(horario);
                 horario = data.message;
                 $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
             });

@@ -1,0 +1,728 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .modal-header{
+            padding: 4% 6%;
+        }
+        .modal-title{
+            font-size: 25px;
+        }
+        #mensaje-texto{
+            font-size: 20px;
+        }
+        #reporte{
+            font-size: 12px;
+        }
+        #info-image-form{
+            width:  290px;
+            height: 290px;
+        }
+        .modal-advice .modal-dialog{
+            top: 50%;
+        }
+        .advertencia{
+            font-size: 15px;
+        }
+        .card {
+            margin-top: 20px;
+            padding: 30px;
+            background-color: rgba(214, 224, 226, 0.2);
+            -webkit-border-top-left-radius:5px;
+            -moz-border-top-left-radius:5px;
+            border-top-left-radius:5px;
+            -webkit-border-top-right-radius:5px;
+            -moz-border-top-right-radius:5px;
+            border-top-right-radius:5px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .card.hovercard {
+            position: relative;
+            padding-top: 0;
+            overflow: hidden;
+            text-align: center;
+            background-color: #fff;
+            background-color: rgba(255, 255, 255, 1);
+        }
+        .card.hovercard .card-background {
+            height: 130px;
+        }
+        .card-background img {
+            -webkit-filter: blur(25px);
+            -moz-filter: blur(25px);
+            -o-filter: blur(25px);
+            -ms-filter: blur(25px);
+            filter: blur(25px);
+            margin-left: -100px;
+            margin-top: -200px;
+            min-width: 130%;
+        }
+        .card.hovercard .useravatar {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+        }
+        .card.hovercard .useravatar img {
+            width: 100px;
+            height: 100px;
+            max-width: 100px;
+            max-height: 100px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.5);
+        }
+        .card.hovercard .card-info {
+            position: absolute;
+            bottom: 14px;
+            left: 0;
+            right: 0;
+        }
+        .card.hovercard .card-info .card-title {
+            padding:0 5px;
+            font-size: 20px;
+            line-height: 1;
+            color: #262626;
+            background-color: rgba(255, 255, 255, 0.1);
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+        }
+        .card.hovercard .card-info {
+            overflow: hidden;
+            font-size: 12px;
+            line-height: 20px;
+            color: #737373;
+            text-overflow: ellipsis;
+        }
+        .card.hovercard .bottom {
+            padding: 0 20px;
+            margin-bottom: 17px;
+        }
+        .btn-pref .btn {
+            -webkit-border-radius:0 !important;
+        }
+        .btn-group img{
+            height: 60px;
+        }
+        .datatable {
+            padding-bottom: 40px;
+        }
+        .dataTables_wrapper {
+            position: relative;
+            clear: both;
+            zoom: 1;
+        }
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #111;
+        }
+        table.dataTable, table.dataTable td, table.dataTable th {
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+        }
+        table.dataTable {
+            width: 100%;
+            margin: 0 auto;
+            clear: both;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        table {
+            background-color: transparent;
+        }
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        .datatable tfoot tr, .datatable thead tr {
+            text-transform: uppercase;
+        }
+        .datatable tr {
+            background-color: transparent!important;
+        }
+        table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_asc_disabled, table.dataTable thead .sorting_desc, table.dataTable thead .sorting_desc_disabled {
+            background-repeat: no-repeat;
+            background-position: center right;
+        }
+        table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc {
+            cursor: pointer;
+        }
+        th.details.sorting_asc {
+            visibility: hidden;
+        }
+        table.dataTable thead td, table.dataTable thead th {
+            padding: 10px 18px;
+            border-bottom: 1px solid #111;
+        }
+        table.dataTable tfoot th, table.dataTable thead th {
+            font-weight: 700;
+        }
+        table.dataTable, table.dataTable td, table.dataTable th {
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+        }
+        .datatable th {
+            padding: 10px!important;
+        }
+        th {
+            text-align: left;
+        }
+        td, th {
+            padding: 0;
+        }
+        table.dataTable.display tbody tr.odd, table.dataTable.stripe tbody tr.odd {
+            background-color: #f9f9f9;
+        }
+        table.dataTable tbody tr {
+            background-color: #fff;
+        }
+        .datatable tr {
+            background-color: transparent!important;
+        }
+        #depositosMovimientos tbody tr td, #movimientos tbody tr td, #movimientosC tbody tr td {
+            text-align: right;
+            font-weight: 100!important;
+        }
+        table.dataTable tbody td, table.dataTable tbody th {
+            padding: 8px 10px;
+        }
+        #depositosMovimientos tbody tr td:nth-child(1), 
+        #depositosMovimientos tbody tr td:nth-child(2), 
+        #depositosMovimientos tbody tr td:nth-child(3), 
+        #movTarjeta tbody tr td.child, 
+        #movimientos tbody tr td:nth-child(1), 
+        #movimientos tbody tr td:nth-child(2), 
+        #movimientos tbody tr td:nth-child(3), 
+        #movimientosC tbody tr td:nth-child(1), 
+        #movimientosC tbody tr td:nth-child(2), 
+        #movimientosC tbody tr td:nth-child(3), 
+        #transferencias tbody tr td.child, 
+        #transferenciasP tbody tr td.child, 
+        #transferenciasPeriodicas tbody tr td.child {
+            text-align: left!important;
+        }
+
+        .green-number-xs,
+        .red-number-xs {
+            font-weight: 700;
+        }
+        .red-number-xs {
+            color: #e14147;
+        }
+        .green-number-xs {
+            color: #41a68d;
+        }
+        #clasificacion-distritos{
+            font-size: 45px;
+        }
+        .hidden-xs{
+            font-size: 25px;
+        }
+        .minicarta{
+            position: relative;
+        }
+        .minicarta img{
+            width: 100%;
+        }
+        .minicarta figcaption{
+            display: none;
+            position: absolute;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.77);
+            bottom: 0px;
+            color: white;
+            font-size: 25px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .minicarta:hover figcaption{
+            display: block;
+        }
+        #nivel-usuario{
+            font-size: 50px;
+        }
+        @media (max-width: 760px){
+            #mensaje-texto,
+            .modal-title{
+                font-size: 23px;
+            }
+            #reporte,
+            .advertencia{
+                font-size: 17px;
+            }
+            #info-image-form{
+                width:  290px;
+                height: 290px;
+            }
+            #nivel img,
+            #clasificaciones img,
+            #badges img,
+            #movimientos img,
+            #modificar img{
+                height: 53px;
+            }
+            .card.hovercard .card-background {
+                height: 153px;
+            }
+            .card.hovercard .useravatar img {
+                width: 117px;
+                height: 117px;
+                max-width: 117px;
+                max-height: 117px;
+            }
+            .card.hovercard .card-info .card-title {
+                font-size: 30px;
+            }
+            .clasificacion h3,
+            .clasificacion i{
+                font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
+
+        }
+        @media (min-width: 760px){
+            legend{
+                font-size: 35px;
+            }
+            #nivel-usuario{
+                font-size: 60px;
+            }
+            #mensaje-texto,
+            .modal-title{
+                font-size: 35px;
+            }
+            #reporte,
+            .advertencia{
+                font-size: 25px;
+            }
+            #info-image-form{
+                width:  280px;
+                height: 280px;
+            }
+            .btn-group img{
+                height: 100px;
+            }
+            .card.hovercard .card-background {
+                height: 230px;
+            }
+            .card.hovercard .useravatar img {
+                width: 175px;
+                height: 175px;
+                max-width: 175px;
+                max-height: 175px;
+            }
+            .card.hovercard .card-info .card-title {
+                font-size: 45px;
+            }
+            .clasificacion h3,
+            .clasificacion i{
+                font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
+            .info-button{
+                font-size: 65px;
+                border-radius: 15px;
+            }
+            .hidden-xs{
+
+            }
+        }
+        @media (min-width: 992px){
+            .clasificacion h3,
+            .clasificacion i{
+                font-size: 60px; 
+            }
+            .clasificacion span{
+                font-size: 120px;
+            }
+        }
+        @media (min-width: 1200px){
+            .info-button{
+                font-size: 20px;
+            }
+            #nivel-usuario,
+            legend{
+                font-size: 17px;
+            }
+            .modal-title{
+                font-size: 25px;
+            }
+            #mensaje-texto{
+                font-size: 20px;
+            }
+            #reporte{
+                font-size: 12px;
+            }
+            #info-image-form{
+                width:  290px;
+                height: 290px;
+            }
+            .modal-advice .modal-dialog{
+                top: 50%;
+            }
+            .advertencia{
+                font-size: 15px;
+            }
+            #info-image-form{
+                width:  280px;
+                height: 280px;
+            }
+            .btn-group img{
+                height: 60px;
+            }
+            .card.hovercard .card-background {
+                height: 130px;
+            }
+            .card.hovercard .useravatar img {
+                width: 100px;
+                height: 100px;
+                max-width: 100px;
+                max-height: 100px;
+            }
+            .card.hovercard .card-info .card-title {
+                font-size: 20px;
+            }
+            .clasificacion h3,
+            .clasificacion i{
+                font-size: 30px; 
+            }
+            .clasificacion span{
+                font-size: 60px;
+            }
+            #clasificacion-distritos{
+                font-size: 25px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12">
+                    <div class="card hovercard">
+                        <div class="card-background" id="foto-perfil-fondo"></div>
+                        <div class="useravatar" id="foto-perfil"></div>
+                        <div class="card-info"> <span class="card-title" id="alias-perfil"></span></div>
+                    </div>
+                    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button type="button" id="modificar" class="btn btn-primary" href="#tab1" data-toggle="tab">
+                                <img src="{{ asset('images/iconos/Jugador/Datos_personales.png') }}" />
+                                <div class="hidden-xs">MIS DATOS</div>
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" id="nivel" class="btn btn-default" href="#tab2" data-toggle="tab" onclick="getNivelMC();">
+                                <img src="{{ asset('images/iconos/Jugador/Nivel_y_privilegios.png') }}" />
+                                <div class="hidden-xs">NIVEL</div>
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" id="clasificaciones" class="btn btn-default" href="#tab3" data-toggle="tab">
+                                <img src="{{ asset('images/iconos/Jugador/Clasificaciones.png') }}" />
+                                <div class="hidden-xs">CLASIFICACIÓN</div>
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab">
+                                <img src="{{ asset('images/iconos/Jugador/Consultar_movimientos.png') }}" />
+                                <div class="hidden-xs">MOVIMIENTOS</div>
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" id="menu-segun" class="btn btn-default" onclick="window.history.back();" >
+                                <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                                <div class="hidden-xs">ATRÁS</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="well">
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="tab1">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" id="dni-ciudadano" value="{{ DNI }}">
+                                        <legend>Distrito:</legend>
+                                        <span id="distrito"></span>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 1%;">
+                                    <div class="col-md-6">
+                                        <legend>Información personal</legend>
+                                        <label for="nombre">Nombre: </label>
+                                        <span id="nombre">Sin nombre</span><span id="apellidos"> Sin apellidos</span><br>
+                                        <label for="dni">DNI: </label>
+                                        <span id="dni"></span><br>
+                                        <label for="fecha-nacimiento">Fecha de nacimiento: </label>
+                                        <span id="fecha-nacimiento">Sin fecha de nacimiento</span><br>
+                                        <label for="email">Correo: </label>
+                                        <span id="email">Sin email</span><br>
+                                        <label for="tdv-ciudadano">TdV: </label>
+                                        <span id="tdv-ciudadano"></span><br>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <legend><i class="fa fa-heartbeat"></i>&nbsp; Modificar tiempo de vida</legend>
+                                        <div class="left-inner-addon ">
+                                            <i class="fa fa-calendar"></i>
+                                            <input class="form-control" type="datetime-local" id="modificar-tdv" />
+                                        </div>
+                                        <button style="margin-top: 1%;" class="btn btn-block btn-primary" onclick="modificarTDV();">OK</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade in" id="tab2">
+
+                            </div>
+                            <div class="tab-pane fade in" id="tab3">
+
+                            </div>
+                            <div class="tab-pane fade in" id="tab4">
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            descargarInfoBasica();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+            $('.btn-pref .btn').height($('#menu-primer').height());
+        });
+        function modificarTDV(){
+            var dni = $("#dni-ciudadano").val();
+            var tdv_modificar = $("#modificar-tdv").val();
+            $('#modal-avisos2').click();
+            mostrarCarga('Enviando solicitud al servidor');
+            ruta = '/guardian/directorio/modificarTdV';
+            d = {'tdv': tdv_modificar, 'dni': dni};
+            $.post(ruta, d, function (respuesta) {
+                data = jQuery.parseJSON(respuesta);
+                console.log(respuesta);
+                mostrarResultadoOperacion(data.message);
+            });
+        }
+        function descargarInfoBasica() {
+            var dni = $("#dni-ciudadano").val();
+            var ruta = '/guardian/directorio/getInfoBasica/' + dni;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    if (data.message.IMAGEN) {
+                        $('#foto-perfil').html('<img alt="" src="{{ asset('images/users/') }}' + data.message.IMAGEN + '">');
+                        $('#foto-perfil-fondo').html('<img class="card-bkimg" alt="" src="{{ asset('images/users/') }}' + data.message.IMAGEN + '">');
+                    } else {
+                        $('#foto-perfil').html('<img alt="" src="{{ asset('images/fotos-usuarios/default.jpg') }}">');
+                        $('#foto-perfil-fondo').hmtl('<img class="card-bkimg" alt="" src="{{ asset('images/fotos-usuarios/default.jpg') }}">');
+                    }
+                    if (data.message.ALIAS) {
+                        $('#alias-perfil').html('@' + data.message.ALIAS);
+                    } else {
+                        $('#alias-perfil').html('Sin alias');
+                    }
+                    if (data.message.NOMBRE) {
+                        $('#nombre').html(data.message.NOMBRE);
+                    }
+                    if (data.message.APELLIDOS) {
+                        $('#apellidos').html(data.message.APELLIDOS);
+                    }
+                    if (data.message.EMAIL) {
+                        $('#email').html('<a href="mailto:' + data.message.EMAIL + '" target="_top">' + data.message.EMAIL + '</a>');
+                    }
+                    if (data.message.FECHA_NACIMIENTO) {
+                        $('#fecha-nacimiento').html(data.message.FECHA_NACIMIENTO);
+                    }
+                    if (data.message.DISTRITO) {
+                        $('#distrito').html('<i class="fa fa-university" aria-hidden="true"></i>&nbsp;' + data.message.DISTRITO);
+                    }
+                    contenido = '';
+                    if (data.message.TDV.dias) {
+                        contenido += data.message.TDV.dias + 'd ';
+                    }
+                    if (data.message.TDV.horas) {
+                        contenido += data.message.TDV.horas + 'd ';
+                    }
+                    if (data.message.TDV.minutos) {
+                        contenido += data.message.TDV.minutos + 'd ';
+                    }
+                    if (data.message.TDV.segundos) {
+                        contenido += data.message.TDV.segundos + 'd ';
+                    }
+                    $('#tdv-ciudadano').html(contenido);
+                    $('#dni').html(dni);
+                }
+            });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      ' + resultado;
+            contenido += '  </center>';
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-12">';
+            contenido += '      <button class="btn btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            //$("#modal-button-aceptar").show();
+            $("#mensaje-texto").append(contenido);
+        }
+
+        function addReporte(texto, color) {
+            contenido = '';
+            contenido += '<div class="row">';
+            contenido += '  <div class="col-md-12">';
+            contenido += '      <p style="color:' + color + '">' + texto + '</p>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#reporte").append(contenido);
+        }
+
+        function actualizarMovimientos() {
+            $('#tabla-movimientos').empty();
+            contenido = '';
+            ruta = '/ciudadano/info/actualizarMovimientos';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (k, v) {
+                        contenido += '<tr class="even" role="row">';
+                        contenido += '  <td>';
+                        contenido += '      #' + v.ID;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.FECHA.date;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.CONCEPTO;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        if (v.VALANCE === 'NEG') {
+                            contenido += '      <span class="red-number-xs">';
+                        } else {
+                            contenido += '      <span class="green-number-xs">';
+                        }
+                        if (v.CANTIDAD.dias > 0) {
+                            contenido += '          ' + v.CANTIDAD.dias + 'd&nbsp;';
+                        }
+                        if (v.CANTIDAD.horas > 0) {
+                            contenido += '          ' + v.CANTIDAD.horas + 'h&nbsp;';
+                        }
+                        if (v.CANTIDAD.minutos > 0) {
+                            contenido += '          ' + v.CANTIDAD.minutos + 'm&nbsp;';
+                        }
+                        if (v.CANTIDAD.segundos > 0) {
+                            contenido += '          ' + v.CANTIDAD.segundos + 's&nbsp;';
+                        }
+                        contenido += '      </span>';
+                        contenido += '  </td>';
+                        contenido += '</tr>';
+                    });
+                    $('#tabla-movimientos').append(contenido);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function getClasificacionGlobal() {
+            ruta = '/ciudadano/info/getClasificacionGlobal';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    $("#puesto-global").html(data.message.PUESTO);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+
+        function getClasificacionDistrito() {
+            ruta = '/ciudadano/info/getClasificacionDistrito';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    $("#puesto-distrito").html(data.message.PUESTO);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function getClasificacionDistritos() {
+            ruta = '/ciudadano/info/getClasificacionDistritos';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (k, v) {
+                        contenido = '<div style="float: left;">';
+                        contenido += '' + v.DISTRITO;
+                        contenido += '</div>';
+                        /*
+                         contenido += '<div style="float: right;">';
+                         if (v.CANTIDAD.dias === 0) {
+                         contenido += '00d ';
+                         } else if (v.CANTIDAD.dias < 10) {
+                         contenido += '0' + v.CANTIDAD.dias + 'd ';
+                         } else {
+                         contenido += v.CANTIDAD.dias + 'd ';
+                         }
+                         if (v.CANTIDAD.horas === 0) {
+                         contenido += '00d ';
+                         } else if (v.CANTIDAD.horas < 10) {
+                         contenido += '0' + v.CANTIDAD.horas + 'h ';
+                         } else {
+                         contenido += v.CANTIDAD.horas + 'h ';
+                         }
+                         if (v.CANTIDAD.segundos === 0) {
+                         contenido += '00d ';
+                         } else if (v.CANTIDAD.segundos < 10) {
+                         contenido += '0' + v.CANTIDAD.segundos + 's ';
+                         } else {
+                         contenido += v.CANTIDAD.segundos + 's ';
+                         }
+                         contenido += '</div>';
+                         */
+                        contenido += '<br/>';
+                        $("#clasificacion-distritos").append(contenido);
+                    });
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+    </script>
+{% endblock %}
