@@ -75,25 +75,15 @@ class ApuestaController extends Controller {
                 $aux2['TdV'] = 0;
                 $aux2['N_APUESTAS'] = 0;
                 $aux2['APOSTADORES'] = [];
-                $array_apostadores = [];
                 $USUARIOS_APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findByIdApuestaPosibilidad($POSIBILIDAD);
                 if (count($USUARIOS_APUESTA)) {
                     foreach ($USUARIOS_APUESTA as $USUARIO_APUESTA) {
                         $apostador = [];
                         $apostador['alias'] = $USUARIO_APUESTA->getIdUsuario()->getSeudonimo();
-                        $apostador['TdV'] = $USUARIO_APUESTA->getTdvApostado();
-                        if (in_array($apostador['alias'], $array_apostadores)) {
-                            foreach ($aux2['APOSTADORES'] as $a) {
-                                if ($a['alias'] === $apostador['alias']) {
-                                    $a['TdV'] += $apostador['TdV'];
-                                }
-                            }
-                        } else {
-                            $aux2['APOSTADORES'][] = $apostador;
-                            $array_apostadores[] = $apostador['alias'];
-                            $aux2['N_APUESTAS'] += 1;
-                            $aux['N_APUESTAS'] += 1;
-                        }
+                        $apostador['TdV'] = Utils::segundosToDias($USUARIO_APUESTA->getTdvApostado());
+                        $aux2['APOSTADORES'][] = $apostador;
+                        $aux2['N_APUESTAS'] += 1;
+                        $aux['N_APUESTAS'] += 1;
 
                         $aux['TIEMPO_TOTAL'] += $USUARIO_APUESTA->getTdvApostado();
                         $aux2['TdV'] += $USUARIO_APUESTA->getTdvApostado();
@@ -132,18 +122,18 @@ class ApuestaController extends Controller {
             }
             if ($TIEMPO > 0) {
                 $haApostado = Utils::haApostado($doctrine, $USUARIO, $OPCION_APUESTA);
-                if ($haApostado === -1) {
+                if ($haApostado === -1 || $haApostado) {
                     return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Ya se había realizado una apuesta anteriormente'), 200);
                 }
-                if ($haApostado) {
-                    $APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findOneBy([
-                        'idApuestaPosibilidad' => $OPCION_APUESTA, 'idUsuario' => $USUARIO
-                    ]);
-                    $APUESTA->setTdvApostado($APUESTA->getTdvApostado() + $TIEMPO);
-                    $em->persist($APUESTA);
-                    $em->flush();
-                    return new JsonResponse(array('estado' => 'OK', 'message' => 'Se ha actualizado la apuesta'), 200);
-                }
+//                if ($haApostado) {
+//                    $APUESTA = $doctrine->getRepository('AppBundle:UsuarioApuesta')->findOneBy([
+//                        'idApuestaPosibilidad' => $OPCION_APUESTA, 'idUsuario' => $USUARIO
+//                    ]);
+//                    $APUESTA->setTdvApostado($APUESTA->getTdvApostado() + $TIEMPO);
+//                    $em->persist($APUESTA);
+//                    $em->flush();
+//                    return new JsonResponse(array('estado' => 'OK', 'message' => 'Se ha actualizado la apuesta'), 200);
+//                }
                 $APUESTA = new \AppBundle\Entity\UsuarioApuesta();
                 $APUESTA->setIdApuestaPosibilidad($OPCION_APUESTA);
                 $APUESTA->setIdUsuario($USUARIO);

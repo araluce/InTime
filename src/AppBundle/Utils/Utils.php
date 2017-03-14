@@ -442,6 +442,18 @@ class Utils {
         }
         return false;
     }
+    /**
+     * True si la fecha es de esta semana, false en otro caso
+     * @param type $fecha
+     * @return true|false
+     */
+    static function semanaPasada($fecha) {
+        $semana = new \DateTime('now');
+        if (intval($semana->format("W")) === intval($fecha->format("W") - 1)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Devuelve una duración en formato HH:MM:SS

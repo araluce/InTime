@@ -156,7 +156,6 @@ class RuntasticController extends Controller {
         }
         $fase_min = 1000;
         $RETO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-//        $RETO = Ejercicio::getFase($doctrine, $USUARIO);
         
         if ($RETO === 0) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
@@ -659,7 +658,7 @@ class RuntasticController extends Controller {
                                         $DATOS['EVALUADO'] = 1;
                                         $n_sesiones++;
                                         if ($n_sesiones >= 3) {
-                                            Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
+                                            //Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
                                         }
                                     }
                                 }

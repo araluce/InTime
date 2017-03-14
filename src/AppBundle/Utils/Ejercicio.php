@@ -172,7 +172,7 @@ class Ejercicio {
         }
         $em->flush();
 
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase ' . $EJERCICIO->getEnunciado() . ' de deportes superada.');
+        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Reto deportivo superado.');
     }
 
     /**

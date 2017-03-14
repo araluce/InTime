@@ -210,17 +210,17 @@
                             $.each(posibilidadv.APOSTADORES, function (apostador_k, apostador_v) {
                                 contenido += '          <div class="col-xs-6 apostador-alias">@' + apostador_v.alias + '</div>';
                                 contenido += '          <div class="col-xs-6 apostador-tdv">';
-                                if (posibilidadv.TdV.dias > 0) {
-                                    contenido += '              ' + posibilidadv.TdV.dias + 'D ';
+                                if (apostador_v.TdV.dias > 0) {
+                                    contenido += '              ' + apostador_v.TdV.dias + 'D ';
                                 }
-                                if (posibilidadv.TdV.horas > 0) {
-                                    contenido += '              ' + posibilidadv.TdV.horas + 'H ';
+                                if (apostador_v.TdV.horas > 0) {
+                                    contenido += '              ' + apostador_v.TdV.horas + 'H ';
                                 }
-                                if (posibilidadv.TdV.minutos > 0) {
-                                    contenido += '              ' + posibilidadv.TdV.minutos + 'M ';
+                                if (apostador_v.TdV.minutos > 0) {
+                                    contenido += '              ' + apostador_v.TdV.minutos + 'M ';
                                 }
-                                if (posibilidadv.TdV.segundos > 0) {
-                                    contenido += '              ' + posibilidadv.TdV.segundos + 'S ';
+                                if (apostador_v.TdV.segundos > 0) {
+                                    contenido += '              ' + apostador_v.TdV.segundos + 'S ';
                                 }
                                 contenido += '          </div>';
                             });

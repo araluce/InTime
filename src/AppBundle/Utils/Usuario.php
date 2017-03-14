@@ -671,8 +671,10 @@ class Usuario {
     static function comprobarNivel($doctrine, $USUARIO) {
         $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
-        $mina = Usuario::comprobarMinaDesactivada($doctrine, $USUARIO);
-        if ($balon && $deporte && $mina) {
+        $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
+        //$mina = Usuario::comprobarMinaDesactivada($doctrine, $USUARIO);
+        //if ($balon && $deporte && $mina) {
+        if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
         }
@@ -726,6 +728,35 @@ class Usuario {
                             return 1;
                         }
                     }
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Comprueba si ha superado la última inspección de trabajo
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function comprobarInspeccion($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $ESTADO_EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
+        $query = $qb->select('a')
+                ->from('\AppBundle\Entity\EjercicioEstado', 'a')
+                ->where('a.idUsuario = :USUARIO')
+                ->orderBy('a.fecha', 'ASC')
+                ->setParameters(array('USUARIO' => $USUARIO));
+        $ULT_INSPECCION = $query->getQuery()->getResult();
+        if (count($ULT_INSPECCION)) {
+            foreach ($ULT_INSPECCION as $CALIFICACION) {
+                if (
+                        $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion()->getSeccion() === 'inspeccion_trabajo' &&
+                        $CALIFICACION->getIdEjercicioEstado() === $ESTADO_EVALUADO
+                ) {
+                    return 1;
                 }
             }
         }

@@ -159,6 +159,7 @@ class Trabajo {
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $CALIFICACION_MEDIA, 'Ingreso - '
                     . 'Test de inspección realizado correctamente');
             $message = 'correcto';
+            Usuario::comprobarNivel($doctrine, $USUARIO);
         } else {
             $CALIFICACION->setIdEvaluador($USUARIO_SISTEMA);
             $ESTADOS_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
