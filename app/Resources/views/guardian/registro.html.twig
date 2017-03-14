@@ -134,11 +134,9 @@
                                         <th>DISTRITO</th>
                                         <th>SEUDÓNIMO</th>
                                         <th>NOMBRE</th>
-                                        <th>APELLIDOS</th>
                                         <th>EMAIL</th>
                                         <th>TdV</th>
                                         <th>ESTADO</th>
-                                        <th>DIRECTORIO</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -147,29 +145,25 @@
                                         <th>DISTRITO</th>
                                         <th>SEUDÓNIMO</th>
                                         <th>NOMBRE</th>
-                                        <th>APELLIDOS</th>
                                         <th>EMAIL</th>
                                         <th>TdV</th>
                                         <th>ESTADO</th>
-                                        <th>DIRECTORIO</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
                                     {% for JUGADOR in JUGADORES %}
                                         <tr>
-                                            <td>{{ JUGADOR.DNI }}</td>
-                                            <td>{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</td>
-                                            <td>{{ JUGADOR.ALIAS }}</td>
-                                            <td>{{ JUGADOR.NOMBRE }}</td>
-                                            <td>{{ JUGADOR.APELLIDOS }}</td>
-                                            <td>{{ JUGADOR.EMAIL }}</td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.DNI }}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.EMAIL }}</a></td>
                                             {% if JUGADOR.TDV_RED %}
-                                                <td style="color:red; font-weight: bold;">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</td>
+                                                <td style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                             {% else %}
-                                                <td style="color:green; font-weight: bold;">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</td>
+                                                <td style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                             {% endif %}
-                                            <td title="{{ JUGADOR.ESTADO }}">{{ JUGADOR.ESTADO }}</td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}"><span class="fa fa-user-o"></span></a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -239,8 +233,6 @@
                                                 <th>DNI</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th>NOMBRE</th>
-                                                <th>APELLIDOS</th>
-                                                <th>DIRECTORIO</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -248,8 +240,6 @@
                                                 <th>DNI</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th>NOMBRE</th>
-                                                <th>APELLIDOS</th>
-                                                <th>DIRECTORIO</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>
@@ -257,11 +247,9 @@
                                                 {% if JUGADOR.getIdDistrito() is not null %}
                                                     {% if JUGADOR.getIdDistrito() == DISTRITO %}
                                                         <tr>
-                                                            <td>{{ JUGADOR.getDni() }}</td>
-                                                            <td>{{ JUGADOR.getSeudonimo() }}</td>
-                                                            <td>{{ JUGADOR.getNombre() }}</td>
-                                                            <td>{{ JUGADOR.getApellidos() }}</td>
-                                                            <td><span class="fa fa-user-o"></span></td>
+                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getDni() }}</a></td>
+                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getSeudonimo() }}</a></td>
+                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getNombre() }}&nbsp;{{ JUGADOR.getApellidos() }}</a></td>
                                                         </tr>
                                                     {% endif %}
                                                 {% endif %}

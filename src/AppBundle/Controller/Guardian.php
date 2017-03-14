@@ -1128,13 +1128,12 @@ class Guardian extends Controller {
 
         $DATOS = [];
 
+        $DATOS['NIVEL'] = 0;
+        $DATOS['PUNTOS'] = 0;
         $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
         if (null !== $USUARIO_NIVEL) {
             $DATOS['NIVEL'] = $USUARIO_NIVEL->getNivel();
             $DATOS['PUNTOS'] = $USUARIO_NIVEL->getPuntos();
-        } else {
-            $DATOS['NIVEL'] = 0;
-            $DATOS['PUNTOS'] = 0;
         }
         if (null !== $USUARIO->getIdDistrito()) {
             $DATOS['DISTRITO'] = $USUARIO->getIdDistrito()->getNombre();
@@ -1206,20 +1205,63 @@ class Guardian extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
         }
         if ($request->getMethod() == 'POST') {
-            $TDV = str_replace("T", " ", $request->request->get('tdv')) . ":00";
+            $tiempo = $request->request->get('tdv');
             $dni = $request->request->get('dni');
+            $causa = $request->request->get('motivo');
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
             if (null === $USUARIO) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ciudadano')), 200);
             }
-            $CUENTA = $USUARIO->getIdCuenta();
-            $TDV_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV);
-            $CUENTA->setTdv($TDV_formato);
-            $em->persist($CUENTA);
-            $em->flush();
+            if($tiempo < 0){
+                $causa = 'Cobro - ' . $causa;
+            } else {
+                $causa = 'Ingreso - ' . $causa;
+            }
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, $causa);
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'TdV modificado')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha enviado ningún dato')), 200);
+    }
+
+    /**
+     * 
+     * @Route("/guardian/info/actualizarMovimientos/{dni}", name="actualizarMovimientoGuardian")
+     */
+    public function actualizarMovimientoAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/info/actualizarMovimientos/' . $dni, true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')));
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        $query = $qb->select('f')
+                ->from('\AppBundle\Entity\UsuarioMovimiento', 'f')
+                ->where('f.idUsuario = :ID_USUARIO')
+                ->orderBy('f.fecha', 'DESC')
+                ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario()]);
+        $MOVIMIENTOS = $query->getQuery()->getResult();
+        if (!count($MOVIMIENTOS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Aún no se han producido movimientos')));
+        }
+        $DATOS['MOVIMIENTOS'] = [];
+        foreach ($MOVIMIENTOS as $MOVIMIENTO) {
+            $aux = [];
+            $aux['ID'] = $MOVIMIENTO->getIdUsuarioMovimiento();
+            $aux['CANTIDAD'] = $MOVIMIENTO->getCantidad();
+            if ($aux['CANTIDAD'] < 0) {
+                $aux['VALANCE'] = 'NEG';
+            } else {
+                $aux['VALANCE'] = 'POS';
+            }
+            $aux['CANTIDAD'] = Utils::segundosToDias($aux['CANTIDAD']);
+            $aux['CONCEPTO'] = $MOVIMIENTO->getCausa();
+            $aux['FECHA'] = $MOVIMIENTO->getFecha();
+            $DATOS['MOVIMIENTOS'][] = $aux;
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS['MOVIMIENTOS'])));
     }
 
 }

@@ -139,9 +139,9 @@
                     contenido = '<div class="col-lg-6" style="margin-bottom: 1%;">';
                     contenido += '  <div class="row bordes border-radius" style="margin: 1%;">';
                     contenido += '   <div class="col-lg-12">';
-                    contenido += '      Alias: ' + v.CIUDADANO.ALIAS + '<br>';
-                    contenido += '      Nombre y Apellidos: ' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + '<br>';
-                    contenido += '      DNI: ' + v.CIUDADANO.DNI;
+                    contenido += '      Alias: <a href="/guardian/directorio/getDirectorio/'+v.CIUDADANO.DNI+'">' + v.CIUDADANO.ALIAS + '</a><br>';
+                    contenido += '      Nombre y Apellidos: <a href="/guardian/directorio/getDirectorio/'+v.CIUDADANO.DNI+'">' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + '</a><br>';
+                    contenido += '      DNI: <a href="/guardian/directorio/getDirectorio/'+v.CIUDADANO.DNI+'">' + v.CIUDADANO.DNI + '</a>';
                     contenido += '  </div>';
                     contenido += '   <div class="col-lg-12">';
                     contenido += '      <legend>Propuesta</legend>';

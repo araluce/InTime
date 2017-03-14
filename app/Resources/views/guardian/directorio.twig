@@ -422,7 +422,7 @@
                     </div>
                     <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
                         <div class="btn-group" role="group">
-                            <button type="button" id="modificar" class="btn btn-primary" href="#tab1" data-toggle="tab">
+                            <button type="button" id="modificar" class="btn btn-primary" href="#tab1" data-toggle="tab" onclick="descargarInfoBasica();">
                                 <img src="{{ asset('images/iconos/Jugador/Datos_personales.png') }}" />
                                 <div class="hidden-xs">MIS DATOS</div>
                             </button>
@@ -440,7 +440,7 @@
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab">
+                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab" onclick="actualizarMovimientos();">
                                 <img src="{{ asset('images/iconos/Jugador/Consultar_movimientos.png') }}" />
                                 <div class="hidden-xs">MOVIMIENTOS</div>
                             </button>
@@ -457,14 +457,19 @@
                         <div class="tab-content">
                             <div class="tab-pane fade in active" id="tab1">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-xs-6">
                                         <input type="hidden" id="dni-ciudadano" value="{{ DNI }}">
                                         <legend>Distrito:</legend>
                                         <span id="distrito"></span>
                                     </div>
+                                    <div class="col-xs-6">
+                                        <legend>Nivel:</legend>
+                                        <span id="nivel-ciudadano"></span>&nbsp;
+                                        <span id="xp-ciudadano"></span>
+                                    </div>
                                 </div>
                                 <div class="row" style="margin-top: 1%;">
-                                    <div class="col-md-6">
+                                    <div class="col-lg-6">
                                         <legend>Información personal</legend>
                                         <label for="nombre">Nombre: </label>
                                         <span id="nombre">Sin nombre</span><span id="apellidos"> Sin apellidos</span><br>
@@ -477,12 +482,41 @@
                                         <label for="tdv-ciudadano">TdV: </label>
                                         <span id="tdv-ciudadano"></span><br>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-lg-6">
                                         <legend><i class="fa fa-heartbeat"></i>&nbsp; Modificar tiempo de vida</legend>
-                                        <div class="left-inner-addon ">
-                                            <i class="fa fa-calendar"></i>
-                                            <input class="form-control" type="datetime-local" id="modificar-tdv" />
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="dias" class="form-control input-number digit" value="0" min="-100" max="100" />
+                                                    <span class="input-group-addon">d</span>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="horas" class="form-control input-number digit" value="0" min="-24" max="24" />
+                                                    <span class="input-group-addon">h</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="minutos" class="form-control input-number digit" value="0" min="-60" max="60" />
+                                                    <span class="input-group-addon">m</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="segundos" class="form-control input-number digit" value="0" min="-60" max="60" />
+                                                    <span class="input-group-addon">s</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="text" placeholder="Motivo" style="margin-top: 1%;" class="form-control" id="motivo">
                                         <button style="margin-top: 1%;" class="btn btn-block btn-primary" onclick="modificarTDV();">OK</button>
                                     </div>
                                 </div>
@@ -494,7 +528,34 @@
 
                             </div>
                             <div class="tab-pane fade in" id="tab4">
+                                <div class="datatable">
+                                    <div id="movimientosC_wrapper" class="dataTables_wrapper no-footer">
+                                        <table id="movimientosC" class="display contentInfo dataTable no-footer dtr-inline" cellspacing="0" cellpadding="1" width="100%" role="grid" style="width: 100%;">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="#ID" style="width: 128px;">
+                                                        #ID
+                                                    </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="F.Operacion" style="width: 128px;">
+                                                        F.Operacion
+                                                    </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Concepto" style="width: 363px;">
+                                                        Concepto
+                                                    </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Importe" style="width: 74px;">
+                                                        Importe
+                                                    </th>
+                                                    <th style="display:none" class="sorting" tabindex="0" aria-controls="movimientosC" aria-label=": activate to sort column ascending" rowspan="1" colspan="1">
 
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabla-movimientos">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -515,16 +576,20 @@
             });
             $('.btn-pref .btn').height($('#menu-primer').height());
         });
-        function modificarTDV(){
+        function modificarTDV() {
             var dni = $("#dni-ciudadano").val();
-            var tdv_modificar = $("#modificar-tdv").val();
+            var dias = parseInt($("#dias").val());
+            var horas = parseInt($("#horas").val());
+            var minutos = parseInt($("#minutos").val());
+            var segundos = parseInt($("#segundos").val());
+            var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+            var motivo = $('#motivo').val();
             $('#modal-avisos2').click();
             mostrarCarga('Enviando solicitud al servidor');
             ruta = '/guardian/directorio/modificarTdV';
-            d = {'tdv': tdv_modificar, 'dni': dni};
+            d = {'tdv': tiempo, 'dni': dni, 'motivo': motivo};
             $.post(ruta, d, function (respuesta) {
                 data = jQuery.parseJSON(respuesta);
-                console.log(respuesta);
                 mostrarResultadoOperacion(data.message);
             });
         }
@@ -534,12 +599,14 @@
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
+                    $('#nivel-ciudadano').html('<b>Nivel: </b>' + data.message.NIVEL);
+                    $('#xp-ciudadano').html(data.message.PUNTOS + '<b>xp</b>');
                     if (data.message.IMAGEN) {
                         $('#foto-perfil').html('<img alt="" src="{{ asset('images/users/') }}' + data.message.IMAGEN + '">');
                         $('#foto-perfil-fondo').html('<img class="card-bkimg" alt="" src="{{ asset('images/users/') }}' + data.message.IMAGEN + '">');
                     } else {
                         $('#foto-perfil').html('<img alt="" src="{{ asset('images/fotos-usuarios/default.jpg') }}">');
-                        $('#foto-perfil-fondo').hmtl('<img class="card-bkimg" alt="" src="{{ asset('images/fotos-usuarios/default.jpg') }}">');
+                        $('#foto-perfil').html('<img alt="" class="card-bkimg" src="{{ asset('images/fotos-usuarios/default.jpg') }}">');
                     }
                     if (data.message.ALIAS) {
                         $('#alias-perfil').html('@' + data.message.ALIAS);
@@ -566,13 +633,13 @@
                         contenido += data.message.TDV.dias + 'd ';
                     }
                     if (data.message.TDV.horas) {
-                        contenido += data.message.TDV.horas + 'd ';
+                        contenido += data.message.TDV.horas + 'h ';
                     }
                     if (data.message.TDV.minutos) {
-                        contenido += data.message.TDV.minutos + 'd ';
+                        contenido += data.message.TDV.minutos + 'm ';
                     }
                     if (data.message.TDV.segundos) {
-                        contenido += data.message.TDV.segundos + 'd ';
+                        contenido += data.message.TDV.segundos + 's ';
                     }
                     $('#tdv-ciudadano').html(contenido);
                     $('#dni').html(dni);
@@ -620,8 +687,10 @@
         function actualizarMovimientos() {
             $('#tabla-movimientos').empty();
             contenido = '';
-            ruta = '/ciudadano/info/actualizarMovimientos';
-            $.get(ruta, function (data, status) {
+            var dni = $("#dni-ciudadano").val();
+            ruta = '/guardian/info/actualizarMovimientos/' + dni;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     $.each(data.message, function (k, v) {
                         contenido += '<tr class="even" role="row">';

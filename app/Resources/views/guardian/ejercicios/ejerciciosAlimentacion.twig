@@ -398,7 +398,7 @@
                 if (!entregas.DISTRITO) {
                     contenido += '   <div class="col-lg-12">';
                     contenido += '      <legend>Datos del ciudadano</legend>';
-                    contenido += '      ' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI;
+                    contenido += '      <a href="/guardian/directorio/getDirectorio/'+v.CIUDADANO.DNI+'">' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI + '</a>';
                     contenido += '  </div>';
                 } else {
                     contenido += '   <div class="col-lg-12">';
@@ -408,8 +408,15 @@
                 }
                 if (v.CALIFICACION.ESTADO !== 'solicitado') {
                     contenido += '   <div class="col-lg-12">';
-                    contenido += '      <legend>Datos de la entrega</legend>';
-                    contenido += '      Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/' + v.SECCION + '/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
+                    contenido += '      <div class="row">';
+                    contenido += '          <legend>Datos de la entrega</legend>';
+                    contenido += '          <div class="col-xs-6">';
+                    contenido += '              Fecha de entrega: ' + v.ENTREGA.FECHA.date;
+                    contenido += '          </div>';
+                    contenido += '          <div class="col-xs-6">';
+                    contenido += '              Entrega: <a href="{{ asset('USUARIOS/') }}' + v.CIUDADANO.DNI + '/' + v.SECCION + '/' + v.ENTREGA.ID + '/' + v.ENTREGA.NOMBRE + '">' + v.ENTREGA.NOMBRE + '</a>';
+                    contenido += '          </div>';
+                    contenido += '      </div>';
                     contenido += '  </div>';
                 }
                 contenido += '  <div class="row">';
