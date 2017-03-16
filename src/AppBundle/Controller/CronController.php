@@ -187,6 +187,7 @@ class CronController extends Controller {
     public function comprobarRetosDeportivosAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
         $CIUDADANOS = Usuario::getCiudadanosVacaciones($doctrine);
         $contador = 0;
         if (count($CIUDADANOS)) {

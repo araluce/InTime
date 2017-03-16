@@ -190,7 +190,8 @@
                             contenido += '       <div class="col-xs-6 borde-rojo tarjeta-ejercicio-tipo">';
                             }
                         }
-                        contenido += '           Coste: ';
+                        contenido += '           Penalización: 1d';
+                        /*
                         if (v.COSTE.dias > 0) {
                             contenido += '           ' + v.COSTE.dias + 'd ';
                         }
@@ -206,6 +207,7 @@
                         if(v.COSTE.dias + v.COSTE.horas + v.COSTE.minutos + v.COSTE.segundos === 0){
                             contenido += '           <span style="color:green;">GRATIS</span>';
                         }
+                        */
                         contenido += '           <span class="fa fa-money" style="float:right;"> </span>';
                         contenido += '       </div>';
                         if (v.ELEGIBLE) {

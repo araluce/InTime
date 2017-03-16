@@ -449,7 +449,7 @@ class Utils {
      */
     static function semanaPasada($fecha) {
         $semana = new \DateTime('now');
-        if (intval($semana->format("W")) === intval($fecha->format("W") - 1)) {
+        if (intval($semana->format("W")-1) === intval($fecha->format("W"))) {
             return true;
         }
         return false;

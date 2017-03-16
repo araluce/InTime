@@ -246,7 +246,9 @@
             mostrarCarga('Procesando apuesta');
             if (apuesta <= 0) {
                 mostrarResultadoOperacion('Haga una apuesta');
-            } else {
+            } if(apuesta > 604800){
+                mostrarResultadoOperacion('Apuesta máxima 7 días');
+            }else {
                 datos = {'apuesta': apuesta, 'id': opcion_id};
                 $.post('/ciudadano/ocio/apuestas/apostar', datos, function (data) {
                     console.log(data);

@@ -946,7 +946,7 @@ class Guardian extends Controller {
 
     /**
      * 
-     * @Route("/guardian/setCalificacion", name="setCalificacion")
+     * @Route("/guardian/setCalificacion", name="setCalificacionGeneral")
      */
     public function setCalificacionAction(Request $request) {
         if ($request->getMethod() == 'POST') {

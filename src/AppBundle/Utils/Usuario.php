@@ -745,7 +745,7 @@ class Usuario {
         $qb = $em->createQueryBuilder();
         $ESTADO_EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
         $query = $qb->select('a')
-                ->from('\AppBundle\Entity\EjercicioEstado', 'a')
+                ->from('\AppBundle\Entity\EjercicioCalificacion', 'a')
                 ->where('a.idUsuario = :USUARIO')
                 ->orderBy('a.fecha', 'ASC')
                 ->setParameters(array('USUARIO' => $USUARIO));

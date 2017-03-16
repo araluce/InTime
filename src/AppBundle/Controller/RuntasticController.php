@@ -156,7 +156,7 @@ class RuntasticController extends Controller {
         }
         $fase_min = 1000;
         $RETO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-        
+
         if ($RETO === 0) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'No hay retos disponibles')), 200);
         }
@@ -231,58 +231,62 @@ class RuntasticController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Permiso denegado'), 200);
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-        $query = $qb->select('ur')
-                ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
-                ->where('ur.idUsuario = :Usuario AND ur.activo = 1')
-                ->setParameters(['Usuario' => $USUARIO]);
-        $UR = $query->getQuery()->getOneOrNullResult();
-
-        if ($UR === null) {
+        $UR = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($USUARIO);
+        if (!count($UR)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
         }
+        $actividades_semana = [];
+        foreach ($UR as $U) {
+            $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
 
-        $r = new Runtastic();
-        $r->setUsername($UR->getUsername())->setPassword($UR->getPassword());
-        $query = $qb->select('sr.idRuntastic')
-                ->from('\AppBundle\Entity\SesionRuntastic', 'sr')
-                ->where('sr.idUsuarioRuntastic = :idUsuarioRuntastic')
-                ->setParameters(['idUsuarioRuntastic' => $UR]);
-        $SESIONES = $query->getQuery()->getResult();
-//        if ($r->login()) {
-        $response['usuario'] = $r->getUsername();
-        $response['Uid'] = $r->getUid();
-
-        $week_activities = $r->getActivities();
-        if(!count($week_activities)){
-            return new JsonResponse(['estatus' => 'ERROR', 'message' => 'Actualizar falló. No se han recibido datos de Runtastic, vuelve a intentarlo de nuevo.'], 200);
-        }
-//        return new JsonResponse($week_activities, 200);
-//        return new JsonResponse(array('estado' => 'ERROR', 'message' => $SESIONES), 200);
-        foreach ($week_activities as $activity) {
-            if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
-                $SESION = new \AppBundle\Entity\SesionRuntastic();
-                $SESION->setIdRuntastic($activity->id);
-                $SESION->setIdUsuarioRuntastic($UR);
-                $SESION->setTipo('cycling');
-                if ($activity->type === 'running') {
-                    $SESION->setTipo('running');
+            $r = new Runtastic();
+            $timeout = false;
+            $tiempo_inicio = microtime(true);
+            do {
+                $r->setUsername($U->getUsername())->setPassword($U->getPassword());
+                $week_activities = $r->getActivities();
+                $tiempo_fin = microtime(true);
+                $tiempo = $tiempo_fin - $tiempo_inicio;
+                if ($tiempo >= 10.0) {
+                    $timeout = true;
                 }
-                $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
-                $SESION->setDistancia($activity->distance);
-                $SESION->setRitmo($activity->pace);
-                $SESION->setVelocidad($activity->speed);
-                $SESION->setEvaluado(0);
-                $FECHA = new \Datetime();
-                $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
-                $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
-                $SESION->setFecha($FECHA);
-                $em->persist($SESION);
+            } while ($r->getResponseStatusCode() !== 200 && !$timeout);
+            $response['usuario'] = $r->getUsername();
+            $response['Uid'] = $r->getUid();
+
+            $week_activities = $r->getActivities();
+            foreach ($week_activities as $activity) {
+                $actividades_semana[] = $activity;
+                if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
+                    $SESION = new \AppBundle\Entity\SesionRuntastic();
+                    $SESION->setIdRuntastic($activity->id);
+                    $SESION->setIdUsuarioRuntastic($U);
+                    $SESION->setTipo('cycling');
+                    if ($activity->type === 'running') {
+                        $SESION->setTipo('running');
+                    }
+                    $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
+                    $SESION->setDistancia($activity->distance);
+                    $SESION->setRitmo($activity->pace);
+                    $SESION->setVelocidad($activity->speed);
+                    $SESION->setEvaluado(0);
+                    $FECHA = new \Datetime();
+                    $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
+                    $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
+                    $SESION->setFecha($FECHA);
+                    $em->persist($SESION);
+                }
             }
+            $em->flush();
         }
-        $em->flush();
+        if (!count($actividades_semana)) {
+            return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han actualizado sus sesiones. '
+                . 'Puede que hayas excedido el máximo de sesiones abiertas permitidas por Runtastic. Podría ayudar cerrar sesiones '
+                . 'de Runtastic que tengas abiertas en los navegadores. Si esto no funciona prueba a cerrar y abrir la sesión de '
+                . 'Runtastic en $inTime.'], 200);
+        }
+
         return new JsonResponse(['estatus' => 'OK', 'message' => 'Datos descargados correctamente'], 200);
-//        }
-//        return new JsonResponse(['estatus' => 'ERROR', 'message' => 'Login failed'], 200);
     }
 
     /**
@@ -603,7 +607,7 @@ class RuntasticController extends Controller {
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
         $query = $qb->select('ur')
                 ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
-                ->where('ur.idUsuario = :IdUsuario AND ur.activo = 1')
+                ->where('ur.idUsuario = :IdUsuario')
                 ->setParameters(['IdUsuario' => $USUARIO]);
         $CUENTAS_RUNTASTIC = $query->getQuery()->getResult();
         if (!count($CUENTAS_RUNTASTIC)) {
@@ -613,7 +617,6 @@ class RuntasticController extends Controller {
         $DATOS['COMPARATIVA'] = 0;
         $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
         $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-        //$EJERCICIO = Ejercicio::getFase($doctrine, $USUARIO);
         if (null !== $EJERCICIO) {
             $DATOS['COMPARATIVA'] = 1;
             $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
@@ -647,18 +650,31 @@ class RuntasticController extends Controller {
                                 $aux2['VELOCIDAD'] = $RETO->getVelocidad();
                                 $aux2['RITMO'] = $RETO->getRitmo();
                                 $aux['RETO'][] = $aux2;
-//                                if ($RETO->getTipo() === $aux['TIPO'] && $RETO->getVelocidad() <= $aux['VELOCIDAD']) {
-//                                return new JsonResponse(json_encode(array(($RETO->getTipo() === 'running' && $RETO->getRitmo() >= $aux['RITMO']) )), 200);
-                                if (($aux2['TIPO'] === $aux['TIPO'] && $aux['TIPO'] === 'running' && $aux2['RITMO'] >= $aux['RITMO']) ||
-                                        ($aux2['TIPO'] === $aux['TIPO'] && $aux['TIPO'] === 'cycling' && $aux2['VELOCIDAD'] <= $aux['VELOCIDAD'])) {
-                                    $aux['VELOCIDAD_SUP'] = 1;
-                                    $duracion_acumulada += $duracion;
-                                    $id_sesiones[] = $SESION;
-                                    if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                        $DATOS['EVALUADO'] = 1;
-                                        $n_sesiones++;
-                                        if ($n_sesiones >= 3) {
+                                if ($aux['TIPO'] === 'running') {
+                                    if (($aux2['TIPO'] === $aux['TIPO'] && $aux2['RITMO'] >= $aux['RITMO'])) {
+                                        $aux['VELOCIDAD_SUP'] = 1;
+                                        $duracion_acumulada += $duracion;
+                                        $id_sesiones[] = $SESION;
+                                        if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                            $DATOS['EVALUADO'] = 1;
+//                                        $n_sesiones++;
+//                                        if ($n_sesiones >= 3) {
                                             //Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
+//                                        }
+                                        }
+                                    }
+                                }
+                                if ($aux['TIPO'] === 'cycling') {
+                                    if ($aux2['TIPO'] === $aux['TIPO'] && $aux2['VELOCIDAD'] <= $aux['VELOCIDAD']) {
+                                        $aux['VELOCIDAD_SUP'] = 1;
+                                        $duracion_acumulada += $duracion;
+                                        $id_sesiones[] = $SESION;
+                                        if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                            $DATOS['EVALUADO'] = 1;
+//                                        $n_sesiones++;
+//                                        if ($n_sesiones >= 3) {
+                                            //Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $id_sesiones);
+//                                        }
                                         }
                                     }
                                 }

@@ -171,6 +171,8 @@ class ApuestaController extends Controller {
             if (count($POSIBILIDADES) > 1) {
                 $APUESTA = new \AppBundle\Entity\Apuesta();
                 $APUESTA->setDescripcion($DESCRIPCION);
+                $APUESTA->setDisponible(0);
+                $APUESTA->setFecha(new \DateTime('now'));
                 $em->persist($APUESTA);
 
                 foreach ($POSIBILIDADES as $POSIBILIDAD) {
