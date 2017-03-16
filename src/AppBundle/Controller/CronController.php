@@ -293,6 +293,24 @@ class CronController extends Controller {
     }
 
     /**
+     * @Route("/cron/comprobarNivelCiudadanos", name="comprobarNivelCiudadanos")
+     */
+    public function comprobarNivelCiudadanosAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+        $contador = 0;
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                if(Usuario::comprobarNivel($doctrine, $CIUDADANO)){
+                    $contador++;
+                }
+            }
+        }
+        Utils::setError($doctrine, 3, 'CRON - ' . $contador . ' ciudadanos han subido de nivel');
+        return new JsonResponse(json_encode($contador . ' ciudadanos han subido de nivel'), 200);
+    }
+
+    /**
      * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")
      */
     public function testCiudadanos(Request $request) {

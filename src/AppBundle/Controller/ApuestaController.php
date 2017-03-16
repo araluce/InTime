@@ -72,6 +72,7 @@ class ApuestaController extends Controller {
                 $aux2 = [];
                 $aux2['ENUNCIADO'] = $POSIBILIDAD->getPosibilidad();
                 $aux2['ID'] = $POSIBILIDAD->getIdApuestaPosibilidad();
+                $aux2['RESULTADO'] = $POSIBILIDAD->getResultado();
                 $aux2['TdV'] = 0;
                 $aux2['N_APUESTAS'] = 0;
                 $aux2['APOSTADORES'] = [];

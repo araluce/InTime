@@ -40,7 +40,7 @@ class Utils {
                 ]);
                 if (null !== $BONIFICACION) {
                     $tdv = (-1) * $BONIFICACION->getBonificacion();
-                    Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Gasto - Se descuenta la bonificación por nota para ingresar la nueva');
+                    Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Cobro - Se descuenta la bonificación por nota para ingresar la nueva (id: ' . $id_ejercicio->getIdEjercicio() . ')');
                 }
             }
         }

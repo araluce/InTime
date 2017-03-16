@@ -953,20 +953,28 @@ class DefaultController extends Controller {
     /**
      * @Route("/cerrarSesionRuntastic/{alias}", name="cerrarSesionRuntastic")
      */
-    public function cerrarSesionRuntasticAction(Request $request, $alias) {
+    public function cerrarSesionRuntasticAction($alias) {
         $doctrine = $this->getDoctrine();
 
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
-        $UR = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findOneBy([
-            'idUsuario' => $USUARIO, 'activo' => 1
-        ]);
-        if ($UR === null) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No hay sesiones iniciadas'), 200);
+        $CALIFICACIONES_VALIDAS = [];
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(3);
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(2);
+        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(1);
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdUsuario($USUARIO);
+        $HOY = new \DateTime('now');
+        if (count($CALIFICACIONES)) {
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
+                    if (intval($CALIFICACION->getFecha()->format('W') - 1) === intval($HOY->format('W'))) {
+                        Utils::pretty_print('No superado');
+                        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+                    }
+                }
+            }
         }
-        $r = new Runtastic();
-        $r->setUsername($UR->getUsername())->setPassword($UR->getPassword());
-        $r->logout();
-        return new JsonResponse(['estatus' => 'OK', 'message' => 'Se ha cerrado la sesión'], 200);
+        Utils::pretty_print('No superado');
+        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 
 }

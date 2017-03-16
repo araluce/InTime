@@ -374,11 +374,13 @@ class CiudadanoController extends Controller {
         if (count($FOTOS)) {
             $datos = [];
             foreach ($FOTOS AS $FOTO) {
+                $aux['usuario']['mi_alias'] = $USUARIO->getSeudonimo();
                 $aux['usuario']['alias'] = $FOTO->getIdUsuario()->getSeudonimo();
                 $aux['usuario']['dni'] = $FOTO->getIdUsuario()->getDni();
                 $aux['fecha'] = $FOTO->getFecha();
                 $aux['imagen'] = $FOTO->getImagen();
                 $aux['id'] = $FOTO->getIdAlbumFoto();
+                $aux['titulo'] = '';
                 $REACCIONES = $doctrine->getRepository('AppBundle:FotoReaccion')->findByIdAlbumFoto($FOTO);
                 $aux['mi_like'] = 0;
                 $aux['mi_dislike'] = 0;

@@ -205,11 +205,15 @@ class Ejercicio {
                 $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
                     'idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO
                 ]);
-                if(null !== $ENTREGA){
+                if (null !== $ENTREGA) {
                     return $ENTREGA;
                 }
             }
+            // No se ha encontrado ninguna entrega por parte de ningún miembro
+            // del distrito
+            return 0;
         }
+        return $ENTREGA;
     }
 
 }

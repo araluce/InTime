@@ -1008,7 +1008,6 @@ class Guardian extends Controller {
                         }
                         $em->flush();
                         Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
-                        Usuario::comprobarNivel($doctrine, $CIUDADANO);
                     }
                 }
             } else {
@@ -1035,7 +1034,6 @@ class Guardian extends Controller {
                 }
                 $em->flush();
                 Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
-                Usuario::comprobarNivel($doctrine, $CALIFICACION->getIdUsuario());
             }
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);

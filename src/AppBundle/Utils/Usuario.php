@@ -672,8 +672,7 @@ class Usuario {
         $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
-        //$mina = Usuario::comprobarMinaDesactivada($doctrine, $USUARIO);
-        //if ($balon && $deporte && $mina) {
+        
         if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
@@ -698,7 +697,7 @@ class Usuario {
         if (count($CALIFICACIONES)) {
             foreach ($CALIFICACIONES as $CALIFICACION) {
                 if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
-                    if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W'))) {
+                    if (intval($CALIFICACION->getFecha()->format('W')-1) === intval($HOY->format('W'))) {
                         return 1;
                     }
                 }

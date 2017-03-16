@@ -27,8 +27,8 @@
             float:right;
             font-weight: bold;
         }
-        .apostador-alias{
-
+        .acierto{
+            background-color: #5cb85c;
         }
         .apostador-tdv{
             text-align: right;
@@ -155,9 +155,15 @@
                         $.each(apuestav.POSIBILIDAD, function (posibilidadk, posibilidadv) {
                             contenido += '<div class="row">';
                             contenido += '      <div class="col-xs-12">';
-                            contenido += '          <button class="btn btn-block boton-opcion" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
-                            contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
-                            contenido += '          </button>';
+                            if(posibilidadv.RESULTADO){
+                                contenido += '          <button class="btn btn-block boton-opcion acierto" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
+                                contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
+                                contenido += '          </button>';
+                            } else {
+                                contenido += '          <button class="btn btn-block boton-opcion" data-toggle="collapse" data-target="#datos' + posibilidadv.ID + '">';
+                                contenido += '              ' + posibilidadv.ENUNCIADO + '<span>(' + posibilidadv.N_APUESTAS + ')</span>';
+                                contenido += '          </button>';
+                            }
                             contenido += '      </div>';
                             contenido += '      <div class="row collapse" id="datos' + posibilidadv.ID + '" style="margin: 0 22px;">';
                             contenido += '          <div class="col-xs-12">';

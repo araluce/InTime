@@ -11,6 +11,7 @@ namespace AppBundle\Utils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Ejercicio;
 
 /**
  * Description of Trabajo
@@ -58,6 +59,16 @@ class Trabajo {
         ]);
         $em = $doctrine->getManager();
         $resp = Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
+        $seCobra = true;
+        if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $USUARIO->getIdDistrito())) {
+                $seCobra = false;
+            }
+        } else {
+            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, null)) {
+                $seCobra = false;
+            }
+        }
         if ($EJERCICIO_CALIFICACION === null) {
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
         }
@@ -67,7 +78,9 @@ class Trabajo {
         $EJERCICIO_CALIFICACION->setFecha($FECHA);
         $em->persist($EJERCICIO_CALIFICACION);
         $em->flush();
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra comida');
+        if ($seCobra) {
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra comida');
+        }
         return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
     }
 
@@ -159,7 +172,6 @@ class Trabajo {
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $CALIFICACION_MEDIA, 'Ingreso - '
                     . 'Test de inspección realizado correctamente');
             $message = 'correcto';
-            Usuario::comprobarNivel($doctrine, $USUARIO);
         } else {
             $CALIFICACION->setIdEvaluador($USUARIO_SISTEMA);
             $ESTADOS_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
