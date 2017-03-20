@@ -382,7 +382,7 @@
             contenido += '<div class="row">';
             if (v.ESTADO === 'no_solicitado') {
                 contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" onclick="solicitar(' + v.ID + ')"';
-                if (solicitado) {
+                if (solicitado || (v.SOLICITANTES - v.NUM_MAX_SOLICITANTES <= 0)) {
                     contenido += ' disabled>';
                 } else {
                     contenido += ' >';

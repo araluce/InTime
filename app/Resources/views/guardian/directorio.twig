@@ -471,8 +471,10 @@
                                 <div class="row" style="margin-top: 1%;">
                                     <div class="col-lg-6">
                                         <legend>Información personal</legend>
-                                        <label for="nombre">Nombre: </label>
-                                        <span id="nombre">Sin nombre</span><span id="apellidos"> Sin apellidos</span><br>
+                                        <label for="puesto">Puesto en clasificación global: </label>
+                                        <span id="puesto">No clasificado</span><br>
+                                        <label for="nombre">Apellidos, Nombre: </label>
+                                        <span id="apellidos"> Sin apellidos</span>,&nbsp;<span id="nombre">Sin nombre</span><br>
                                         <label for="dni">DNI: </label>
                                         <span id="dni"></span><br>
                                         <label for="fecha-nacimiento">Fecha de nacimiento: </label>
@@ -484,6 +486,7 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <legend><i class="fa fa-heartbeat"></i>&nbsp; Modificar tiempo de vida</legend>
+                                        <p style="color: #e14147; font-weight: bold;" id="libre-minuteros"></p>
                                         <div class="col-xs-3">
                                             <div class="row">
                                                 <div class="input-group">
@@ -628,6 +631,9 @@
                     if (data.message.DISTRITO) {
                         $('#distrito').html('<i class="fa fa-university" aria-hidden="true"></i>&nbsp;' + data.message.DISTRITO);
                     }
+                    if (data.message.LIBRE_MINUTEROS) {
+                        $('#libre-minuteros').html('Este usuario ha comprado esta semana una carta de bonificación contra minuteros');
+                    }
                     contenido = '';
                     if (data.message.TDV.dias) {
                         contenido += data.message.TDV.dias + 'd ';
@@ -643,6 +649,7 @@
                     }
                     $('#tdv-ciudadano').html(contenido);
                     $('#dni').html(dni);
+                    $('#puesto').html(data.message.PUESTO);
                 }
             });
         }

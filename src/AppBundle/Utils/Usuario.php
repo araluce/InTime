@@ -298,7 +298,7 @@ class Usuario {
         $cantidad = $query->getQuery()->getSingleScalarResult();
         $puesto = 1;
         foreach ($USUARIOS as $U) {
-            if ($U->getSeudonimo() !== null) {
+            if ($U->getSeudonimo() !== null && $U !== $USUARIO) {
                 $aux = [];
                 $aux['UsuarioId'] = $U->getIdUsuario();
                 $aux['UsuarioAlias'] = $U->getSeudonimo();
@@ -318,7 +318,20 @@ class Usuario {
         $RESPUESTA['ALIAS'] = $USUARIO->getSeudonimo();
         $RESPUESTA['CANTIDAD'] = $cantidad;
         $RESPUESTA['PUESTO'] = $puesto;
-        return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
+        return $RESPUESTA;
+        //return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $RESPUESTA)), 200);
+    }
+    /**
+     * Devuelve el puesto que tiene un usuario dentro de un conjunto de usuarios
+     * por su TdV
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $USUARIOS
+     * @return JsonResponse
+     */
+    static function getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS) {
+        $RESPUESTA = Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $RESPUESTA)), 200);
     }
 
     /**
@@ -697,7 +710,7 @@ class Usuario {
         if (count($CALIFICACIONES)) {
             foreach ($CALIFICACIONES as $CALIFICACION) {
                 if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
-                    if (intval($CALIFICACION->getFecha()->format('W')-1) === intval($HOY->format('W'))) {
+                    if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W')-1)) {
                         return 1;
                     }
                 }
@@ -798,7 +811,8 @@ class Usuario {
             $USUARIO_NIVEL->setPuntos(1);
         } else {
             $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel() + 1);
-            $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getNivel());
+            $nuevos_xp = $USUARIO_NIVEL->getNivel() + 1 + $USUARIO_NIVEL->getPuntos();
+            $USUARIO_NIVEL->setPuntos($nuevos_xp);
         }
         $em = $doctrine->getManager();
         $em->persist($USUARIO_NIVEL);

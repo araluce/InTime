@@ -417,15 +417,17 @@ class AsistenciaController extends Controller {
                 }
             }
             foreach ($horas as $hora) {
-                $TUTORIA = new \AppBundle\Entity\UsuarioTutoria();
-                $TUTORIA->setIdUsuario($USUARIO);
-                $TUTORIA->setDia($dia);
-                $TUTORIA->setHora($hora);
-                $TUTORIA->setMotivo($motivo);
-                $TUTORIA->setCoste(0);
-                $TUTORIA->setFechaSolicitud($fecha);
-                $TUTORIA->setEstado(false);
-                $em->persist($TUTORIA);
+                if ($hora !== '') {
+                    $TUTORIA = new \AppBundle\Entity\UsuarioTutoria();
+                    $TUTORIA->setIdUsuario($USUARIO);
+                    $TUTORIA->setDia($dia);
+                    $TUTORIA->setHora($hora);
+                    $TUTORIA->setMotivo($motivo);
+                    $TUTORIA->setCoste(0);
+                    $TUTORIA->setFechaSolicitud($fecha);
+                    $TUTORIA->setEstado(false);
+                    $em->persist($TUTORIA);
+                }
             }
             $em->flush();
 

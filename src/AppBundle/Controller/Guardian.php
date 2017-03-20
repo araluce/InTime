@@ -13,12 +13,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Ejercicio;
-use AppBundle\Utils\Trabajo;
 use AppBundle\Utils\Distrito;
 
 /**
@@ -1114,6 +1111,7 @@ class Guardian extends Controller {
     public function getInfoBasicaGuardianAction(Request $request, $dni) {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/directorio/getInfoBasica/' . $dni, true);
         if (!$status) {
@@ -1125,7 +1123,14 @@ class Guardian extends Controller {
         }
 
         $DATOS = [];
-
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL')
+                ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
+        $USUARIOS = $query->getQuery()->getResult();
+        $infoPuesto = Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+        $DATOS['PUESTO'] = $infoPuesto['PUESTO'];
         $DATOS['NIVEL'] = 0;
         $DATOS['PUNTOS'] = 0;
         $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
@@ -1167,6 +1172,17 @@ class Guardian extends Controller {
         $TDV = $USUARIO->getIdCuenta()->getTdv();
         $RESTANTE = $TDV->getTimestamp() - $AHORA->getTimestamp();
         $DATOS['TDV'] = Utils::segundosToDias($RESTANTE);
+
+        $DATOS['LIBRE_MINUTEROS'] = 0;
+        $MC_LIBRE_MINUTEROS = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
+        $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+            'idBonificacionExtra' => $MC_LIBRE_MINUTEROS, 'idUsuario' => $USUARIO
+        ]);
+        if (null !== $MI_MC) {
+            if ($AHORA->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
+                $DATOS['LIBRE_MINUTEROS'] = 1;
+            }
+        }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
@@ -1210,7 +1226,7 @@ class Guardian extends Controller {
             if (null === $USUARIO) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ciudadano')), 200);
             }
-            if($tiempo < 0){
+            if ($tiempo < 0) {
                 $causa = 'Cobro - ' . $causa;
             } else {
                 $causa = 'Ingreso - ' . $causa;

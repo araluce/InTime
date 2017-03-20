@@ -238,7 +238,12 @@ class RuntasticController extends Controller {
         $actividades_semana = [];
         foreach ($UR as $U) {
             $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
-
+            $sesiones_ids = [];
+            if(count($SESIONES)){
+                foreach($SESIONES as $S){
+                    $sesiones_ids[] = $S->getIdRuntastic();
+                }
+            }
             $r = new Runtastic();
             $timeout = false;
             $tiempo_inicio = microtime(true);
@@ -257,7 +262,7 @@ class RuntasticController extends Controller {
             $week_activities = $r->getActivities();
             foreach ($week_activities as $activity) {
                 $actividades_semana[] = $activity;
-                if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
+                if (!in_array($activity->id, $sesiones_ids)) {
                     $SESION = new \AppBundle\Entity\SesionRuntastic();
                     $SESION->setIdRuntastic($activity->id);
                     $SESION->setIdUsuarioRuntastic($U);

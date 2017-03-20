@@ -459,6 +459,12 @@ class TrabajoController extends Controller {
         if ($EJERCICIO === null) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este ejercicio no existe')), 200);
         }
+        $NUM_MAX_SOLICITANTES = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga');
+        $SOLICITANTES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
+        if($NUM_MAX_SOLICITANTES - count($SOLICITANTES) <= 0){
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Número máximo de solicitantes alcanzado')), 200);
+        }
+        
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
 
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([

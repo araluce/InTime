@@ -190,7 +190,7 @@ class JugadorController extends Controller {
                 ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
         $USUARIOS = $query->getQuery()->getResult();
 
-        return Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+        return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
 
     /**
@@ -223,7 +223,7 @@ class JugadorController extends Controller {
         ]);
         $USUARIOS = $query->getQuery()->getResult();
 
-        return Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+        return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
 
     /**
@@ -306,15 +306,27 @@ class JugadorController extends Controller {
                 $array_mc[] = $MCU->getIdBonificacionExtra();
             }
         }
+        $hoy = new \DateTime('now');
         if (count($MINICARTAS)) {
             foreach ($MINICARTAS as $MC) {
-                if (!in_array($MC, $array_mc) && $MC->getDisponible()) {
-                    $aux = [];
-                    $aux['ID'] = $MC->getIdBonificacionExtra();
-                    $aux['TITULO'] = $MC->getBonificacion();
-                    $aux['DESCRIPCION'] = $MC->getDescripcion();
-                    $aux['IMAGEN'] = $MC->getImagen();
-                    $aux['COSTE'] = $MC->getCosteXp();
+                $aux = [];
+                $aux['ID'] = $MC->getIdBonificacionExtra();
+                $aux['TITULO'] = $MC->getBonificacion();
+                $aux['DESCRIPCION'] = $MC->getDescripcion();
+                $aux['IMAGEN'] = $MC->getImagen();
+                $aux['COSTE'] = $MC->getCosteXp();
+                $aux['COMPRADA'] = 0;
+                if (in_array($MC, $array_mc) && $MC->getDisponible()) {
+                    $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+                        'idBonificacionExtra' => $MC, 'idUsuario' => $USUARIO
+                    ]);
+                    if (null !== $MI_MC) {
+                        if ($hoy->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
+                            $aux['COMPRADA'] = 1;
+                        }
+                    }
+                }
+                if ($MC->getDisponible()) {
                     $DATOS['MC'][] = $aux;
                 }
             }
@@ -357,7 +369,7 @@ class JugadorController extends Controller {
         if ($MI_MC === null) {
             $MI_MC = new \AppBundle\Entity\BonificacionXUsuario();
         }
-        
+
         $MI_MC->setFecha(new \DateTime('now'));
         $MI_MC->setContador(0);
         $MI_MC->setIdBonificacionExtra($MC);

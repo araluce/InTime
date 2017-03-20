@@ -17,6 +17,7 @@ use AppBundle\Utils\Utils;
 use AppBundle\Utils\Trabajo;
 use AppBundle\Utils\Distrito;
 use AppBundle\Utils\Pago;
+use AppBundle\Utils\Ejercicio;
 
 /**
  * Description of CronController
@@ -188,46 +189,60 @@ class CronController extends Controller {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
-        $CIUDADANOS = Usuario::getCiudadanosVacaciones($doctrine);
+        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
         $contador = 0;
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
-                $query = $qb->select('ur')
-                        ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
-                        ->where('ur.idUsuario = :IdUsuario AND ur.activo = 1')
-                        ->setParameters(['IdUsuario' => $CIUDADANO]);
-                $CUENTAS_RUNTASTIC = $query->getQuery()->getResult();
-                if (!count($CUENTAS_RUNTASTIC)) {
-                    return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
-                }
-                $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
-                $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-                if (null !== $EJERCICIO) {
-                    $comparar = 1;
-                    $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
-                    if (!count($RETOS)) {
-                        $comparar = 0;
-                    }
-                    $duracion_acumulada = 0;
-                    $id_sesiones = [];
-                    $n_sesiones = 1;
-                    foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
-                        $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
-                        foreach ($SESIONES_RUNTASTIC as $SESION) {
-                            if (Utils::semanaPasada($SESION->getFecha())) {
-                                $duracion = $SESION->getDuracion();
-                                if ($comparar) {
-                                    if (!$SESION->getEvaluado()) {
-                                        foreach ($RETOS as $RETO) {
-                                            if (($RETO->getTipo() === $SESION->getTipo() && $SESION->getTipo() === 'running' && $RETO->getRitmo() >= $SESION->getRitmo()) ||
-                                                    ($RETO->getTipo() === $SESION->getTipo() && $SESION->getTipo() === 'cycling' && $RETO->getVelocidad() <= $SESION->getVelocidad())) {
-                                                $duracion_acumulada += $duracion;
-                                                $id_sesiones[] = $SESION;
-                                                if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                                    $n_sesiones++;
-                                                    if ($n_sesiones >= 3) {
-                                                        $contador++;
-                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                $ok = false;
+                $CUENTAS_RUNTASTIC = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($CIUDADANO);
+                if (count($CUENTAS_RUNTASTIC)) {
+                    $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+                    $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
+                    if (null !== $EJERCICIO) {
+                        $comparar = 1;
+                        $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
+                        if (!count($RETOS)) {
+                            $comparar = 0;
+                        }
+                        $duracion_acumulada = 0;
+                        $id_sesiones = [];
+                        $n_sesiones = 1;
+                        foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
+                            $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
+                            foreach ($SESIONES_RUNTASTIC as $SESION) {
+                                if (!$ok) {
+                                    if (Utils::semanaPasada($SESION->getFecha())) {
+                                        $duracion = $SESION->getDuracion();
+                                        if ($comparar) {
+                                            if (!$SESION->getEvaluado()) {
+                                                foreach ($RETOS as $RETO) {
+                                                    if ($RETO->getTipo() === 'running') {
+                                                        if (($RETO->getTipo() === $SESION->getTipo() && $RETO->getRitmo() >= $SESION->getRitmo())) {
+                                                            $duracion_acumulada += $duracion;
+                                                            $id_sesiones[] = $SESION;
+                                                            if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                                                $n_sesiones++;
+                                                                if ($n_sesiones >= 2) {
+                                                                    $ok = true;
+                                                                    $contador++;
+                                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    if ($RETO->getTipo() === 'cycling') {
+                                                        if ($RETO->getTipo() === $SESION->getTipo() && $RETO->getVelocidad() <= $SESION->getVelocidad()) {
+                                                            $duracion_acumulada += $duracion;
+                                                            $id_sesiones[] = $SESION;
+                                                            if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                                                $n_sesiones++;
+                                                                if ($n_sesiones >= 2) {
+                                                                    $ok = true;
+                                                                    $contador++;
+                                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -241,7 +256,7 @@ class CronController extends Controller {
             }
         }
         $em->flush();
-        Utils::setError($doctrine, 3, 'CRON - Comprobar retos deportivos');
+        Utils::setError($doctrine, 3, 'CRON - Comprobar retos deportivos - ' . $contador);
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $contador . ' ciudadanos han superado el reto deportivo')), 200);
     }
 
@@ -301,7 +316,7 @@ class CronController extends Controller {
         $contador = 0;
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
-                if(Usuario::comprobarNivel($doctrine, $CIUDADANO)){
+                if (Usuario::comprobarNivel($doctrine, $CIUDADANO)) {
                     $contador++;
                 }
             }

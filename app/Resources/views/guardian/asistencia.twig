@@ -317,8 +317,8 @@
         function obtenerBloqueados() {
             ruta = '/ciudadano/asistencia/obtenerOcupados';
             $.get(ruta, function (data, status) {
-                //console.log(horario);
                 horario = data.message;
+                console.log(horario);
                 $("#day-schedule").data('artsy.dayScheduleSelector').deserializeOccupied(jQuery.parseJSON(horario));
             });
         }

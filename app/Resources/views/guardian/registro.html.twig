@@ -130,7 +130,8 @@
                             <table id="tabla" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>DNI</th>
+                                        <th>PUESTO</th>
+                                        <th>NIVEL/XP</th>
                                         <th>DISTRITO</th>
                                         <th>SEUDÓNIMO</th>
                                         <th>NOMBRE</th>
@@ -141,7 +142,8 @@
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <th>DNI</th>
+                                        <th>PUESTO</th>
+                                        <th>NIVEL/XP</th>
                                         <th>DISTRITO</th>
                                         <th>SEUDÓNIMO</th>
                                         <th>NOMBRE</th>
@@ -153,7 +155,8 @@
                                 <tbody>
                                     {% for JUGADOR in JUGADORES %}
                                         <tr>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.DNI }}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
+                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
                                             <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
                                             <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
                                             <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>

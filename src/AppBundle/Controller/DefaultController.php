@@ -264,12 +264,20 @@ class DefaultController extends Controller {
                     $aux['TDV_RED'] = 0;
                     $aux['TDV'] = Utils::segundosToDias($RESTANTE);
                 }
+                $aux['NIVEL'] = 0;
+                $aux['XP'] = 0;
+                $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($JUGADOR);
+                if (null !== $USUARIO_NIVEL) {
+                    $aux['NIVEL'] = $USUARIO_NIVEL->getNivel();
+                    $aux['XP'] = $USUARIO_NIVEL->getPuntos();
+                }
+                $infoPuesto = Usuario::getClasificacion($doctrine, $JUGADOR, $JUGADORES);
+                $aux['PUESTO'] = $infoPuesto['PUESTO'];
                 $DATOS['JUGADORES'][] = $aux;
             }
         }
         $DATOS['TITULO'] = 'Gestión de distritos';
         $DATOS['SECCION'] = 'CIUDADANOS';
-        //\AppBundle\Utils\Utils::pretty_print($DATOS);
         return $this->render('guardian/registro.html.twig', $DATOS);
     }
 
@@ -799,7 +807,7 @@ class DefaultController extends Controller {
     /**
      * @Route("/actualizarRuntastic/{alias}", name="actualizarRuntastic")
      */
-    public function actualizarRuntasticAction(Request $request, $alias) {
+    public function actualizarRuntasticAction($alias) {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
@@ -811,6 +819,12 @@ class DefaultController extends Controller {
         $actividades_semana = [];
         foreach ($UR as $U) {
             $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
+            $array_sesiones = [];
+            if (count($SESIONES)) {
+                foreach ($SESIONES as $S) {
+                    $array_sesiones[] = $S->getIdRuntastic();
+                }
+            }
             $r = new Runtastic();
             $timeout = false;
             $tiempo_inicio = microtime(true);
@@ -829,7 +843,7 @@ class DefaultController extends Controller {
             $response['Uid'] = $r->getUid();
             foreach ($week_activities as $activity) {
                 $actividades_semana[] = $activity;
-                if (!in_array(array('idRuntastic' => $activity->id), $SESIONES)) {
+                if (!in_array($activity->id, $array_sesiones)) {
                     $SESION = new \AppBundle\Entity\SesionRuntastic();
                     $SESION->setIdRuntastic($activity->id);
                     $SESION->setIdUsuarioRuntastic($U);
@@ -974,6 +988,22 @@ class DefaultController extends Controller {
             }
         }
         Utils::pretty_print('No superado');
+        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+    }
+
+    /**
+     * @Route("/testComprobarNivelAlias/{alias}", name="testComprobarNivelAlias")
+     */
+    public function testComprobarNivelAliassAction($alias) {
+        $doctrine = $this->getDoctrine();
+
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
+        $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
+        if ($ok) {
+            Utils::pretty_print('Sube de nivel');
+        } else {
+            Utils::pretty_print('No superado');
+        }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 

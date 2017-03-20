@@ -650,7 +650,7 @@
 {% block javascripts %}
     <script>
         var todoOk = true;
-        function mostrarCartas(){
+        function mostrarCartas() {
             $('#btn-privilegios').hide();
             $('#minicartas').show();
         }
@@ -881,7 +881,8 @@
         }
         function getClasificacionGlobal() {
             ruta = '/ciudadano/info/getClasificacionGlobal';
-            $.get(ruta, function (data, status) {
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     $("#puesto-global").html(data.message.PUESTO);
                 } else {
@@ -892,7 +893,8 @@
 
         function getClasificacionDistrito() {
             ruta = '/ciudadano/info/getClasificacionDistrito';
-            $.get(ruta, function (data, status) {
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
                     $("#puesto-distrito").html(data.message.PUESTO);
                 } else {
@@ -959,9 +961,15 @@
                         contenido += '          <p>' + v.DESCRIPCION + '</p>';
                         contenido += '          </div>';
                         contenido += '          <div class="col-md-10 col-md-offset-2">';
-                        contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
-                        contenido += '              COMPRAR (' + v.COSTE + 'XP)';
-                        contenido += '          </button>';
+                        if (v.COMPRADA) {
+                            contenido += '          <button type="button" class="btn btn-block btn-primary" disabled">';
+                            contenido += '              COMPRADA';
+                            contenido += '          </button>';
+                        } else {
+                            contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
+                            contenido += '              COMPRAR (' + v.COSTE + 'XP)';
+                            contenido += '          </button>';
+                        }
                         contenido += '          </div>';
                         contenido += '          </div>';
                         contenido += '      </figcaption>';
