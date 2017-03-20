@@ -271,7 +271,7 @@ class DataManager {
         }
         return $DATOS;
     }
-    
+
     static function getCitasDeHoyGuardian($doctrine) {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $fecha = new \DateTime('now');
@@ -293,21 +293,17 @@ class DataManager {
 
     static function numEntregasAlimentacionGuardian($doctrine) {
         $cont = 0;
-        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();
         $COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
         $BEBIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('bebida');
         $ESTADO_ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
         $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
         $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
-        // El array nos sirve cuando un distrito reentrega y es otro usuario del distrito quien entrega
-        $array_ids_ejercicios = [];
-        if (count($ENTREGAS)) {
-            foreach ($ENTREGAS as $ENTREGA) {
-                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                    'idEjercicioEstado' => $ESTADO_ENTREGADO, 'idEvaluador' => $SISTEMA, 'idEjercicio' => $ENTREGA->getIdEjercicio()
-                ]);
-                if (null !== $CALIFICACION && !in_array($CALIFICACION->getIdEjercicio(), $array_ids_ejercicios) && ($CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $COMIDA || $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $BEBIDA)) {
-                    $array_ids_ejercicios[] = $CALIFICACION->getIdEjercicio();
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
+            'idEjercicioEstado' => $ESTADO_ENTREGADO, 'idEvaluador' => $SISTEMA
+        ]);
+        if (count($CALIFICACIONES)) {
+            foreach ($CALIFICACIONES as $CALIFICACION) {
+                if ($CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $COMIDA || $CALIFICACION->getIdEjercicio()->getIdEjercicioSeccion() === $BEBIDA) {
                     $cont++;
                 }
             }

@@ -79,7 +79,7 @@ class Trabajo {
         $em->persist($EJERCICIO_CALIFICACION);
         $em->flush();
         if ($seCobra) {
-            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra comida');
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra '.$EJERCICIO->getIdEjercicioSeccion()->getSeccion().' (id: '.$EJERCICIO->getIdEjercicio().')');
         }
         return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
     }
