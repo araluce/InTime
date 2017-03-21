@@ -268,6 +268,7 @@
         function contenidoIniciarSesion() {
             $(".modal-header").remove();
             contenido = '';
+            /*
             contenido += '<div class="modal-box js-modal-box" >';
             contenido += '    <button type="button" class="modal-box__close js-modal-box__close close" data-dismiss="modal">';
             contenido += '        <div data-test-name="icon" class="  icon--medium icon--blue ">';
@@ -298,6 +299,31 @@
             contenido += '            </a>';
             contenido += '        </fieldset>';
             contenido += '    </div>';
+            contenido += '</div>';
+            */
+            contenido += '<div class="card">';
+            contenido += '  <div class="card-block">';
+            contenido += '      <div class="form-header purple darken-4 text-center">';
+            contenido += '          <h3><i class="fa fa-lock"></i> Iniciar sesión en Runtastic:</h3>';
+            contenido += '      </div>';
+            contenido += '      <div class="md-form">';
+            contenido += '          <label for="rt-usuario"><i class="fa fa-envelope prefix"></i>&nbsp;Tu correo</label>';
+            contenido += '          <input type="text" id="rt-usuario" class="form-control">';
+            contenido += '      </div>';
+            contenido += '      <div class="md-form">';
+            contenido += '          <label for="rt-clave"><i class="fa fa-lock prefix"></i>&nbsp; Tu contraseña</label>';
+            contenido += '          <input id="rt-clave" type="password" class="form-control">';
+            contenido += '      </div>';
+            contenido += '      <div class="text-center">';
+            contenido += '          <button class="btn btn-primary btn-deep-purple" onclick="iniciarSesionRuntastic();">Login</button>';
+            contenido += '      </div>';
+            contenido += '  </div>';
+            contenido += '  <div class="modal-footer">';
+            contenido += '      <div class="options">';
+            contenido += '          <p>¿Aún no tienes cuenta? <a href="https://www.runtastic.com">¡Regístrate aquí!</a></p>';
+            contenido += '          <p>¿Has olvidado <a href="https://www.runtastic.com/es/d/usuarios/password/new">tu contraseña</a>?</p>';
+            contenido += '      </div>';
+            contenido += '  </div>';
             contenido += '</div>';
             $("#mensaje-texto").append(contenido);
             $("#modal-avisos2").click();

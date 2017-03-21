@@ -187,11 +187,13 @@ code, kbd, pre, samp {
 /*FIN DE MARCA DE AGUA PARA IMAGENES*/
 
 .badge-notify{
-   background:red;
-   position:absolute;
-   top:0px;
-  }
-
+    background:red;
+    position:absolute;
+    top:0px;
+}
+.text-center {
+    text-align: center !important;
+}
 @media (min-width: 992px){
     .reloj-digital{
         font-size: 25px;
