@@ -107,6 +107,29 @@ class TrabajoController extends Controller {
     }
 
     /**
+     * @Route("/ciudadano/trabajo/jornada_laboral/dejarDeSeguir/{usuario_tw}", name="dejarDeSeguir")
+     */
+    public function dejarDeSeguirAction(Request $request, $usuario_tw) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/jornada_laboral/dejarDeSeguir');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $twiteer = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findOneBy(
+                ['idUsuario' => $USUARIO, 'idTuitero' => strtolower($usuario_tw)]
+        );
+        if(null !== $twiteer){
+            $em->remove($twiteer);
+            $em->flush();
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Se ha dejado de seguir a ' . $usuario_tw)), 200);
+    }
+
+    /**
      * @Route("/ciudadano/trabajo/jornada_laboral/almacenarTweet", name="almacenarTweet")
      */
     public function almacenarTweet(Request $request) {
