@@ -64,7 +64,9 @@ class PrestamosController extends Controller {
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No te conozco amigo. Registra '
                     . 'tu alias en información y luego hablaremos.'), 200);
             }
-
+            if($USUARIO->getIdEstado()->getNombre() === 'Fallecido'){
+                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Estás muerto. No puedes solicitar tiempo.<br><br>RIP: @'.$alias), 200);
+            } 
             $tiempo = $request->request->get('tiempo');
             $bonificacion = $request->request->get('bonificacion');
             if ($bonificacion) {
