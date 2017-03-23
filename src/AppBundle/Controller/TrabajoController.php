@@ -438,8 +438,8 @@ class TrabajoController extends Controller {
                             array(
                                 'estado' => 'ERROR',
                                 'message' => 'No tienes suficiente tdv para comprar este reto.'
-                                . '<br>Puedes solicitar un préstamo al metronomista o aceptar una donación por'
-                                . ' parte de algún ciudadano caritativo.'
+                                . '<br>Puedes solicitar un préstamo al metronomista o recibir una donación por'
+                                . ' parte de algún ciudadano.'
                             )
                     ), 200
             );

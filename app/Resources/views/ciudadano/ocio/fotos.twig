@@ -355,9 +355,9 @@
                         contenido += '      <center>';
                         //contenido += '      <div class="marca-de-agua">'
                         if (v.usuario.alias === v.usuario.mi_alias) {
-                            contenido += '      <img class="img-responsive" id="mi-imagen-' + v.id + '" data-mia="mia" data-deg="0" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
+                            contenido += '      <img class="img-responsive animated pulse" id="mi-imagen-' + v.id + '" data-mia="mia" data-deg="0" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
                         } else {
-                            contenido += '      <img class="img-responsive" id="imagen-otro-' + v.id + '" data-mia="otro" data-deg="0" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
+                            contenido += '      <img class="img-responsive animated pulse" id="imagen-otro-' + v.id + '" data-mia="otro" data-deg="0" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
                         }
                         //contenido += '      </div>';
                         contenido += '      </center>';
