@@ -37,9 +37,6 @@ class MinaController extends Controller {
         if ($USUARIO->getSeudonimo() === null) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Para participar debes tener un alias.<br>Puedes crearte uno en la sección Jugador de la página principal')), 200);
         }
-        if ($USUARIO->getIdDistrito() === null) {
-            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Para participar debes pertenecer a un distrito.<br> Solicita un distrito a tu Guardián del tiempo')), 200);
-        }
         $MINA = Utils::minaActiva($doctrine);
         if (!$MINA) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Actualmente no hay minas que desactivar. El ingreso por desactivación de minas se hará sobre las 00:00')), 200);
