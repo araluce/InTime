@@ -294,7 +294,7 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                    <button type="button" class="btn btn-default btn13" href="#tab2" data-toggle="tab" onclick="misFotos();">
                         <span class="fa fa-upload" aria-hidden="true"></span>
                         <div class="hidden-xs">MIS FOTOS</div>
                     </button>
@@ -312,12 +312,32 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row" id="photo-grid"></div>
+                        <div class="col-xs-12">
+                            <div class="btn-pref btn-group btn-group-justified btn-group-lg btn-group-tweet" role="group" >
+                                <div class="btn-group panel-btn-seguir" role="group">
+                                    <button type="button" class="btn btn-default" id="cargarMas" onclick="cargarMas();">
+                                        <span class="fa fa-caret-square-o-down" aria-hidden="true"></span>
+                                        <div class="titulo-xs" style="display: inline-block;">VER MÁS</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>'
                     </div>
                     <div class="tab-pane fade in" id="tab2">
                         <div class="row" style="margin-bottom: 2%;">
                             <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
                         </div>
                         <div class="row" id="mis-fotos"></div>
+                        <div class="col-xs-12">
+                            <div class="btn-pref btn-group btn-group-justified btn-group-lg btn-group-tweet" role="group" >
+                                <div class="btn-group panel-btn-seguir" role="group">
+                                    <button type="button" class="btn btn-default" id="cargarMas" onclick="cargarMasMisFotos();">
+                                        <span class="fa fa-caret-square-o-down" aria-hidden="true"></span>
+                                        <div class="titulo-xs" style="display: inline-block;">VER MÁS</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>'
                     </div>
                 </div>
 
@@ -328,10 +348,65 @@
 
 {% block javascripts %}
     <script>
-        function getPhotos() {
-            $('#photo-grid').html('');
+        var limite = 0;
+        var fotosDescargadas = 0;
+        var limiteMisFotos = 0;
+        var misFotosDescargadas = 0;
+        function misFotos(){
             $('#mis-fotos').html('');
-            ruta = '/ciudadano/obtenerFotos';
+            limiteMisFotos = 5;
+            misFotosDescargadas = 0;
+            getMisFotos();
+        }
+        function cargarMas() {
+            limite += 5;
+            getPhotos();
+        }
+        function cargarMasMisFotos() {
+            limiteMisFotos += 5;
+            getMisFotos();
+        }
+        function getMisFotos() {
+            ruta = '/ciudadano/obtenerMisFotos/' + limiteMisFotos;
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    count = 1;
+                    $.each(data.fotos, function (k, v) {
+                        var contenido = '';
+                        contenido += '<div class="col-md-6" style="margin-bottom:1%;">';
+                        contenido += '<div class="single-portfolio">';
+                        contenido += '  <figure class="portfolio-item">';
+                        contenido += '      <figcaption class="portfolio-details details-author">';
+                        contenido += '      <h4>@' + v.usuario.alias + '</h4><span class="fa fa-undo" style="float:right;" onclick="rotar(' + v.id + ', 1);"></span>';
+                        contenido += '      </figcaption>';
+                        contenido += '      <center>';
+                        contenido += '      <img class="img-responsive animated pulse" id="mi-imagen-' + v.id + '" data-mia="mia" data-deg="0" src="{{ asset('images/users/') }}' + v.usuario.dni + '/galeria/' + v.imagen + '" alt="">';
+                        contenido += '      </center>';
+                        contenido += '      <figcaption class="portfolio-details details-social">';
+                        if (v.titulo !== '') {
+                            contenido += '          <center>' + v.titulo + '</center>';
+                        }
+                        if (v.mi_like) {
+                            contenido += '          <span class="fa fa-thumbs-up like" style="color: #5cb85c;" onclick="reaccion(' + v.id + ', 1);">' + v.likes + '</span>';
+                        } else {
+                            contenido += '          <span class="fa fa-thumbs-up like" onclick="reaccion(' + v.id + ', 1);">' + v.likes + '</span>';
+                        }
+                        if (v.mi_dislike) {
+                            contenido += '          <span class="fa fa-thumbs-down dislike" style="color:#c9302c;" onclick="reaccion(' + v.id + ', 0);">' + v.dislikes + '</span>';
+                        } else {
+                            contenido += '          <span class="fa fa-thumbs-down dislike" onclick="reaccion(' + v.id + ', 0);">' + v.dislikes + '</span>';
+                        }
+                        contenido += '      </figcaption>';
+                        contenido += '  </figure>';
+                        contenido += '</div>';
+                        contenido += '</div>';
+                        $('#mis-fotos').append(contenido);
+                    });
+                }
+            });
+        }
+        function getPhotos() {
+            ruta = '/ciudadano/obtenerFotos/' + limite;
             $.get(ruta, function (data, status) {
                 if (data.estado === 'OK') {
                     count = 1;
@@ -362,7 +437,7 @@
                         //contenido += '      </div>';
                         contenido += '      </center>';
                         contenido += '      <figcaption class="portfolio-details details-social">';
-                        if(v.titulo !== ''){
+                        if (v.titulo !== '') {
                             contenido += '          <center>' + v.titulo + '</center>';
                         }
                         if (v.mi_like) {
@@ -380,29 +455,26 @@
                         contenido += '  </figure>';
                         contenido += '</div>';
                         contenido += '</div>';
-                        if (v.usuario.alias === v.usuario.mi_alias) {
-                            $('#mis-fotos').append(contenido);
-                        }
                         $('#photo-grid').append(contenido);
                     });
                 }
             });
         }
-        function rotar(id, mia){
-            if(mia){
-               var imagen = $("#mi-imagen-" + id);
+        function rotar(id, mia) {
+            if (mia) {
+                var imagen = $("#mi-imagen-" + id);
             } else {
-               var imagen = $("#imagen-otro-" + id); 
+                var imagen = $("#imagen-otro-" + id);
             }
             var grados = imagen.attr('data-deg');
-            if(grados === -360){
+            if (grados === -360) {
                 grados = 0;
             }
             var nuevos_grados = grados - 90;
-            imagen.css('-moz-transform', 'rotate('+nuevos_grados+'deg)');
-            imagen.css('-o-transform', 'rotate('+nuevos_grados+'deg)');
-            imagen.css('-webkit-transform', 'rotate('+nuevos_grados+'deg)');
-            imagen.css('transform', 'rotate('+nuevos_grados+'deg)');
+            imagen.css('-moz-transform', 'rotate(' + nuevos_grados + 'deg)');
+            imagen.css('-o-transform', 'rotate(' + nuevos_grados + 'deg)');
+            imagen.css('-webkit-transform', 'rotate(' + nuevos_grados + 'deg)');
+            imagen.css('transform', 'rotate(' + nuevos_grados + 'deg)');
             imagen.attr('data-deg', nuevos_grados);
         }
         $("#input-711").fileinput({
@@ -420,6 +492,8 @@
             data = jQuery.parseJSON(response);
             alert(data.message);
             if (data.estado === 'OK') {
+                $('#photo-grid').html('');
+                $('#mis-fotos').html('');
                 getPhotos();
             }
         });
@@ -429,7 +503,14 @@
             $.get(url, function (data) {
                 console.log(data);
                 if (data.estado === 'OK') {
+                    limite = 0;
+                    fotosDescargadas = 0;
+                    limiteMisFotos = 0;
+                    misFotosDescargadas = 0;
+                    $('#photo-grid').html('');
+                    $('#mis-fotos').html('');
                     getPhotos();
+                    getMisFotos();
                 }
             });
         }

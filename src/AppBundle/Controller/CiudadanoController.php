@@ -188,11 +188,12 @@ class CiudadanoController extends Controller {
         $qb = $em->createQueryBuilder();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/getChatComun');
         if (!$status) {
-            $JsonResponse_data["estado"] = "ERROR";
-            $JsonResponse_data["message"] = "No autorizado";
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No autorizado'), 200);
         }
         $Usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
-
+        if (null === $Usuario) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se encuentra el usuario'), 200);
+        }
 
         $CHAT = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
         if ($CHAT === null) {
@@ -354,21 +355,85 @@ class CiudadanoController extends Controller {
     }
 
     /**
-     * @Route("/ciudadano/obtenerFotos", name="getPhotos")
+     * @Route("/ciudadano/obtenerFotos/{limite}", name="getPhotos")
      */
-    public function getPhotos(Request $request) {
+    public function getPhotosAction(Request $request, $limite) {
         $session = $request->getSession();
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
-        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/fotos');
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/obtenerFotos');
         if (!$status) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
         }
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+        $offset = $limite - 5;
         $query = $qb->select('f')
                 ->from('\AppBundle\Entity\AlbumFoto', 'f')
-                ->orderBy('f.fecha', 'DESC');
+                ->orderBy('f.fecha', 'DESC')
+                ->setFirstResult( $limite )
+                ->setMaxResults( 5 );
+        $FOTOS = $query->getQuery()->getResult();
+
+        if (count($FOTOS)) {
+            $datos = [];
+            foreach ($FOTOS AS $FOTO) {
+                $aux['usuario']['mi_alias'] = $USUARIO->getSeudonimo();
+                $aux['usuario']['alias'] = $FOTO->getIdUsuario()->getSeudonimo();
+                $aux['usuario']['dni'] = $FOTO->getIdUsuario()->getDni();
+                $aux['fecha'] = $FOTO->getFecha();
+                $aux['imagen'] = $FOTO->getImagen();
+                $aux['id'] = $FOTO->getIdAlbumFoto();
+                $aux['titulo'] = '';
+                $REACCIONES = $doctrine->getRepository('AppBundle:FotoReaccion')->findByIdAlbumFoto($FOTO);
+                $aux['mi_like'] = 0;
+                $aux['mi_dislike'] = 0;
+                $aux['likes'] = 0;
+                $aux['dislikes'] = 0;
+                if (count($REACCIONES)) {
+                    foreach ($REACCIONES AS $REACCION) {
+                        if ($REACCION->getIdUsuario() === $USUARIO) {
+                            if ($REACCION->getLikeSocial()) {
+                                $aux['mi_like'] = 1;
+                            } else {
+                                $aux['mi_dislike'] = 1;
+                            }
+                        }
+                        if ($REACCION->getLikeSocial()) {
+                            $aux['likes'] ++;
+                        } else {
+                            $aux['dislikes'] ++;
+                        }
+                    }
+                }
+
+                $datos[] = $aux;
+            }
+        }
+        return new JsonResponse(array('estado' => 'OK', 'fotos' => $datos), 200);
+    }
+    
+    /**
+     * @Route("/ciudadano/obtenerMisFotos/{limite}", name="getMisPhotos")
+     */
+    public function getMisPhotosAction(Request $request, $limite) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/obtenerMisFotos');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
+        $offset = $limite - 5;
+        $query = $qb->select('f')
+                ->from('\AppBundle\Entity\AlbumFoto', 'f')
+                ->where('f.idUsuario = :USUARIO')
+                ->setParameter('USUARIO', $USUARIO)
+                ->orderBy('f.fecha', 'DESC')
+                ->setFirstResult( $limite )
+                ->setMaxResults( 5 );
         $FOTOS = $query->getQuery()->getResult();
 
         if (count($FOTOS)) {
