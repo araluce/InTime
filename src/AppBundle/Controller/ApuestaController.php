@@ -231,7 +231,7 @@ class ApuestaController extends Controller {
             if (count($APUESTAS_GANADORAS)) {
                 $DISPARADOR_APUESTAS = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('disparador_apuesta')->getValor();
                 foreach ($APUESTAS_GANADORAS as $A) {
-                    $GANANCIAS = round(($A->getTdvApostado() * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS));
+                    $GANANCIAS = round(($A->getTdvApostado() * $DISPARADOR_APUESTAS) / count($APUESTAS_GANADORAS)) + $A->getTdvApostado();
                     Usuario::operacionSobreTdV($doctrine, $A->getIdUsuario(), $GANANCIAS, 'Ingreso - Apuesta ganadora');
                 }
             }
