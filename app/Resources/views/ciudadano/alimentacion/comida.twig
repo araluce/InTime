@@ -182,15 +182,13 @@
             setTSC();
         });
         function solicitar(id) {
+            cerrarModal();
+            $('#modal-avisos2').click();
             var ruta = '/solicitar/' + id;
+            mostrarCarga('Solicitando reto...');
             $.get(ruta, function (data, status) {
-                if (data.respuesta === 'OK') {
-                    location.reload();
-                } else {
-                    $('#mensaje-titulo').html('&nbsp;ERROR...');
-                    $('#mensaje-texto').html(data.mensaje);
-                    $('#modal-avisos2').click();
-                }
+                datos = jQuery.parseJSON(data);
+                mostrarResultadoOperacion(datos.message);
             });
         }
         $(function () {
@@ -242,7 +240,7 @@
             contador_proceso = 1;
             contador_terminado = 1;
             $('#modal-avisos2').click();
-            mostrarCarga('Rellenando escaparate');
+            mostrarCarga('Rellenando escaparate...');
             $.each(productos, function (k, v) {
                 switch (v.ESTADO) {
                     case 'no_solicitado':
@@ -288,7 +286,7 @@
             $("#image-tienda-" + id).removeClass("opacidad");
             $("#image-tienda-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del reto');
+            mostrarCarga('Obteniendo información del reto...');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -376,7 +374,7 @@
             $("#tab2 .slot").css('background-color', 'gray');
             $("#image-solicitado-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del reto');
+            mostrarCarga('Obteniendo información del reto...');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
@@ -477,7 +475,7 @@
             $("#tab3 .slot").css('background-color', 'gray');
             $("#image-terminado-" + id).parent().css('background-color', 'white');
             $('#modal-avisos2').click();
-            mostrarCarga('Obteniendo información del reto');
+            mostrarCarga('Obteniendo información del reto...');
             var ruta = '/ciudadano/alimentacion/comida/obtenerDetalle/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);

@@ -31,7 +31,7 @@ class Utils {
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
         ]);
-        if(null !== $EJERCICIO_CALIFICACION){
+        if (null !== $EJERCICIO_CALIFICACION) {
             // Si este ejercicio ya había sido calificacdo, se resta el TdV anterior
             // y se le asigna el TdV por defecto hasta que el GdT lo califique
             if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
@@ -280,13 +280,12 @@ class Utils {
 
         if ($EJERCICIO_X_USUARIO === null) {
             return 0;
-        } else {
-            $em = $doctrine->getManager();
-            $EJERCICIO_X_USUARIO->setVisto(1);
-            $em->persist($EJERCICIO_X_USUARIO);
-            $em->flush();
-            return 1;
         }
+        $em = $doctrine->getManager();
+        $EJERCICIO_X_USUARIO->setVisto(1);
+        $em->persist($EJERCICIO_X_USUARIO);
+        $em->flush();
+        return 1;
     }
 
     /**
@@ -442,6 +441,7 @@ class Utils {
         }
         return false;
     }
+
     /**
      * True si la fecha es de esta semana, false en otro caso
      * @param type $fecha
@@ -449,7 +449,7 @@ class Utils {
      */
     static function semanaPasada($fecha) {
         $semana = new \DateTime('now');
-        if (intval($semana->format("W")-1) === intval($fecha->format("W"))) {
+        if (intval($semana->format("W") - 1) === intval($fecha->format("W"))) {
             return true;
         }
         return false;
@@ -689,47 +689,47 @@ class Utils {
         $result = strtr($result, $unwanted_array);
         return $result;
     }
-    
+
     /**
      * Indica si una cita es anterior al día actual
      * @param type $CITA
      * @return int
      */
-    static function esCitaAntigua($CITA){
+    static function esCitaAntigua($CITA) {
         $hoy = new \DateTime('now');
         $dia_int = Utils::diaStringToInt($CITA->getDia());
-        if(intval($dia_int) < intval($hoy->format('w'))){
+        if (intval($dia_int) < intval($hoy->format('w'))) {
             return 1;
         }
         return 0;
     }
-    
+
     /**
      * Indica si el día de una cita es el actual
      * @param type $CITA
      * @return int
      */
-    static function esCitaDeHoy($CITA){
+    static function esCitaDeHoy($CITA) {
         $hoy = new \DateTime('now');
         $dia_int = Utils::diaStringToInt($CITA->getDia());
-        if(intval($dia_int) === intval($hoy->format('w'))){
+        if (intval($dia_int) === intval($hoy->format('w'))) {
             return 1;
         }
         return 0;
     }
-    
+
     /**
      * Convierte un día en String (Lunes, Martes, Miercoles, Jueves, Viernes)
      * a un día en int (1, 2, 3, 4, 5)
      * @param type $diaString
      * @return int
      */
-    static function diaStringToInt($diaString){
+    static function diaStringToInt($diaString) {
         $dia_str = strtolower($diaString);
 
         $conversores = array('lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5);
         $dia_int = strtr($dia_str, $conversores);
-        
+
         return $dia_int;
     }
 

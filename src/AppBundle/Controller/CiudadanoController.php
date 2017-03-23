@@ -555,10 +555,10 @@ class CiudadanoController extends Controller {
         if (!$status) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
         }
-        if (!Usuario::puedoRealizarTransaccion($doctrine, $session, $tdv)) {
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        if (!Usuario::puedoRealizarTransaccion($USUARIO, $tdv)) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes suficiente TdV.')), 200);
         }
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
         if ($USUARIO->getSeudonimo() === '') {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes tener seudonimo para poder donar.')), 200);
         }

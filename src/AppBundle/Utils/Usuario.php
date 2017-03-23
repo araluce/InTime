@@ -167,19 +167,14 @@ class Usuario {
      * de la sesión
      * 
      * @param type $doctrine
-     * @param type $session
-     * @param int $tdv TdV que se le quiere cobrar al usuario
+     * @param type $USUARIO
+     * @param int $cantidadACobrar TdV que se le quiere cobrar al usuario
      * @return int 0 si no tiene TdV suficiente, 1 en cualquier otro caso
      */
-    static function puedoRealizarTransaccion($doctrine, $session, $tdv) {
-        $id_usuario = $session->get('id_usuario');
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
-        $TDV_RESTANTE = $TDV_USUARIO - $tdv;
-        $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
-        $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
-        $HOY = new \DateTime('now');
-        if ($TDV_RESTANTE_DATETIME <= $HOY) {
+    static function puedoRealizarTransaccion($USUARIO, $cantidadACobrar) {
+        $hoy = new \DateTime('now');
+        $tdvUsuario = $USUARIO->getIdCuenta()->getTdv()->getTimestamp() - $hoy->getTimestamp();        
+        if ($tdvUsuario - $cantidadACobrar <= 0) {
             return 0;
         }
         return 1;

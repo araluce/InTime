@@ -29,9 +29,9 @@ class Trabajo {
         $em = $doctrine->getManager();
 
         if ($EJERCICIO_CALIFICACION === null) {
-            $num_solicitudes = $UTILS->comprueba_numero_solicitudes($doctrine, $EJERCICIO);
+            $num_solicitudes = Utils::comprueba_numero_solicitudes($doctrine, $EJERCICIO);
             $num_max_solicitudes = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga')->getValor();
-            $resp = $UTILS->setVisto($doctrine, $USUARIO, $EJERCICIO, null);
+            Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
             if (intval($num_solicitudes) < intval($num_max_solicitudes)) {
                 $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
                 $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
@@ -40,15 +40,24 @@ class Trabajo {
                 $EJERCICIO_CALIFICACION->setFecha($FECHA);
                 $em->persist($EJERCICIO_CALIFICACION);
                 $em->flush();
-                return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
+
+                $coste = Utils::segundosToDias($EJERCICIO->getCoste());
+                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$EJERCICIO->getCoste(), 'Cobro - Paga extra (id: '.$EJERCICIO->getIdEjercicio().')');
+                return new JsonResponse(
+                        json_encode(
+                                array(
+                                    'estado' => 'OK',
+                                    'message' => 'Reto solicitado correctamente<br>'
+                                    . 'Se le cobrará una cantidad de ' . $coste['dias'] . 'd ' . $coste['horas'] . 'h ' . $coste['minutos'] . 'm ' . $coste['segundos'] . 's'
+                                )
+                        ), 200);
             } else {
                 $mensaje = 'OPS! Llegaste tarde<br><br> Este ejercicio está lleno';
             }
         } else {
             $mensaje = 'Este ejercicio ya había sido solicitado, entregado o evaluado por usted';
         }
-
-        return new JsonResponse(array('respuesta' => 'ERROR', 'mensaje' => $mensaje), 200);
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $mensaje)), 200);
     }
 
     static function solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION) {
@@ -58,7 +67,7 @@ class Trabajo {
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
         ]);
         $em = $doctrine->getManager();
-        $resp = Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
+        Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
         $seCobra = true;
         if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
             if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $USUARIO->getIdDistrito())) {
@@ -79,9 +88,11 @@ class Trabajo {
         $em->persist($EJERCICIO_CALIFICACION);
         $em->flush();
         if ($seCobra) {
-            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra '.$EJERCICIO->getIdEjercicioSeccion()->getSeccion().' (id: '.$EJERCICIO->getIdEjercicio().')');
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra ' . $EJERCICIO->getIdEjercicioSeccion()->getSeccion() . ' (id: ' . $EJERCICIO->getIdEjercicio() . ')');
+            $coste = Utils::segundosToDias($EJERCICIO->getCoste());
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Solicitud de reto aceptada.<br>Se le cobrará una cantidad de ' . $coste['dias'] . 'd ' . $coste['horas'] . 'h ' . $coste['minutos'] . 'm ' . $coste['segundos'] . 's')), 200);
         }
-        return new JsonResponse(array('respuesta' => 'OK', 'datos' => $resp), 200);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Solicitud de reto aceptada.<br>No se le cobrará la compra de este producto')), 200);
     }
 
     /**

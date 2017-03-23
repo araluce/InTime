@@ -284,13 +284,15 @@
             maxFileSize: 2000
         });
         $("#entrega-paga").on('fileuploaded', function (event, data, previewId, index) {
+            $('#modal-avisos2').click();
+            mostrarCarga('Subiendo reto...');
             var response = data.response;
             data = jQuery.parseJSON(response);
-            alert(data.message);
-            location.reload();
+            mostrarResultadoOperacion(data.message);
         });
         $('#entrega-paga').on('fileselectnone', function (event) {
-            alert("Huh! No hay ficheros seleccionados.");
+            $('#modal-avisos2').click();
+            mostrarResultadoOperacion("Huh! No hay ficheros seleccionados.");
         });
         $(document).ready(function () {
             getEjerciciosPaga();
@@ -301,15 +303,16 @@
         {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
         function solicitar(id) {
-            var ruta = '/ciudadano/trabajo/paga/solicitar/' + id;
+            $('#modal-avisos2').click();
+            mostrarCarga('Solicitando reto...');
+            var ruta = '/solicitar/' + id;
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
-                console.log(data);
                 if (data.estado === 'OK') {
                     getEjerciciosPaga();
-                } else {
-                    alert(data.message);
                 }
+                console.log(data);
+                mostrarResultadoOperacion(data.message);
             });
         }
         function getEjerciciosPaga() {
@@ -382,7 +385,7 @@
             contenido += '<div class="row">';
             if (v.ESTADO === 'no_solicitado') {
                 contenido += '       <button class="btn btn-primary btn-block btn-ejercicio" onclick="solicitar(' + v.ID + ')"';
-                if (solicitado || (v.SOLICITANTES - v.NUM_MAX_SOLICITANTES <= 0)) {
+                if (solicitado || (parseInt(v.NUM_MAX_SOLICITANTES) - v.SOLICITANTES <= 0)) {
                     contenido += ' disabled>';
                 } else {
                     contenido += ' >';
@@ -535,7 +538,6 @@
             $.post(ruta, datos, function (datos) {
                 data = jQuery.parseJSON(datos);
                 if (data.estado === 'OK') {
-                    console.log(data.message);
                     contenido = '';
                     contenido += '<div class="col-lg-6">';
                     contenido += '<div class="row bordes border-radius">';
@@ -549,6 +551,32 @@
 
                 }
             });
+        }
+        function mostrarCarga(texto) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <center>';
+            contenido += '      <i class="fa fa-spinner fa-spin"></i>' + texto;
+            contenido += '  </center>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function mostrarResultadoOperacion(resultado) {
+            $("#mensaje-texto").empty();
+            contenido = '';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '      ' + resultado;
+            contenido += '</div>';
+            contenido += '<div class="row" style="margin-top:2%;">';
+            contenido += '  <div class="col-xs-3 col-xs-offset-4">';
+            contenido += '      <button class="btn btn-primary btn-block" onclick="location.reload();"> ACEPTAR </button>';
+            contenido += '  </div>';
+            contenido += '</div>';
+            $("#mensaje-texto").append(contenido);
+        }
+        function cerrarModal() {
+            $('#modal-advice2').modal('toggle');
         }
     </script>
 {% endblock %}

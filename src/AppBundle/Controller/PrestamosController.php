@@ -152,7 +152,7 @@ class PrestamosController extends Controller {
             if ($DEUDA === null) {
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Creo que esta deuda no te corresponde. Otra vez será'), 200);
             }
-            if (Usuario::puedoRealizarTransaccion($doctrine, $session, $DEUDA->getRestante())) {
+            if (Usuario::puedoRealizarTransaccion($USUARIO, $DEUDA->getRestante())) {
                 Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $DEUDA->getRestante(), 'Cobro - Liquidación total de deuda', true);
                 $DEUDA->setRestante(0);
                 $em->persist($DEUDA);

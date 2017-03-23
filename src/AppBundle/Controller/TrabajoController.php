@@ -141,7 +141,7 @@ class TrabajoController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral/eliminarTweet", name="eliminarTweet")
      */
@@ -158,18 +158,18 @@ class TrabajoController extends Controller {
             $id_tweet = $request->request->get('id_tweet');
             $id_mochila = $request->request->get('id_mochila');
             $TIPO_TWEET = $doctrine->getRepository('AppBundle:TipoTweet')->findOneById($id_mochila);
-            if(null === $TIPO_TWEET){
+            if (null === $TIPO_TWEET) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
             }
             $mochilaEliminar = $doctrine->getRepository('AppBundle:MochilaTweets')->findOneBy([
                 'idTweet' => $id_tweet, 'idUsuario' => $USUARIO, 'idTipoTweet' => $TIPO_TWEET
             ]);
-            if(null !== $mochilaEliminar){
+            if (null !== $mochilaEliminar) {
                 $em->remove($mochilaEliminar);
                 $em->flush();
                 return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tweet eliminado correctamente')), 200);
             }
-            
+
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha encontrado el tweet: ' . $id_mochila)), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
@@ -432,6 +432,18 @@ class TrabajoController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
+        if (!Usuario::puedoRealizarTransaccion($USUARIO, $EJERCICIO->getCoste())) {
+            return new JsonResponse(
+                    json_encode(
+                            array(
+                                'estado' => 'ERROR',
+                                'message' => 'No tienes suficiente tdv para comprar este reto.'
+                                . '<br>Puedes solicitar un préstamo al metronomista o aceptar una donación por'
+                                . ' parte de algún ciudadano caritativo.'
+                            )
+                    ), 200
+            );
+        }
         $SECCION = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
 
         switch ($SECCION) {
@@ -463,10 +475,10 @@ class TrabajoController extends Controller {
         }
         $NUM_MAX_SOLICITANTES = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga');
         $SOLICITANTES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
-        if($NUM_MAX_SOLICITANTES - count($SOLICITANTES) <= 0){
+        if ($NUM_MAX_SOLICITANTES - count($SOLICITANTES) <= 0) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Número máximo de solicitantes alcanzado')), 200);
         }
-        
+
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
 
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -498,7 +510,7 @@ class TrabajoController extends Controller {
         Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Compra de ejercicio en Paga extra');
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ejercicio solicitado correctamente')), 200);
     }
-    
+
     /**
      * @Route("/ciudadano/trabajo/jornada_laboral/getNumeroTweetsSemana", name="getNumeroTweetsSemana")
      */
@@ -512,13 +524,13 @@ class TrabajoController extends Controller {
         }
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
-        
+
         $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
         $query->select('COUNT(a)');
         $query->where("DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO");
         $query->setParameters(['USUARIO' => $USUARIO]);
         $N_TUITS = $query->getQuery()->getSingleScalarResult();
-        
+
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $N_TUITS)), 200);
     }
 
@@ -609,7 +621,7 @@ class TrabajoController extends Controller {
                 if (preg_match('/"([^"]+)"/', $EJERCICIO->getEnunciado(), $coincidencias)) {
                     $DATOS['TITULO'] = $coincidencias[1];
                 }
-                if(trim($DATOS['TITULO']) === ''){
+                if (trim($DATOS['TITULO']) === '') {
                     $DATOS['TITULO'] = 'Sin título';
                 }
             }
@@ -695,12 +707,12 @@ class TrabajoController extends Controller {
                 $em->persist($EJERCICIO_RESPUESTA);
             }
             $em->flush();
-            
+
             $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
             $PENALIZACION = Utils::getConstante($doctrine, 'test_incorrecto');
-            if(count($CIUDADANOS)){
-                foreach($CIUDADANOS as $CIUDADANO){
-                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1)*$PENALIZACION, 'Cobro - Inspección de trabajo');
+            if (count($CIUDADANOS)) {
+                foreach ($CIUDADANOS as $CIUDADANO) {
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $PENALIZACION, 'Cobro - Inspección de trabajo');
                 }
             }
             return new JsonResponse(array('estado' => 'OK', 'message' => 'Ejercicio publicado correctamente'));
@@ -785,7 +797,5 @@ class TrabajoController extends Controller {
         }
         return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No se han enviado datos'));
     }
-    
-    
 
 }

@@ -216,15 +216,13 @@
             $('#modal-avisos2').click();
         }
         function solicitar(id) {
+            cerrarModal();
+            $('#modal-avisos2').click();
             var ruta = '/solicitar/' + id;
+            mostrarCarga('Solicitando reto...');
             $.get(ruta, function (data, status) {
-                if (data.respuesta === 'OK') {
-                    location.reload();
-                } else {
-                    $('#mensaje-titulo').html('&nbsp;ERROR...');
-                    $('#mensaje-texto').html(data.mensaje);
-                    $('#modal-avisos2').click();
-                }
+                datos = jQuery.parseJSON(data);
+                mostrarResultadoOperacion(datos.message);
             });
         }
         function solicitarAleatorio() {
