@@ -215,5 +215,25 @@ class Ejercicio {
         }
         return $ENTREGA;
     }
+    
+    /**
+     * Marca a vistos los retos de paga extra
+     * @param type $doctrine
+     * @param type $USUARIO
+     */
+    static function actualizarPagaVisto($doctrine, $USUARIO){
+        $em = $doctrine->getManager();
+        $SECCION_PAGA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('paga_extra');
+        $NO_VISTOS = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
+            'idSeccion' => $SECCION_PAGA, 'idUsu' => $USUARIO, 'visto' => 0
+        ]);
+        if(count($NO_VISTOS)){
+            foreach($NO_VISTOS as $EJERCICIO){
+                $EJERCICIO->setVisto(1);
+                $em->persist($EJERCICIO);
+            }
+            $em->flush();
+        }
+    }
 
 }

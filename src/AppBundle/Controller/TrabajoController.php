@@ -238,6 +238,8 @@ class TrabajoController extends Controller {
         if (!$status) {
             return new RedirectResponse('/');
         }
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        Ejercicio::actualizarPagaVisto($doctrine, $USUARIO);
         $DATOS = DataManager::setDefaultData($doctrine, 'Paga extra', $session);
 
         return $this->render('ciudadano/trabajo/paga_extra.twig', $DATOS);
