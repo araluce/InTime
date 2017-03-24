@@ -287,8 +287,7 @@ class AlimentacionController extends Controller {
                     $contador++;
                 }
             }
-            $aleatorio = rand(0, $contador);
-            $DATOS['ALEATORIO'] = $EJERCICIOS_ALEATORIOS[$aleatorio];
+            $DATOS['ALEATORIO'] = $EJERCICIOS_ALEATORIOS[array_rand($EJERCICIOS_ALEATORIOS)];
         }
         // Ejercicios no solicitados aún
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_BEBIDA);

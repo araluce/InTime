@@ -173,7 +173,7 @@ class Usuario {
      */
     static function puedoRealizarTransaccion($USUARIO, $cantidadACobrar) {
         $hoy = new \DateTime('now');
-        $tdvUsuario = $USUARIO->getIdCuenta()->getTdv()->getTimestamp() - $hoy->getTimestamp();        
+        $tdvUsuario = $USUARIO->getIdCuenta()->getTdv()->getTimestamp() - $hoy->getTimestamp();
         if ($tdvUsuario - $cantidadACobrar <= 0) {
             return 0;
         }
@@ -316,6 +316,7 @@ class Usuario {
         return $RESPUESTA;
         //return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $RESPUESTA)), 200);
     }
+
     /**
      * Devuelve el puesto que tiene un usuario dentro de un conjunto de usuarios
      * por su TdV
@@ -494,6 +495,7 @@ class Usuario {
             $USUARIO->setIdEstado($estadoFallecido);
             $em->persist($USUARIO);
             $em->flush();
+            Usuario::mensajeSistemaDefuncion($doctrine, $USUARIO);
         }
         Usuario::dejarHerencia($doctrine, $USUARIO);
         return 1;
@@ -680,7 +682,7 @@ class Usuario {
         $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
-        
+
         if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
@@ -705,7 +707,7 @@ class Usuario {
         if (count($CALIFICACIONES)) {
             foreach ($CALIFICACIONES as $CALIFICACION) {
                 if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
-                    if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W')-1)) {
+                    if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W') - 1)) {
                         return 1;
                     }
                 }
@@ -814,6 +816,12 @@ class Usuario {
         $em->flush();
     }
 
+    /**
+     * Incrementa un aviso de chat sin ver en un chat determinado
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $CHAT
+     */
     static function setChatSinVer($doctrine, $USUARIO, $CHAT) {
         $em = $doctrine->getManager();
         $CHAT_SIN_VER = $doctrine->getRepository('AppBundle:ChatSinVer')->findOneBy([
@@ -829,6 +837,28 @@ class Usuario {
         }
         $em->persist($CHAT_SIN_VER);
         $em->flush();
+    }
+
+    static function mensajeSistemaDefuncion($doctrine, $USUARIO) {
+        $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
+        $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
+        $CHAT_COMUN = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
+        $MENSAJE = new \AppBundle\Entity\ChatMensajes();
+        $MENSAJE->setFecha(new \DateTime('now'));
+        $MENSAJE->setIdChat($CHAT_COMUN);
+        $MENSAJE->setIdUsuario($SISTEMA);
+        $MENSAJE->setMensaje('<center>RIP <b>@' . $USUARIO->getSeudonimo() . '</b></center><br> Todos lloramos su pérdida');
+        $MENSAJE->setVisto(0);
+        $em = $doctrine->getManager();
+        $em->persist($MENSAJE);
+        $em->flush();
+
+        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findAll();
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                Usuario::setChatSinVer($doctrine, $CIUDADANO, $CHAT_COMUN);
+            }
+        }
     }
 
 }
