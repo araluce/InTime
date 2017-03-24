@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
+use AppBundle\Utils\Distrito;
 
 /**
  * Description of JugadorController
@@ -241,31 +242,44 @@ class JugadorController extends Controller {
         if (!count($DISTRITOS)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Por el momento no hay distritos'));
         }
-        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
         $RESPUESTA = [];
+        $numMaxCiudadanos = 0;
+        foreach ($DISTRITOS AS $DISTRITO) {
+            $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+            $contadorCiudadanos = 0;
+            if (count($CIUDADANOS)) {
+                foreach ($CIUDADANOS AS $CIUDADANO) {
+                    $contadorCiudadanos++;
+                    if($numMaxCiudadanos < $contadorCiudadanos){
+                        $numMaxCiudadanos = $contadorCiudadanos;
+                    }
+                }
+            }
+        }
         foreach ($DISTRITOS AS $DISTRITO) {
             $aux = [];
             $aux['DISTRITO'] = $DISTRITO->getNombre();
             $aux['CANTIDAD'] = 0;
-            $query = $doctrine
-                    ->getRepository('AppBundle:Usuario')
-                    ->createQueryBuilder('u');
-            $query->select('u');
-            $query->where('u.idRol = :ROL AND u.idDistrito = :DISTRITO');
-            $query->setParameters(['ROL' => $ROL, 'DISTRITO' => $DISTRITO]);
-            $USUARIOS = $query->getQuery()->getResult();
+            $USUARIOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
             if (count($USUARIOS)) {
+                $contadorCiudadanos = 0;
                 foreach ($USUARIOS AS $USUARIO) {
+                    $contadorCiudadanos++;
                     $query = $doctrine
                             ->getRepository('AppBundle:UsuarioMovimiento')
                             ->createQueryBuilder('um');
                     $query->select('SUM(um.cantidad)');
                     $query->where('um.idUsuario = :ID_USUARIO');
+                    //$query->andWhere('MONTH(um.fecha) = MONTH(CURRENT_DATE())');
                     $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
                     $cant = $query->getQuery()->getSingleScalarResult();
                     if ($cant !== null) {
                         $aux['CANTIDAD'] += $cant;
                     }
+                }
+                $cantidadMedia = $aux['CANTIDAD'] / $contadorCiudadanos;
+                for ($i=$contadorCiudadanos; $i<$numMaxCiudadanos; $i++){
+                    $aux['CANTIDAD'] += $cantidadMedia;
                 }
             }
             $aux['CANTIDAD'] = Utils::segundosToDias($aux['CANTIDAD']);

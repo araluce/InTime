@@ -289,6 +289,7 @@ class Usuario {
         $CUENTAS = [];
         $query->select('SUM(u.cantidad)');
         $query->where('u.idUsuario = :ID_USUARIO');
+        //$query->andWhere ('MONTH(u.fecha) = MONTH(CURRENT_DATE())');
         $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
         $cantidad = $query->getQuery()->getSingleScalarResult();
         $puesto = 1;
