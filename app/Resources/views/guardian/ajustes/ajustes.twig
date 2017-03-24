@@ -252,7 +252,7 @@
                             <legend style="margin-top: 1%;">Apuestas</legend>
                             <div class="caja-opcion">
                                 <label for="disparador_apuesta" style="margin-top:1%;">Disparador de apuestas: </label><br>
-                                <small>Es el factor multiplicativo que aumenta el beneficio del ganador. Así, si el disparador es 2 y el beneficio por cada ganador es de 1 día, el beneficio final para cada uno de ellos será 1 * 2 = 2 días.</small>
+                                <small>Es el factor multiplicativo que aumenta el beneficio del ganador. El resultado de ganar una apuesta será <b>[TdV apostado] + ([TdV apostado] * [disparador])/[número de acertantes]</b></small>
 
                                 <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                     <div class="col-lg-6">
@@ -351,7 +351,7 @@
                             <legend style="margin-top: 1%;">Mina</legend>
                             <div class="caja-opcion">
                                 <label for="test_correcto">Bonificacion por desactivación</label><br>
-                                <small>Este tiempo se divide entre el número de acertantes</small>
+                                <small>El premio por desactivar una mina será <b>[bonificación base por desactivación] + (<span style="color: #761c19">[Bonificación por desactivación]</span>/[número de acertantes])</b></small>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                     <div class="col-xs-3">
                                         <div class="row">
