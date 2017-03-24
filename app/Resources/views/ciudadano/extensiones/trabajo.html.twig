@@ -30,7 +30,7 @@
                     <img alt="Logo" src="{{ asset('images/iconos/Inspeccion_trabajo.png') }}" />
                     {% if MENSAJES_INSPECCION is defined %}
                         {% if MENSAJES_INSPECCION|length > 0%}
-                            <span class="badge badge-aviso">
+                            <span class="badge badge-aviso animated pulse">
                                 {{ MENSAJES_INSPECCION|length}}
                             </span>
                         {% endif %}
@@ -42,7 +42,7 @@
                     <img alt="Logo" src="{{ asset('images/iconos/Paga_extra.png') }}" />
                     {% if MENSAJES_PAGA is defined %}
                         {% if MENSAJES_PAGA|length > 0%}
-                            <span class="badge badge-aviso">
+                            <span class="badge badge-aviso animated pulse">
                                 {{ MENSAJES_PAGA|length}}
                             </span>
                         {% endif %}

@@ -217,6 +217,7 @@ class CiudadanoController extends Controller {
                 ->orderBy('cm.fecha', 'ASC')
                 ->setParameters(array('idChat' => $CHAT))
                 ->setFirstResult(0);
+                //->setMaxResults( 50 );
         $CHATS = $query->getQuery()->getResult();
 
         if (!count($CHATS)) {

@@ -16,7 +16,7 @@
                     <img alt="Logo" src="{{ asset('images/iconos/Trabajo.png') }}"  />
                     {% if MENSAJES_INSPECCION is defined and MENSAJES_PAGA is defined %}
                         {% if MENSAJES_INSPECCION|length > 0 or MENSAJES_PAGA|length > 0%}
-                            <span class="badge badge-aviso">
+                            <span id="aviso-trabajo" class="badge badge-aviso animated pulse">
                                 {{ MENSAJES_INSPECCION|length + MENSAJES_PAGA|length}}
                             </span>
                         {% endif %}
@@ -38,7 +38,7 @@
                     <img alt="Logo" src="{{ asset('images/iconos/Ocio.png') }}" />
                     {% if CHAT is defined %}
                         {% if CHAT > 0 %}
-                            <span class="badge badge-aviso">
+                            <span id="aviso-chat" class="badge badge-aviso animated pulse">
                                 {{ CHAT }}
                             </span>
                         {% endif %}
@@ -61,7 +61,7 @@
         <div class="row" id="log-sal">
             <div id="menu-logo">
                 <a href="http://bit.ly/2llGQYb">
-                    <img alt="Logo" src="{{ asset('images/inTime.png') }}" />
+                    <img alt="Logo" id="logo-inTime" class="animated pulse" src="{{ asset('images/inTime.png') }}" />
                 </a>
             </div>
             <div id="menu-salir" style="float:right;">
@@ -73,6 +73,17 @@
 
 {% block javascripts %}
     <script>
+        setInterval(function () {
+            var logoInTime = $("#logo-inTime");
+            logoInTime.before(logoInTime.clone(true)).remove();
+        }, 1000);
+        setInterval(function () {
+            var avisoChat = $("#aviso-chat");
+            var avisoTrabajo = $("#aviso-trabajo");
+            
+            avisoChat.before(avisoChat.clone(true)).remove();
+            avisoTrabajo.before(avisoTrabajo.clone(true)).remove();
+        }, 1500);
         function comprobarInformacion(redireccion) {
             var ruta = '/comprobarInformacionPersonal';
             $.get(ruta, function (data, status) {

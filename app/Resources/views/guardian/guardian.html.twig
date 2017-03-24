@@ -67,20 +67,20 @@
                                 Censo
                             </li>
                         </a>
-                        
+
                         <a href="/guardian/asistencia">
                             <li class="list-group-item">
                                 Citas
                                 {% if CITAS is defined %}
                                     {% if CITAS > 0 %}
-                                        <span class="badge badge-aviso2">
+                                        <span id="aviso-citas" class="badge badge-aviso2 animated pulse">
                                             {{ CITAS }}
                                         </span>
                                     {% endif %}
                                 {% endif %}
                                 {% if CITAS_HOY is defined %}
                                     {% if CITAS_HOY > 0 %}
-                                        <span class="badge badge-aviso2 aviso-azul">
+                                        <span id="aviso-citas-hoy" class="badge badge-aviso2 aviso-azul animated pulse">
                                             {{ CITAS_HOY }}
                                         </span>
                                     {% endif %}
@@ -92,7 +92,7 @@
                                 Chat
                                 {% if CHAT is defined %}
                                     {% if CHAT > 0 %}
-                                        <span class="badge badge-aviso2">
+                                        <span id="aviso-chat" class="badge badge-aviso2 animated pulse">
                                             {{ CHAT }}
                                         </span>
                                     {% endif %}
@@ -118,7 +118,7 @@
                                 Alimentación
                                 {% if ALIMENTACION is defined %}
                                     {% if ALIMENTACION > 0 %}
-                                        <span class="badge badge-aviso2">
+                                        <span id="aviso-alimentacion" class="badge badge-aviso2 animated pulse">
                                             {{ ALIMENTACION }}
                                         </span>
                                     {% endif %}
@@ -140,7 +140,7 @@
                                 Paga extra
                                 {% if PAGA is defined %}
                                     {% if PAGA > 0 %}
-                                        <span class="badge badge-aviso2">
+                                        <span id="aviso-paga" class="badge badge-aviso2 animated pulse">
                                             {{ PAGA }}
                                         </span>
                                     {% endif %}
@@ -157,7 +157,7 @@
                                 Felicidad
                                 {% if FELICIDAD is defined %}
                                     {% if FELICIDAD > 0 %}
-                                        <span class="badge badge-aviso2">
+                                        <span id="aviso-felicidad" class="badge badge-aviso2 animated pulse">
                                             {{ FELICIDAD }}
                                         </span>
                                     {% endif %}
@@ -176,82 +176,20 @@
 
 {% block javascripts %}
     <script>
-        $(document).ready(function () {
-        {% if info.message is defined or info.type is defined%}
-                $('#box_modal_result').click();
-        {% endif %}
-                $('.day').parent('.form-group').addClass('col-xs-4');
-                $('.hour').parent('.form-group').addClass('col-xs-4');
-                $('.minute').parent('.form-group').addClass('col-xs-4');
-                $('.help').css("margin-left", "1%");
-                $(".help-block").each(function () {
-                    $(this).parent('.form-group').children('.control-label').after($(this).children('.help'));
-                });
-                $('.datetimepicker').datetimepicker({
-                    lang: 'es',
-                    timepicker: true,
-                    format: 'd-m-Y h:i',
-                    minDate: $.now()
-                });
-                $('.datepicker').datetimepicker({
-                    lang: 'es',
-                    timepicker: false,
-                    format: 'd-m-Y',
-                    minDate: $.now()
-                });
-
-                var convertDate = function (tdv) {
-                    var part = tdv.split(" ");
-                    var sdate = part[0].split('-');
-                    var stime = part[1].split(':');
-                    return new Date(Date.UTC(sdate[0], sdate[1] - 1, sdate[2], stime[0], stime[1], stime[2]))
-                };
-
-                function responsive_screen() {
-                    if (window.matchMedia('screen and (max-width: 368px)').matches) {
-                        return 25;
-                    } else {
-                        return 40;
-                    }
-                }
-
-        {% if tdv is defined %}
-                var t1 = convertDate('{{ tdv }}'), now = (new Date()).getTime();
-                if (t1.getTime() < now) {
-                    t1 = 0
-                }
-                $('#countdown-1').timeTo({
-                    timeTo: t1, //Mostramos un contador con la fecha de fin
-                    displayDays: 3,
-                    theme: "white",
-                    displayCaptions: true,
-                    fontSize: responsive_screen(),
-                    start:               {% if estado == 4 %} false{% else %}{% if estado == 2 %}
-                            true{% endif %}{% endif %},
-                    captionSize: 10
-                }, function () {
-                    $('#countdown-1').timeTo("stop");
-                });
-        {% endif %}
-        {% if tdv_usuario is defined %}
-                var t2 = convertDate('{{ tdv_usuario }}'), now = (new Date()), s = true;
-                if (t2.getTime() < now.getTime()) {
-                    t2 = 0;
-                    s = false
-                }
-                $('#countdown-2').timeTo({
-                    timeTo: t2, //Mostramos un contador con la fecha de fin
-                    displayDays: 3,
-                    countdown: s,
-                    theme: "white",
-                    displayCaptions: true,
-                    fontSize: 18,
-                    start:               {% if estado == 4 %} false{% else %}{% if estado == 2 %}s{% endif %}{% endif %},
-                    captionSize: 10
-                }, function () {
-                    $('#countdown-2').timeTo("stop");
-                });
-        {% endif %}
-            });
+        setInterval(function () {
+            var avisoCitas = $("#aviso-citas");
+            var avisoCitasHoy = $("#aviso-citas-hoy");
+            var avisoChat = $("#aviso-chat");
+            var avisoAlimentacion = $("#aviso-alimentacion");
+            var avisoPaga = $("#aviso-paga");
+            var avisoFelicidad = $("#aviso-felicidad");
+            
+            avisoCitas.before(avisoCitas.clone(true)).remove();
+            avisoCitasHoy.before(avisoCitasHoy.clone(true)).remove();
+            avisoChat.before(avisoChat.clone(true)).remove();
+            avisoAlimentacion.before(avisoAlimentacion.clone(true)).remove();
+            avisoPaga.before(avisoPaga.clone(true)).remove();
+            avisoFelicidad.before(avisoFelicidad.clone(true)).remove();
+        }, 1500);
     </script>
 {% endblock %}

@@ -156,7 +156,7 @@
             <div class="col-lg-6">
                 <div class="col-md-12" id="index-logo-app">
                     <center>
-                        <img alt="logo-app" src="{{ asset('fondo-principalLow.png') }}"  />
+                        <img id="logo-app" class="animated pulse" alt="logo-app" src="{{ asset('fondo-principalLow.png') }}"  />
                     </center>
                 </div>
                 <div class="col-md-12 index-frase">
@@ -203,14 +203,18 @@
     <script>
         $(document).ready(function () {
             /*
-            var audioElement = document.createElement('audio');
-            audioElement.setAttribute('src', '{{ asset('audio/index.mp3') }}');
-
-            audioElement.addEventListener('ended', function () {
-                this.play();
-            }, false);
-            audioElement.play();
-            */
+             var audioElement = document.createElement('audio');
+             audioElement.setAttribute('src', '{{ asset('audio/index.mp3') }}');
+             
+             audioElement.addEventListener('ended', function () {
+             this.play();
+             }, false);
+             audioElement.play();
+             */
         });
+        setInterval(function () {
+            var logo_app = $("#logo-app");
+            logo_app.before(logo_app.clone(true)).remove();
+        }, 1500);
     </script>
 {% endblock %}
