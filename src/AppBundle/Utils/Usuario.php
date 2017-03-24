@@ -277,11 +277,17 @@ class Usuario {
      */
     static function getClasificacion($doctrine, $USUARIO, $USUARIOS) {
         if ($USUARIO->getSeudonimo() === null) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Debes tener un alias para participar'
-                . 'en los rankings'));
+            $RESPUESTA = [];
+            $RESPUESTA['ERROR'] = 'Debes tener un alias para participar en los rankings';
+            $RESPUESTA['PUESTO'] = 0;
+            return $RESPUESTA;
         }
         if (!count($USUARIOS)) {
-            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No hay usuarios'));
+            $RESPUESTA = [];
+            $RESPUESTA['ERROR'] = 'No hay usuarios';
+            $RESPUESTA['PUESTO'] = 0;
+            return $RESPUESTA;
+            //return new JsonResponse(array('estado' => 'ERROR', 'message' => ''));
         }
         $query = $doctrine
                 ->getRepository('AppBundle:UsuarioMovimiento')
