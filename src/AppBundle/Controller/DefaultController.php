@@ -754,7 +754,7 @@ class DefaultController extends Controller {
 
     public function inicio_guardian($USUARIO) {
         $doctrine = $this->getDoctrine();
-        $DATOS = ['TITULO' => 'InTime - Guardián del Tiempo'];
+        $DATOS = ['TITULO' => '$inTIME - Guardián del Tiempo'];
         $DATOS['CHAT'] = DataManager::chatsPendientes($this->getDoctrine(), $USUARIO);
         $DATOS['CITAS'] = DataManager::getCitasPendientesGuardian($doctrine);
         $DATOS['CITAS_HOY'] = DataManager::getCitasDeHoyGuardian($doctrine);
@@ -770,12 +770,13 @@ class DefaultController extends Controller {
         $DATOS = [];
 
         if ($usuario->getNombre() !== null) {
-            $DATOS = DataManager::setDefaultData($doctrine, 'InTime - ' . $usuario->getNombre(), $session);
+            $DATOS = DataManager::setDefaultData($doctrine, '$inTIME - ' . $usuario->getNombre(), $session);
         } else {
             $session->set('registro_completo', false);
-            $DATOS = DataManager::setDefaultData($doctrine, 'InTime - Desconocido', $session);
+            $DATOS = DataManager::setDefaultData($doctrine, '$inTIME - Desconocido', $session);
         }
-        return $this->render('ciudadano/ciudadano.html.twig', $DATOS);
+        $response = $this->render('ciudadano/ciudadano.html.twig', $DATOS);
+        return $response;
     }
 
     /**
@@ -1006,5 +1007,4 @@ class DefaultController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
-
 }

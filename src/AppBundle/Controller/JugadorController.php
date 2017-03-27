@@ -250,7 +250,7 @@ class JugadorController extends Controller {
             if (count($CIUDADANOS)) {
                 foreach ($CIUDADANOS AS $CIUDADANO) {
                     $contadorCiudadanos++;
-                    if($numMaxCiudadanos < $contadorCiudadanos){
+                    if ($numMaxCiudadanos < $contadorCiudadanos) {
                         $numMaxCiudadanos = $contadorCiudadanos;
                     }
                 }
@@ -278,13 +278,18 @@ class JugadorController extends Controller {
                     }
                 }
                 $cantidadMedia = $aux['CANTIDAD'] / $contadorCiudadanos;
-                for ($i=$contadorCiudadanos; $i<$numMaxCiudadanos; $i++){
+                for ($i = $contadorCiudadanos; $i < $numMaxCiudadanos; $i++) {
                     $aux['CANTIDAD'] += $cantidadMedia;
                 }
             }
-            $aux['CANTIDAD'] = Utils::segundosToDias($aux['CANTIDAD']);
+            //$aux['CANTIDAD'] = Utils::segundosToDias($aux['CANTIDAD']);
             $RESPUESTA[] = $aux;
         }
+        foreach($RESPUESTA as $clave => $fila){
+            $C[$clave] = $fila['CANTIDAD'];
+            $D[$clave] = $fila['DISTRITO'];
+        }
+        array_multisort($C, SORT_DESC, $D, SORT_ASC, $RESPUESTA);
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
 

@@ -294,321 +294,207 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row bordes border-radius">
-            <div class="row">
-                <div class="col-xs-12">
-                    <legend>Opciones de administrador<a href="/logout" id="logout">Salir<img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" /></a></legend>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <legend style="border-bottom-width: 0px;">Opciones de administrador<a href="/logout" id="logout">Salir<img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" /></a></legend>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ajustes">
+                        <div class="card-header" data-background-color="orange">
+                            <i class="fa fa-lock"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Ajustes</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ajustes">
-                            <div class="card-header" data-background-color="orange">
-                                <i class="fa fa-lock"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Ajustes</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/censo/ciudadanos">
+                        <div class="card-header" data-background-color="green">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Censo</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/censo/ciudadanos">
-                            <div class="card-header" data-background-color="green">
-                                <i class="fa fa-users"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Censo</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/asistencia">
-                            <div class="card-header" data-background-color="red">
-                                <i class="fa fa-address-card"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Citas</p>
-                                {% if CITAS is defined %}
-                                    {% if CITAS >= 0 %}
-                                        <span id="aviso-citas" style="color: green;" class="animated pulse">
-                                            {{ CITAS }}
-                                        </span>
-                                    {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/asistencia">
+                        <div class="card-header" data-background-color="red">
+                            <i class="fa fa-address-card"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Citas</p>
+                            {% if CITAS is defined %}
+                                {% if CITAS >= 0 %}
+                                    <span id="aviso-citas" style="color: green;" class="animated pulse">
+                                        {{ CITAS }}
+                                    </span>
                                 {% endif %}
-                                {% if CITAS_HOY is defined %}
-                                    {% if CITAS_HOY >= 0 %}
-                                        <span id="aviso-citas-hoy" style="color:blue;" class="animated pulse">
-                                            {{ CITAS_HOY }}
-                                        </span>
-                                    {% endif %}
+                            {% endif %}
+                            {% if CITAS_HOY is defined %}
+                                {% if CITAS_HOY >= 0 %}
+                                    <span id="aviso-citas-hoy" style="color:blue;" class="animated pulse">
+                                        {{ CITAS_HOY }}
+                                    </span>
                                 {% endif %}
+                            {% endif %}
 
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/ciudadano/ocio/amigos/chat">
-                            <div class="card-header" data-background-color="blue">
-                                <i class="fa fa-users"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Chat</p>
-                                {% if CHAT is defined %}
-                                    {% if CHAT >= 0 %}
-                                        <span id="aviso-chat" class="animated pulse">
-                                            {{ CHAT }}
-                                        </span>
-                                    {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/ciudadano/ocio/amigos/chat">
+                        <div class="card-header" data-background-color="blue">
+                            <i class="fa fa-comments-o"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Chat</p>
+                            {% if CHAT is defined %}
+                                {% if CHAT >= 0 %}
+                                    <span id="aviso-chat" class="animated pulse">
+                                        {{ CHAT }}
+                                    </span>
                                 {% endif %}
+                            {% endif %}
 
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/ciudadano/ocio/amigos/fotos">
-                            <div class="card-header" data-background-color="green">
-                                <i class="fa fa-picture-o"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Galería</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/ciudadano/ocio/amigos/fotos">
+                        <div class="card-header" data-background-color="green">
+                            <i class="fa fa-picture-o"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Galería</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/apuestas/proponer">
-                            <div class="card-header" data-background-color="purple">
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Apuestas</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/apuestas/proponer">
+                        <div class="card-header" data-background-color="purple">
+                            <i class="fa fa-star-o"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Apuestas</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ejercicios/alimentacion">
-                            <div class="card-header" data-background-color="blue">
-                                <i class="fa fa-cutlery"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Alimentacion</p>
-                                {% if ALIMENTACION is defined %}
-                                    {% if ALIMENTACION >= 0 %}
-                                        <span id="aviso-alimentacion" class="animated pulse">
-                                            {{ ALIMENTACION }}
-                                        </span>
-                                    {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ejercicios/alimentacion">
+                        <div class="card-header" data-background-color="blue">
+                            <i class="fa fa-cutlery"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Alimentación</p>
+                            {% if ALIMENTACION is defined %}
+                                {% if ALIMENTACION >= 0 %}
+                                    <span id="aviso-alimentacion" class="animated pulse">
+                                        {{ ALIMENTACION }}
+                                    </span>
                                 {% endif %}
-                            </div>
-                        </a>
-                    </div>
+                            {% endif %}
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ejercicios/deporte">
-                            <div class="card-header" data-background-color="orange">
-                                <i class="fa fa-signal"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Deporte</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ejercicios/deporte">
+                        <div class="card-header" data-background-color="orange">
+                            <i class="fa fa-signal"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Deporte</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ejercicios/inspeccion">
-                            <div class="card-header" data-background-color="purple">
-                                <i class="fa fa-search"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Inspección de trabajo</p>
-                            </div>
-                        </a>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ejercicios/inspeccion">
+                        <div class="card-header" data-background-color="purple">
+                            <i class="fa fa-search"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Inspección de trabajo</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ejercicios/paga">
-                            <div class="card-header" data-background-color="red">
-                                <i class="fa fa-money"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Paga extra</p>
-                                {% if PAGA is defined %}
-                                    {% if PAGA >= 0 %}
-                                        <span id="aviso-paga" class="animated pulse">
-                                            {{ PAGA }}
-                                        </span>
-                                    {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ejercicios/paga">
+                        <div class="card-header" data-background-color="red">
+                            <i class="fa fa-money"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Paga extra</p>
+                            {% if PAGA is defined %}
+                                {% if PAGA >= 0 %}
+                                    <span id="aviso-paga" class="animated pulse">
+                                        {{ PAGA }}
+                                    </span>
                                 {% endif %}
-                            </div>
-                        </a>
-                    </div>
+                            {% endif %}
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/mina">
-                            <div class="card-header" data-background-color="green">
-                                <i class="fa fa-qrcode"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Mina</p>
-                                &nbsp;
-                            </div>
-                        </a>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/mina">
+                        <div class="card-header" data-background-color="green">
+                            <i class="fa fa-qrcode"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Mina</p>
+                            &nbsp;
+                        </div>
+                    </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card card-stats">
-                        <a href="/guardian/ejercicios/felicidad">
-                            <div class="card-header" data-background-color="purple">
-                                <i class="fa fa-smile-o"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Felicidad</p>
-                                {% if FELICIDAD is defined %}
-                                    {% if FELICIDAD >= 0 %}
-                                        <span id="aviso-felicidad" class="animated pulse">
-                                            {{ FELICIDAD }}
-                                        </span>
-                                    {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <a href="/guardian/ejercicios/felicidad">
+                        <div class="card-header" data-background-color="purple">
+                            <i class="fa fa-smile-o"></i>
+                        </div>
+                        <div class="card-content">
+                            <p class="category">Felicidad</p>
+                            {% if FELICIDAD is defined %}
+                                {% if FELICIDAD >= 0 %}
+                                    <span id="aviso-felicidad" class="animated pulse">
+                                        {{ FELICIDAD }}
+                                    </span>
                                 {% endif %}
-                            </div>
-                        </a>
-                    </div>
+                            {% endif %}
+                        </div>
+                    </a>
                 </div>
-                <!--
-                <div class="col-lg-6">
-                    <ul class="list-group">
-                        <a href="/guardian/ajustes">
-                            <li class="list-group-item">
-                                Ajustes
-                            </li>
-                        </a>
-                        <a href="/guardian/censo/ciudadanos">
-                            <li class="list-group-item">
-                                Censo
-                            </li>
-                        </a>
-
-                        <a href="/guardian/asistencia">
-                            <li class="list-group-item">
-                                Citas
-                {% if CITAS is defined %}
-                    {% if CITAS > 0 %}
-                        <span id="aviso-citas" class="badge badge-aviso2 animated pulse">
-                        {{ CITAS }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-                {% if CITAS_HOY is defined %}
-                    {% if CITAS_HOY > 0 %}
-                        <span id="aviso-citas-hoy" class="badge badge-aviso2 aviso-azul animated pulse">
-                        {{ CITAS_HOY }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-            </li>
-        </a>
-        <a href="/ciudadano/ocio/amigos/chat">
-            <li class="list-group-item">
-                Chat
-                {% if CHAT is defined %}
-                    {% if CHAT > 0 %}
-                        <span id="aviso-chat" class="badge badge-aviso2 animated pulse">
-                        {{ CHAT }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-            </li>
-        </a>
-        <a href="/ciudadano/ocio/amigos/fotos">
-            <li class="list-group-item">
-                Galería
-            </li>
-        </a>
-        <a href="/guardian/apuestas/proponer">
-            <li class="list-group-item">
-                Loterías y apuestas
-            </li>
-        </a>
-    </ul>
-</div>
-<div class="col-lg-6">
-    <ul class="list-group">
-        <a href="/guardian/ejercicios/alimentacion">
-            <li class="list-group-item">
-                Alimentación
-                {% if ALIMENTACION is defined %}
-                    {% if ALIMENTACION > 0 %}
-                        <span id="aviso-alimentacion" class="badge badge-aviso2 animated pulse">
-                        {{ ALIMENTACION }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-            </li>
-        </a>
-        <a href="/guardian/ejercicios/deporte">
-            <li class="list-group-item">
-                Deporte
-            </li>
-        </a>
-        <a href="/guardian/ejercicios/inspeccion">
-            <li class="list-group-item">
-                Inspección de Trabajo
-            </li>
-        </a>
-        <a href="/guardian/ejercicios/paga">
-            <li class="list-group-item">
-                Paga extra
-                {% if PAGA is defined %}
-                    {% if PAGA > 0 %}
-                        <span id="aviso-paga" class="badge badge-aviso2 animated pulse">
-                        {{ PAGA }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-            </li>
-        </a>
-        <a href="/guardian/mina">
-            <li class="list-group-item">
-                Minas
-            </li>
-        </a>
-        <a href="/guardian/ejercicios/felicidad">
-            <li class="list-group-item">
-                Felicidad
-                {% if FELICIDAD is defined %}
-                    {% if FELICIDAD > 0 %}
-                        <span id="aviso-felicidad" class="badge badge-aviso2 animated pulse">
-                        {{ FELICIDAD }}
-                    </span>
-                    {% endif %}
-                {% endif %}
-            </li>
-        </a>
-    </ul>
-</div>
-                -->
             </div>
         </div>
     </div>

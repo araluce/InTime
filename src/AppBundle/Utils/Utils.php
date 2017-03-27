@@ -732,5 +732,12 @@ class Utils {
 
         return $dia_int;
     }
+    
+    public function cmp($a, $b) {
+        if (inval($a['CANTIDAD']) == intval($b['CANTIDAD'])) {
+            return 0;
+        }
+        return (intval($a['CANTIDAD']) < intval($b['CANTIDAD'])) ? -1 : 1;
+    }
 
 }

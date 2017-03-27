@@ -16,7 +16,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new RMS\PushNotificationsBundle\RMSPushNotificationsBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
             new AppBundle\AppBundle(),
         );
 

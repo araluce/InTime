@@ -11,14 +11,15 @@
         "symfony/symfony": "2.7.*",
         "doctrine/orm": "^2.4.8",
         "doctrine/doctrine-bundle": "~1.4",
-        "symfony/assetic-bundle": "~2.3",
+        "symfony/assetic-bundle": "^2.8",
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.11.3",
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "richsage/rms-push-notifications-bundle": "dev-master",
-        "beberlei/DoctrineExtensions": "^1.0"
+        "beberlei/DoctrineExtensions": "^1.0",
+        "liip/imagine-bundle": "^1.7"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

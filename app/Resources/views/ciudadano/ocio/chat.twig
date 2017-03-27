@@ -357,11 +357,11 @@
                             <a href="#pagetwo">
                                 {% if CIUDADANO.getImagen() is not null%}
                                     <img id="image"
-                                         src="{{ asset('images/users/' ~ CIUDADANO.getDni() ~ '/' ~ CIUDADANO.getImagen() ) }}"
+                                         src="{{ asset('images/users/' ~ CIUDADANO.getDni() ~ '/' ~ CIUDADANO.getImagen() ) | imagine_filter('my_thumb') }}"
                                          class="img-chat"/>
                                 {% else %}
                                     <img id="image"
-                                         src="{{ asset('images/fotos-usuarios/default.jpg') }}"
+                                         src="{{ asset('images/fotos-usuarios/default.jpg') | imagine_filter('my_thumb') }}"
                                          class="img-chat"/>
                                 {% endif %}
                                 {{ CIUDADANO.getSeudonimo() }}
@@ -492,9 +492,9 @@
                 if (id_usuario !== null || id_grupo !== null) {
                     if (typeof data.usuario !== 'undefined') {
                         if (data.usuario.imagen !== null) {
-                            descripcion += '<img src="{{ asset('images/users/') }}' + data.usuario.dni + '/' + data.usuario.imagen + '" class="img-chat">';
+                            descripcion += '<img src="{{ asset('images/users/') | imagine_filter('my_thumb') }}' + data.usuario.dni + '/' + data.usuario.imagen + '" class="img-chat">';
                         } else {
-                            descripcion += '<img src="{{ asset('images/fotos-usuarios/default.jpg') }}' + '" class="img-chat">';
+                            descripcion += '<img src="{{ asset('images/fotos-usuarios/default.jpg') | imagine_filter('my_thumb') }}' + '" class="img-chat">';
                         }
                         descripcion += '<h1>Chat con @' + data.usuario.alias + '</h1>';
                     } else if (typeof data.distrito !== 'undefined') {
