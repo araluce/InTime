@@ -690,6 +690,7 @@ class Usuario {
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
 
+        return array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion);
         if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
@@ -763,7 +764,7 @@ class Usuario {
         $query = $qb->select('a')
                 ->from('\AppBundle\Entity\EjercicioCalificacion', 'a')
                 ->where('a.idUsuario = :USUARIO')
-                ->orderBy('a.fecha', 'ASC')
+                ->orderBy('a.fecha', 'DESC')
                 ->setParameters(array('USUARIO' => $USUARIO));
         $ULT_INSPECCION = $query->getQuery()->getResult();
         if (count($ULT_INSPECCION)) {

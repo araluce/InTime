@@ -575,6 +575,44 @@
                                 </div>
                             </div>
                             <div class="caja-opcion">
+                                <label for="test_correcto">Tiempo bonificación 10%</label><br>
+                                <small>Establece la bonificación al obtener un 10% de un ejercicio de Felicidad</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_fel_10" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_fel_10" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_fel_10" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_fel_10" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
                                 <label for="test_correcto">Tiempo bonificación 15%</label><br>
                                 <small>Establece la bonificación al obtener un 15% de un ejercicio de Felicidad</small>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px;">
@@ -606,6 +644,44 @@
                                         <div class="row">
                                             <div class="input-group">
                                                 <input type="number" id="segundos_fel_15" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="caja-opcion">
+                                <label for="test_correcto">Tiempo bonificación 20%</label><br>
+                                <small>Establece la bonificación al obtener un 20% de un ejercicio de Felicidad</small>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias_fel_20" class="form-control input-number" value="0" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas_fel_20" class="form-control input-number" value="0" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos_fel_20" class="form-control input-number" value="0" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos_fel_20" class="form-control input-number" value="0" min="0" max="60" />
                                                 <span class="input-group-addon">s</span>
                                             </div>
                                         </div>
@@ -899,6 +975,21 @@
                 }
             });
         }
+        function getFelicidadBonificacion10(){
+            ruta = '/guardian/ajustes/getFelicidadBonificacion10';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_fel_10').val(data.message.dias);
+                    $('#horas_fel_10').val(data.message.horas);
+                    $('#minutos_fel_10').val(data.message.minutos);
+                    $('#segundos_fel_10').val(data.message.segundos);
+                } else {
+                    alerta = setAlert(data.message);
+                    $('#alert-felicidad').html(alerta);
+                }
+            });
+        }
         function getFelicidadBonificacion15(){
             ruta = '/guardian/ajustes/getFelicidadBonificacion15';
             $.get(ruta, function (datos, status) {
@@ -908,6 +999,21 @@
                     $('#horas_fel_15').val(data.message.horas);
                     $('#minutos_fel_15').val(data.message.minutos);
                     $('#segundos_fel_15').val(data.message.segundos);
+                } else {
+                    alerta = setAlert(data.message);
+                    $('#alert-felicidad').html(alerta);
+                }
+            });
+        }
+        function getFelicidadBonificacion20(){
+            ruta = '/guardian/ajustes/getFelicidadBonificacion20';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $('#dias_fel_20').val(data.message.dias);
+                    $('#horas_fel_20').val(data.message.horas);
+                    $('#minutos_fel_20').val(data.message.minutos);
+                    $('#segundos_fel_20').val(data.message.segundos);
                 } else {
                     alerta = setAlert(data.message);
                     $('#alert-felicidad').html(alerta);
@@ -1136,18 +1242,28 @@
             var minutos_5 = parseInt($('#minutos_fel_5').val());
             var segundos_5 = parseInt($('#segundos_fel_5').val());
             var b5 = (((((dias_5 * 24) + horas_5) * 60) + minutos_5) * 60) + segundos_5;
+            var dias_10 = parseInt($('#dias_fel_10').val());
+            var horas_10 = parseInt($('#horas_fel_10').val());
+            var minutos_10 = parseInt($('#minutos_fel_10').val());
+            var segundos_10 = parseInt($('#segundos_fel_10').val());
+            var b10 = (((((dias_10 * 24) + horas_10) * 60) + minutos_10) * 60) + segundos_10;
             var dias_15 = parseInt($('#dias_fel_15').val());
             var horas_15 = parseInt($('#horas_fel_15').val());
             var minutos_15 = parseInt($('#minutos_fel_15').val());
             var segundos_15 = parseInt($('#segundos_fel_15').val());
             var b15 = (((((dias_15 * 24) + horas_15) * 60) + minutos_15) * 60) + segundos_15;
+            var dias_20 = parseInt($('#dias_fel_20').val());
+            var horas_20 = parseInt($('#horas_fel_20').val());
+            var minutos_20 = parseInt($('#minutos_fel_20').val());
+            var segundos_20 = parseInt($('#segundos_fel_20').val());
+            var b20 = (((((dias_20 * 24) + horas_20) * 60) + minutos_20) * 60) + segundos_20;
             var dias_25 = parseInt($('#dias_fel_25').val());
             var horas_25 = parseInt($('#horas_fel_25').val());
             var minutos_25 = parseInt($('#minutos_fel_25').val());
             var segundos_25 = parseInt($('#segundos_fel_25').val());
             var b25 = (((((dias_25 * 24) + horas_25) * 60) + minutos_25) * 60) + segundos_25;
             
-            if(b5 <= 0 || b15 <= 0 || b25 <= 0){
+            if(b5 <= 0 || b10 <= 0 || b15 <= 0 || b20 <= 0 || b25 <= 0){
                 $('#alert-felicidad').html(setAlert('El valor de los campos debe ser mayor que 0'));
             } else if (dias_felicidad <= 0) {
                 $('#alert-felicidad').html(setAlert('El valor de los campos debe ser mayor que 0'));
@@ -1156,7 +1272,9 @@
                 datos = {
                     'dias_felicidad': dias_felicidad,
                     'b5': b5,
+                    'b10': b10,
                     'b15': b15,
+                    'b20': b20,
                     'b25': b25
                 };
                 $.post(ruta, datos, function (data, status) {
@@ -1186,7 +1304,9 @@
             getTiempoMaximoPrestado();
             getFelicidad();
             getFelicidadBonificacion5();
+            getFelicidadBonificacion10();
             getFelicidadBonificacion15();
+            getFelicidadBonificacion20();
             getFelicidadBonificacion25();
             $(".btn-pref .btn").click(function () {
                 $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");

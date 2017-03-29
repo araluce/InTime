@@ -1000,11 +1000,12 @@ class DefaultController extends Controller {
 
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
         $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
-        if ($ok) {
-            Utils::pretty_print('Sube de nivel');
-        } else {
-            Utils::pretty_print('No superado');
-        }
+        Utils::pretty_print($ok);
+//        if ($ok) {
+//            Utils::pretty_print('Sube de nivel');
+//        } else {
+//            Utils::pretty_print('No superado');
+//        }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 }
