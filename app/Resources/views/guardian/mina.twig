@@ -36,6 +36,12 @@
                     </button>
                 </div>
                 <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn btn-default btn13" href="#tab2" data-toggle="tab" onclick="descargarMinaActual();">
+                        <span class="fa fa-qrcode" aria-hidden="true"></span>
+                        <div class="hidden-xs">MINAS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
                     <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
                         <span class="fa fa-arrow-left" aria-hidden="true"></span>
                         <div class="hidden-xs">ATRÁS</div>
@@ -57,8 +63,37 @@
                             <label for="fecha" style="margin-top:1%;">Fecha tope</label>
                             <input type="datetime-local" class="form-control" id="fecha">
                             <label for="pista" style="margin-top:1%;">Pista para la mina</label>
-                            <input type="text" class="form-control" id="pista" placeholder="Pista para la mina" />
-                            <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarMina();">PUBLICAR</button>
+                            <div id="pistas"></div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="masPistas();">MÁS PISTAS</button>
+                                </div>
+                                <div class="col-xs-6">
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarMina();">PUBLICAR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab2">
+                        <div class="row bordes" style="margin-top:1%;">
+                            <legend>Mina actual</legend>
+                            <input type="hidden" id="id-actual">
+                            <label for="enunciado-actual" style="margin-top:1%;">Enunciado de la mina</label>
+                            <input type="text" class="form-control" id="enunciado-actual" placeholder="Enunciado de la mina"/>
+                            <label for="codigo-actual" style="margin-top:1%;">Código de desactivación de la mina</label>
+                            <input type="text" class="form-control" id="codigo-actual" placeholder="Código de la mina"/>
+                            <label for="fecha-actual" style="margin-top:1%;">Fecha tope</label>
+                            <input type="datetime-local" class="form-control" id="fecha-actual">
+                            <label style="margin-top:1%;">Pistas para la mina</label>
+                            <div id="pistas-actuales"></div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="masPistasActuales();">MÁS PISTAS</button>
+                                </div>
+                                <div class="col-xs-6">
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="editarMina();">EDITAR</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -70,6 +105,8 @@
 
 {% block javascripts %}
     <script>
+        var contadorPistasActuales = 1;
+        var contadorPistas = 1;
         function setSuccess(message) {
             contenido = '<div class="alert alert-success alert-dismissable">';
             contenido += '   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
@@ -84,22 +121,95 @@
             contenido += '</div>';
             return contenido;
         }
+        function masPistas() {
+            contenido = '<input type="text" class="form-control" id="pista' + contadorPistas + '" placeholder="Pista para la mina" />';
+            $("#pistas").append(contenido);
+            contadorPistas++;
+        }
+        function masPistasActuales(){
+            contenido = '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" placeholder="Pista para la mina" />';
+            $("#pistas-actuales").append(contenido);
+            contadorPistasActuales++;
+        }
         function publicarMina() {
             var enunciado = $("#enunciado").val();
             var codigo = $("#codigo").val();
             var fecha = $("#fecha").val();
-            var pista = $("#pista").val();
             if ($.trim(enunciado) === '') {
                 alert('Debe insertar un enunciado');
             } else if ($.trim(codigo) === '') {
                 alert('Debe insertar un código');
             } else {
                 ruta = '/guardian/mina/publicar';
+                pistas = recolectarPistas();
                 datos = {
                     'ENUNCIADO': enunciado,
                     'CODIGO': codigo,
                     'FECHA': fecha,
-                    'PISTA': pista
+                    'PISTAS': pistas
+                };
+                $.post(ruta, datos, function (datos, status) {
+                    data = jQuery.parseJSON(datos);
+                    alert(data.message);
+                    location.reload();
+                });
+            }
+        }
+        function recolectarPistas() {
+            var i = 1;
+            var pistas = [];
+            for (i = 1; i < contadorPistas; i++) {
+                pistas.push($("#pista" + i).val());
+            }
+            return pistas;
+        }
+        function recolectarPistasActuales() {
+            var i = 1;
+            var pistas = [];
+            for (i = 1; i < contadorPistasActuales; i++) {
+                pistas.push($("#pista-actual-" + i).val());
+            }
+            return pistas;
+        }
+        function descargarMinaActual() {
+            ruta = '/guardian/mina/descargarMinaActual';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK'){
+                    $("#id-actual").val(data.message.ID);
+                    $("#enunciado-actual").val(data.message.ENUNCIADO);
+                    $("#codigo-actual").val(data.message.CODIGO);
+                    $("#fecha-actual").val(data.message.FECHA_TOPE);
+                    contadorPistasActuales = 1;
+                    contenido = '';
+                    $.each(data.message.PISTAS, function (k, v) {
+                        contenido += '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" value="' + v + '" />';
+                        contadorPistasActuales++;
+                    });
+                    $("#pistas-actuales").html(contenido);
+                } else {
+                    $("#alerta").append(setAlert(data.message));
+                }
+            });
+        }
+        function editarMina() {
+            var id = $("#id-actual").val();
+            var enunciado = $("#enunciado-actual").val();
+            var codigo = $("#codigo-actual").val();
+            var fecha = $("#fecha-actual").val();
+            if ($.trim(enunciado) === '') {
+                $("#alerta").append(setAlert("Debe insertar un enunciado"));
+            } else if ($.trim(codigo) === '') {
+                $("#alerta").append(setAlert("Debe insertar un código"));
+            } else {
+                ruta = '/guardian/mina/editarMinaActual';
+                pistas = recolectarPistasActuales();
+                datos = {
+                    'ID': id,
+                    'ENUNCIADO': enunciado,
+                    'CODIGO': codigo,
+                    'FECHA': fecha,
+                    'PISTAS': pistas
                 };
                 $.post(ruta, datos, function (datos, status) {
                     data = jQuery.parseJSON(datos);

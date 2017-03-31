@@ -252,7 +252,7 @@ class MinaController extends Controller {
             }
             $ENUNCIADO = $request->request->get('ENUNCIADO');
             $CODIGO = strtolower($request->request->get('CODIGO'));
-            $PISTA = $request->request->get('PISTA');
+            $PISTAS = $request->request->get('PISTAS');
             $CODIGO_FORMATO = preg_replace('/\s+/', '', $CODIGO);
             $FECHA_TOPE = str_replace("T", " ", $request->request->get('FECHA')) . ":00";
             $FECHA_TOPE_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $FECHA_TOPE);
@@ -283,15 +283,101 @@ class MinaController extends Controller {
             $MINA->setIdEjercicio($EJERCICIO);
             $em->persist($MINA);
 
-            $PISTA_MINA = new \AppBundle\Entity\MinaPista();
-            $PISTA_MINA->setIdMina($MINA);
-            $PISTA_MINA->setPista($PISTA);
-            $em->persist($PISTA_MINA);
+            if (count($PISTAS)) {
+                foreach ($PISTAS as $PISTA) {
+                    $PISTA_MINA = new \AppBundle\Entity\MinaPista();
+                    $PISTA_MINA->setIdMina($MINA);
+                    $PISTA_MINA->setPista($PISTA);
+                    $em->persist($PISTA_MINA);
+                }
+            }
 
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Mina registrada')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/guardian/mina/editarMinaActual", name="editarMinaActual")
+     */
+    public function editarMinaActualAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/mina/editarMinaActual', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+            $MINA = $doctrine->getRepository("AppBundle:Mina")->findOneByIdMina($request->request->get('ID'));
+            if (null === $MINA) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
+            }
+            $CODIGO = strtolower($request->request->get('CODIGO'));
+            $CODIGO_FORMATO = preg_replace('/\s+/', '', $CODIGO);
+            $FECHA_TOPE = str_replace("T", " ", $request->request->get('FECHA')) . ":00";
+            $FECHA_TOPE_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $FECHA_TOPE);
+
+            $MINA->setEnunciado($request->request->get('ENUNCIADO'));
+            $MINA->setCodigo($CODIGO_FORMATO);
+            $MINA->setFechaFinal($FECHA_TOPE_formato);
+            $em->persist($MINA);
+
+            $PISTAS_EDITADAS = $request->request->get('PISTAS');
+            $PISTAS = $doctrine->getRepository('AppBundle:MinaPista')->findByIdMina($request->request->get('ID'));
+
+            if (count($PISTAS_EDITADAS)) {
+                $i = 0;
+                foreach ($PISTAS_EDITADAS as $PISTA_EDITADA) {
+                    if (isset($PISTAS[$i])) {
+                        $PISTAS[$i]->setPista($PISTA_EDITADA);
+                        $em->persist($PISTAS[$i]);
+                    } else {
+                        $PISTA_MINA = new \AppBundle\Entity\MinaPista();
+                        $PISTA_MINA->setIdMina($MINA);
+                        $PISTA_MINA->setPista($PISTA_EDITADA);
+                        $em->persist($PISTA_MINA);
+                    }
+                    $i++;
+                }
+            }
+
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Mina actualizada')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/guardian/mina/descargarMinaActual", name="descargarMinaActualGuardian")
+     */
+    public function descargarMinaActualAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/mina/descargarMinaActual', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+        $MINA = Utils::minaActiva($doctrine);
+        if (!$MINA) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ninguna mina activa')), 200);
+        }
+        $DATOS['ID'] = $MINA->getIdMina();
+        $DATOS['ENUNCIADO'] = $MINA->getEnunciado();
+        $DATOS['CODIGO'] = $MINA->getCodigo();
+        $FECHA = $MINA->getFechaFinal()->format('Y-m-d') . 'T' . $MINA->getFechaFinal()->format('H:i');
+        $DATOS['FECHA_TOPE'] = $FECHA;
+
+        $PISTAS = $doctrine->getRepository('AppBundle:MinaPista')->findByIdMina($DATOS['ID']);
+        $DATOS['PISTAS'] = [];
+        if (count($PISTAS)) {
+            foreach ($PISTAS as $PISTA) {
+                $DATOS['PISTAS'][] = $PISTA->getPista();
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
 }

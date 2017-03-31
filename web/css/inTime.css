@@ -1141,7 +1141,8 @@ legend{
     .container{
         width: 95%;
     }
-
+    
+    .badge-mina,
     .badge-aviso,
     .badge-aviso2{
         font-size: 20px;
@@ -1233,6 +1234,7 @@ legend{
     .texto-tweet{
         font-size: 16px;
     }
+    .badge-mina,
     .badge-aviso,
     .badge-aviso2{
         font-size: 14px;
