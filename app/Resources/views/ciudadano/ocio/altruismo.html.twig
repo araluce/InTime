@@ -274,22 +274,11 @@
                         contenido += '</div>';
                         contenido += '</div>';
                     }
-                    if (data.message.DESACTIVADA) {
-                        contenido += '<hr>';
-                        contenido += '<legend style="text-align: center;">DESACTIVADORES</legend>';
-                        contenido += '<div class="row">';
-                        contenido += '  <div class="col-md-6 advertencia">';
-                        $.each(data.message.DESACTIVADORES, function (k, v) {
-                            contenido += '      Ciudadano: @' + v.ALIAS + '<br>';
-                        });
+                    if (data.message.DESACTIVADA_X_MI) {
+                        contenido += '<div class="row" style="margin-top:2%;">';
+                        contenido += '  <div class="col-xs-6 col-xs-offset-3">';
+                        contenido += '      <button class="btn btn-block btn-primary" onclick="location.reload();"> OK </button>';
                         contenido += '  </div>';
-                        contenido += '</div>';
-                        if (data.message.DESACTIVADA_X_MI) {
-                            contenido += '<div class="row" style="margin-top:2%;">';
-                            contenido += '  <div class="col-xs-6 col-xs-offset-3">';
-                            contenido += '      <button class="btn btn-block btn-primary" onclick="location.reload();"> OK </button>';
-                            contenido += '  </div>';
-                        }
                         contenido += '</div>';
                     }
                     $("#mensaje-texto").append(contenido);

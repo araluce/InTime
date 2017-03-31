@@ -94,6 +94,12 @@
                                     <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="editarMina();">EDITAR</button>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <legend>Desactivadores</legend>
+                                    <div id="desactivadores-actual"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,6 +193,14 @@
                         contadorPistasActuales++;
                     });
                     $("#pistas-actuales").html(contenido);
+                    if (data.message.DESACTIVADA) {
+                        $.each(data.message.DESACTIVADORES, function (k, v) {
+                            contenido += '      Ciudadano: @' + v.ALIAS + '<br>';
+                        });
+                        $("#desactivadores-actual").html(contenido);
+                    } else {
+                        $("#desactivadores-actual").html("Aún no hay desactivadores");
+                    }
                 } else {
                     $("#alerta").append(setAlert(data.message));
                 }

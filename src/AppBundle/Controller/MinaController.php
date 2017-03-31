@@ -377,6 +377,23 @@ class MinaController extends Controller {
                 $DATOS['PISTAS'][] = $PISTA->getPista();
             }
         }
+        $query = $doctrine->getRepository('AppBundle:UsuarioMina')->createQueryBuilder('a');
+        $query->select('a');
+        $query->where('a.idMina = :IdMina');
+        $query->orderBy('a.fecha', 'DESC');
+        $query->setParameters(['IdMina' => $MINA]);
+        $USUARIOS_MINA = $query->getQuery()->getResult();
+
+        $DATOS['DESACTIVADA'] = 0;
+        if (count($USUARIOS_MINA)) {
+            $DATOS['DESACTIVADA'] = 1;
+            $DATOS['DESACTIVADORES'] = [];
+            foreach ($USUARIOS_MINA as $USUARIO_M) {
+                $aux = [];
+                $aux['ALIAS'] = $USUARIO_M->getIdUsuario()->getSeudonimo();
+                $DATOS['DESACTIVADORES'][] = $aux;
+            }
+        }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
