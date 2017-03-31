@@ -235,7 +235,7 @@
                     if (data.message.HAY_PISTAS) {
                         contenido += '<div class="row">';
                         contenido += '  <div class="col-md-12 advertencia">';
-                        contenido += '      Hay ' + data.message.PISTAS_RESTANTES + ' pistas disponibles (' + data.message.TENGO_PISTAS + '/' + data.message.HAY_PISTAS + ')';
+                        contenido += '      Hay ' + data.message.PISTAS_RESTANTES + ' pistas disponibles para comprar (tienes ' + data.message.TENGO_PISTAS + ' de ' + data.message.HAY_PISTAS + ')';
                         contenido += '  </div>';
                         if (data.message.PISTAS_RESTANTES) {
                             var coste = data.message.COSTE_PISTA;
@@ -261,7 +261,7 @@
                         if (data.message.TENGO_PISTAS) {
                             contenido += '  <div class="col-md-12 advertencia">';
                             $.each(data.message.MIS_PISTAS, function (k, v) {
-                                contenido += '      <b>PISTA:</b> ' + v;
+                                contenido += '      <b>PISTA:</b> ' + v + '<br>';
                             });
                             contenido += '  </div>';
                         }
