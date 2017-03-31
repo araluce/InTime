@@ -337,10 +337,11 @@ class JugadorController extends Controller {
         $em->persist($USUARIO_NIVEL);
         if ($MI_MC === null) {
             $MI_MC = new \AppBundle\Entity\BonificacionXUsuario();
+            $MI_MC->setContador(0);
         }
 
         $MI_MC->setFecha(new \DateTime('now'));
-        $MI_MC->setContador(0);
+        $MI_MC->setContador($MI_MC->getContador()+1);
         $MI_MC->setIdBonificacionExtra($MC);
         $MI_MC->setIdUsuario($USUARIO);
         $MI_MC->setUsado(0);

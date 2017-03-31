@@ -469,7 +469,7 @@
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 1%;">
-                                    <div class="col-lg-6">
+                                    <div class="col-xs-6">
                                         <legend>Información personal</legend>
                                         <label for="puesto">Puesto en clasificación global: </label>
                                         <span id="puesto">No clasificado</span><br>
@@ -484,7 +484,13 @@
                                         <label for="tdv-ciudadano">TdV: </label>
                                         <span id="tdv-ciudadano"></span><br>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-xs-6">
+                                        <legend>Minicartas compradas</legend>
+                                        <div id="cartasBonificacion">Este usuario no tiene minicartas compradas</div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 1%;">
+                                    <div class="col-xs-12">
                                         <legend><i class="fa fa-heartbeat"></i>&nbsp; Modificar tiempo de vida</legend>
                                         <p style="color: #e14147; font-weight: bold;" id="libre-minuteros"></p>
                                         <div class="col-xs-3">
@@ -648,6 +654,19 @@
                         contenido += data.message.TDV.segundos + 's ';
                     }
                     $('#tdv-ciudadano').html(contenido);
+                    if (data.message.TENGO_CARTAS){
+                        contenido = '';
+                        $.each(data.message.CARTAS, function (k, v){
+                            color = "#d9534f";
+                            mensaje = "USADO/PASADO EL PLAZO";
+                            if(v.DISPONIBLE){
+                                color = "#5cb85c";
+                                mensaje = "DISPONIBLE";
+                            }
+                            contenido += '<b>' + v.CARTA + '</b>  ('+v.VECES+' vez comprada)  ---  <span style="color:' + color + ';"><b>' + mensaje + '</b></span><br>';
+                        });
+                        $("#cartasBonificacion").html(contenido);
+                    }
                     $('#dni').html(dni);
                     $('#puesto').html(data.message.PUESTO);
                 }

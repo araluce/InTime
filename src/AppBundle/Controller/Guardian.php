@@ -183,7 +183,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidadBonificacion10", name="getFelicidadBonificacion10")
      */
@@ -215,7 +215,7 @@ class Guardian extends Controller {
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $diasDifEntregasFelicidad)), 200);
     }
-    
+
     /**
      * @Route("/guardian/ajustes/getFelicidadBonificacion20", name="getFelicidadBonificacion20")
      */
@@ -1106,7 +1106,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion5);
             $em->persist($CONSTANTE);
-            
+
             $felicidadBonificacion10 = $request->request->get('b10');
             if ($felicidadBonificacion10 <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -1130,7 +1130,7 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion15);
             $em->persist($CONSTANTE);
-            
+
             $felicidadBonificacion20 = $request->request->get('b20');
             if ($felicidadBonificacion20 <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'La constante debe ser mayor que 0')), 200);
@@ -1229,14 +1229,34 @@ class Guardian extends Controller {
         $RESTANTE = $TDV->getTimestamp() - $AHORA->getTimestamp();
         $DATOS['TDV'] = Utils::segundosToDias($RESTANTE);
 
-        $DATOS['LIBRE_MINUTEROS'] = 0;
         $MC_LIBRE_MINUTEROS = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
-        $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
-            'idBonificacionExtra' => $MC_LIBRE_MINUTEROS, 'idUsuario' => $USUARIO
+        $MC_VACACIONES = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(9);
+        $MIS_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
+            'idUsuario' => $USUARIO
         ]);
-        if (null !== $MI_MC) {
-            if ($AHORA->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
-                $DATOS['LIBRE_MINUTEROS'] = 1;
+        $DATOS['LIBRE_MINUTEROS'] = 0;
+        $DATOS['TENGO_CARTAS'] = 0;
+        if (count($MIS_MC)) {
+            $DATOS['TENGO_CARTAS'] = 1;
+            $DATOS['CARTAS'] = [];
+            foreach ($MIS_MC as $MI_MC) {
+                $aux = [];
+                $aux['CARTA'] = $MI_MC->getIdBonificacionExtra()->getBonificacion();
+                $aux['VECES'] = ($MI_MC->getContador()) + 1;
+                $aux['DISPONIBLE'] = 0;
+                if ($MI_MC->getIdBonificacionExtra() === $MC_LIBRE_MINUTEROS) {
+                    if ($AHORA->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
+                        $DATOS['LIBRE_MINUTEROS'] = 1;
+                        $aux['DISPONIBLE'] = 1;
+                    }
+                } elseif ($MI_MC->getIdBonificacionExtra() === $MC_VACACIONES) {
+                    if ($AHORA->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
+                        $aux['DISPONIBLE'] = 1;
+                    }
+                } elseif (!$MI_MC->getUsado()) {
+                    $aux['DISPONIBLE'] = 1;
+                }
+                $DATOS['CARTAS'][] = $aux;
             }
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
