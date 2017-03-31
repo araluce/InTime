@@ -7,6 +7,9 @@
 
 {% block stylesheets %}
     <style>
+        *{
+            font-size: 25px;
+        }
         .modal-header{
             padding: 4% 6%;
         }
@@ -351,6 +354,9 @@
             }
         }
         @media (min-width: 1200px){
+            *{
+                font-size: 14px;
+            }
             .info-button{
                 font-size: 20px;
             }
@@ -464,8 +470,8 @@
                                     </div>
                                     <div class="col-xs-6">
                                         <legend>Nivel:</legend>
-                                        <span id="nivel-ciudadano"></span>&nbsp;
-                                        <span id="xp-ciudadano"></span>
+                                        <span id="nivel-ciudadano" style="font-weight: bold;"></span>&nbsp;
+                                        <span id="xp-ciudadano" style="float:right; font-weight: bold;"></span>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 1%;">
@@ -489,6 +495,8 @@
                                         <div id="cartasBonificacion">Este usuario no tiene minicartas compradas</div>
                                         <legend>Donaciones realizadas</legend>
                                         <div id="donaciones">Este usuario no ha realizado ninguna donación</div>
+                                        <legend>Préstamos en curso</legend>
+                                        <div id="deudas">Este usuario no tiene deudas pendientes</div>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 1%;">
@@ -668,6 +676,15 @@
                             contenido += '<b>' + v.CARTA + '</b>  (' + v.VECES + ' vez comprada)  <span style="float:right; color:' + color + ';"><b>' + mensaje + '</b></span><br>';
                         });
                         $("#cartasBonificacion").html(contenido);
+                    }
+                    if (data.message.TENGO_DEUDAS) {
+                        contenido = '';
+                        $.each(data.message.DEUDAS, function (k, v) {
+                            contenido += '<b>Interés: ' + v.INTERES + '</b><br>';
+                            contenido += '<span style="color:#5cb85c; float:left;"><b>Sol: ' + v.SOLICITADO.dias + 'd ' + v.SOLICITADO.horas + 'h ' + v.SOLICITADO.minutos + 'm ' + v.SOLICITADO.segundos + 's</b></span><span style="float:right; color:#d9534f;"><b>Rest: ' + v.RESTANTE.dias + 'd ' + v.RESTANTE.horas + 'h ' + v.RESTANTE.minutos + 'm ' + v.RESTANTE.segundos + 's</b></span><br>';
+                            contenido += '<hr>';
+                        });
+                        $("#deudas").html(contenido);
                     }
                     if (data.message.HE_DONADO) {
                         contenido = '';

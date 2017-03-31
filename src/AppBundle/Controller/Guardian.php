@@ -1186,22 +1186,22 @@ class Guardian extends Controller {
                 ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
         $USUARIOS = $query->getQuery()->getResult();
         $infoPuesto = Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
-        
+
         $DATOS['DONACIONES'] = [];
         $DATOS['CANTIDADES'] = [];
-        if(count($USUARIOS)){
-            foreach($USUARIOS as $U){
+        if (count($USUARIOS)) {
+            foreach ($USUARIOS as $U) {
                 $cantidad = Usuario::heDonadoYa($doctrine, $USUARIO, $U);
-                if($cantidad < 0){
+                if ($cantidad < 0) {
                     $DATOS['HE_DONADO'] = 1;
                     $aux = [];
                     $aux['CIUDADANO'] = $U->getSeudonimo();
-                    $aux['CANTIDAD'] = Utils::segundosToDias((-1)*$cantidad);
+                    $aux['CANTIDAD'] = Utils::segundosToDias((-1) * $cantidad);
                     $DATOS['DONACIONES'][] = $aux;
                 }
             }
         }
-        
+
         $DATOS['PUESTO'] = $infoPuesto['PUESTO'];
         $DATOS['NIVEL'] = 0;
         $DATOS['PUNTOS'] = 0;
@@ -1273,6 +1273,23 @@ class Guardian extends Controller {
                     $aux['DISPONIBLE'] = 1;
                 }
                 $DATOS['CARTAS'][] = $aux;
+            }
+        }
+        $query = $em->createQueryBuilder()->select('d')
+                ->from('\AppBundle\Entity\UsuarioPrestamo', 'd')
+                ->where('d.idUsuario = :Usuario AND d.motivo = :motivo AND d.restante !=0')
+                ->setParameters(['Usuario' => $USUARIO, 'motivo' => 'prestamo']);
+        $MIS_DEUDAS = $query->getQuery()->getResult();
+        $DATOS['TENGO_DEUDAS'] = 0;
+        $DATOS['DEUDAS'] = [];
+        if (count($MIS_DEUDAS)) {
+            $DATOS['TENGO_DEUDAS'] = 1;
+            foreach($MIS_DEUDAS as $DEUDA) {
+                $aux = [];
+                $aux['INTERES'] = $DEUDA->getInteres();
+                $aux['SOLICITADO'] = Utils::segundosToDias($DEUDA->getCantidad());
+                $aux['RESTANTE'] = Utils::segundosToDias($DEUDA->getRestante());
+                $DATOS['DEUDAS'][] = $aux;
             }
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
