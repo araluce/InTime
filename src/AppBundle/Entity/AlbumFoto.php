@@ -27,6 +27,13 @@ class AlbumFoto
     private $imagen;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="titulo", type="string", length=1000, nullable=false)
+     */
+    private $titulo;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id_album_foto", type="integer")
@@ -91,6 +98,29 @@ class AlbumFoto
     public function getImagen()
     {
         return $this->imagen;
+    }
+
+    /**
+     * Set titulo
+     *
+     * @param string $titulo
+     * @return AlbumFoto
+     */
+    public function setTitulo($titulo)
+    {
+        $this->titulo = $titulo;
+
+        return $this;
+    }
+
+    /**
+     * Get titulo
+     *
+     * @return string 
+     */
+    public function getTitulo()
+    {
+        return $this->titulo;
     }
 
     /**

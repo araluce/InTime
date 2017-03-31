@@ -15,6 +15,13 @@ class Mina
     /**
      * @var string
      *
+     * @ORM\Column(name="enunciado", type="string", length=1000, nullable=false)
+     */
+    private $enunciado;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="codigo", type="string", length=1000, nullable=false)
      */
     private $codigo;
@@ -53,6 +60,29 @@ class Mina
     private $idEjercicio;
 
 
+
+    /**
+     * Set enunciado
+     *
+     * @param string $enunciado
+     * @return Mina
+     */
+    public function setEnunciado($enunciado)
+    {
+        $this->enunciado = $enunciado;
+
+        return $this;
+    }
+
+    /**
+     * Get enunciado
+     *
+     * @return string 
+     */
+    public function getEnunciado()
+    {
+        return $this->enunciado;
+    }
 
     /**
      * Set codigo

@@ -43,6 +43,13 @@
                             </span>
                         {% endif %}
                     {% endif %}
+                    {% if MINA is defined %}
+                        {% if MINA > 0 %}
+                            <span id="aviso-mina" class="badge badge-mina animated pulse">
+                                !
+                            </span>
+                        {% endif %}
+                    {% endif %}
                 </a>
             </div>
         </div>
@@ -79,9 +86,11 @@
         }, 1000);
         setInterval(function () {
             var avisoChat = $("#aviso-chat");
+            var avisoMina = $("#aviso-mina");
             var avisoTrabajo = $("#aviso-trabajo");
             
             avisoChat.before(avisoChat.clone(true)).remove();
+            avisoMina.before(avisoMina.clone(true)).remove();
             avisoTrabajo.before(avisoTrabajo.clone(true)).remove();
         }, 1500);
         function comprobarInformacion(redireccion) {

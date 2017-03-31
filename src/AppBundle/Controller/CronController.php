@@ -381,6 +381,146 @@ class CronController extends Controller {
     }
 
     /**
+     * 
+     * @Route("/cron/bonificarClasificaciones", name="bonificarClasificaciones")
+     */
+    public function bonificarClasificacionesAction() {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+
+        // Obtenemos los tres primeros distritos
+        $clasificacionDistritos = Usuario::getClasificacionDistritos($doctrine);
+        $DISTRITO_PRIMERO = null;
+        $DISTRITO_SEGUNDO = null;
+        $DISTRITO_TERCERO = null;
+        // Necesitamos al menos 3 distritos
+        if (count($clasificacionDistritos) >= 3) {
+            $DISTRITO_PRIMERO = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByNombre($clasificacionDistritos[0]['DISTRITO']);
+            $DISTRITO_SEGUNDO = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByNombre($clasificacionDistritos[1]['DISTRITO']);
+            $DISTRITO_TERCERO = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByNombre($clasificacionDistritos[2]['DISTRITO']);
+        }
+
+        $ROL_JUGADOR = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL_JUGADOR);
+        $listaCiudadanosPremiados = [];
+        if (count($CIUDADANOS)) {
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                $miListaDePremios = [];
+
+                // Obtenemos todos los ciudadanos menos yo
+                // y obtenemos nuestra clasificación entre ese conjunto de 
+                // usuarios (clasificación global)
+                $qb = $em->createQueryBuilder();
+                $query = $qb->select('u')
+                        ->from('\AppBundle\Entity\Usuario', 'u')
+                        ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL')
+                        ->setParameters(['ID_USUARIO' => $CIUDADANO->getIdUsuario(), 'ROL' => $ROL_JUGADOR]);
+                $RESTO_CIUDADANOS = $query->getQuery()->getResult();
+                $clasificacionGlobal = Usuario::getClasificacion($doctrine, $CIUDADANO, $RESTO_CIUDADANOS);
+                
+                switch ($clasificacionGlobal['PUESTO']) {
+                    case '1':
+                        $aux = [];
+                        $aux['causa'] = 'Ingreso - 1er puesto en la clasificación global';
+                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroGlobalMes');
+                        $miListaDePremios[] = $aux;
+                        break;
+                    case '2':
+                        $aux = [];
+                        $aux['causa'] = 'Ingreso - 2do puesto en la clasificación global';
+                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoGlobalMes');
+                        $miListaDePremios[] = $aux;
+                        break;
+                    case '3':
+                        $aux = [];
+                        $aux['causa'] = 'Ingreso - 3er puesto en la clasificación global';
+                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'terceroGlobalMes');
+                        $miListaDePremios[] = $aux;
+                        break;
+                }
+
+                // Obtenemos todos los ciudadanos de mi distrito menos yo
+                // y obtenemos nuestra clasificación entre ese conjunto de 
+                // usuarios (clasificación en el distrito)
+                $qb = $em->createQueryBuilder();
+                $query = $qb->select('u')
+                        ->from('\AppBundle\Entity\Usuario', 'u')
+                        ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL AND u.idDistrito = :DISTRITO')
+                        ->setParameters([
+                    'ID_USUARIO' => $CIUDADANO->getIdUsuario(),
+                    'ROL' => $ROL_JUGADOR,
+                    'DISTRITO' => $CIUDADANO->getIdDistrito()
+                ]);
+                $CIUDADANOS_DE_MI_DISTRITO = $query->getQuery()->getResult();
+                $clasificacionEnDistrito = Usuario::getClasificacion($doctrine, $CIUDADANO, $CIUDADANOS_DE_MI_DISTRITO);
+                if ($clasificacionEnDistrito['PUESTO'] === 1) {
+                    $aux = [];
+                    $aux['causa'] = 'Ingreso - 1er puesto en tu distrito';
+                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroEnDistritoMes');
+                    $miListaDePremios[] = $aux;
+                }
+//                $aux = [];
+//                $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
+//                $aux['clasificacion global'] = $clasificacionGlobal['PUESTO'];
+//                $aux['clasificacion distrito'] = $clasificacionEnDistrito['PUESTO'];
+//                Utils::pretty_print($aux);
+
+                // Obtenemos posibles bonificaciones por la clasificación
+                // de nuestro distrito
+                if ($CIUDADANO->getIdDistrito() === $DISTRITO_PRIMERO) {
+                    $aux = [];
+                    $aux['causa'] = 'Ingreso - Pertenencia al 1er distrito del mes';
+                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primerDistritoMes');
+                    $miListaDePremios[] = $aux;
+                }
+                if ($CIUDADANO->getIdDistrito() === $DISTRITO_SEGUNDO) {
+                    $aux = [];
+                    $aux['causa'] = 'Ingreso - Pertenencia al 2do distrito del mes';
+                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoDistritoMes');
+                    $miListaDePremios[] = $aux;
+                }
+                if ($CIUDADANO->getIdDistrito() === $DISTRITO_TERCERO) {
+                    $aux = [];
+                    $aux['causa'] = 'Ingreso - Pertenencia al 3er distrito del mes';
+                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'tercerDistritoMes');
+                    $miListaDePremios[] = $aux;
+                }
+
+//                $aux = [];
+//                $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
+//                $aux['premios'] = $miListaDePremios;
+//                Utils::pretty_print($aux);
+                // En este punto ya tenemos todas las posibles bonificaciones
+                // ahora bonificamos la más alta
+                if (count($miListaDePremios)) {
+                    $miBonificacionMasAlta = 0;
+                    $aux = [];
+                    foreach ($miListaDePremios as $bonificacion) {
+                        if ($bonificacion['bonificacion'] > $miBonificacionMasAlta) {
+                            $miBonificacionMasAlta = $bonificacion['bonificacion'];
+                            $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
+                            $aux['causa'] = $bonificacion['causa'];
+                            $aux['bonificacion'] = $bonificacion['bonificacion'];
+                        }
+                    }
+                    $listaCiudadanosPremiados[] = $aux;
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $aux['bonificacion'], $aux['causa']);
+                }
+            }
+        }
+        
+        $reporte = "";
+        if (count($listaCiudadanosPremiados)) {
+            foreach ($listaCiudadanosPremiados as $premio) {
+                $reporte .= $premio['ciudadano'] . "=>" . $premio['causa'] . " ";
+            }
+        }
+        Utils::setError($doctrine, 3, "Clasificaciones - " . $reporte);
+        Utils::pretty_print($listaCiudadanosPremiados);
+        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+    }
+
+    /**
      * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")
      */
     public function testCiudadanos(Request $request) {

@@ -325,6 +325,7 @@
                     </div>
                     <div class="tab-pane fade in" id="tab2">
                         <div class="row" style="margin-bottom: 2%;">
+                            <input id="titulo-foto-up" type="text" class="form-control" placeholder="Título de la foto" onkeyup="actualizarFile();">
                             <input id="input-711" name="imagenes[]" type="file" multiple class="file-loading">
                         </div>
                         <div class="row" id="mis-fotos"></div>
@@ -352,6 +353,7 @@
         var fotosDescargadas = 0;
         var limiteMisFotos = 0;
         var misFotosDescargadas = 0;
+        var titulo_global = '';
         function misFotos(){
             $('#mis-fotos').html('');
             limiteMisFotos = 5;
@@ -477,10 +479,15 @@
             imagen.css('transform', 'rotate(' + nuevos_grados + 'deg)');
             imagen.attr('data-deg', nuevos_grados);
         }
+        function actualizarFile(fase) {
+            titulo_global = $('#titulo-foto-up').val();
+            $("#input-711").fileinput('refresh', {uploadExtraData: {"titulo": titulo_global}});
+        }
         $("#input-711").fileinput({
             uploadUrl: "/ciudadano/subirImagenAlbum",
+            uploadExtraData: {"titulo": titulo_global},
             uploadAsync: true,
-            maxFileCount: 2,
+            maxFileCount: 1,
             showBrowse: false,
             browseOnZoneClick: true,
             allowedFileExtensions: ['jpg', 'png', 'gif'],

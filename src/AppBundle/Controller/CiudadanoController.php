@@ -385,7 +385,7 @@ class CiudadanoController extends Controller {
                 $aux['fecha'] = $FOTO->getFecha();
                 $aux['imagen'] = $FOTO->getImagen();
                 $aux['id'] = $FOTO->getIdAlbumFoto();
-                $aux['titulo'] = '';
+                $aux['titulo'] = $FOTO->getTitulo();
                 $REACCIONES = $doctrine->getRepository('AppBundle:FotoReaccion')->findByIdAlbumFoto($FOTO);
                 $aux['mi_like'] = 0;
                 $aux['mi_dislike'] = 0;
@@ -489,11 +489,12 @@ class CiudadanoController extends Controller {
         if ($request->getMethod() == 'POST') {
             $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
             $IMAGENES = $request->files->get('imagenes');
-
+            $TITULO = $request->request->get('titulo');
             if (count($IMAGENES)) {
                 foreach ($IMAGENES as $IMAGEN) {
                     $IMG = new \AppBundle\Entity\AlbumFoto();
                     $IMG->setFecha(new \DateTime('now'));
+                    $IMG->setTitulo($TITULO);
                     $IMG->setIdUsuario($USUARIO);
                     $em->persist($IMG);
                     $em->flush();

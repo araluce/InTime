@@ -29,6 +29,7 @@ class DataManager {
         }
         $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
         $DATOS['CHAT'] = DataManager::chatsPendientes($doctrine, $usuario);
+        $DATOS['MINA'] = DataManager::minaActiva($doctrine);
 
         $mensajes_sin_ver = $doctrine->getRepository('AppBundle:MensajeXUsuario')->findBy(
                 ['idUsuario' => $usuario, 'visto' => 0]);
@@ -127,6 +128,12 @@ class DataManager {
         return 1;
     }
 
+    /**
+     * Retorna el número de mensajes del chat que tiene el usuario
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
     static function chatsPendientes($doctrine, $USUARIO) {
         $CIUDADANOS = Usuario::getUsuariosMenosSistema($doctrine);
         $contador = 0;
@@ -137,6 +144,18 @@ class DataManager {
             $contador += Usuario::numeroMensajesChat($doctrine, $USUARIO, null, true);
         }
         return $contador;
+    }
+    
+    /**
+     * Devuelve si hay alguna mina activa
+     * @param type $doctrine
+     * @return int
+     */
+    static function minaActiva($doctrine){
+        if(Utils::minaActiva($doctrine)){
+            return 1;
+        }
+        return 0;
     }
 
     static function getDatosEjercicioInspeccion($doctrine, $USUARIO, $EJERCICIO) {

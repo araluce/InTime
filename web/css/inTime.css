@@ -380,6 +380,7 @@ legend{
 .contenedor-badge{
     position: relative;
 }
+.badge-mina,
 .badge-alimentacion,
 .badge-aviso{
     position: absolute;
@@ -395,6 +396,11 @@ legend{
     background-color: #E0B831;
     font-size: 14px;
     font-weight: 600;
+}
+.badge-mina{
+    background-color: #d9534f;
+    bottom: 0px;
+    left: 0px;
 }
 
 .resultados-titulo{

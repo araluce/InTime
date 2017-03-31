@@ -122,7 +122,7 @@ class TrabajoController extends Controller {
         $twiteer = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findOneBy(
                 ['idUsuario' => $USUARIO, 'idTuitero' => strtolower($usuario_tw)]
         );
-        if(null !== $twiteer){
+        if (null !== $twiteer) {
             $em->remove($twiteer);
             $em->flush();
         }
@@ -455,27 +455,39 @@ class TrabajoController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
-        if (!Usuario::puedoRealizarTransaccion($USUARIO, $EJERCICIO->getCoste())) {
-            return new JsonResponse(
-                    json_encode(
-                            array(
-                                'estado' => 'ERROR',
-                                'message' => 'No tienes suficiente tdv para comprar este reto.'
-                                . '<br>Puedes solicitar un préstamo al metronomista o recibir una donación por'
-                                . ' parte de algún ciudadano.'
-                            )
-                    ), 200
-            );
+        $seCobra = false;
+        if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
+            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $USUARIO->getIdDistrito())) {
+                $seCobra = false;
+            }
+        } else {
+            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, null)) {
+                $seCobra = false;
+            }
+        }
+        if ($seCobra) {
+            if (!Usuario::puedoRealizarTransaccion($USUARIO, $EJERCICIO->getCoste())) {
+                return new JsonResponse(
+                        json_encode(
+                                array(
+                                    'estado' => 'ERROR',
+                                    'message' => 'No tienes suficiente tdv para comprar este reto.'
+                                    . '<br>Puedes solicitar un préstamo al metronomista o recibir una donación por'
+                                    . ' parte de algún ciudadano.'
+                                )
+                        ), 200
+                );
+            }
         }
         $SECCION = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
 
         switch ($SECCION) {
             case 'paga_extra':
-                return Trabajo::solicitar_paga($doctrine, $USUARIO, $EJERCICIO);
+                return Trabajo::solicitar_paga($doctrine, $USUARIO, $EJERCICIO, $seCobra);
             case 'comida':
-                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
+                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION, $seCobra);
             case 'bebida':
-                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION);
+                return Trabajo::solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION, $seCobra);
         }
     }
 

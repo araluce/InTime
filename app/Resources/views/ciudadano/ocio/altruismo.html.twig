@@ -62,8 +62,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-2 col-xs-offset-4 menu">
-                <center><span onclick="modalQR();"><img alt="Logo" src="{{ asset('images/iconos/Minas.png') }}" /></span></center>
+            <div class="col-xs-2 col-xs-offset-4 menu contenedor-badge">
+                <center>
+                    <span onclick="modalQR();">
+                        <img alt="Logo" src="{{ asset('images/iconos/Minas.png') }}" />
+                        {% if MINA is defined %}
+                            {% if MINA > 0 %}
+                                <span id="aviso-chat" class="badge badge-mina animated pulse">
+                                    !
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </center>
             </div>
             <div class="col-xs-2 menu">
                 <center><span onclick="modalDonar();"><img alt="Logo" src="{{ asset('images/iconos/Donar_TdV.png') }}" /></span></center>
@@ -196,6 +207,11 @@
                     contenido += '  </div>';
                     contenido += '  <div class="col-md-6 advertencia">';
                     contenido += '      ' + data.message.FECHA_FINAL.date;
+                    contenido += '  </div>';
+                    contenido += '</div>';
+                    contenido += '<div class="row">';
+                    contenido += '  <div class="col-md-12 advertencia">';
+                    contenido += '      ' + data.message.ENUNCIADO;
                     contenido += '  </div>';
                     contenido += '</div>';
                     if (!data.message.DESACTIVADA_X_MI) {

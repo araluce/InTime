@@ -57,8 +57,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-5 col-xs-offset-1 menu">
-                <center><a href="/ciudadano/ocio/altruismo"><img alt="Logo" src="{{ asset('images/iconos/Altruismo.png') }}" /></a></center>
+            <div class="col-xs-5 col-xs-offset-1 menu contenedor-badge">
+                <center>
+                    <a href="/ciudadano/ocio/altruismo">
+                        <img alt="Logo" src="{{ asset('images/iconos/Altruismo.png') }}" />
+                        {% if MINA is defined %}
+                            {% if MINA > 0 %}
+                                <span class="badge badge-mina animated pulse">
+                                    !
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </center>
             </div>
             <div class="col-xs-5 menu contenedor-badge">
                 <center>

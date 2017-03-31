@@ -50,7 +50,9 @@
                     <div class="tab-pane fade in active" id="tab1">
                         <div class="row bordes" style="margin-top:1%;">
                             <legend>Proponer una mina</legend>
-                            <label for="codigo" style="margin-top:1%;">Enunciado de la entrega</label>
+                            <label for="enunciado" style="margin-top:1%;">Enunciado de la mina</label>
+                            <input type="text" class="form-control" id="enunciado" placeholder="Enunciado de la mina"/>
+                            <label for="codigo" style="margin-top:1%;">Código de desactivación de la mina</label>
                             <input type="text" class="form-control" id="codigo" placeholder="Código de la mina"/>
                             <label for="fecha" style="margin-top:1%;">Fecha tope</label>
                             <input type="datetime-local" class="form-control" id="fecha">
@@ -83,14 +85,18 @@
             return contenido;
         }
         function publicarMina() {
+            var enunciado = $("#enunciado").val();
             var codigo = $("#codigo").val();
             var fecha = $("#fecha").val();
             var pista = $("#pista").val();
-            if ($.trim(codigo) === '') {
+            if ($.trim(enunciado) === '') {
+                alert('Debe insertar un enunciado');
+            } else if ($.trim(codigo) === '') {
                 alert('Debe insertar un código');
             } else {
                 ruta = '/guardian/mina/publicar';
                 datos = {
+                    'ENUNCIADO': enunciado,
                     'CODIGO': codigo,
                     'FECHA': fecha,
                     'PISTA': pista

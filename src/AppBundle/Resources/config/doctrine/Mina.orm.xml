@@ -7,6 +7,7 @@
     <id name="idMina" type="integer" column="id_mina">
       <generator strategy="IDENTITY"/>
     </id>
+    <field name="enunciado" type="string" column="enunciado" length="1000" nullable="false"/>
     <field name="codigo" type="string" column="codigo" length="1000" nullable="false"/>
     <field name="fecha" type="datetime" column="fecha" nullable="false"/>
     <field name="fechaFinal" type="datetime" column="fecha_final" nullable="false"/>

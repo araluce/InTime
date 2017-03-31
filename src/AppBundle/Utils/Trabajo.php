@@ -20,7 +20,7 @@ use AppBundle\Utils\Ejercicio;
  */
 class Trabajo {
 
-    static function solicitar_paga($doctrine, $USUARIO, $EJERCICIO) {
+    static function solicitar_paga($doctrine, $USUARIO, $EJERCICIO, $seCobra) {
         $FECHA = new \DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -42,7 +42,9 @@ class Trabajo {
                 $em->flush();
 
                 $coste = Utils::segundosToDias($EJERCICIO->getCoste());
-                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1)*$EJERCICIO->getCoste(), 'Cobro - Paga extra (id: '.$EJERCICIO->getIdEjercicio().')');
+                if ($seCobra) {
+                    Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * $EJERCICIO->getCoste(), 'Cobro - Paga extra (id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                }
                 return new JsonResponse(
                         json_encode(
                                 array(
@@ -60,7 +62,7 @@ class Trabajo {
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $mensaje)), 200);
     }
 
-    static function solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION) {
+    static function solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION, $seCobra) {
         $FECHA = new \DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
@@ -68,16 +70,6 @@ class Trabajo {
         ]);
         $em = $doctrine->getManager();
         Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
-        $seCobra = true;
-        if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
-            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $USUARIO->getIdDistrito())) {
-                $seCobra = false;
-            }
-        } else {
-            if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, null)) {
-                $seCobra = false;
-            }
-        }
         if ($EJERCICIO_CALIFICACION === null) {
             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
         }

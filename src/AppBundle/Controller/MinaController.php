@@ -74,6 +74,7 @@ class MinaController extends Controller {
 
         $DATOS['ID_MINA'] = $MINA->getIdMina();
         $DATOS['ID_EJERCICIO'] = $MINA->getIdEjercicio()->getIdEjercicio();
+        $DATOS['ENUNCIADO'] = $MINA->getEnunciado();
         $DATOS['FECHA_FINAL'] = $MINA->getFechaFinal();
         $query = $doctrine->getRepository('AppBundle:UsuarioMina')->createQueryBuilder('a');
         $query->select('a');
@@ -249,6 +250,7 @@ class MinaController extends Controller {
             if (Utils::minaActiva($doctrine)) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Actualmente hay una mina activa')), 200);
             }
+            $ENUNCIADO = $request->request->get('ENUNCIADO');
             $CODIGO = strtolower($request->request->get('CODIGO'));
             $PISTA = $request->request->get('PISTA');
             $CODIGO_FORMATO = preg_replace('/\s+/', '', $CODIGO);
@@ -274,6 +276,7 @@ class MinaController extends Controller {
             $em->persist($EJERCICIO);
 
             $MINA = new \AppBundle\Entity\Mina();
+            $MINA->setEnunciado($ENUNCIADO);
             $MINA->setCodigo($CODIGO_FORMATO);
             $MINA->setFecha(new \DateTime('now'));
             $MINA->setFechaFinal($FECHA_TOPE_formato);
