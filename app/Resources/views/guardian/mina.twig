@@ -9,7 +9,12 @@
 
 {% block stylesheets %}
     <style>
-
+        #desactivadores-actual{
+            font-size: 50px;
+        }
+        label{
+            font-size: 50px;
+        }
         @media (max-width: 760px){
 
         }
@@ -20,7 +25,12 @@
 
         }
         @media (min-width: 1200px){
-
+            #desactivadores-actual{
+                font-size: 25px;
+            }
+            label{
+                font-size: 25px;
+            }
         }
     </style>
 {% endblock %}
@@ -57,7 +67,7 @@
                         <div class="row bordes" style="margin-top:1%;">
                             <legend>Proponer una mina</legend>
                             <label for="enunciado" style="margin-top:1%;">Enunciado de la mina</label>
-                            <input type="text" class="form-control" id="enunciado" placeholder="Enunciado de la mina"/>
+                            <textarea class="form-control" id="enunciado" placeholder="Enunciado de la mina" rows="3"></textarea>
                             <label for="codigo" style="margin-top:1%;">Código de desactivación de la mina</label>
                             <input type="text" class="form-control" id="codigo" placeholder="Código de la mina"/>
                             <label for="fecha" style="margin-top:1%;">Fecha tope</label>
@@ -69,7 +79,7 @@
                                     <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="masPistas();">MÁS PISTAS</button>
                                 </div>
                                 <div class="col-xs-6">
-                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="publicarMina();">PUBLICAR</button>
+                                    <button class="btn btn-block btn-primary" style="margin-top:1%;" onclick="publicarMina();">PUBLICAR</button>
                                 </div>
                             </div>
                         </div>
@@ -78,8 +88,7 @@
                         <div class="row bordes" style="margin-top:1%;">
                             <legend>Mina actual</legend>
                             <input type="hidden" id="id-actual">
-                            <label for="enunciado-actual" style="margin-top:1%;">Enunciado de la mina</label>
-                            <input type="text" class="form-control" id="enunciado-actual" placeholder="Enunciado de la mina"/>
+                            <textarea class="form-control" id="enunciado-actual" placeholder="Enunciado de la mina" rows="3"></textarea>
                             <label for="codigo-actual" style="margin-top:1%;">Código de desactivación de la mina</label>
                             <input type="text" class="form-control" id="codigo-actual" placeholder="Código de la mina"/>
                             <label for="fecha-actual" style="margin-top:1%;">Fecha tope</label>
@@ -91,7 +100,7 @@
                                     <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="masPistasActuales();">MÁS PISTAS</button>
                                 </div>
                                 <div class="col-xs-6">
-                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="editarMina();">EDITAR</button>
+                                    <button class="btn btn-block btn-primary" style="margin-top:1%;" onclick="editarMina();">EDITAR</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -128,12 +137,14 @@
             return contenido;
         }
         function masPistas() {
-            contenido = '<input type="text" class="form-control" id="pista' + contadorPistas + '" placeholder="Pista para la mina" />';
+            contenido = '<textarea class="form-control" id="pista' + contadorPistas + '" placeholder="Pista para la mina" rows="3"></textarea>';
+            //contenido = '<input type="text" class="form-control" id="pista' + contadorPistas + '" placeholder="Pista para la mina" />';
             $("#pistas").append(contenido);
             contadorPistas++;
         }
-        function masPistasActuales(){
-            contenido = '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" placeholder="Pista para la mina" />';
+        function masPistasActuales() {
+            contenido = '<textarea class="form-control" id="pista-actual-' + contadorPistasActuales + '" placeholder="Pista para la mina" rows="3"></textarea>';
+            //contenido = '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" placeholder="Pista para la mina" />';
             $("#pistas-actuales").append(contenido);
             contadorPistasActuales++;
         }
@@ -181,7 +192,7 @@
             ruta = '/guardian/mina/descargarMinaActual';
             $.get(ruta, function (datos, status) {
                 data = jQuery.parseJSON(datos);
-                if (data.estado === 'OK'){
+                if (data.estado === 'OK') {
                     $("#id-actual").val(data.message.ID);
                     $("#enunciado-actual").val(data.message.ENUNCIADO);
                     $("#codigo-actual").val(data.message.CODIGO);
@@ -189,15 +200,17 @@
                     contadorPistasActuales = 1;
                     contenido = '';
                     $.each(data.message.PISTAS, function (k, v) {
-                        contenido += '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" value="' + v + '" />';
+                        contenido += '<textarea class="form-control" id="pista-actual-' + contadorPistasActuales + '" placeholder="Pista para la mina" rows="3">' + v + '</textarea>';
+                        //contenido += '<input type="text" class="form-control" id="pista-actual-' + contadorPistasActuales + '" value="' + v + '" />';
                         contadorPistasActuales++;
                     });
                     $("#pistas-actuales").html(contenido);
                     if (data.message.DESACTIVADA) {
+                        contenido = '';
                         $.each(data.message.DESACTIVADORES, function (k, v) {
                             contenido += '      Ciudadano: @' + v.ALIAS + '<br>';
                         });
-                        $("#desactivadores-actual").html(contenido);
+                        $("#desactivadores-actual").append(contenido);
                     } else {
                         $("#desactivadores-actual").html("Aún no hay desactivadores");
                     }

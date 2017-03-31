@@ -69,7 +69,7 @@
                         {% if MINA is defined %}
                             {% if MINA > 0 %}
                                 <span id="aviso-chat" class="badge badge-mina animated pulse">
-                                    !
+                                    <span class="fa fa-qrcode"></span>
                                 </span>
                             {% endif %}
                         {% endif %}
@@ -220,7 +220,7 @@
                         contenido += '      <div class="form-group">';
                         contenido += '            <div class="input-group">';
                         contenido += '                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-barcode" style="font-weight: bold;"></i></span>';
-                        contenido += '                <input type="text" class="form-control" id="codigo" placeholder="Inserte el código para desactivar la mina"/>';
+                        contenido += '                <input type="text" class="form-control" id="codigo" placeholder="Código de desactivación"/>';
                         contenido += '            </div>';
                         contenido += '       </div>';
                         contenido += '  </div>';
