@@ -1186,6 +1186,22 @@ class Guardian extends Controller {
                 ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
         $USUARIOS = $query->getQuery()->getResult();
         $infoPuesto = Usuario::getClasificacion($doctrine, $USUARIO, $USUARIOS);
+        
+        $DATOS['DONACIONES'] = [];
+        $DATOS['CANTIDADES'] = [];
+        if(count($USUARIOS)){
+            foreach($USUARIOS as $U){
+                $cantidad = Usuario::heDonadoYa($doctrine, $USUARIO, $U);
+                if($cantidad < 0){
+                    $DATOS['HE_DONADO'] = 1;
+                    $aux = [];
+                    $aux['CIUDADANO'] = $U->getSeudonimo();
+                    $aux['CANTIDAD'] = Utils::segundosToDias((-1)*$cantidad);
+                    $DATOS['DONACIONES'][] = $aux;
+                }
+            }
+        }
+        
         $DATOS['PUESTO'] = $infoPuesto['PUESTO'];
         $DATOS['NIVEL'] = 0;
         $DATOS['PUNTOS'] = 0;

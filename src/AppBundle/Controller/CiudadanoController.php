@@ -633,7 +633,7 @@ class CiudadanoController extends Controller {
         if ($USUARIO_DESTINO === null || $USUARIO === null) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Se ha producido un error al intentar encontrar al usuario.')), 200);
         }
-        if (Usuario::heDonadoYa($doctrine, $session, $USUARIO_DESTINO)) {
+        if (Usuario::heDonadoYa($doctrine, $USUARIO, $USUARIO_DESTINO)) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() . ' anteriormente. No puedes volver a donarle TdV.')), 200);
         }
         if ($bonificacion) {

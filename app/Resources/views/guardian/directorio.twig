@@ -487,6 +487,8 @@
                                     <div class="col-xs-6">
                                         <legend>Minicartas compradas</legend>
                                         <div id="cartasBonificacion">Este usuario no tiene minicartas compradas</div>
+                                        <legend>Donaciones realizadas</legend>
+                                        <div id="donaciones">Este usuario no ha realizado ninguna donación</div>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 1%;">
@@ -654,18 +656,25 @@
                         contenido += data.message.TDV.segundos + 's ';
                     }
                     $('#tdv-ciudadano').html(contenido);
-                    if (data.message.TENGO_CARTAS){
+                    if (data.message.TENGO_CARTAS) {
                         contenido = '';
-                        $.each(data.message.CARTAS, function (k, v){
+                        $.each(data.message.CARTAS, function (k, v) {
                             color = "#d9534f";
                             mensaje = "USADO/PASADO EL PLAZO";
-                            if(v.DISPONIBLE){
+                            if (v.DISPONIBLE) {
                                 color = "#5cb85c";
                                 mensaje = "DISPONIBLE";
                             }
-                            contenido += '<b>' + v.CARTA + '</b>  ('+v.VECES+' vez comprada)  ---  <span style="color:' + color + ';"><b>' + mensaje + '</b></span><br>';
+                            contenido += '<b>' + v.CARTA + '</b>  (' + v.VECES + ' vez comprada)  <span style="float:right; color:' + color + ';"><b>' + mensaje + '</b></span><br>';
                         });
                         $("#cartasBonificacion").html(contenido);
+                    }
+                    if (data.message.HE_DONADO) {
+                        contenido = '';
+                        $.each(data.message.DONACIONES, function (k, v) {
+                            contenido += '<b>@' + v.CIUDADANO + '</b> <span style="float:right; color:#5cb85c;"><b>' + v.CANTIDAD.dias + 'd ' + v.CANTIDAD.horas + 'h ' + v.CANTIDAD.minutos + 'm ' + v.CANTIDAD.segundos + 's</b></span><br>';
+                        });
+                        $("#donaciones").html(contenido);
                     }
                     $('#dni').html(dni);
                     $('#puesto').html(data.message.PUESTO);

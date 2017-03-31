@@ -190,18 +190,18 @@ class Usuario {
      * @return int 1 si se ha realizado una donación con anterioridad al 
      * usuario pasado por parámetro, 0 en cualquier otro caso
      */
-    static function heDonadoYa($doctrine, $session, $usuario_destino) {
-        $id_usuario = $session->get('id_usuario');
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+    static function heDonadoYa($doctrine, $USUARIO, $usuario_destino) {
         $em = $doctrine->getManager();
         $qb = $em->createQueryBuilder();
         $query = $qb->select('d')
                 ->from('\AppBundle\Entity\UsuarioMovimiento', 'd')
                 ->where('d.idUsuario = :Usuario AND d.causa = :Causa')
                 ->setParameters(['Usuario' => $USUARIO, 'Causa' => 'Cobro - Donación a @' . $usuario_destino->getSeudonimo()]);
-        $DONACION = $query->getQuery()->getResult();
-        if (count($DONACION)) {
-            return 1;
+        $DONACION = $query->getQuery()->getOneOrNullResult();
+        
+        if (null !== $DONACION) {
+//            Utils::pretty_print($USUARIO->getSeudonimo() . ' ha donado a ' . $usuario_destino->getSeudonimo() . ': ' . $DONACION->getCantidad());
+            return $DONACION->getCantidad();
         }
         return 0;
     }
