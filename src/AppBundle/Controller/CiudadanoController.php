@@ -146,9 +146,8 @@ class CiudadanoController extends Controller {
                 ->from('\AppBundle\Entity\ChatMensajes', 'cm')
                 ->where('cm.idChat = :idChat')
                 ->orderBy('cm.fecha', 'ASC')
-                ->setParameters(array('idChat' => $CHAT))
-                ->setFirstResult(0);
-//                ->setMaxResults($offset + 100);
+//                ->orderBy('cm.fecha', 'DESC')
+                ->setParameters(array('idChat' => $CHAT));
         $CHATS = $query->getQuery()->getResult();
 
         if (!count($CHATS)) {

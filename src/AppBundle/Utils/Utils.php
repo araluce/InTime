@@ -435,7 +435,6 @@ class Utils {
     static function estaSemana($fecha) {
         $semana = new \DateTime('now');
         if ($semana->format("W") === $fecha->format("W") &&
-                $semana->format("m") === $fecha->format("m") &&
                 $semana->format("Y") === $fecha->format("Y")) {
             return true;
         }

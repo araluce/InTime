@@ -177,29 +177,21 @@
             height: 160px;
             width: 160px;
         }
-        .mi-chat{
-            background-color: rgba(68, 157, 68, 0.7);
-        }
-        .otro-chat{
-            background-color: rgba(201, 48, 48, 0.7);
-        }
         .mi-chat,
         .otro-chat{
-            padding: 1% 4%; 
-            /*color:black; */
+            padding: 1% 4%;
             color: white;
-            /*background-color: #337ab7;*/
             border-radius:50px;
             min-width: 50%;
         }
         .mi-chat{
-            float:right; 
-            /*background-color: #EBF8A4;*/
+            float: right;
+            background-color: rgba(68, 157, 68, 0.7);
             border-bottom-right-radius: 0px;
         }
         .otro-chat{
-            float:left; 
-            /*background-color: #FFC0CB;*/
+            float: left;
+            background-color: rgba(201, 48, 48, 0.7);
             border-bottom-left-radius: 0px;
         }
 
@@ -396,6 +388,44 @@
             </button>
         </div>
     </div>
+                
+    <div data-role="page" id="pagethree">
+        <div data-role="content" data-position="fixed">
+            <form class="ui-filterable">
+                <input id="filtro-todos-ciudadanos" data-type="search" placeholder="Buscar ciudadano">
+            </form>
+            <ul data-role="listview" data-filter="true" data-input="#filtro-todos-ciudadanos" id="lista-todos-usuarios">
+                {% if CIUDADANOS is not null %}
+                    <li data-role="list-divider">CIUDADANOS</li>
+                        {% for CIUDADANO in CIUDADANOS %}
+                        <li onclick="abrir_chat({{ CIUDADANO.getIdUsuario() }}, null);">
+                            <a href="#pagetwo">
+                                {% if CIUDADANO.getImagen() is not null%}
+                                    <img id="image"
+                                         src="{{ asset('images/users/' ~ CIUDADANO.getDni() ~ '/' ~ CIUDADANO.getImagen() ) | imagine_filter('my_thumb') }}"
+                                         class="img-chat"/>
+                                {% else %}
+                                    <img id="image"
+                                         src="{{ asset('images/fotos-usuarios/default.jpg') | imagine_filter('my_thumb') }}"
+                                         class="img-chat"/>
+                                {% endif %}
+                                {{ CIUDADANO.getSeudonimo() }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+        <div data-role="footer" data-position="fixed" style="background-color: rgba(255,255,255,0.6);">
+            <div class="col-xs-6 col-xs-offset-3 border-radius" style="background-color: #337ab7;" role="none">
+                <a role="none" href="/ciudadano/ocio/amigos" rel="external">
+                    <button id="btn-principal-volver" role="none" data-enhance="false" class="btn btn-block btn-primary">
+                        Volver
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>            
 {% endblock %}
 
 {% block javascripts %}
@@ -460,10 +490,10 @@
                     $.each(data.mensajes, function (k, v) {
                         contenido += '<div class="col-xs-12" style="margin-top:1%;">';
                         if (v.usuario.alias === v.usuario.mi_alias) {
-                            contenido += '<span class="mi-chat">';
+                            contenido += '<span class="mensaje-chat mi-chat">';
                             contenido += '<p></p>';
                         } else {
-                            contenido += '<span class="otro-chat">';
+                            contenido += '<span class="mensaje-chat otro-chat">';
                             contenido += '<p><small>@' + v.usuario.alias + '</small></p>';
                         }
                         contenido += v.mensaje;
