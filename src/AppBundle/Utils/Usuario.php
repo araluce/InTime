@@ -142,9 +142,19 @@ class Usuario {
         if (!$usuario) {
             return 0;
         }
-
+        
+        $noEsSuper = $usuario->getIdRol()->getIdRol() !== 2 && $usuario->getIdRol()->getIdRol() !== 5;
+        
         $em = $doctrine->getManager();
         $fecha = new \DateTime('now');
+        $tdv = $usuario->getIdCuenta()->getTdv();
+        
+        if ($noEsSuper) {
+            if ($tdv < $fecha) {
+                return 0;
+            }
+        }
+
         $log = new \AppBundle\Entity\LogUser();
         $log->setIdUsuario($usuario);
         $log->setAction($route);
@@ -155,7 +165,7 @@ class Usuario {
         // Si se pide acceso admin
         if ($admin) {
             // Si el usuario no es GdT/admin se le envía fuera y se almacena el intento de acceso en el log
-            if ($usuario->getIdRol()->getIdRol() !== 2 && $usuario->getIdRol()->getIdRol() !== 5) {
+            if ($noEsSuper) {
                 return 0;
             }
         }
@@ -198,7 +208,7 @@ class Usuario {
                 ->where('d.idUsuario = :Usuario AND d.causa = :Causa')
                 ->setParameters(['Usuario' => $USUARIO, 'Causa' => 'Cobro - Donación a @' . $usuario_destino->getSeudonimo()]);
         $DONACION = $query->getQuery()->getOneOrNullResult();
-        
+
         if (null !== $DONACION) {
 //            Utils::pretty_print($USUARIO->getSeudonimo() . ' ha donado a ' . $usuario_destino->getSeudonimo() . ': ' . $DONACION->getCantidad());
             return $DONACION->getCantidad();
@@ -905,11 +915,23 @@ class Usuario {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GDT);
         $CHAT_COMUN = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
+        
+        $mensajesDeDuelo = [
+            'El duelo es un proceso, no un estado. <br><span style="float: right;"><b><i>Anne</i></b></span>',
+            'El que encubre su dolor no encuentra remedio para él. <br><span style="float: right;"><b><i>Proverbio turco</i></b></span>',
+            'El dolor compartido es dolor disminuido. <br><span style="float: right;"><b><i>Rabbi Grollman</i></b></span>',
+            'Todo crece con el tiempo, excepto el duelo. <br><span style="float: right;"><b><i>Proverbio</i></b></span>',
+            'El tiempo se lleva el dolor del hombre.',
+            'La palabra "FELICIDAD" perdería sentido sin la tristeza. <br><span style="float: right;"><b><i>Carl Gustav Jung</i></b></span>',
+            'El tiempo es un médico que sana todo duelo. <br><span style="float: right;"><b><i>Dífilo</i></b></span>',
+            'No diré "no llores" porque no todas las lágrimas son malas. <br><span style="float: right;"><b><i>J.R.R. Tolkien</i></b></span>'
+        ];
+        $mensajeDeDuelo = $mensajesDeDuelo[array_rand($mensajesDeDuelo)];
         $MENSAJE = new \AppBundle\Entity\ChatMensajes();
         $MENSAJE->setFecha(new \DateTime('now'));
         $MENSAJE->setIdChat($CHAT_COMUN);
         $MENSAJE->setIdUsuario($SISTEMA);
-        $MENSAJE->setMensaje('<center>RIP <b>@' . $USUARIO->getSeudonimo() . '</b></center><br> Todos lloramos su pérdida');
+        $MENSAJE->setMensaje('<center>RIP <b>@' . $USUARIO->getSeudonimo() . '</b></center><br>' . $mensajeDeDuelo . '<br>');
         $MENSAJE->setVisto(0);
         $em = $doctrine->getManager();
         $em->persist($MENSAJE);
@@ -921,6 +943,66 @@ class Usuario {
                 Usuario::setChatSinVer($doctrine, $CIUDADANO, $CHAT_COMUN);
             }
         }
+    }
+
+    /**
+     * Lanza un mensaje con aviso "te quedan menos de dos días" para el usuario
+     * especificado si no lo ha mostrado en el día.
+     * @param type $doctrine
+     * @param type $CIUDADANO
+     */
+    static function mensajeTeQuedanDosDias($doctrine, $CIUDADANO) {
+        $texto = 'Te quedan menos de 2 días de vida, sería recomendable que pidieras un préstamo o lograras una donación.'
+                . ' Sentiría mucho tu pérdida.';
+        $MENSAJE_DIRECTO = $doctrine->getRepository('AppBundle:TipoMensaje')->findOneByTipo('directo');
+        $mensajeDosDias = $doctrine->getRepository('AppBundle:Mensaje')->findOneBy([
+            'idTipoMensaje' => $MENSAJE_DIRECTO, 'mensaje' => $texto
+        ]);
+        $hoy = new \DateTime('now');
+        if (null !== $mensajeDosDias) {
+            $mensajesDosDiasCiudadano = $doctrine->getRepository('AppBundle:MensajeXUsuario')->findBy([
+                'idUsuario' => $CIUDADANO, 'idMensaje' => $mensajeDosDias
+            ]);
+            if (count($mensajesDosDiasCiudadano)) {
+                $mensajeDeHoy = false;
+                foreach ($mensajesDosDiasCiudadano as $msj) {
+                    if (!$mensajeDeHoy) {
+                        if ($msj->getFecha()->format('d') === $hoy->format('d')) {
+                            $mensajeDeHoy = true;
+                        }
+                    }
+                }
+                if (!$mensajeDeHoy) {
+                    Usuario::mensajeGuardianACiudadano($doctrine, $CIUDADANO, $texto, $mensajeDosDias);
+                }
+            }
+        } else {
+            Usuario::mensajeGuardianACiudadano($doctrine, $CIUDADANO, $texto);
+        }
+    }
+
+    static function mensajeGuardianACiudadano($doctrine, $CIUDADANO, $texto, $MENSAJE = null) {
+        $em = $doctrine->getManager();
+        $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
+        $GDT = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GDT);
+
+        $MENSAJE_DIRECTO = $doctrine->getRepository('AppBundle:TipoMensaje')->findOneByTipo('directo');
+        if (null === $MENSAJE) {
+            $MENSAJE = new \AppBundle\Entity\Mensaje();
+        }
+        $MENSAJE->setFecha(new \DateTime('now'));
+        $MENSAJE->setIdTipoMensaje($MENSAJE_DIRECTO);
+        $MENSAJE->setTitulo('Advertencia');
+        $MENSAJE->setMensaje($texto);
+        $em->persist($MENSAJE);
+
+        $MENSAJE_X_CIUDADANO = new \AppBundle\Entity\MensajeXUsuario();
+        $MENSAJE_X_CIUDADANO->setIdMensaje($MENSAJE);
+        $MENSAJE_X_CIUDADANO->setIdUsuario($CIUDADANO);
+        $MENSAJE_X_CIUDADANO->setVisto(0);
+        $em->persist($MENSAJE_X_CIUDADANO);
+
+        $em->flush();
     }
 
 }

@@ -683,7 +683,6 @@ svg:not(:root) {
 #modal-advice1 .modal-body button,
 #modal-advice2 .modal-body button{
     font-size: 20px;
-    border: 2px solid #000000;
 }
 
 .titulo-xs,

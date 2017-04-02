@@ -20,6 +20,13 @@ class MensajeXUsuario
     private $visto;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -71,6 +78,29 @@ class MensajeXUsuario
     public function getVisto()
     {
         return $this->visto;
+    }
+
+    /**
+     * Set fecha
+     *
+     * @param \DateTime $fecha
+     * @return MensajeXUsuario
+     */
+    public function setFecha($fecha)
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    /**
+     * Get fecha
+     *
+     * @return \DateTime 
+     */
+    public function getFecha()
+    {
+        return $this->fecha;
     }
 
     /**

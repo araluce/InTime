@@ -519,6 +519,27 @@ class CronController extends Controller {
         Utils::pretty_print($listaCiudadanosPremiados);
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
+    
+    /**
+     * @Route("/cron/ko", name="ko")
+     */
+    public function koAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $RESPUESTA = [];
+        $CIUDADANOS = Usuario::getCiudadanosActivos($doctrine);
+        $FECHA = new \DateTime('now');
+        $cincoDias = 432000;
+        $contador = 0;
+        foreach($CIUDADANOS as $CIUDADANO){
+            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $cincoDias, 'Cobro - Deuda con el metronomista');
+            $tdv = $CIUDADANO->getIdCuenta()->getTdv();
+            if ($tdv < $FECHA) {
+                $contador++;
+                Usuario::setDefuncion($doctrine, $CIUDADANO);
+            }
+        }
+        return new JsonResponse(json_encode($contador), 200);
+    }
 
     /**
      * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")

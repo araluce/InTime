@@ -489,6 +489,7 @@
         var chat_actual = null;
         var chat_grupo_actual = null;
         var offset = 0;
+        var doubleCheck = '<span class="fa-stack fa-lg text-info"><i class="fa fa-check fa-stack-1x" style="margin-left:4px"></i><i class="fa fa-check fa-inverse fa-stack-1x" style="margin-left:-3px;"></i><i class="fa fa-check  fa-stack-1x" style="margin-left:-4px"></i></span>';
         $(document).ready(function () {
             obtenerChatsActuales();
             setInterval(function () {
@@ -542,7 +543,7 @@
                         contenido += '      </strong></p>';
                         if (v.MIO) {
                             if (v.VISTO) {
-                                contenido += '      <p class="ui-li-desc" style="margin-left: 4%;"><strong><span style="color:#337ab7;" class="fa fa-check"></span><span style="color:#337ab7;" class="fa fa-check"></span></strong></p>';
+                                contenido += '      <p class="ui-li-desc" style="margin-left: 4%;">'+doubleCheck+'</p>';
                             }
                         }
                         contenido += '      <span id="badge-' + v.ID + '" class="ui-li-count ui-btn-up-c ui-btn-corner-all" style="display: none;">0</span>';
@@ -591,7 +592,7 @@
                             if (id_usuario !== null || id_grupo !== null) {
                                 if (typeof data.usuario !== 'undefined') {
                                     if (v.visto) {
-                                        contenido += '<p><span float: left;"><span style="color:#337ab7;" class="fa fa-check"></span><span style="color:#337ab7;" class="fa fa-check"></span></span> <small style="float: right;">' + v.fecha.date + '</small></p>';
+                                        contenido += '<p><span float: left;">'+doubleCheck+'</span> <small style="float: right;">' + v.fecha.date + '</small></p>';
                                     } else {
                                         contenido += '<p><small style="text-align: right;">' + v.fecha.date + '</small></p>';
                                     }

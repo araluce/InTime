@@ -27,6 +27,10 @@ class DataManager {
         if ($DATOS['TDV'] < $FECHA) {
             Usuario::setDefuncion($doctrine, $usuario);
         }
+        $dosDias = 172800;
+        if ($FECHA->getTimestamp() > ($DATOS['TDV']->getTimestamp() - $dosDias)) {
+            Usuario::mensajeTeQuedanDosDias($doctrine, $usuario);
+        }
         $DATOS['ESTADO_USUARIO'] = $usuario->getIdEstado()->getNombre();
         $DATOS['CHAT'] = DataManager::chatsPendientes($doctrine, $usuario);
         $DATOS['MINA'] = DataManager::minaActiva($doctrine);
@@ -35,25 +39,11 @@ class DataManager {
                 ['idUsuario' => $usuario, 'visto' => 0]);
         if (count($mensajes_sin_ver)) {
             $DATOS['MENSAJES'] = [];
-            foreach ($mensajes_sin_ver as $mensaje) {
-                $MENSAJE = [];
-                $MENSAJE['TITULO'] = $mensaje->getIdMensaje()->getTitulo();
-                $MENSAJE['TEXTO'] = $mensaje->getIdMensaje()->getMensaje();
-                $MENSAJE['FECHA'] = $mensaje->getIdMensaje()->getFecha();
-//                $tipo_mensaje = $mensaje->getIdMensaje()->getIdTipoMensaje()->getIdTipoMensaje();
-                $DATOS['MENSAJES'][] = $MENSAJE;
-//                switch ($tipo_mensaje) {
-//                    case 1:
-//                        $DATOS['MENSAJES'][] = $MENSAJE;
-//                        break;
-//                    case 4:
-//                        $DATOS['MENSAJES_INSPECCION'][] = $MENSAJE;
-//                        break;
-//                    case 5:
-//                        $DATOS['MENSAJES_PAGA'][] = $MENSAJE;
-//                        break;
-//                }
-            }
+            $MENSAJE = [];
+            $MENSAJE['TITULO'] = $mensajes_sin_ver[0]->getIdMensaje()->getTitulo();
+            $MENSAJE['TEXTO'] = $mensajes_sin_ver[0]->getIdMensaje()->getMensaje();
+            $MENSAJE['FECHA'] = $mensajes_sin_ver[0]->getIdMensaje()->getFecha();
+            $DATOS['MENSAJES'][] = $MENSAJE;
             $em = $doctrine->getManager();
             $mensajes_sin_ver[0]->setVisto(1);
             $em->persist($mensajes_sin_ver[0]);
@@ -145,14 +135,14 @@ class DataManager {
         }
         return $contador;
     }
-    
+
     /**
      * Devuelve si hay alguna mina activa
      * @param type $doctrine
      * @return int
      */
-    static function minaActiva($doctrine){
-        if(Utils::minaActiva($doctrine)){
+    static function minaActiva($doctrine) {
+        if (Utils::minaActiva($doctrine)) {
             return 1;
         }
         return 0;
