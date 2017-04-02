@@ -902,8 +902,8 @@ class Usuario {
     }
 
     static function mensajeSistemaDefuncion($doctrine, $USUARIO) {
-        $ROL_SISTEMA = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Sistema');
-        $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_SISTEMA);
+        $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
+        $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GDT);
         $CHAT_COMUN = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
         $MENSAJE = new \AppBundle\Entity\ChatMensajes();
         $MENSAJE->setFecha(new \DateTime('now'));
