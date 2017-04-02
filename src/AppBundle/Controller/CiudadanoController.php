@@ -91,6 +91,69 @@ class CiudadanoController extends Controller {
     }
 
     /**
+     * @Route("/ciudadano/ocio/amigos/chat/obtenerChatsActuales", name="obtenerChatsActuales")
+     */
+    public function obtenerChatsActualesAction(Request $request) {
+        $session = $request->getSession();
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/ocio/amigos/chat/obtenerChatsActuales');
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Permiso denegado')), 200);
+        }
+
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get("id_usuario"));
+        $query = $em->createQueryBuilder()->select('c1')
+                ->from('\AppBundle\Entity\Chat', 'c1')
+                ->where('c1.idUsuario1 IS NOT NULL AND c1.idUsuario2 IS NOT NULL')
+                ->andWhere('c1.idUsuario1 = :emisor OR c1.idUsuario2 = :emisor')
+                ->orderBy('c1.fechaUltimoMensaje', 'DESC')
+                ->setParameters(array('emisor' => $USUARIO));
+        $CHATS = $query->getQuery()->getResult();
+        if (!count($CHATS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes chats recientes')), 200);
+        }
+        $DATOS = [];
+        foreach ($CHATS as $CHAT) {
+            $aux = [];
+            $USUARIO_DESTINO = $CHAT->getIdUsuario1();
+            if ($USUARIO === $CHAT->getIdUsuario1()) {
+                $USUARIO_DESTINO = $CHAT->getIdUsuario2();
+            }
+            $aux['FECHA'] = $CHAT->getFechaUltimoMensaje();
+            $aux['ID'] = $USUARIO_DESTINO->getIdUsuario();
+            $aux['ALIAS'] = $USUARIO_DESTINO->getSeudonimo();
+            if (null === $USUARIO_DESTINO->getImagen()) {
+                $aux['IMAGEN'] = "fotos-usuarios/default.jpg";
+            } else {
+                $aux['IMAGEN'] = "users/" . $USUARIO_DESTINO->getDni() . '/' . $USUARIO_DESTINO->getImagen();
+            }
+            $query = $em->createQueryBuilder()->select('m')
+                    ->from('\AppBundle\Entity\ChatMensajes', 'm')
+                    ->where('m.idChat = :CHAT')
+                    ->orderBy('m.fecha', 'DESC')
+                    ->setParameters(array('CHAT' => $CHAT));
+            $UltimoMensaje = $query->getQuery()->getResult();
+            $aux['FECHA_ULTIMO_MENSAJE'] = "";
+            $aux['ULTIMO_MENSAJE'] = "";
+            $aux['VISTO'] = 0;
+            $aux['MIO'] = 1;
+            if (isset($UltimoMensaje[0])) {
+                $aux['ULTIMO_MENSAJE'] = $UltimoMensaje[0]->getMensaje();
+                $aux['FECHA_ULTIMO_MENSAJE'] = $UltimoMensaje[0]->getFecha()->format('H:i:s d-m-Y');
+                $aux['VISTO'] = $UltimoMensaje[0]->getVisto();
+                if($UltimoMensaje[0]->getIdUsuario() !== $USUARIO){
+                    $aux['MIO'] = 0;
+                }
+            }
+            if ($USUARIO !== $USUARIO_DESTINO) {
+                $DATOS[] = $aux;
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
      * @Route("/ciudadano/getChat/{id_usuario_destino}/{id_grupo_destino}/{offset}", name="getChat")
      */
     public function getChat(Request $request, $id_usuario_destino, $id_grupo_destino, $offset) {
@@ -138,7 +201,7 @@ class CiudadanoController extends Controller {
         if (null !== $CHAT_SIN_VER) {
             $em->remove($CHAT_SIN_VER);
         }
-        $CHAT->setFechaUltimoMensaje(new \DateTime('now'));
+        //$CHAT->setFechaUltimoMensaje(new \DateTime('now'));
         $em->persist($CHAT);
         $em->flush();
 
@@ -216,7 +279,7 @@ class CiudadanoController extends Controller {
                 ->orderBy('cm.fecha', 'ASC')
                 ->setParameters(array('idChat' => $CHAT))
                 ->setFirstResult(0);
-                //->setMaxResults( 50 );
+        //->setMaxResults( 50 );
         $CHATS = $query->getQuery()->getResult();
 
         if (!count($CHATS)) {
@@ -371,8 +434,8 @@ class CiudadanoController extends Controller {
         $query = $qb->select('f')
                 ->from('\AppBundle\Entity\AlbumFoto', 'f')
                 ->orderBy('f.fecha', 'DESC')
-                ->setFirstResult( $limite )
-                ->setMaxResults( 5 );
+                ->setFirstResult($limite)
+                ->setMaxResults(5);
         $FOTOS = $query->getQuery()->getResult();
 
         if (count($FOTOS)) {
@@ -412,7 +475,7 @@ class CiudadanoController extends Controller {
         }
         return new JsonResponse(array('estado' => 'OK', 'fotos' => $datos), 200);
     }
-    
+
     /**
      * @Route("/ciudadano/obtenerMisFotos/{limite}", name="getMisPhotos")
      */
@@ -432,8 +495,8 @@ class CiudadanoController extends Controller {
                 ->where('f.idUsuario = :USUARIO')
                 ->setParameter('USUARIO', $USUARIO)
                 ->orderBy('f.fecha', 'DESC')
-                ->setFirstResult( $limite )
-                ->setMaxResults( 5 );
+                ->setFirstResult($limite)
+                ->setMaxResults(5);
         $FOTOS = $query->getQuery()->getResult();
 
         if (count($FOTOS)) {
