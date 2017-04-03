@@ -902,67 +902,96 @@ class DefaultController extends Controller {
             if (!count($RETOS)) {
                 $comparar = 0;
             }
+            $retoRunning = null;
+            $retoCycling = null;
+            foreach ($RETOS as $RETO) {
+                if ($RETO->getTipo() === 'running') {
+                    $retoRunning = $RETO;
+                }
+                if ($RETO->getTipo() === 'cycling') {
+                    $retoCycling = $RETO;
+                }
+            }
+            if (null === $retoCycling || null === $retoRunning) {
+                $comparar = 0;
+            }
             $duracion_acumulada = 0;
             $id_sesiones = [];
             $n_sesiones = 1;
             $contador = 0;
+            $estaSemana = 0;
             foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
                 $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
                 //$cont = 0;
                 foreach ($SESIONES_RUNTASTIC as $SESION) {
                     if (!$ok) {
-                        if (Utils::semanaPasada($SESION->getFecha())) {
+                        $retoDepSemanaPasada = Utils::semanaPasada($SESION->getFecha());
+                        if ($retoDepSemanaPasada) {
+                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+                            $estaSemana++;
+                        } else {
+                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+                        }
+                        if ($retoDepSemanaPasada) {
                             $duracion = $SESION->getDuracion();
                             if ($comparar) {
+//                                Utils::pretty_print("Se evalúa una sesión");
+//                                if ($SESION->getEvaluado()) {
+//                                    Utils::pretty_print("Sesión evaluada");
+//                                }
                                 if (!$SESION->getEvaluado()) {
-                                    foreach ($RETOS as $RETO) {
-                                        if ($RETO->getTipo() === 'running') {
-                                            if (($RETO->getTipo() === $SESION->getTipo() && $RETO->getRitmo() >= $SESION->getRitmo())) {
-                                                $duracion_acumulada += $duracion;
-                                                $id_sesiones[] = $SESION;
-                                                if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                                    $n_sesiones++;
-                                                    $contador++;
+//                                    Utils::pretty_print("Sesión no evaluada");
+//                                    foreach ($RETOS as $RETO) {
+                                    if ($SESION->getTipo() === 'running') {
+                                        if (($retoRunning->getRitmo() >= $SESION->getRitmo())) {
+                                            $duracion_acumulada += $duracion;
+                                            $id_sesiones[] = $SESION;
+                                            if ($duracion_acumulada >= $retoRunning->getDuracion()) {
+                                                $n_sesiones++;
+                                                $contador++;
 //                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
-//                                                    Utils::pretty_print('Duracion reto: ' . $RETO->getDuracion());
+//                                                    Utils::pretty_print('Duracion reto: ' . $retoRunning->getDuracion());
 //                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
-                                                    if ($n_sesiones >= 2) {
-                                                        $ok = true;
-                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if ($RETO->getTipo() === 'cycling') {
-                                            if ($RETO->getTipo() === $SESION->getTipo() && $RETO->getVelocidad() <= $SESION->getVelocidad()) {
-                                                $duracion_acumulada += $duracion;
-                                                $id_sesiones[] = $SESION;
-                                                if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                                    $n_sesiones++;
-                                                    $contador++;
-//                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
-//                                                    Utils::pretty_print('Duracion reto: ' . $RETO->getDuracion());
-//                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
-                                                    if ($n_sesiones >= 2) {
-                                                        $ok = true;
-                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
-                                                    }
+                                                if ($n_sesiones >= 2) {
+                                                    $ok = true;
+//                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
                                                 }
                                             }
                                         }
                                     }
+                                    if ($SESION->getTipo() === 'cycling') {
+                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoCycling->getVelocidad() . "Km/h");
+                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
+                                        if ($retoCycling->getVelocidad() <= $SESION->getVelocidad()) {
+                                            $duracion_acumulada += $duracion;
+                                            $id_sesiones[] = $SESION;
+                                            if ($duracion_acumulada >= $retoCycling->getDuracion()) {
+                                                $n_sesiones++;
+                                                $contador++;
+//                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
+//                                                    Utils::pretty_print('Duracion reto: ' . $retoCycling->getDuracion());
+//                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
+                                                if ($n_sesiones >= 2) {
+                                                    $ok = true;
+//                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                }
+                                            }
+                                        }
+                                    }
+//                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+//            Utils::pretty_print("Esta semana se han contado " . $estaSemana . " sesiones");
         }
         $em->flush();
-        if ($ok) {
-            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
-        }
-        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo no superado')), 200);
+//        if ($ok) {
+//            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
+//        }
+//        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo no superado')), 200);
     }
 
     /**
@@ -1008,4 +1037,5 @@ class DefaultController extends Controller {
 //        }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
+
 }

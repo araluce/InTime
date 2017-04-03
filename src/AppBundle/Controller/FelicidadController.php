@@ -87,10 +87,9 @@ class FelicidadController extends Controller {
                     $tiempoEntreEntregas = Utils::getConstante($doctrine, 'diasDifEntregasFelicidad');
                     $HOY = new \DateTime('now');
                     $fechaEntrega = $EJERCICIO_FELICIDAD->getIdEjercicioPropuesta()->getFecha();
-                    if ($HOY->format("Y") === $fechaEntrega->format("Y")) {
-                        if ($HOY->format("d") - $fechaEntrega->format("d") < $tiempoEntreEntregas) {
-                            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo entre entregas de ' . $tiempoEntreEntregas . ' días')), 200);
-                        }
+                    $diasDiferencia = ((($HOY->getTimestamp() - $fechaEntrega->getTimestamp()) / 60) / 60) / 24;
+                    if ($diasDiferencia < $tiempoEntreEntregas) {
+                        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Tiempo entre entregas de ' . $tiempoEntreEntregas . ' días')), 200);
                     }
                     $TIPO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioTipo')->findOneByTipo('entrega');
                     $SECCION_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('felicidad');
@@ -176,7 +175,7 @@ class FelicidadController extends Controller {
 
                     if ($ANTERIOR_EJERCICIO_FELICIDAD !== null) {
                         $EJERCICIO = $ANTERIOR_EJERCICIO_FELICIDAD->getIdEjercicioPropuesta();
-                        if(null === $EJERCICIO){
+                        if (null === $EJERCICIO) {
                             $EJERCICIO = new \AppBundle\Entity\Ejercicio();
                         }
                     } else {
@@ -195,7 +194,7 @@ class FelicidadController extends Controller {
 
                     if ($ANTERIOR_EJERCICIO_FELICIDAD !== null) {
                         $EJERCICIO_FELICIDAD = $ANTERIOR_EJERCICIO_FELICIDAD;
-                        if(null === $EJERCICIO_FELICIDAD){
+                        if (null === $EJERCICIO_FELICIDAD) {
                             $EJERCICIO_FELICIDAD = new \AppBundle\Entity\EjercicioFelicidad();
                         }
                     } else {
@@ -212,7 +211,7 @@ class FelicidadController extends Controller {
 
                     if ($ANTERIOR_EJERCICIO_FELICIDAD !== null) {
                         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneByIdEjercicio($EJERCICIO);
-                        if(null === $EJERCICIO_CALIFICACION){
+                        if (null === $EJERCICIO_CALIFICACION) {
                             $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
                         }
                     } else {
@@ -231,7 +230,7 @@ class FelicidadController extends Controller {
 
                     if ($ANTERIOR_EJERCICIO_FELICIDAD !== null) {
                         $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneByIdEjercicio($EJERCICIO);
-                        if(null === $EJERCICIO_ENTREGA){
+                        if (null === $EJERCICIO_ENTREGA) {
                             $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
                         }
                     } else {
@@ -314,6 +313,7 @@ class FelicidadController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
+
     /**
      * 
      * @Route("/guardian/ejercicios/felicidad", name="felicidadGuardian")
@@ -329,7 +329,7 @@ class FelicidadController extends Controller {
         $DATOS['TITULO'] = 'Felicidad';
         return $this->render('guardian/ejercicios/ejerciciosFelicidad.twig', $DATOS);
     }
-    
+
     /**
      * 
      * @Route("/guardian/ejercicios/felicidad/calificar", name="setCalificacionFelicidad")
@@ -346,15 +346,15 @@ class FelicidadController extends Controller {
             $idFelicidad = $request->request->get('idFelicidad');
             $porcentaje = $request->request->get('porcentaje');
             $EJERCICIO_FELICIDAD = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneByIdEjercicioFelicidad($idFelicidad);
-            if(null === $EJERCICIO_FELICIDAD){
+            if (null === $EJERCICIO_FELICIDAD) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe el ejercicio')), 200);
             }
-            $BONIFICACION = Utils::getConstante($doctrine, 'felicidadBonificacion'.$porcentaje);
+            $BONIFICACION = Utils::getConstante($doctrine, 'felicidadBonificacion' . $porcentaje);
             Usuario::operacionSobreTdV($doctrine, $EJERCICIO_FELICIDAD->getIdUsuario(), $BONIFICACION, 'Ingreso - Felicidad');
             $EJERCICIO_FELICIDAD->setPorcentaje($porcentaje);
             $em->persist($EJERCICIO_FELICIDAD);
             $em->flush();
-            
+
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
