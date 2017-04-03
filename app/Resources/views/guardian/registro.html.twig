@@ -55,7 +55,7 @@
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" id="resultados" class="btn {% if SECCION == 'DISTRITOS' %} btn-primary {% else %} btn-default {% endif %} btn13">
-                        <a href="/guardian/censo/registro">
+                        <a href="/guardian/censo/distritos">
                             <span class="fa fa-users" aria-hidden="true"></span>
                             <div class="hidden-xs">DISTRITOS</div>
                         </a>
@@ -138,32 +138,32 @@
                                         <thead>
                                             <tr>
                                                 <th>PUESTO</th>
-                                                <th class="responsive">NIVEL/XP</th>
+                                                <th>NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th class="responsive">NOMBRE</th>
                                                 <th class="responsive">EMAIL</th>
                                                 <th class="responsive">TdV</th>
-                                                <th>ESTADO</th>
+                                                <th class="responsive">ESTADO</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
                                                 <th>PUESTO</th>
-                                                <th class="responsive">NIVEL/XP</th>
+                                                <th>NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th class="responsive">NOMBRE</th>
                                                 <th class="responsive">EMAIL</th>
                                                 <th class="responsive">TdV</th>
-                                                <th>ESTADO</th>
+                                                <th class="responsive">ESTADO</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>
                                             {% for JUGADOR in JUGADORES %}
                                                 <tr>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
-                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
+                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
@@ -173,7 +173,7 @@
                                                     {% else %}
                                                         <td class="responsive" style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% endif %}
-                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

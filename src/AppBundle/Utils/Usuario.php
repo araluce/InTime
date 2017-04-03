@@ -754,7 +754,7 @@ class Usuario {
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
 
-        return array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion);
+        //return array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion);
         if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
