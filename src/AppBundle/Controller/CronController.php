@@ -521,25 +521,25 @@ class CronController extends Controller {
     }
     
     /**
-     * @Route("/cron/ko", name="ko")
+     * @Route("/cron/koVacaciones", name="koVacaciones")
      */
-    public function koAction(Request $request) {
-        $doctrine = $this->getDoctrine();
-        $RESPUESTA = [];
-        $CIUDADANOS = Usuario::getCiudadanosActivos($doctrine);
-        $FECHA = new \DateTime('now');
-        $cincoDias = 432000;
-        $contador = 0;
-        foreach($CIUDADANOS as $CIUDADANO){
-            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $cincoDias, 'Cobro - Deuda con el metronomista');
-            $tdv = $CIUDADANO->getIdCuenta()->getTdv();
-            if ($tdv < $FECHA) {
-                $contador++;
-                Usuario::setDefuncion($doctrine, $CIUDADANO);
-            }
-        }
-        return new JsonResponse(json_encode($contador), 200);
-    }
+//    public function koVacacionesAction(Request $request) {
+//        $doctrine = $this->getDoctrine();
+//        $RESPUESTA = [];
+//        $CIUDADANOS = Usuario::getCiudadanosVacaciones($doctrine);
+//        $FECHA = new \DateTime('now');
+//        $cincoDias = 432000;
+//        $contador = 0;
+//        foreach($CIUDADANOS as $CIUDADANO){
+//            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $cincoDias, 'Cobro - Deuda con el metronomista');
+//            $tdv = $CIUDADANO->getIdCuenta()->getTdv();
+//            if ($tdv < $FECHA) {
+//                $contador++;
+//                Usuario::setDefuncion($doctrine, $CIUDADANO);
+//            }
+//        }
+//        return new JsonResponse(json_encode($contador), 200);
+//    }
 
     /**
      * @Route("/cron/ciudadanosDistrito", name="testCiudadanos")

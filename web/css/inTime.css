@@ -183,7 +183,10 @@ select, select[size="1"]{
 }
 
 table{
-    font-size: 14px;
+    font-size: 30px;
+}
+.dataTables_wrapper {
+    font-size: 30px;
 }
 
 .slot-mochila{
@@ -563,10 +566,6 @@ legend{
     font-size: 15px;
 }
 
-.dataTables_wrapper {
-    font-size: 12px;
-}
-
 .svg-icon {
     margin: 0 auto;
     text-align: center;
@@ -837,9 +836,9 @@ legend{
     .item-carousel{
         font-size: 54px;
     }
-    table{
-        font-size: 17px;
-    }
+    /*    table{
+            font-size: 17px;
+        }*/
     footer{
         font-size: 20px;
     }
@@ -1018,9 +1017,9 @@ legend{
     .item-carousel{
         font-size: 95px;
     }
-    table{
-        font-size: 30px;
-    }
+    /*    table{
+            font-size: 30px;
+        }*/
     footer{
         font-size: 35px;
     }
@@ -1141,7 +1140,7 @@ legend{
     .container{
         width: 95%;
     }
-    
+
     .badge-mina,
     .badge-aviso,
     .badge-aviso2{
@@ -1167,9 +1166,9 @@ legend{
     .item-carousel{
         font-size: 95px;
     }
-    table{
-        font-size: 30px;
-    }
+    /*    table{
+            font-size: 30px;
+        }*/
     footer{
         font-size: 35px;
     }
@@ -1272,6 +1271,9 @@ legend{
         bottom:10px; right:30px;
     }
     table{
+        font-size: 14px;
+    }
+    #tabla_wrapper{
         font-size: 14px;
     }
     .share_modal_dialog .modal-footer button{

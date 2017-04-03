@@ -7,13 +7,24 @@
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css">
     <style>
-        #tabla_wrapper{
-            font-size: 12px;
-        }
         .desplegable{
             border: 2px #000000 solid;
             border-radius: 5px;
             min-height: 69px;
+        }
+        .responsive{
+            display: none;
+        }
+        .btn-primary a{
+            color: white;
+        }
+        .btn-default a{
+            color: black;
+        }
+        @media (min-width: 1200px){
+            .responsive{
+                display: table-cell;
+            }
         }
     </style>
 {% endblock %}
@@ -24,248 +35,246 @@
 
 {% block body %}
     <div class="container">
-        <div class="row bordes" style="margin-top: 1%;">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="tienda" class="btn {% if SECCION == 'CIUDADANOS' %} btn-primary {% else %} btn-default {% endif %} btn13">
+                        <a href="/guardian/censo/ciudadanos">
+                            <span class="fa fa-user" aria-hidden="true"></span>
+                            <div class="hidden-xs">CIUDADANOS</div>
+                        </a>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="proceso" class="btn {% if SECCION == 'CENSO' %} btn-primary {% else %} btn-default {% endif %} btn13">
+                        <a href="/guardian/censo/registro">
+                            <span class="fa fa-bookmark" aria-hidden="true"></span>
+                            <div class="hidden-xs">REGISTRO</div>
+                        </a>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="resultados" class="btn {% if SECCION == 'DISTRITOS' %} btn-primary {% else %} btn-default {% endif %} btn13">
+                        <a href="/guardian/censo/registro">
+                            <span class="fa fa-users" aria-hidden="true"></span>
+                            <div class="hidden-xs">DISTRITOS</div>
+                        </a>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRÁS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-12">
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="/">
-                                    <i class="fa fa-home"></i>
-                                    HOME
-                                </a>
-                                <span class="divider">/</span>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-bookmark"></i> CENSO
-                            </li>
-                            <li style="float:right;">
-                                <a href="/logout">
-                                    <i class="fa fa-sign-out"></i>
-                                    SALIR
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 1%;">
-                    <div class="col-md-12">
-                        <ul class="nav nav-tabs" style="font-weight: bold; text-transform: uppercase; font-size: 15px;">
-                            <li {% if SECCION == 'CIUDADANOS' %} class="active" {% endif %}>
-                                <a href="/guardian/censo/ciudadanos">CIUDADANOS</a>
-                            </li>
-                            <li {% if SECCION == 'CENSO' %} class="active" {% endif %}>
-                                <a href="/guardian/censo/registro">CENSO</a>
-                            </li>
-                            <li {% if SECCION == 'DISTRITOS' %} class="active" {% endif %}>
-                                <a href="/guardian/censo/distritos">DISTRITOS</a>
-                            </li>
-                            <li class="disabled">
-                                <a href="#">OTRO</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% if SECCION == 'CENSO' %}
-                    <div class="row">
-                        <div class="col-md-6">
+                <div class="tab-content">
+                    <div class="row bordes border-radius" style="margin-top:1%;">
+                        {% if SECCION == 'CENSO' %}
                             <div class="row">
-                                <div class="col-xs-12">
-                                    <legend>Registro de usuarios</legend>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <dl class="dl-horizontal">
-                                    <dt>
-                                        Instrucciones
-                                    </dt>
-                                    <dt>
-                                        Registro de usuarios
-                                    </dt>
-                                    <dd>
-                                        Este formulario registra usuarios <strong>exclusivamente</strong> por DNI/NIE.
-                                    </dd>
-                                    <dd>
-                                        Introduzca de forma separada (por espacio en blanco) los DNI/NIE con letra que desea dar de alta.
-                                    </dd>
-                                    <dt>
-                                        Resultado
-                                    </dt>
-                                    <dd>
-                                        Se dará de alta a cada jugador asignándole su correspondiente DNI/NIE como contraseña.
-                                    </dd>
-                                    <dd>
-                                        En caso de que se introduzca un DNI/NIE en un formato no válido se le comunicará.
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <form id="form" method="post" action="/guardian/censo/registro" >
+                                <div class="col-md-6">
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <legend><i class="fa fa-heartbeat"></i>&nbsp;Tiempo de vida</legend>
-                                            <div class="left-inner-addon ">
-                                                <i class="fa fa-calendar"></i>
-                                                <input class="form-control" type="datetime-local" name="TDV">
-                                            </div>
+                                            <legend>Registro de usuarios</legend>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-12" style="display:inline-block; position:relative;">
-                                            <legend><i class="fa fa-id-card"></i> Entrada de DNI/NIE</legend>
-                                            <textarea class="form-control" name="DATOS_REGISTRO" rows="5" style="resize:none; width:100%;"></textarea>
-                                            <i class="fa fa-users" style="position:absolute; bottom:37px; right:85px;"></i>
-                                            <button class="btn btn-default" style="position:absolute; bottom:30px; right:25px;" type="submit">Alta</button>                                
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                {% elseif SECCION == 'CIUDADANOS' %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table id="tabla" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>PUESTO</th>
-                                        <th>NIVEL/XP</th>
-                                        <th>DISTRITO</th>
-                                        <th>SEUDÓNIMO</th>
-                                        <th>NOMBRE</th>
-                                        <th>EMAIL</th>
-                                        <th>TdV</th>
-                                        <th>ESTADO</th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>PUESTO</th>
-                                        <th>NIVEL/XP</th>
-                                        <th>DISTRITO</th>
-                                        <th>SEUDÓNIMO</th>
-                                        <th>NOMBRE</th>
-                                        <th>EMAIL</th>
-                                        <th>TdV</th>
-                                        <th>ESTADO</th>
-                                    </tr>
-                                </tfoot>
-                                <tbody>
-                                    {% for JUGADOR in JUGADORES %}
-                                        <tr>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.EMAIL }}</a></td>
-                                            {% if JUGADOR.TDV_RED %}
-                                                <td style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
-                                            {% else %}
-                                                <td style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
-                                            {% endif %}
-                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% elseif SECCION == 'DISTRITOS' %}
-                    <div class="row">
-                        <legend>CREAR UN DISTRITO</legend>
-                        <form method="post" action="/guardian/censo/creardistrito">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <span class="input-group-addon" id="basic-addon1"><i class="fa fa-users" style=""></i></span>
-                                        <input type="text" class="form-control" name="NOMBRE" placeholder="NOMBRE DEL DISTRITO" />
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Instrucciones
+                                            </dt>
+                                            <dt>
+                                                Registro de usuarios
+                                            </dt>
+                                            <dd>
+                                                Este formulario registra usuarios <strong>exclusivamente</strong> por DNI/NIE.
+                                            </dd>
+                                            <dd>
+                                                Introduzca de forma separada (por espacio en blanco) los DNI/NIE con letra que desea dar de alta.
+                                            </dd>
+                                            <dt>
+                                                Resultado
+                                            </dt>
+                                            <dd>
+                                                Se dará de alta a cada jugador asignándole su correspondiente DNI/NIE como contraseña.
+                                            </dd>
+                                            <dd>
+                                                En caso de que se introduzca un DNI/NIE en un formato no válido se le comunicará.
+                                            </dd>
+                                        </dl>
                                     </div>
                                 </div>
-
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary btn-block">
-                                    Crear
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="row">
-                        <legend>GESTIÓN DE DISTRITOS</legend>
-                        <div class="row" style="margin-bottom: 1%;">
-                            <div class="col-md-6 col-md-offset-3">
-                                <select class="form-control" id="id-selector-distritos">
-                                    {% if DISTRITOS is not empty %}
-                                        <option value="0"> - SELECCIONA UN DISTRITO - </option>
-                                        {% for DISTRITO in DISTRITOS %}
-                                            <option value="{{ DISTRITO.getIdUsuarioDistrito() }}">{{ DISTRITO.getNombre() }}</option>
-                                        {% endfor %}
-                                    {% endif %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="desplegable-titulo">
-                                    <center><i class="fa fa-users"></i> CIUDADANOS SIN DISTRITO</center>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <form id="form" method="post" action="/guardian/censo/registro" >
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <legend><i class="fa fa-heartbeat"></i>&nbsp;Tiempo de vida</legend>
+                                                    <div class="left-inner-addon ">
+                                                        <i class="fa fa-calendar"></i>
+                                                        <input class="form-control" type="datetime-local" name="TDV">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12" style="display:inline-block; position:relative;">
+                                                    <legend><i class="fa fa-id-card"></i> Entrada de DNI/NIE</legend>
+                                                    <textarea class="form-control" name="DATOS_REGISTRO" rows="5" style="resize:none; width:100%;"></textarea>
+                                                    <i class="fa fa-users" style="position:absolute; bottom:37px; right:85px;"></i>
+                                                    <button class="btn btn-default" style="position:absolute; bottom:30px; right:25px;" type="submit">Alta</button>                                
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="desplegable" id="id-desplegable-sin-distrito"> </div>
-
                             </div>
-
-                            <div class="col-xs-6">
-                                <div class="desplegable-titulo">
-                                    <center><i class="fa fa-users"></i><span id="id-desplegable-titulo">CIUDADANOS DEL DISTRITO</span></center>
-                                </div>
-                                <div class="desplegable" id="id-desplegable-distrito"> </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="font-size: 15px; font-weight: bold; text-transform: uppercase;">
-                        <legend>DISTRITOS</legend>
-                        {% if DISTRITOS is not empty %}
-                            {% for DISTRITO in DISTRITOS %}
+                        {% elseif SECCION == 'CIUDADANOS' %}
+                            <div class="row">
                                 <div class="col-md-12">
-                                    <legend style="font-size:15px;">CIUDADANOS DEL DISTRITO {{ DISTRITO.getNombre() }}</legend>
-                                    <table id="{{'tabla' ~ DISTRITO.getIdUsuarioDistrito() }}" class="table table-striped table-bordered" cellspacing="0" width="100%" >
+                                    <table id="tabla" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                         <thead>
                                             <tr>
-                                                <th>DNI</th>
+                                                <th>PUESTO</th>
+                                                <th class="responsive">NIVEL/XP</th>
+                                                <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
-                                                <th>NOMBRE</th>
+                                                <th class="responsive">NOMBRE</th>
+                                                <th class="responsive">EMAIL</th>
+                                                <th class="responsive">TdV</th>
+                                                <th>ESTADO</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
-                                                <th>DNI</th>
+                                                <th>PUESTO</th>
+                                                <th class="responsive">NIVEL/XP</th>
+                                                <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
-                                                <th>NOMBRE</th>
+                                                <th class="responsive">NOMBRE</th>
+                                                <th class="responsive">EMAIL</th>
+                                                <th class="responsive">TdV</th>
+                                                <th>ESTADO</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>
                                             {% for JUGADOR in JUGADORES %}
-                                                {% if JUGADOR.getIdDistrito() is not null %}
-                                                    {% if JUGADOR.getIdDistrito() == DISTRITO %}
-                                                        <tr>
-                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getDni() }}</a></td>
-                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getSeudonimo() }}</a></td>
-                                                            <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getNombre() }}&nbsp;{{ JUGADOR.getApellidos() }}</a></td>
-                                                        </tr>
+                                                <tr>
+                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
+                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.EMAIL }}</a></td>
+                                                        {% if JUGADOR.TDV_RED %}
+                                                        <td class="responsive" style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
+                                                    {% else %}
+                                                        <td class="responsive" style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% endif %}
-                                                {% endif %}
+                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
+                                                </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
-                            {% endfor %}
-                        {% else %}
-                            <center><p style="font-weight: bold; font-size: 15px; color:red;">AÚN NO HAY NINGÚN DISTRITO DEFINIDO</p></center>
-                            {% endif %}
+                            </div>
+                        {% elseif SECCION == 'DISTRITOS' %}
+                            <div class="row">
+                                <legend>CREAR UN DISTRITO</legend>
+                                <form method="post" action="/guardian/censo/creardistrito">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" id="basic-addon1"><i class="fa fa-users" style=""></i></span>
+                                                <input type="text" class="form-control" name="NOMBRE" placeholder="NOMBRE DEL DISTRITO" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-primary btn-block">
+                                            Crear
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="row">
+                                <legend>GESTIÓN DE DISTRITOS</legend>
+                                <div class="row" style="margin-bottom: 1%;">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <select class="form-control" id="id-selector-distritos">
+                                            {% if DISTRITOS is not empty %}
+                                                <option value="0"> - SELECCIONA UN DISTRITO - </option>
+                                                {% for DISTRITO in DISTRITOS %}
+                                                    <option value="{{ DISTRITO.getIdUsuarioDistrito() }}">{{ DISTRITO.getNombre() }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="desplegable-titulo">
+                                            <center><i class="fa fa-users"></i> CIUDADANOS SIN DISTRITO</center>
+                                        </div>
+                                        <div class="desplegable" id="id-desplegable-sin-distrito"> </div>
+
+                                    </div>
+
+                                    <div class="col-xs-6">
+                                        <div class="desplegable-titulo">
+                                            <center><i class="fa fa-users"></i><span id="id-desplegable-titulo">CIUDADANOS DEL DISTRITO</span></center>
+                                        </div>
+                                        <div class="desplegable" id="id-desplegable-distrito"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="font-size: 15px; font-weight: bold; text-transform: uppercase;">
+                                <legend>DISTRITOS</legend>
+                                {% if DISTRITOS is not empty %}
+                                    {% for DISTRITO in DISTRITOS %}
+                                        <div class="col-md-12">
+                                            <legend style="font-size:15px;">CIUDADANOS DEL DISTRITO {{ DISTRITO.getNombre() }}</legend>
+                                            <table id="{{'tabla' ~ DISTRITO.getIdUsuarioDistrito() }}" class="table table-striped table-bordered" cellspacing="0" width="100%" >
+                                                <thead>
+                                                    <tr>
+                                                        <th>DNI</th>
+                                                        <th>SEUDÓNIMO</th>
+                                                        <th>NOMBRE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>DNI</th>
+                                                        <th>SEUDÓNIMO</th>
+                                                        <th>NOMBRE</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    {% for JUGADOR in JUGADORES %}
+                                                        {% if JUGADOR.getIdDistrito() is not null %}
+                                                            {% if JUGADOR.getIdDistrito() == DISTRITO %}
+                                                                <tr>
+                                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getDni() }}</a></td>
+                                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getSeudonimo() }}</a></td>
+                                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.getDni() }}">{{ JUGADOR.getNombre() }}&nbsp;{{ JUGADOR.getApellidos() }}</a></td>
+                                                                </tr>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <center><p style="font-weight: bold; font-size: 15px; color:red;">AÚN NO HAY NINGÚN DISTRITO DEFINIDO</p></center>
+                                    {% endif %}
+                            </div>
+                        {% endif %}                            
                     </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
