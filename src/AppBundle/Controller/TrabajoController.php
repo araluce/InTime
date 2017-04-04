@@ -455,7 +455,7 @@ class TrabajoController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicio($id_ejercicio);
-        $seCobra = false;
+        $seCobra = true;
         if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
             if (Ejercicio::datosReentrega($doctrine, $USUARIO, $EJERCICIO, $USUARIO->getIdDistrito())) {
                 $seCobra = false;

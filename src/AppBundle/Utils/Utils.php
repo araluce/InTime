@@ -31,22 +31,10 @@ class Utils {
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $id_usuario, 'idEjercicio' => $id_ejercicio
         ]);
-        if (null !== $EJERCICIO_CALIFICACION) {
-            // Si este ejercicio ya había sido calificacdo, se resta el TdV anterior
-            // y se le asigna el TdV por defecto hasta que el GdT lo califique
-            if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
-                $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
-                    'idEjercicio' => $id_ejercicio, 'idCalificacion' => $EJERCICIO_CALIFICACION->getIdCalificaciones()
-                ]);
-                if (null !== $BONIFICACION) {
-                    $tdv = (-1) * $BONIFICACION->getBonificacion();
-                    Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Cobro - Se descuenta la bonificación por nota para ingresar la nueva (id: ' . $id_ejercicio->getIdEjercicio() . ')');
-                }
-            }
-        }
+        
         $EJERCICIO_CALIFICACION->setIdUsuario($id_usuario);
         $EJERCICIO_CALIFICACION->setIdEjercicio($id_ejercicio);
-        $concepto = 'Ingreso - Pago por defecto temporal por entrega';
+        $concepto = 'Ingreso - Pago por defecto temporal por entrega (id: ' . $id_ejercicio->getIdEjercicio() . ')';
         $EJERCICIO_BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
             'idEjercicio' => $id_ejercicio, 'idCalificacion' => $CALIFICACION
         ]);
@@ -54,7 +42,6 @@ class Utils {
             $TdVDefecto = $EJERCICIO_BONIFICACION->getBonificacion();
             Usuario::operacionSobreTdV($doctrine, $id_usuario, $TdVDefecto, $concepto);
         }
-        $EJERCICIO_CALIFICACION->setIdCalificaciones($CALIFICACION);
         $EJERCICIO_CALIFICACION->setIdEvaluador($SISTEMA);
         $EJERCICIO_CALIFICACION->setFecha(new \DateTime('now'));
         $EJERCICIO_ESTADO = null;
@@ -731,7 +718,7 @@ class Utils {
 
         return $dia_int;
     }
-    
+
     public function cmp($a, $b) {
         if (inval($a['CANTIDAD']) == intval($b['CANTIDAD'])) {
             return 0;

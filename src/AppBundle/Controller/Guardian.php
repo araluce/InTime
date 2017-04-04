@@ -997,6 +997,10 @@ class Guardian extends Controller {
             }
             $EJERCICIO = $CALIFICACION->getIdEjercicio();
             $SECCION = $EJERCICIO->getIdEjercicioSeccion();
+            $CALIFICACION_MEDIA = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
+            $BONIFICACION_MEDIA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_MEDIA
+            ]);
             $BONIFICACION_ANTERIOR = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
                 'idEjercicio' => $CALIFICACION->getIdEjercicio(), 'idCalificacion' => $CALIFICACION->getIdCalificaciones()
             ]);
@@ -1011,8 +1015,22 @@ class Guardian extends Controller {
                 $DISTRITO = $CALIFICACION->getIdUsuario()->getIdDistrito();
                 $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
                 foreach ($CIUDADANOS as $CIUDADANO) {
+//                    if (null !== $EJERCICIO_CALIFICACION) {
+//                        // Si este ejercicio ya había sido calificacdo, se resta el TdV anterior
+//                        // y se le asigna el TdV por defecto hasta que el GdT lo califique
+//                        if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
+//                            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+//                                'idEjercicio' => $id_ejercicio, 'idCalificacion' => $EJERCICIO_CALIFICACION->getIdCalificaciones()
+//                            ]);
+//                            if (null !== $BONIFICACION) {
+//                                $tdv = (-1) * $BONIFICACION->getBonificacion();
+//                                Usuario::operacionSobreTdV($doctrine, $id_usuario, $tdv, 'Cobro - Se descuenta la bonificación por nota para ingresar la nueva (id: ' . $id_ejercicio->getIdEjercicio() . ')');
+//                            }
+//                        }
+//                    }
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_MEDIA->getBonificacion(), 'Cobro (Ajuste) - Se descuenta el pago temporal (id: ' . $EJERCICIO->getIdEjercicio() . ')');
                     if (null !== $BONIFICACION_ANTERIOR) {
-                        Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+                        Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo reto (id: ' . $EJERCICIO->getIdEjercicio() . ')');
                     }
                     $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy(['idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO]);
                     if (null !== $CALIFICACION) {
@@ -1029,19 +1047,20 @@ class Guardian extends Controller {
                                     'idBonificacionExtra' => $TARJETA, 'idUsuario' => $CIUDADANO, 'usado' => 0
                                 ]);
                                 if (null !== $MI_TARJETA) {
-                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (2) * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de reto en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
                                     $MI_TARJETA->setUsado(1);
                                     $em->persist($MI_TARJETA);
                                 }
                             }
                         }
                         $em->flush();
-                        Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+                        Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de reto en ' . $SECCION->getSeccion() . ' por el GdT (id: ' . $EJERCICIO->getIdEjercicio() . ')');
                     }
                 }
             } else {
+                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_MEDIA->getBonificacion(), 'Cobro (Ajuste) - Se descuenta el pago temporal (id: ' . $EJERCICIO->getIdEjercicio() . ')');
                 if (null !== $BONIFICACION_ANTERIOR) {
-                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo ejercicio');
+                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo reto (id: ' . $EJERCICIO->getIdEjercicio() . ')');
                 }
                 $CALIFICACION->setIdEvaluador($GdT);
                 $CALIFICACION->setIdEjercicioEstado($EVALUADO);
@@ -1055,14 +1074,14 @@ class Guardian extends Controller {
                             'idBonificacionExtra' => $TARJETA, 'idUsuario' => $doctrine, $CALIFICACION->getIdUsuario(), 'usado' => 0
                         ]);
                         if (null !== $MI_TARJETA) {
-                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)');
+                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
                             $MI_TARJETA->setUsado(1);
                             $em->persist($MI_TARJETA);
                         }
                     }
                 }
                 $em->flush();
-                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT');
+                Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de reto en ' . $SECCION->getSeccion() . ' por el GdT (id: ' . $EJERCICIO->getIdEjercicio() . ')');
             }
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Ciudadano evaluado correctamente')), 200);
@@ -1284,7 +1303,7 @@ class Guardian extends Controller {
         $DATOS['DEUDAS'] = [];
         if (count($MIS_DEUDAS)) {
             $DATOS['TENGO_DEUDAS'] = 1;
-            foreach($MIS_DEUDAS as $DEUDA) {
+            foreach ($MIS_DEUDAS as $DEUDA) {
                 $aux = [];
                 $aux['INTERES'] = $DEUDA->getInteres();
                 $aux['SOLICITADO'] = Utils::segundosToDias($DEUDA->getCantidad());
