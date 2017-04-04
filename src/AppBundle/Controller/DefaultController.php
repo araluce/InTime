@@ -926,12 +926,12 @@ class DefaultController extends Controller {
                 foreach ($SESIONES_RUNTASTIC as $SESION) {
                     if (!$ok) {
                         $retoDepSemanaPasada = Utils::semanaPasada($SESION->getFecha());
-                        if ($retoDepSemanaPasada) {
-                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
-                            $estaSemana++;
-                        } else {
-                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
-                        }
+//                        if ($retoDepSemanaPasada) {
+//                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+//                            $estaSemana++;
+//                        } else {
+//                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+//                        }
                         if ($retoDepSemanaPasada) {
                             $duracion = $SESION->getDuracion();
                             if ($comparar) {
@@ -954,14 +954,14 @@ class DefaultController extends Controller {
 //                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
                                                 if ($n_sesiones >= 2) {
                                                     $ok = true;
-//                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
                                                 }
                                             }
                                         }
                                     }
                                     if ($SESION->getTipo() === 'cycling') {
-                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoCycling->getVelocidad() . "Km/h");
-                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
+//                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoCycling->getVelocidad() . "Km/h");
+//                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
                                         if ($retoCycling->getVelocidad() <= $SESION->getVelocidad()) {
                                             $duracion_acumulada += $duracion;
                                             $id_sesiones[] = $SESION;
@@ -973,7 +973,7 @@ class DefaultController extends Controller {
 //                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
                                                 if ($n_sesiones >= 2) {
                                                     $ok = true;
-//                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
                                                 }
                                             }
                                         }
@@ -988,10 +988,10 @@ class DefaultController extends Controller {
 //            Utils::pretty_print("Esta semana se han contado " . $estaSemana . " sesiones");
         }
         $em->flush();
-//        if ($ok) {
-//            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
-//        }
-//        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo no superado')), 200);
+        if ($ok) {
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo no superado')), 200);
     }
 
     /**
@@ -1030,12 +1030,12 @@ class DefaultController extends Controller {
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
         $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
         Utils::pretty_print($ok);
-//        if ($ok) {
-//            Utils::pretty_print('Sube de nivel');
-//        } else {
-//            Utils::pretty_print('No superado');
-//        }
-        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+        if ($ok) {
+            Utils::pretty_print('Sube de nivel');
+        } else {
+            Utils::pretty_print('No superado');
+        }
+//        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 
 }

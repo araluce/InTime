@@ -21,6 +21,30 @@
         .btn-default a{
             color: black;
         }
+        thead{
+            color: white;
+            background: #337ab7;
+        }
+        table.dataTable thead .sorting,
+        table.dataTable thead .sorting_asc,
+        table.dataTable thead .sorting_desc
+        {
+            background-image: none;
+        }
+        table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc_disabled:after {
+            opacity: 1;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            color: #333 !important;
+            border: 2px solid #979797;
+            background-color: white;
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, white), color-stop(100%, #ffffff)); 
+            background: -webkit-linear-gradient(top, white 0%, #ffffff 100%);
+            background: -moz-linear-gradient(top, white 0%, #ffffff 100%);
+            background: -ms-linear-gradient(top, white 0%, #ffffff 100%);
+            background: -o-linear-gradient(top, white 0%, #ffffff 100%);
+            background: linear-gradient(to bottom, white 0%, #ffffff 100%);
+        }
         @media (min-width: 1200px){
             .responsive{
                 display: table-cell;
@@ -138,24 +162,24 @@
                                         <thead>
                                             <tr>
                                                 <th>PUESTO</th>
-                                                <th>NIVEL/XP</th>
+                                                <th class="responsive">NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th class="responsive">NOMBRE</th>
                                                 <th class="responsive">EMAIL</th>
-                                                <th class="responsive">TdV</th>
+                                                <th>TdV</th>
                                                 <th class="responsive">ESTADO</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
                                                 <th>PUESTO</th>
-                                                <th>NIVEL/XP</th>
+                                                <th class="responsive">NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
                                                 <th class="responsive">NOMBRE</th>
                                                 <th class="responsive">EMAIL</th>
-                                                <th class="responsive">TdV</th>
+                                                <th>TdV</th>
                                                 <th class="responsive">ESTADO</th>
                                             </tr>
                                         </tfoot>
@@ -163,15 +187,15 @@
                                             {% for JUGADOR in JUGADORES %}
                                                 <tr>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
-                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
+                                                    <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.EMAIL }}</a></td>
                                                         {% if JUGADOR.TDV_RED %}
-                                                        <td class="responsive" style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
+                                                        <td style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% else %}
-                                                        <td class="responsive" style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
+                                                        <td style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% endif %}
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
                                                 </tr>
@@ -292,7 +316,20 @@
         {% endif %}
         {% if SECCION == 'CIUDADANOS' %}
                 $('#tabla').DataTable({
-                    "dom": '<"top"iflp<"clear">>rt<"bottom"iflp<"clear">>'
+                    "language": {
+                        "search": "Buscar ciudadano: ",
+                        "lengthMenu": "Mostrando _MENU_ resultados por página",
+                        "zeroRecords": "No hay resultados",
+                        "info": "Página _PAGE_ de _PAGES_",
+                        "infoEmpty": "No hay datos disponibles",
+                        "infoFiltered": "(filtered from _MAX_ total records)",
+                        "paginate": {
+                            "sFirst": "Primera página",
+                            "sPrevious": "Anterior",
+                            "sNext": "Siguiente",
+                            "sLast": "Anterior"
+                        }
+                    }
                 });
         {% endif %}
             });
@@ -300,7 +337,20 @@
             {% if DISTRITOS is defined %}
                 {% for DISTRITO in DISTRITOS %}
                     $('#tabla{{ DISTRITO.getIdUsuarioDistrito() }}').DataTable({
-                        "dom": '<"top"iflp<"clear">>rt<"bottom"iflp<"clear">>'
+                        "language": {
+                            "search": "Buscar ciudadano: ",
+                            "lengthMenu": "Mostrando _MENU_ resultados por página",
+                            "zeroRecords": "No hay resultados",
+                            "info": "Página _PAGE_ de _PAGES_",
+                            "infoEmpty": "No hay datos disponibles",
+                            "infoFiltered": "(filtered from _MAX_ total records)",
+                            "paginate": {
+                                "sFirst": "Primera página",
+                                "sPrevious": "Anterior",
+                                "sNext": "Siguiente",
+                                "sLast": "Anterior"
+                            }
+                        }
                     });
                 {% endfor %}
             {% endif %}
