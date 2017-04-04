@@ -171,10 +171,11 @@ class CronController extends Controller {
                         $contador++;
                     }
                 } else {
-                    $finBloqueo = $CUENTA->getFinbloqueo();
-                    $finBloqueo->add(new \DateInterval('P1D'));
-                    $CUENTA->setFinbloqueo($finBloqueo);
-                    $em->persist($CUENTA);
+//                    $CUENTA = $USUARIO->getIdCuenta();
+//                    $finBloqueo = new \DateTime('now');
+//                    $finBloqueo->add(new \DateInterval('P1D'));
+//                    $CUENTA->setFinbloqueo($finBloqueo);
+//                    $em->persist($CUENTA);
                 }
             }
         }
@@ -417,7 +418,7 @@ class CronController extends Controller {
                         ->setParameters(['ID_USUARIO' => $CIUDADANO->getIdUsuario(), 'ROL' => $ROL_JUGADOR]);
                 $RESTO_CIUDADANOS = $query->getQuery()->getResult();
                 $clasificacionGlobal = Usuario::getClasificacion($doctrine, $CIUDADANO, $RESTO_CIUDADANOS);
-                
+
                 switch ($clasificacionGlobal['PUESTO']) {
                     case '1':
                         $aux = [];
@@ -464,7 +465,6 @@ class CronController extends Controller {
 //                $aux['clasificacion global'] = $clasificacionGlobal['PUESTO'];
 //                $aux['clasificacion distrito'] = $clasificacionEnDistrito['PUESTO'];
 //                Utils::pretty_print($aux);
-
                 // Obtenemos posibles bonificaciones por la clasificación
                 // de nuestro distrito
                 if ($CIUDADANO->getIdDistrito() === $DISTRITO_PRIMERO) {
@@ -508,7 +508,7 @@ class CronController extends Controller {
                 }
             }
         }
-        
+
         $reporte = "";
         if (count($listaCiudadanosPremiados)) {
             foreach ($listaCiudadanosPremiados as $premio) {
@@ -519,7 +519,7 @@ class CronController extends Controller {
         Utils::pretty_print($listaCiudadanosPremiados);
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
-    
+
     /**
      * @Route("/cron/koVacaciones", name="koVacaciones")
      */

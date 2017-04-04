@@ -816,7 +816,7 @@ class CiudadanoController extends Controller {
 
             $CUENTA = $USUARIO->getIdCuenta();
             $finBloqueo = new \DateTime('now');
-            $finBloqueo->add(new \DateInterval('P5D'));
+            $finBloqueo->add(new \DateInterval('P7D'));
             $CUENTA->setFinbloqueo($finBloqueo);
             $em->persist($CUENTA);
 
