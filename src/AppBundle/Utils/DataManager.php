@@ -22,7 +22,7 @@ class DataManager {
         $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $DATOS['TITULO'] = $TITULO;
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
-        $DATOS['BLOQUEO'] = $usuario->getIdCuenta()->getFinbloqueo();
+        $DATOS['BLOQUEO'] = $usuario->getIdCuenta()->getTdvVacaciones();
         $FECHA = new \DateTime('now');
         if ($DATOS['TDV'] < $FECHA) {
             Usuario::setDefuncion($doctrine, $usuario);

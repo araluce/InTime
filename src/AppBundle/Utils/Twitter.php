@@ -31,6 +31,7 @@ class Twitter {
         $tweets = [];
         $tweets['ALIAS'] = strtolower($usuario_tw);
         $tweets['TWEETS'] = Twitter::tweetsFormato($tweetsSinFormato);
+//        $tweets['real_data'] = $tweetsSinFormato;
         
 //        return $tweetsSinFormato;
         return $tweets;

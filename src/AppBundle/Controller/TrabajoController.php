@@ -76,9 +76,13 @@ class TrabajoController extends Controller {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $SEGUIDOS = 0;
-        if (isset($usuario_tw)) {
+        if ($usuario_tw !== "null") {
+            $session->set('usuario_tw', $usuario_tw);
             $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $usuario_tw, $offset);
+        } else {
+            $SEGUIDOS = Twitter::twitter($doctrine, $USUARIO, $session->get('usuario_tw'), $offset);
         }
+        $SEGUIDOS['SESION'] = $session->get('usuario_tw');
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $SEGUIDOS)), 200);
     }

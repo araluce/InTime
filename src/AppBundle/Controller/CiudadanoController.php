@@ -806,19 +806,19 @@ class CiudadanoController extends Controller {
             $PRESTAMO->setInteres(0);
             $PRESTAMO->setFecha(new \DateTime('now'));
             $em->persist($PRESTAMO);
-            if ($tarjeta_experiencia) {
-                $TARJETA_VACACIONES->setUsado(1);
-                $em->persist($TARJETA_VACACIONES);
-            } else {
-                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * ($tiempo / 2), 'Gasto - Semana de vacaciones');
-            }
+            
             $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
 
             $CUENTA = $USUARIO->getIdCuenta();
+            $hoy = new \DateTime('now');
             $finBloqueo = new \DateTime('now');
             $finBloqueo->add(new \DateInterval('P7D'));
             $CUENTA->setFinbloqueo($finBloqueo);
+//            $tdvVacaciones = $hoy->diff($CUENTA->getTdv());
+            $tdvVacaciones = intval($hoy->getTimestamp()) - intval($CUENTA->getTdv()->getTimestamp());
+            $CUENTA->setTdvVacaciones($tdvVacaciones);
             $em->persist($CUENTA);
+            $em->flush();
 
             $USUARIO->setIdEstado($ESTADO_VACACIONES);
             $HOY = new \DateTime('now');
@@ -826,6 +826,13 @@ class CiudadanoController extends Controller {
             $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $em->persist($USUARIO);
+            
+            if ($tarjeta_experiencia) {
+                $TARJETA_VACACIONES->setUsado(1);
+                $em->persist($TARJETA_VACACIONES);
+            } else {
+                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * ($tiempo / 2), 'Cobro - Semana de vacaciones');
+            }
 
             $em->flush();
             Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');

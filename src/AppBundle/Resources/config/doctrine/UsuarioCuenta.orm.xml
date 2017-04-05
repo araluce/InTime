@@ -6,5 +6,6 @@
     </id>
     <field name="tdv" type="datetime" column="tdv" nullable="false"/>
     <field name="finbloqueo" type="datetime" column="finbloqueo" nullable="true"/>
+    <field name="tdvvacaciones" type="integer" column="tdvVacaciones" nullable="false"/>
   </entity>
 </doctrine-mapping>

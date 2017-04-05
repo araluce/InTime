@@ -29,6 +29,13 @@ class UsuarioCuenta
     /**
      * @var integer
      *
+     * @ORM\Column(name="tdvVacaciones", type="integer", nullable=false)
+     */
+    private $tdvvacaciones;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="id_cuenta", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -81,6 +88,29 @@ class UsuarioCuenta
     public function getFinbloqueo()
     {
         return $this->finbloqueo;
+    }
+
+    /**
+     * Set tdvvacaciones
+     *
+     * @param integer $tdvvacaciones
+     * @return UsuarioCuenta
+     */
+    public function setTdvvacaciones($tdvvacaciones)
+    {
+        $this->tdvvacaciones = $tdvvacaciones;
+
+        return $this;
+    }
+
+    /**
+     * Get tdvvacaciones
+     *
+     * @return integer 
+     */
+    public function getTdvvacaciones()
+    {
+        return $this->tdvvacaciones;
     }
 
     /**

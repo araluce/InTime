@@ -359,6 +359,7 @@
                     alert(data.message);
                 }
             });
+            descargarTuits("null");
         }
         function dejarDeSeguir(id_contador) {
             var usuario_tw = $('#alias-'+id_contador).attr('data-alias');
@@ -427,6 +428,7 @@
                         }
                         contenido += '          </div>';
                         contenido += '      </div>';
+                        contenido += '<center><button class="btn btn-sm btn-default"><a href="https://twitter.com/araluce1/status/'+v.ID_STR+'"><span class="fa fa-twitter"></span></a></button></center>';
                         contenido += '  </div>';
                         contenido += '  </div>';
                         contenido += '  <div class="col-xs-12" id="' + v.ID_STR + '">';
