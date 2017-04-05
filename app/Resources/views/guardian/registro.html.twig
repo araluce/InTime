@@ -21,7 +21,8 @@
         .btn-default a{
             color: black;
         }
-        thead{
+        thead,
+        tfoot{
             color: white;
             background: #337ab7;
         }
@@ -35,8 +36,14 @@
             opacity: 1;
         }
         .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            color: #333 !important;
-            border: 2px solid #979797;
+            /*color: #333 !important;*/
+            font-weight: bold;
+            font-size: 102%;
+            /*border: 2px solid #979797;*/
+            border-radius: 50px;
+            color: white !important;
+            background: #337ab7;
+            /*
             background-color: white;
             background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, white), color-stop(100%, #ffffff)); 
             background: -webkit-linear-gradient(top, white 0%, #ffffff 100%);
@@ -44,6 +51,7 @@
             background: -ms-linear-gradient(top, white 0%, #ffffff 100%);
             background: -o-linear-gradient(top, white 0%, #ffffff 100%);
             background: linear-gradient(to bottom, white 0%, #ffffff 100%);
+            */
         }
         @media (min-width: 1200px){
             .responsive{
@@ -324,10 +332,10 @@
                         "infoEmpty": "No hay datos disponibles",
                         "infoFiltered": "(filtered from _MAX_ total records)",
                         "paginate": {
-                            "sFirst": "Primera página",
-                            "sPrevious": "Anterior",
-                            "sNext": "Siguiente",
-                            "sLast": "Anterior"
+                            "sFirst": '<span style="color: #337ab7;" class="fa fa-step-backward"></span>',
+                            "sPrevious": '<span style="color: #337ab7;" class="fa fa-caret-left"></span>',
+                            "sNext": '<span style="color: #337ab7;" class="fa fa-caret-right"></span>',
+                            "sLast": '<span style="color: #337ab7;" class="fa fa-step-forward"></span>'
                         }
                     }
                 });
@@ -345,10 +353,10 @@
                             "infoEmpty": "No hay datos disponibles",
                             "infoFiltered": "(filtered from _MAX_ total records)",
                             "paginate": {
-                                "sFirst": "Primera página",
-                                "sPrevious": "Anterior",
-                                "sNext": "Siguiente",
-                                "sLast": "Anterior"
+                                "sFirst": '<span style="color: #337ab7;" class="fa fa-step-backward"></span>',
+                            "sPrevious": '<span style="color: #337ab7;" class="fa fa-caret-left"></span>',
+                            "sNext": '<span style="color: #337ab7;" class="fa fa-caret-right"></span>',
+                            "sLast": '<span style="color: #337ab7;" class="fa fa-step-forward"></span>'
                             }
                         }
                     });
