@@ -403,28 +403,23 @@ class AlimentacionController extends Controller {
                     $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                         'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
                     ]);
-
                     $ruta = 'USUARIOS/' . $USUARIO->getDni() . '/' . $SECCION->getSeccion() . '/' . $EJERCICIO_CALIFICACION->getIdEjercicioCalificacion();
                     if (!file_exists($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
                     $nombre_entrega = Utils::replaceAccented($ENTREGA->getClientOriginalName());
                     $ENTREGA->move($ruta, $nombre_entrega);
-                    if (!$DATOS_REENTREGA) {
-                        $EJERCICIO_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                            'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
-                        ]);
-                    } else {
-                        $EJERCICIO_ENTREGA = $DATOS_REENTREGA;
-                    }
-                    if ($EJERCICIO_ENTREGA === null) {
-                        $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
-                    }
+                    $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
+//                    if (!$DATOS_REENTREGA) {
+//                        $EJERCICIO_ENTREGA = new \AppBundle\Entity\EjercicioEntrega();
+//                    } else {
+//                        $EJERCICIO_ENTREGA = $DATOS_REENTREGA;
+//                    }
                     $EJERCICIO_ENTREGA->setIdUsuario($USUARIO);
                     $EJERCICIO_ENTREGA->setIdEjercicio($EJERCICIO);
                     $EJERCICIO_ENTREGA->setNombre(Utils::replaceAccented($ENTREGA->getClientOriginalName()));
                     $EJERCICIO_ENTREGA->setMime($ENTREGA->getClientMimeType());
-                    $EJERCICIO_ENTREGA->setFecha($EJERCICIO_CALIFICACION->getFecha());
+                    $EJERCICIO_ENTREGA->setFecha(new \DateTime('now'));
                     $em->persist($EJERCICIO_ENTREGA);
                     $em->flush();
                     return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto entregado correctamente')), 200);

@@ -62,7 +62,7 @@ class Ejercicio {
     }
 
     /**
-     * Para localizar la entrega de un ejercicio de distrito realizada por un integrante del mismo
+     * Localiza la calificación de un ejercicio de distrito realizada por un integrante del mismo
      * @param type $doctrine
      * @param type $EJERCICIO
      * @param type $DISTRITO

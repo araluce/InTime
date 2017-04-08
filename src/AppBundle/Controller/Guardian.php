@@ -582,10 +582,9 @@ class Guardian extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
         }
         $DATOS = [];
+        $DATOS['DISTRITO'] = 0;
         if (Ejercicio::esEjercicioDistrito($doctrine, $EJERCICIO)) {
             $DATOS['DISTRITO'] = 1;
-        } else {
-            $DATOS['DISTRITO'] = 0;
         }
         $DATOS['NOTAS'] = [];
         $NOTAS = $doctrine->getRepository('AppBundle:Calificaciones')->findAll();
@@ -625,11 +624,19 @@ class Guardian extends Controller {
                     $aux['CALIFICACION']['ICONO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
                 }
                 if ($aux['CALIFICACION']['ESTADO'] !== 'solicitado') {
-                    $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                        'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
-                    ]);
-                    $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
-                    $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+//                    $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+//                        'idUsuario' => $CALIFICACION->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+//                    ]);
+                    $query = $doctrine->getManager()->createQueryBuilder('s')
+                            ->addSelect('s')
+                            ->from("\AppBundle\Entity\EjercicioEntrega", 's')
+                            ->where("s.idUsuario = :USUARIO AND s.idEjercicio = :EJERCICIO")
+                            ->setParameters(['USUARIO' => $CIUDADANO, 'EJERCICIO' => $EJERCICIO])
+                            ->orderBy('s.fecha', 'DESC');
+                    ;
+                    $ENTREGA = $query->getQuery()->getResult();
+                    $aux['ENTREGA']['NOMBRE'] = $ENTREGA[0]->getNombre();
+                    $aux['ENTREGA']['FECHA'] = $ENTREGA[0]->getFecha();
                     $aux['ENTREGA']['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
                 }
                 $DATOS['CALIFICACIONES'][] = $aux;
@@ -641,17 +648,28 @@ class Guardian extends Controller {
             }
             foreach ($DISTRITOS as $DISTRITO) {
                 $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
-                $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
+//                $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
+                $query = $doctrine->getManager()->createQueryBuilder('s')
+                        ->addSelect('s')
+                        ->from("\AppBundle\Entity\EjercicioEntrega", 's')
+                        ->where("s.idUsuario IN (:USUARIOS) AND s.idEjercicio = :EJERCICIO")
+                        ->setParameters(['USUARIOS' => array_values($CIUDADANOS), 'EJERCICIO' => $EJERCICIO])
+                        ->orderBy('s.fecha', 'DESC');
+                ;
+                $ENTREGAS = $query->getQuery()->getResult();
                 if (count($CIUDADANOS) && count($ENTREGAS)) {
-                    $CALIFICACION2 = null;
-                    foreach ($ENTREGAS as $ENTREGA) {
-                        $CIUDADANO = $ENTREGA->getIdUsuario();
-                        if (in_array($CIUDADANO, $CIUDADANOS)) {
-                            $CALIFICACION2 = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
-                                'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
-                            ]);
-                        }
-                    }
+//                    $CALIFICACION2 = null;
+//                    foreach ($ENTREGAS as $ENTREGA) {
+//                        $CIUDADANO = $ENTREGA->getIdUsuario();
+//                        if (in_array($CIUDADANO, $CIUDADANOS)) {
+//                            $CALIFICACION2 = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+//                                'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
+//                            ]);
+//                        }
+//                    }
+                    $CALIFICACION2 = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                        'idEjercicio' => $EJERCICIO, 'idUsuario' => $ENTREGAS[0]->getIdUsuario()
+                    ]);
                     if ($CALIFICACION2 !== null) {
                         $aux = [];
                         $aux['CIUDADANO'] = [];
@@ -669,11 +687,19 @@ class Guardian extends Controller {
                             $aux['CALIFICACION']['CALIFICACION'] = $CALIFICACION2->getIdCalificaciones()->getIdCalificaciones();
                             $aux['CALIFICACION']['ICONO'] = $CALIFICACION2->getIdCalificaciones()->getCorrespondenciaIcono();
                         }
-                        $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
-                            'idUsuario' => $CALIFICACION2->getIdUsuario(), 'idEjercicio' => $EJERCICIO
-                        ]);
-                        $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
-                        $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+//                        $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+//                            'idUsuario' => $CALIFICACION2->getIdUsuario(), 'idEjercicio' => $EJERCICIO
+//                        ]);
+                        $query = $doctrine->getManager()->createQueryBuilder('s')
+                                ->addSelect('s')
+                                ->from("\AppBundle\Entity\EjercicioEntrega", 's')
+                                ->where("s.idUsuario = :USUARIO AND s.idEjercicio = :EJERCICIO")
+                                ->setParameters(['USUARIO' => $CALIFICACION2->getIdUsuario(), 'EJERCICIO' => $EJERCICIO])
+                                ->orderBy('s.fecha', 'DESC');
+                        ;
+                        $ENTREGA = $query->getQuery()->getResult();
+                        $aux['ENTREGA']['NOMBRE'] = $ENTREGA[0]->getNombre();
+                        $aux['ENTREGA']['FECHA'] = $ENTREGA[0]->getFecha();
                         $aux['ENTREGA']['ID'] = $CALIFICACION2->getIdEjercicioCalificacion();
                         $DATOS['CALIFICACIONES'][] = $aux;
                     }

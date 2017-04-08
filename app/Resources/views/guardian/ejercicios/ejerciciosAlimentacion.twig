@@ -398,7 +398,7 @@
                 if (!entregas.DISTRITO) {
                     contenido += '   <div class="col-lg-12">';
                     contenido += '      <legend>Datos del ciudadano</legend>';
-                    contenido += '      <a href="/guardian/directorio/getDirectorio/'+v.CIUDADANO.DNI+'">' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI + '</a>';
+                    contenido += '      <a href="/guardian/directorio/getDirectorio/' + v.CIUDADANO.DNI + '">' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + ' @' + v.CIUDADANO.ALIAS + ' DNI' + v.CIUDADANO.DNI + '</a>';
                     contenido += '  </div>';
                 } else {
                     contenido += '   <div class="col-lg-12">';
@@ -421,8 +421,17 @@
                 }
                 contenido += '  <div class="row">';
                 contenido += '  <div class="col-lg-12" style="margin-top: 1%;">';
-                contenido += '      <legend>Evaluación</legend>';
+                
                 if (v.CALIFICACION.ESTADO === 'entregado') {
+                    if (v.CALIFICACION.CALIFICADO) {
+                        contenido += '      <legend>Datos de entrega anterior</legend>';
+                        contenido += '              <div class="slot border-radius">';
+                        contenido += '                  <span class="btn-tienda">';
+                        contenido += '                      <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
+                        contenido += '                  </span>';
+                        contenido += '              </div>';
+                    }
+                    contenido += '      <legend>Evaluación</legend>';
                     contenido += '      <div class="slot fila btn-menu-first">';
                     contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ENTREGA.ID + '' + entregas.NOTAS[0].ID + '" onclick="setNota(' + v.ENTREGA.ID + ',' + entregas.NOTAS[0].ID + ');">';
                     contenido += '              <center><img src="{{ asset('images/badges/') }}' + entregas.NOTAS[0].ICONO + '" /></center>';

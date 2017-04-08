@@ -148,6 +148,14 @@ class DataManager {
         return 0;
     }
 
+    /**
+     * Recolecta la toda la información que relacione al usuario con los un reto
+     * específico de inspección y la retorna de forma estructurada
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $EJERCICIO
+     * @return array
+     */
     static function getDatosEjercicioInspeccion($doctrine, $USUARIO, $EJERCICIO) {
         $aux = [];
         $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
@@ -174,6 +182,14 @@ class DataManager {
         return $aux;
     }
 
+    /**
+     * Recolecta la toda la información que relacione al usuario con los un reto
+     * específico de Paga Extra y la retorna de forma estructurada
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $ejercicio
+     * @return type
+     */
     static function getDatosEjercicioPaga($doctrine, $USUARIO, $ejercicio) {
         $EJERCICIO_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findOneBy([
             'idEjercicio' => $ejercicio, 'idUsu' => $USUARIO
@@ -263,6 +279,11 @@ class DataManager {
         return $DATOS;
     }
 
+    /**
+     * Obtiene el número de solicitudes de asistencia de la semana
+     * @param type $doctrine
+     * @return int
+     */
     static function getCitasPendientesGuardian($doctrine) {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $fecha = new \DateTime('now');
@@ -281,6 +302,11 @@ class DataManager {
         return $DATOS;
     }
 
+    /**
+     * Retorna el número de citas que ha aceptado el GdT en el día actual
+     * @param type $doctrine
+     * @return int
+     */
     static function getCitasDeHoyGuardian($doctrine) {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $fecha = new \DateTime('now');
@@ -300,6 +326,12 @@ class DataManager {
         return $DATOS;
     }
 
+    /**
+     * Retorna el número de entregas pendientes de calificar por el GdT de la 
+     * sección de Alimentación (Comida/Agua)
+     * @param type $doctrine
+     * @return int
+     */
     static function numEntregasAlimentacionGuardian($doctrine) {
         $cont = 0;
         $COMIDA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('comida');
