@@ -954,7 +954,7 @@ class DefaultController extends Controller {
 //                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
                                                 if ($n_sesiones >= 2) {
                                                     $ok = true;
-                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
                                                 }
                                             }
                                         }
@@ -973,7 +973,7 @@ class DefaultController extends Controller {
 //                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
                                                 if ($n_sesiones >= 2) {
                                                     $ok = true;
-                                                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
                                                 }
                                             }
                                         }
@@ -995,33 +995,6 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/cerrarSesionRuntastic/{alias}", name="cerrarSesionRuntastic")
-     */
-    public function cerrarSesionRuntasticAction($alias) {
-        $doctrine = $this->getDoctrine();
-
-        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
-        $CALIFICACIONES_VALIDAS = [];
-        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(3);
-        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(2);
-        $CALIFICACIONES_VALIDAS[] = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(1);
-        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdUsuario($USUARIO);
-        $HOY = new \DateTime('now');
-        if (count($CALIFICACIONES)) {
-            foreach ($CALIFICACIONES as $CALIFICACION) {
-                if (in_array($CALIFICACION->getIdCalificaciones(), $CALIFICACIONES_VALIDAS)) {
-                    if (intval($CALIFICACION->getFecha()->format('W') - 1) === intval($HOY->format('W'))) {
-                        Utils::pretty_print('No superado');
-                        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
-                    }
-                }
-            }
-        }
-        Utils::pretty_print('No superado');
-        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
-    }
-
-    /**
      * @Route("/testComprobarNivelAlias/{alias}", name="testComprobarNivelAlias")
      */
     public function testComprobarNivelAliassAction($alias) {
@@ -1035,6 +1008,21 @@ class DefaultController extends Controller {
         } else {
             Utils::pretty_print('No superado');
         }
+//        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+    }
+    
+    /**
+     * @Route("/ok", name="ok")
+     */
+    public function okAction() {
+//        $doctrine = $this->getDoctrine();
+//
+//        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+//        $unDia = 86400;
+//        $motivo = "Fair play";
+//        foreach($CIUDADANOS as $CIUDADANO){
+//            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $unDia, $motivo);
+//        }
 //        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 

@@ -142,13 +142,13 @@ class Usuario {
         if (!$usuario) {
             return 0;
         }
-        
+
         $noEsSuper = $usuario->getIdRol()->getIdRol() !== 2 && $usuario->getIdRol()->getIdRol() !== 5;
-        
+
         $em = $doctrine->getManager();
         $fecha = new \DateTime('now');
         $tdv = $usuario->getIdCuenta()->getTdv();
-        
+
         if ($noEsSuper) {
             if ($tdv < $fecha) {
                 return 0;
@@ -335,6 +335,86 @@ class Usuario {
     }
 
     /**
+     * Devuelve el puesto mensual que tiene un usuario dentro de un conjunto de 
+     * usuarios por su TdV
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $USUARIOS
+     * @return JsonResponse
+     */
+    static function getClasificacionMes($doctrine, $USUARIO, $USUARIOS) {
+        if ($USUARIO->getSeudonimo() === null) {
+            $RESPUESTA = [];
+            $RESPUESTA['ERROR'] = 'Debes tener un alias para participar en los rankings';
+            $RESPUESTA['PUESTO'] = 0;
+            return $RESPUESTA;
+        }
+        if (!count($USUARIOS)) {
+            $RESPUESTA = [];
+            $RESPUESTA['ERROR'] = 'No hay usuarios';
+            $RESPUESTA['PUESTO'] = 0;
+            return $RESPUESTA;
+        }
+        $query = $doctrine
+                ->getRepository('AppBundle:UsuarioMovimiento')
+                ->createQueryBuilder('u');
+        $CUENTAS = [];
+        $query->select('u');
+        $query->where('u.idUsuario = :ID_USUARIO');
+        $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
+        $movimientos = $query->getQuery()->getResult();
+        if (!count($movimientos)) {
+            $RESPUESTA = [];
+            $RESPUESTA['ERROR'] = 'Aún no has participado este mes';
+            $RESPUESTA['PUESTO'] = 0;
+            return $RESPUESTA;
+        }
+        $cantidad = 0;
+        foreach ($movimientos as $movimiento) {
+            $fecha = $movimiento->getFecha();
+            if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+                $cantidad += $movimiento->getCantidad();
+            }
+        }
+        $puesto = 1;
+        foreach ($USUARIOS as $U) {
+            if ($U->getSeudonimo() !== null && $U !== $USUARIO) {
+                $aux = [];
+                $aux['UsuarioId'] = $U->getIdUsuario();
+                $aux['UsuarioAlias'] = $U->getSeudonimo();
+
+                $query->select('SUM(u.cantidad)');
+                $query->where('u.idUsuario = :ID_USUARIO');
+                $query->setParameter('ID_USUARIO', $U->getIdUsuario());
+                $aux['UsuarioMovimientos'] = $query->getQuery()->getSingleScalarResult();
+                if ($aux['UsuarioMovimientos'] !== null && $aux['UsuarioMovimientos'] > $cantidad) {
+                    $puesto++;
+                }
+                $CUENTAS[] = $aux;
+            }
+        }
+        $RESPUESTA = [];
+        $RESPUESTA['ID'] = $USUARIO->getIdUsuario();
+        $RESPUESTA['ALIAS'] = $USUARIO->getSeudonimo();
+        $RESPUESTA['CANTIDAD'] = $cantidad;
+        $RESPUESTA['PUESTO'] = $puesto;
+        return $RESPUESTA;
+    }
+
+    /**
+     * Devuelve el puesto mensual que tiene un usuario dentro de un conjunto de 
+     * usuarios por su TdV en formato JSon
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $USUARIOS
+     * @return JsonResponse
+     */
+    static function getClasificacionMesJsonResponse($doctrine, $USUARIO, $USUARIOS) {
+        $RESPUESTA = Usuario::getClasificacionMes($doctrine, $USUARIO, $USUARIOS);
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $RESPUESTA)), 200);
+    }
+
+    /**
      * Devuelve el puesto que tiene un usuario dentro de un conjunto de usuarios
      * por su TdV
      * @param type $doctrine
@@ -347,6 +427,11 @@ class Usuario {
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $RESPUESTA)), 200);
     }
 
+    /**
+     * Devuelve cada uno de los distritos ordenados por cantidad de TdV acumulado
+     * @param type $doctrine
+     * @return type
+     */
     static function getClasificacionDistritos($doctrine) {
         $RESPUESTA = [];
         $numMaxCiudadanos = 0;
@@ -383,6 +468,70 @@ class Usuario {
                         $cant = $query->getQuery()->getSingleScalarResult();
                         if ($cant !== null) {
                             $aux['CANTIDAD'] += $cant;
+                        }
+                    }
+                    $cantidadMedia = $aux['CANTIDAD'] / $contadorCiudadanos;
+                    for ($i = $contadorCiudadanos; $i < $numMaxCiudadanos; $i++) {
+                        $aux['CANTIDAD'] += $cantidadMedia;
+                    }
+                }
+                $RESPUESTA[] = $aux;
+            }
+            foreach ($RESPUESTA as $clave => $fila) {
+                $C[$clave] = $fila['CANTIDAD'];
+                $D[$clave] = $fila['DISTRITO'];
+            }
+            array_multisort($C, SORT_DESC, $D, SORT_ASC, $RESPUESTA);
+        }
+        return $RESPUESTA;
+    }
+
+    /**
+     * Devuelve cada uno de los distritos ordenados por cantidad de TdV acumulado
+     * durante un mes
+     * @param type $doctrine
+     * @return type
+     */
+    static function getClasificacionDistritosMes($doctrine) {
+        $RESPUESTA = [];
+        $numMaxCiudadanos = 0;
+        $DISTRITOS = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
+        if (count($DISTRITOS)) {
+            foreach ($DISTRITOS AS $DISTRITO) {
+                $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+                $contadorCiudadanos = 0;
+                if (count($CIUDADANOS)) {
+                    foreach ($CIUDADANOS AS $CIUDADANO) {
+                        $contadorCiudadanos++;
+                        if ($numMaxCiudadanos < $contadorCiudadanos) {
+                            $numMaxCiudadanos = $contadorCiudadanos;
+                        }
+                    }
+                }
+            }
+            foreach ($DISTRITOS AS $DISTRITO) {
+                $aux = [];
+                $aux['DISTRITO'] = $DISTRITO->getNombre();
+                $aux['CANTIDAD'] = 0;
+                $USUARIOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
+                if (count($USUARIOS)) {
+                    $contadorCiudadanos = 0;
+                    foreach ($USUARIOS AS $USUARIO) {
+                        $contadorCiudadanos++;
+                        $query = $doctrine
+                                ->getRepository('AppBundle:UsuarioMovimiento')
+                                ->createQueryBuilder('um');
+                        $query->select('um');
+                        $query->where('um.idUsuario = :ID_USUARIO');
+                        $query->setParameter('ID_USUARIO', $USUARIO->getIdUsuario());
+                        $movimientos = $query->getQuery()->getResult();
+                        if (count($movimientos)) {
+                            foreach ($movimientos as $movimiento) {
+                                $fecha = $movimiento->getFecha();
+                                if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+                                    $aux['CANTIDAD'] += $movimiento->getCantidad();
+                                }
+                            }
                         }
                     }
                     $cantidadMedia = $aux['CANTIDAD'] / $contadorCiudadanos;
@@ -754,7 +903,7 @@ class Usuario {
         $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
         $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
 
-        return array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion);
+//        return array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion);
         if ($balon && $deporte && $inspeccion) {
             Usuario::subirNivel($doctrine, $USUARIO);
             return 1;
@@ -915,7 +1064,7 @@ class Usuario {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $SISTEMA = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GDT);
         $CHAT_COMUN = $doctrine->getRepository('AppBundle:Chat')->findOneByIdChat(1);
-        
+
         $mensajesDeDuelo = [
             'El duelo es un proceso, no un estado. <br><span style="float: right;"><b><i>Anne</i></b></span>',
             'El que encubre su dolor no encuentra remedio para él. <br><span style="float: right;"><b><i>Proverbio turco</i></b></span>',

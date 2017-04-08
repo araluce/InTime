@@ -222,6 +222,7 @@
         .green-number-xs {
             color: #41a68d;
         }
+        #clasificacion-distritosMes,
         #clasificacion-distritos{
             font-size: 45px;
         }
@@ -403,6 +404,7 @@
             .clasificacion span{
                 font-size: 60px;
             }
+            #clasificacion-distritosMes,
             #clasificacion-distritos{
                 font-size: 25px;
             }
@@ -455,7 +457,7 @@
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab">
+                            <button type="button" id="menu-primer" class="btn btn-default" href="#tab4" data-toggle="tab" onclick="actualizarMovimientos();">
                                 <img src="{{ asset('images/iconos/Jugador/Consultar_movimientos.png') }}" />
                                 <div class="hidden-xs">MOVIMIENTOS</div>
                             </button>
@@ -583,6 +585,34 @@
                                     <div class="col-lg-6 col-lg-offset-3" style="padding: 2%;">
                                         <div class="clasificacion bordes border-radius">
                                             <center>
+                                                <h3><i class="fa fa-university" aria-hidden="true"></i> DISTRITOS (MES)</h3>
+                                                <div id="clasificacion-distritosMes"></div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6" style="padding: 2%;">
+                                        <div class="clasificacion bordes border-radius">
+                                            <center>
+                                                <h3><i class="fa fa-globe" aria-hidden="true"></i> GLOBAL (MES)</h3>
+                                                <span id="puesto-globalMes" class="animated pulse"></span>
+                                            </center>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="padding: 2%;">
+                                        <div class="clasificacion bordes border-radius" >
+                                            <center>
+                                                <h3><i class="fa fa-users" aria-hidden="true"></i> DISTRITO (MES)</h3>
+                                                <span id="puesto-distritoMes" class="animated pulse"></span>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-lg-offset-3" style="padding: 2%;">
+                                        <div class="clasificacion bordes border-radius">
+                                            <center>
                                                 <h3><i class="fa fa-university" aria-hidden="true"></i> DISTRITOS</h3>
                                                 <div id="clasificacion-distritos"></div>
                                             </center>
@@ -655,10 +685,12 @@
             $('#minicartas').show();
         }
         $(document).ready(function () {
-            actualizarMovimientos();
             getClasificacionGlobal();
             getClasificacionDistrito();
             getClasificacionDistritos();
+            getClasificacionGlobalMes();
+            getClasificacionDistritoMes();
+            getClasificacionDistritosMes();
             $('#info-form').submit(function (event) {
                 todoOk = true;
                 contenido = '';
@@ -937,6 +969,45 @@
                          */
                         contenido += '<br/>';
                         $("#clasificacion-distritos").append(contenido);
+                    });
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function getClasificacionGlobalMes() {
+            ruta = '/ciudadano/info/getClasificacionGlobalMes';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $("#puesto-globalMes").html(data.message.PUESTO);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+
+        function getClasificacionDistritoMes() {
+            ruta = '/ciudadano/info/getClasificacionDistritoMes';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $("#puesto-distritoMes").html(data.message.PUESTO);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function getClasificacionDistritosMes() {
+            ruta = '/ciudadano/info/getClasificacionDistritosMes';
+            $.get(ruta, function (data, status) {
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (k, v) {
+                        contenido = '<div style="float: left;">';
+                        contenido += '' + v.DISTRITO;
+                        contenido += '</div>';
+                        contenido += '<br/>';
+                        $("#clasificacion-distritosMes").append(contenido);
                     });
                 } else {
                     console.log(data);

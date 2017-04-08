@@ -193,6 +193,31 @@ class JugadorController extends Controller {
 
         return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
+    
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionGlobalMes", name="getClasificacionGlobalMes")
+     */
+    public function getClasificacionGlobalMesAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionGlobalMes');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL')
+                ->setParameters(['ID_USUARIO' => $USUARIO->getIdUsuario(), 'ROL' => $ROL]);
+        $USUARIOS = $query->getQuery()->getResult();
+
+        return Usuario::getClasificacionMesJsonResponse($doctrine, $USUARIO, $USUARIOS);
+    }
 
     /**
      * 
@@ -226,6 +251,39 @@ class JugadorController extends Controller {
 
         return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
+    
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionDistritoMes", name="getClasificacionDistritoMes")
+     */
+    public function getClasificacionDistritoMesAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $qb = $em->createQueryBuilder();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionDistritoMes');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $id_usuario = $session->get('id_usuario');
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
+        $DISTRITO = $USUARIO->getIdDistrito();
+        if ($DISTRITO === null) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No perteneces a ningún distrito'));
+        }
+        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $qb->select('u')
+                ->from('\AppBundle\Entity\Usuario', 'u')
+                ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL AND u.idDistrito = :DISTRITO')
+                ->setParameters([
+            'ID_USUARIO' => $USUARIO->getIdUsuario(),
+            'ROL' => $ROL,
+            'DISTRITO' => $DISTRITO
+        ]);
+        $USUARIOS = $query->getQuery()->getResult();
+
+        return Usuario::getClasificacionMesJsonResponse($doctrine, $USUARIO, $USUARIOS);
+    }
 
     /**
      * 
@@ -239,6 +297,22 @@ class JugadorController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
         }
         $RESPUESTA = Usuario::getClasificacionDistritos($doctrine);
+        
+        return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
+    }
+    
+    /**
+     * 
+     * @Route("/ciudadano/info/getClasificacionDistritosMes", name="getClasificacionDistritosMes")
+     */
+    public function getClasificacionDistritosMesAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/getClasificacionDistritos');
+        if (!$status) {
+            return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
+        }
+        $RESPUESTA = Usuario::getClasificacionDistritosMes($doctrine);
         
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
