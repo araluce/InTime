@@ -66,7 +66,10 @@ class PrestamosController extends Controller {
             }
             if($USUARIO->getIdEstado()->getNombre() === 'Fallecido'){
                 return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Estás muerto. No puedes solicitar tiempo.<br><br>RIP: @'.$alias), 200);
-            } 
+            }
+            if(Usuario::tieneMasDeSieteDiasDeVida($doctrine, $USUARIO)){
+                return new JsonResponse(array('estado' => 'ERROR', 'message' => 'No te puedo prestar TdV... tienes más de 7 días de vida.'), 200);
+            }
             $tiempo = $request->request->get('tiempo');
             $bonificacion = $request->request->get('bonificacion');
             if ($bonificacion) {
