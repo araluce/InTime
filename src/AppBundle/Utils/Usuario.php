@@ -6,13 +6,24 @@ use \Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 
+/**
+ * Clase que gestiona todo lo relacionado con el usuario
+ * 
+ * @author araluce
+ */
 class Usuario {
 
+    /**
+     * Función que carga una plantilla de gestión o ciudadano dependiendo del
+     * rol del usuario
+     * @param type $usuario
+     * @param type $session
+     * @return render
+     */
     public function inicio_usuario($usuario, $session) {
         $rol_usu = $usuario->getIdRol()->getIdRol();
 
         if ($rol_usu === 1) {
-
             $render = $this->inicio_ciudadano($usuario, $session);
         }
         if ($rol_usu === 2) {
@@ -21,11 +32,21 @@ class Usuario {
         return $render;
     }
 
+    /**
+     * Retorna la plantilla de administración (GdT)
+     * @return render
+     */
     public function inicio_guardian() {
         $DATOS = ['TITULO' => 'InTime - Guardián del Tiempo'];
         return $this->render('guardian/guardian.html.twig', $DATOS);
     }
 
+    /**
+     * Retorna la plantilla de ciudadano (Rol normal)
+     * @param type $usuario
+     * @param type $session
+     * @return render
+     */
     public function inicio_ciudadano($usuario, $session) {
         $DATOS = [];
 
@@ -49,6 +70,11 @@ class Usuario {
         return sha1($salt . $password);
     }
 
+    /**
+     * Cambia el estado de un usuario de inactivo a activo
+     * @param type $doctrine
+     * @param type $USUARIO
+     */
     static function activar_usuario($doctrine, $USUARIO) {
         $USUARIO_ESTADO = $USUARIO->getIdEstado();
 
@@ -62,65 +88,6 @@ class Usuario {
             $em->persist($USUARIO);
             $em->flush();
         }
-    }
-
-    static function addTdVEjercicio($doctrine, $USUARIO, $timestamp, $tdvARestar = null) {
-        $em = $doctrine->getManager();
-        $TdV_u = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
-        $TdV = 0;
-        $TdV += $TdV_u;
-        $TdV += $timestamp;
-        if ($tdvARestar !== null) {
-            $nota_numerica = $tdvARestar->getCorrespondenciaNumerica();
-            $tdvARestarTimestamp = $doctrine->getRepository('AppBundle:Constante')
-                            ->findOneByClave('pago_paga_' . $nota_numerica)->getValor();
-            $TdV -= $tdvARestarTimestamp;
-        }
-        $HOY = new \DateTime('now');
-        //$TDV_TIMESTAMP = $HOY->getTimestamp() + $TdV;
-        $TDV_FORMATO = date('Y-m-d H:i:s', intval($TdV));
-        $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $TDV_FORMATO));
-        $em->persist($USUARIO);
-        $em->flush();
-    }
-
-    /**
-     * Retorna el TdV de bonificación dependiendo de la nota obtenida
-     * @param doctrine $doctrine
-     * @param Entity:CALIFICACIONES $CALIFICACION
-     * @return TdV|null
-     */
-    static function getTimesTampCalificacion($doctrine, $CALIFICACION) {
-        if (!$CALIFICACION === null) {
-            return null;
-        }
-        $correspondencia_numerica = $CALIFICACION->getCorrespondenciaNumerica();
-        return $doctrine->getRepository('AppBundle:Constante')
-                        ->findOneByClave('pago_paga_' . $correspondencia_numerica)->getValor();
-    }
-
-    /**
-     * Obtener todos los usuarios por Rol (especificando el Rol por String)
-     * 
-     * @param type $doctrine
-     * @param type $stringRol
-     * @return array<Entity:Usuario> Array de usuarios con el Rol $stringRol, -1 en cualquier otro caso
-     */
-    static function getAllByStringRol($doctrine, $stringRol) {
-        $ROL = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre($stringRol);
-        return \AppBundle\Utils\Usuario::getAllByIdRol($doctrine, $ROL);
-    }
-
-    /**
-     * Obtener todos los usuarios por rol (especificando el Rol por Entidad)
-     * 
-     * @param type $doctrine
-     * @param Entity:Rol $ROL Entidad Rol que queremos buscar
-     * @return array<Entity:Usuario> Array de los usuarios con el rol $ROL
-     */
-    static function getAllByIdRol($doctrine, $ROL) {
-        $USUARIOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdRol($ROL);
-        return $USUARIOS;
     }
 
     /**
@@ -195,7 +162,7 @@ class Usuario {
      * donación al usuario que se pasa por parámetro.
      * 
      * @param type $doctrine
-     * @param type $session
+     * @param type $USUARIO
      * @param Entity $usuario_destino Usuario destino de la donación
      * @return int 1 si se ha realizado una donación con anterioridad al 
      * usuario pasado por parámetro, 0 en cualquier otro caso
@@ -213,6 +180,25 @@ class Usuario {
 //            Utils::pretty_print($USUARIO->getSeudonimo() . ' ha donado a ' . $usuario_destino->getSeudonimo() . ': ' . $DONACION->getCantidad());
             return $DONACION->getCantidad();
         }
+        return 0;
+    }
+    
+    /**
+     * Esta función retorna si el usuario tiene más de 7 días de vida o no
+     * 
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @return int
+     */
+    static function tieneMasDeSieteDiasDeVida($doctrine, $USUARIO) {
+        $em = $doctrine->getManager();
+        
+        $hoy = new \DateTime('now');
+        $sieteDias = $hoy->getTimestamp() + 604800;
+        if($USUARIO->getIdCuenta()->getTdv()->getTimestamp() >= $sieteDias){
+            return 1;
+        }
+                
         return 0;
     }
 

@@ -698,6 +698,9 @@ class CiudadanoController extends Controller {
         if (Usuario::heDonadoYa($doctrine, $USUARIO, $USUARIO_DESTINO)) {
             return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Lo siento, ya habías donado a @' . $USUARIO_DESTINO->getSeudonimo() . ' anteriormente. No puedes volver a donarle TdV.')), 200);
         }
+        if (Usuario::tieneMasDeSieteDiasDeVida($doctrine, $USUARIO_DESTINO)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Lo siento, el ciudadano al que intentas realizar una donación tiene más de 7 días de vida.')), 200);
+        }
         if ($bonificacion) {
             $DOS_DIAS = 172800;
             $CARTA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(4);

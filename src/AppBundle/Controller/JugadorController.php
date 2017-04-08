@@ -18,6 +18,11 @@ use AppBundle\Utils\Utils;
 use AppBundle\Utils\Distrito;
 
 /**
+ * Para hacer:
+ *      1) Ciudadano del mes.
+ */
+
+/**
  * Description of JugadorController
  *
  * @author araluce
