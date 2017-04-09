@@ -266,6 +266,9 @@
         #nivel-usuario{
             font-size: 50px;
         }
+        td img{
+            width: 100px;
+        }
         @media (max-width: 760px){
             #mensaje-texto,
             .modal-title{
@@ -424,6 +427,9 @@
             #clasificacion-distritos{
                 font-size: 25px;
             }
+            td img{
+                width: 60px;
+            }
         }
     </style>
 {% endblock %}
@@ -452,9 +458,9 @@
                             </button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="button" id="clasificaciones" class="btn btn-default" href="#tab3" data-toggle="tab" onclick="actualizarEntregasPagaExtra();">
-                                <img src="{{ asset('images/iconos/Jugador/Paga_extra.png') }}" />
-                                <div class="hidden-xs">PAGA EXTRA</div>
+                            <button type="button" id="clasificaciones" class="btn btn-default" href="#tab3" data-toggle="tab" onclick="actualizarEntregasFelicidad();">
+                                <img src="{{ asset('images/iconos/Jugador/Felicidad.png') }}" />
+                                <div class="hidden-xs">FELICIDAD</div>
                             </button>
                         </div>
                         <div class="btn-group" role="group">
@@ -573,6 +579,9 @@
                                                     <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Entrega" style="width: 137px;">
                                                         Entrega
                                                     </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Calificación" style="width: 137px;">
+                                                        Calificación
+                                                    </th>
                                                     <th style="display:none" class="sorting" tabindex="0" aria-controls="movimientosC" aria-label=": activate to sort column ascending" rowspan="1" colspan="1">
 
                                                     </th>
@@ -591,6 +600,12 @@
                                         <table id="entregaPaga" class="display contentInfo dataTable no-footer dtr-inline" cellspacing="0" cellpadding="1" width="100%" role="grid" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Fase" style="width: 60px;">
+                                                        Fase
+                                                    </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Tipo" style="width: 60px;">
+                                                        Tipo
+                                                    </th>
                                                     <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="F.Entrega" style="width: 128px;">
                                                         F.Entrega
                                                     </th>
@@ -600,12 +615,15 @@
                                                     <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Entrega" style="width: 137px;">
                                                         Entrega
                                                     </th>
+                                                    <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="Porcentaje" style="width: 60px;">
+                                                        Porcentaje
+                                                    </th>
                                                     <th style="display:none" class="sorting" tabindex="0" aria-controls="movimientosC" aria-label=": activate to sort column ascending" rowspan="1" colspan="1">
 
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="tabla-entregaPaga">
+                                            <tbody id="tabla-entregaFelicidad">
 
                                             </tbody>
                                         </table>
@@ -880,6 +898,15 @@
                         contenido += '  <td>';
                         contenido += '      <a href="{{ asset('USUARIOS/') }}' + v.RUTA + '">' + v.NOMBRE + '</a>';
                         contenido += '  </td>';
+                        if (v.CALIFICADO) {
+                            contenido += '  <td>';
+                            contenido += '      <img src="{{ asset('images/badges/') }}' + v.CALIFICACION + '" />';
+                            contenido += '  </td>';
+                        } else {
+                            contenido += '<td>';
+                            contenido += '  <span class="red-number-xs">RETO NO CALIFICADO<span>';
+                            contenido += '</td>';
+                        }
                         contenido += '</tr>';
                     });
                     $('#tabla-entregaAlimentacion').append(contenido);
@@ -910,6 +937,42 @@
                         contenido += '</tr>';
                     });
                     $('#tabla-entregaPaga').append(contenido);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        function actualizarEntregasFelicidad() {
+            $('#tabla-entregaFelicidad').empty();
+            contenido = '';
+            var dni = $("#dni-ciudadano").val();
+            ruta = '/guardian/info/actualizarEntregasFelicidad/' + dni;
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                if (data.estado === 'OK') {
+                    $.each(data.message, function (k, v) {
+                        contenido += '<tr class="even" role="row">';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.FASE;
+                        contenido += '  </td>';
+                         contenido += '  <td>';
+                        contenido += '      ' + v.TIPO;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.FECHA;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.ENUNCIADO;
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      <a href="{{ asset('USUARIOS/') }}' + v.RUTA + '">' + v.NOMBRE + '</a>';
+                        contenido += '  </td>';
+                        contenido += '  <td>';
+                        contenido += '      ' + v.PORCENTAJE + '%';
+                        contenido += '  </td>';
+                        contenido += '</tr>';
+                    });
+                    $('#tabla-entregaFelicidad').append(contenido);
                 } else {
                     console.log(data);
                 }

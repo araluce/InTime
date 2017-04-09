@@ -1465,17 +1465,22 @@ class Guardian extends Controller {
                 if (null === $ejercicioDistrito) {
                     $aux['DISTRITO'] = 0;
                 }
-                $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+                $aux['ENUNCIADO'] = Utils::recortar_texto($EJERCICIO->getEnunciado());
                 $aux['FECHA'] = $ENTREGA->getFecha()->format('h:m:s d/m/Y');
                 $aux['NOMBRE'] = $ENTREGA->getNombre();
                 $aux['RUTA'] = $USUARIO->getDni() . '/' . $aux['SECCION'] . '/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['NOMBRE'];
+                $aux['CALIFICADO'] = 0;
+                if (null !== $CALIFICACION->getIdCalificaciones()) {
+                    $aux['CALIFICADO'] = 1;
+                    $aux['CALIFICACION'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
+                }
                 $DATOS[] = $aux;
             }
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
-    
+
     /**
      * @Route("/guardian/info/actualizarEntregasPaga/{dni}", name="actualizarEntregasPaga")
      */
@@ -1504,7 +1509,7 @@ class Guardian extends Controller {
                 $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
                     'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
                 ]);
-                $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+                $aux['ENUNCIADO'] = Utils::recortar_texto($EJERCICIO->getEnunciado());
                 $aux['FECHA'] = $ENTREGA->getFecha()->format('h:m:s d/m/Y');
                 $aux['NOMBRE'] = $ENTREGA->getNombre();
                 $aux['RUTA'] = $USUARIO->getDni() . '/' . $aux['SECCION'] . '/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['NOMBRE'];
@@ -1513,6 +1518,113 @@ class Guardian extends Controller {
         }
 
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/info/actualizarEntregasFelicidad/{dni}", name="actualizarEntregasFelicidad")
+     */
+    public function actualizarEntregasFelicidadAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/actualizarEntregasFelicidad', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $DATOS = [];
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        if (null === $USUARIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe un usuario con este dni')), 200);
+        }
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdUsuario($USUARIO);
+        if (!count($ENTREGAS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este usuario no ha realizado ninguna entrega')), 200);
+        }
+        foreach ($ENTREGAS as $ENTREGA) {
+            $aux = [];
+            $EJERCICIO = $ENTREGA->getIdEjercicio();
+            $aux['SECCION'] = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
+            if ($aux['SECCION'] === 'felicidad') {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+                ]);
+                $FELICIDAD_PROPUESTA = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneByIdEjercicioPropuesta($EJERCICIO);
+                if (null !== $FELICIDAD_PROPUESTA) {
+                    $aux['TIPO'] = "Propuesta";
+                    $aux['ENUNCIADO'] = Utils::recortar_texto($FELICIDAD_PROPUESTA->getEnunciado());
+                    $aux['FASE'] = $FELICIDAD_PROPUESTA->getFase();
+                    $aux['PORCENTAJE'] = $FELICIDAD_PROPUESTA->getPorcentaje();
+                }
+                $FELICIDAD_ENTREGA = $doctrine->getRepository('AppBundle:EjercicioFelicidad')->findOneByIdEjercicioEntrega($EJERCICIO);
+                if (null !== $FELICIDAD_ENTREGA) {
+                    $aux['TIPO'] = "Evidencia";
+                    $aux['ENUNCIADO'] = Utils::recortar_texto($FELICIDAD_ENTREGA->getEnunciado());
+                    $aux['FASE'] = $FELICIDAD_ENTREGA->getFase();
+                    $aux['PORCENTAJE'] = $FELICIDAD_ENTREGA->getPorcentaje();
+                }
+                $aux['FECHA'] = $ENTREGA->getFecha()->format('h:m:s d/m/Y');
+                $aux['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['RUTA'] = $USUARIO->getDni() . '/' . $aux['SECCION'] . '/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['NOMBRE'];
+                $DATOS[] = $aux;
+            }
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
+    /**
+     * @Route("/guardian/info/vacacionesParaTodos", name="vacacionesParaTodos")
+     */
+    public function vacacionesParaTodosAction(Request $request, $dni) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            // Comprobamos que el usuario es admin, si no, redireccionamos a /
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/vacacionesParaTodos', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+            }
+            $tiempo = $request->request->get('tiempo');
+            if($timepo <= 0){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes asignar un tiempo de vacaciones')), 200);
+            }
+            $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+            if (!count($CIUDADANOS)) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ciudadanos vivos')), 200);
+            }
+            $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
+            $hoy = new \DateTime('now');
+            $finBloqueoTimestamp = new \DateTime('now');
+            $finBloqueoTimestamp = $finBloqueoTimestamp->getTimestamp() + $tiempo;
+            $finBloqueo = new \DateTime();
+            foreach ($CIUDADANOS as $CIUDADANO) {
+                // Ponemos la fecha del fin de vacaciones y el tiempo que se mostrará
+                $CUENTA = $CIUDADANO->getIdCuenta();
+                $CUENTA->setFinbloqueo($finBloqueo->setTimestamp($finBloqueoTimestamp));
+                $tdvVacaciones = intval($hoy->getTimestamp()) - intval($CUENTA->getTdv()->getTimestamp());
+                $CUENTA->setTdvVacaciones($tdvVacaciones);
+
+                // Sumamos el tdv correspondiente a las vacaciones a su cuenta
+                $TDV_USUARIO = $CIUDADANO->getIdCuenta()->getTdv()->getTimestamp();
+                $TDV_RESTANTE = $TDV_USUARIO + $tiempo;
+                $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
+                $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
+                $CUENTA->setTdv($TDV_RESTANTE_DATETIME);
+                $em->persist($CUENTA);
+
+                // Le damos de comer y beber
+                $CIUDADANO->setIdEstado($ESTADO_VACACIONES);
+                $CIUDADANO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $hoy));
+                $CIUDADANO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $hoy));
+                $em->persist($CIUDADANO);
+                
+            }
+            $em->flush();
+
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los ciudadanos están de vacaciones')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
 
 }
