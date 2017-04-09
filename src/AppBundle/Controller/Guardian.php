@@ -1432,4 +1432,87 @@ class Guardian extends Controller {
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS['MOVIMIENTOS'])));
     }
 
+    /**
+     * @Route("/guardian/info/actualizarEntregasAlimentacion/{dni}", name="actualizarEntregasAlimentacion")
+     */
+    public function actualizarEntregasAlimentacionAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/actualizarEntregasAlimentacion', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $DATOS = [];
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        if (null === $USUARIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe un usuario con este dni')), 200);
+        }
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdUsuario($USUARIO);
+        if (!count($ENTREGAS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este usuario no ha realizado ninguna entrega')), 200);
+        }
+        foreach ($ENTREGAS as $ENTREGA) {
+            $aux = [];
+            $EJERCICIO = $ENTREGA->getIdEjercicio();
+            $aux['SECCION'] = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
+            if ($aux['SECCION'] === 'comida' || $aux['SECCION'] === 'bebida') {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+                ]);
+                $ejercicioDistrito = $doctrine->getRepository('AppBundle:EjercicioDistrito')->findOneByIdEjercicio($EJERCICIO);
+                $aux['DISTRITO'] = 1;
+                if (null === $ejercicioDistrito) {
+                    $aux['DISTRITO'] = 0;
+                }
+                $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+                $aux['FECHA'] = $ENTREGA->getFecha()->format('h:m:s d/m/Y');
+                $aux['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['RUTA'] = $USUARIO->getDni() . '/' . $aux['SECCION'] . '/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['NOMBRE'];
+                $DATOS[] = $aux;
+            }
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+    
+    /**
+     * @Route("/guardian/info/actualizarEntregasPaga/{dni}", name="actualizarEntregasPaga")
+     */
+    public function actualizarEntregasPagaAction(Request $request, $dni) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        // Comprobamos que el usuario es admin, si no, redireccionamos a /
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/actualizarEntregasPaga', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $DATOS = [];
+        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByDni($dni);
+        if (null === $USUARIO) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No existe un usuario con este dni')), 200);
+        }
+        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdUsuario($USUARIO);
+        if (!count($ENTREGAS)) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Este usuario no ha realizado ninguna entrega')), 200);
+        }
+        foreach ($ENTREGAS as $ENTREGA) {
+            $aux = [];
+            $EJERCICIO = $ENTREGA->getIdEjercicio();
+            $aux['SECCION'] = $EJERCICIO->getIdEjercicioSeccion()->getSeccion();
+            if ($aux['SECCION'] === 'paga_extra') {
+                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                    'idEjercicio' => $EJERCICIO, 'idUsuario' => $USUARIO
+                ]);
+                $aux['ENUNCIADO'] = $EJERCICIO->getEnunciado();
+                $aux['FECHA'] = $ENTREGA->getFecha()->format('h:m:s d/m/Y');
+                $aux['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['RUTA'] = $USUARIO->getDni() . '/' . $aux['SECCION'] . '/' . $CALIFICACION->getIdEjercicioCalificacion() . '/' . $aux['NOMBRE'];
+                $DATOS[] = $aux;
+            }
+        }
+
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
+    }
+
 }
