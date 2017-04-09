@@ -142,7 +142,7 @@ class CiudadanoController extends Controller {
                 $aux['ULTIMO_MENSAJE'] = $UltimoMensaje[0]->getMensaje();
                 $aux['FECHA_ULTIMO_MENSAJE'] = $UltimoMensaje[0]->getFecha()->format('H:i:s d-m-Y');
                 $aux['VISTO'] = $UltimoMensaje[0]->getVisto();
-                if($UltimoMensaje[0]->getIdUsuario() !== $USUARIO){
+                if ($UltimoMensaje[0]->getIdUsuario() !== $USUARIO) {
                     $aux['MIO'] = 0;
                 }
             }
@@ -793,7 +793,7 @@ class CiudadanoController extends Controller {
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes tarjeta de vacaciones')), 200);
                 }
             }
-            $tiempo = 432000;
+            $tiempo = 6048000;
             $VACACIONES = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([
                 'idUsuario' => $USUARIO,
                 'motivo' => 'vacaciones'
@@ -809,7 +809,7 @@ class CiudadanoController extends Controller {
             $PRESTAMO->setInteres(0);
             $PRESTAMO->setFecha(new \DateTime('now'));
             $em->persist($PRESTAMO);
-            
+
             $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
 
             $CUENTA = $USUARIO->getIdCuenta();
@@ -829,16 +829,24 @@ class CiudadanoController extends Controller {
             $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
             $em->persist($USUARIO);
-            
+
             if ($tarjeta_experiencia) {
                 $TARJETA_VACACIONES->setUsado(1);
                 $em->persist($TARJETA_VACACIONES);
             } else {
-                Usuario::operacionSobreTdV($doctrine, $USUARIO, (-1) * ($tiempo / 2), 'Cobro - Semana de vacaciones');
+                Usuario::operacionSobreTdV($doctrine, $USUARIO, -216000, 'Cobro - Semana de vacaciones');
             }
-
             $em->flush();
-            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
+            
+            // Sumamos el tdv correspondiente a las vacaciones a su cuenta
+            $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
+            $TDV_RESTANTE = $TDV_USUARIO + $tiempo;
+            $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
+            $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
+            $CUENTA->setTdv($TDV_RESTANTE_DATETIME);
+            $em->persist($CUENTA);
+            $em->flush();
+//            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones en marcha.')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato')), 200);
