@@ -170,6 +170,7 @@
                                         <thead>
                                             <tr>
                                                 <th>PUESTO</th>
+                                                <th>PUESTO (MES)</th>
                                                 <th class="responsive">NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
@@ -182,6 +183,7 @@
                                         <tfoot>
                                             <tr>
                                                 <th>PUESTO</th>
+                                                <th>PUESTO (MES)</th>
                                                 <th class="responsive">NIVEL/XP</th>
                                                 <th class="responsive">DISTRITO</th>
                                                 <th>SEUDÓNIMO</th>
@@ -195,6 +197,7 @@
                                             {% for JUGADOR in JUGADORES %}
                                                 <tr>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO }}</a></td>
+                                                    <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.PUESTO_MES }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NIVEL }}/{{ JUGADOR.XP }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{% if JUGADOR.DISTRITO is not null %}{{ JUGADOR.DISTRITO }}{% else %} <b style="color: red">SIN DISTRITO ASIGNADO</b> {% endif %}</a></td>
                                                     <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ALIAS }}</a></td>

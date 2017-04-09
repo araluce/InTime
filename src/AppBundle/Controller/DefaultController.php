@@ -273,6 +273,8 @@ class DefaultController extends Controller {
                 }
                 $infoPuesto = Usuario::getClasificacion($doctrine, $JUGADOR, $JUGADORES);
                 $aux['PUESTO'] = $infoPuesto['PUESTO'];
+                $infoPuestoMes = Usuario::getClasificacionMes($doctrine, $JUGADOR, $JUGADORES);
+                $aux['PUESTO_MES'] = $infoPuestoMes['PUESTO'];
                 $DATOS['JUGADORES'][] = $aux;
             }
         }

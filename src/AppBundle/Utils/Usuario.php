@@ -182,7 +182,7 @@ class Usuario {
         }
         return 0;
     }
-    
+
     /**
      * Esta función retorna si el usuario tiene más de 7 días de vida o no
      * 
@@ -192,13 +192,13 @@ class Usuario {
      */
     static function tieneMasDeSieteDiasDeVida($doctrine, $USUARIO) {
         $em = $doctrine->getManager();
-        
+
         $hoy = new \DateTime('now');
         $sieteDias = $hoy->getTimestamp() + 604800;
-        if($USUARIO->getIdCuenta()->getTdv()->getTimestamp() >= $sieteDias){
+        if ($USUARIO->getIdCuenta()->getTdv()->getTimestamp() >= $sieteDias) {
             return 1;
         }
-                
+
         return 0;
     }
 
@@ -369,11 +369,20 @@ class Usuario {
                 $aux['UsuarioId'] = $U->getIdUsuario();
                 $aux['UsuarioAlias'] = $U->getSeudonimo();
 
-                $query->select('SUM(u.cantidad)');
+                $query->select('u');
                 $query->where('u.idUsuario = :ID_USUARIO');
                 $query->setParameter('ID_USUARIO', $U->getIdUsuario());
-                $aux['UsuarioMovimientos'] = $query->getQuery()->getSingleScalarResult();
-                if ($aux['UsuarioMovimientos'] !== null && $aux['UsuarioMovimientos'] > $cantidad) {
+                $movimientos = $query->getQuery()->getResult();
+                $aux['UsuarioMovimientos'] = 0;
+                if (null !== $movimientos) {
+                    foreach ($movimientos as $movimiento) {
+                        $fecha = $movimiento->getFecha();
+                        if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+                            $aux['UsuarioMovimientos'] += $movimiento->getCantidad();
+                        }
+                    }
+                }
+                if ($aux['UsuarioMovimientos'] > $cantidad) {
                     $puesto++;
                 }
                 $CUENTAS[] = $aux;
