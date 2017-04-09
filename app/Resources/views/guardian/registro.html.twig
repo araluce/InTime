@@ -163,6 +163,93 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class='row'>
+                                <div class='col-md-12'>
+                                    <legend>TdV para todos</legend>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <input type="text" id="motivo_tdv" placeholder="Motivo" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 1%;">
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="dias_tdv" class="form-control input-number" value="0" min="0" max="100" />
+                                                    <span class="input-group-addon">d</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="horas_tdv" class="form-control input-number" value="0" min="0" max="24" />
+                                                    <span class="input-group-addon">h</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="minutos_tdv" class="form-control input-number" value="0" min="0" max="60" />
+                                                    <span class="input-group-addon">m</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="segundos_tdv" class="form-control input-number" value="0" min="0" max="60" />
+                                                    <span class="input-group-addon">s</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="TdVParaTodos();">APLICAR OPERACIÓN</button>
+
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-md-12'>
+                                    <legend>Vacaciones para todos</legend>
+                                    <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="dias_vacaciones" class="form-control input-number" value="0" min="0" max="100" />
+                                                    <span class="input-group-addon">d</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="horas_vacaciones" class="form-control input-number" value="0" min="0" max="24" />
+                                                    <span class="input-group-addon">h</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="minutos_vacaciones" class="form-control input-number" value="0" min="0" max="60" />
+                                                    <span class="input-group-addon">m</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="row">
+                                                <div class="input-group">
+                                                    <input type="number" id="segundos_vacaciones" class="form-control input-number" value="0" min="0" max="60" />
+                                                    <span class="input-group-addon">s</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-block btn-default" style="margin-top:1%;" onclick="vacacionesParaTodos();">VACACIONES</button>
+
+                                </div>
+                            </div>
                         {% elseif SECCION == 'CIUDADANOS' %}
                             <div class="row">
                                 <div class="col-md-12">
@@ -357,9 +444,9 @@
                             "infoFiltered": "(filtered from _MAX_ total records)",
                             "paginate": {
                                 "sFirst": '<span style="color: #337ab7;" class="fa fa-step-backward"></span>',
-                            "sPrevious": '<span style="color: #337ab7;" class="fa fa-caret-left"></span>',
-                            "sNext": '<span style="color: #337ab7;" class="fa fa-caret-right"></span>',
-                            "sLast": '<span style="color: #337ab7;" class="fa fa-step-forward"></span>'
+                                "sPrevious": '<span style="color: #337ab7;" class="fa fa-caret-left"></span>',
+                                "sNext": '<span style="color: #337ab7;" class="fa fa-caret-right"></span>',
+                                "sLast": '<span style="color: #337ab7;" class="fa fa-step-forward"></span>'
                             }
                         }
                     });
@@ -427,6 +514,50 @@
                     });
                 } else {
                     alert('Debes seleccionar un distrito');
+                }
+            }
+            function TdVParaTodos() {
+                var dias = parseInt($("#dias_tdv").val());
+                var horas = parseInt($("#horas_tdv").val());
+                var minutos = parseInt($("#minutos_tdv").val());
+                var segundos = parseInt($("#segundos_tdv").val());
+                var motivo = $("#motivo_tdv").val();
+                var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                if ($.trim(motivo) === "") {
+                    alert('Debes escribir un motivo');
+                } else if (tiempo === 0) {
+                    alert('Debes insertar un TdV válido');
+                } else {
+                    ruta = '/guardian/tdvParaTodos';
+                    datos = {
+                        'tiempo': tiempo,
+                        'motivo': motivo
+                    };
+                    $.post(ruta, datos, function (respuesta, status) {
+                        data = jQuery.parseJSON(respuesta);
+                        alert(data.message);
+                        location.reload();
+                    });
+                }
+            }
+            function vacacionesParaTodos() {
+                var dias = parseInt($("#dias_vacaciones").val());
+                var horas = parseInt($("#horas_vacaciones").val());
+                var minutos = parseInt($("#minutos_vacaciones").val());
+                var segundos = parseInt($("#segundos_vacaciones").val());
+                var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+                if (tiempo <= 0) {
+                    alert('Debes insertar un tiempo de vacaciones válido');
+                } else {
+                    ruta = '/guardian/vacacionesParaTodos';
+                    datos = {
+                        'tiempo': tiempo
+                    };
+                    $.post(ruta, datos, function (respuesta, status) {
+                        data = jQuery.parseJSON(respuesta);
+                        alert(data.message);
+                        location.reload();
+                    });
                 }
             }
     </script>

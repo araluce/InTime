@@ -1573,9 +1573,9 @@ class Guardian extends Controller {
     }
 
     /**
-     * @Route("/guardian/info/vacacionesParaTodos", name="vacacionesParaTodos")
+     * @Route("/guardian/vacacionesParaTodos", name="vacacionesParaTodos")
      */
-    public function vacacionesParaTodosAction(Request $request, $dni) {
+    public function vacacionesParaTodosAction(Request $request) {
         if ($request->getMethod() == 'POST') {
             $doctrine = $this->getDoctrine();
             $em = $doctrine->getManager();
@@ -1586,7 +1586,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
             }
             $tiempo = $request->request->get('tiempo');
-            if($timepo <= 0){
+            if($tiempo <= 0){
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes asignar un tiempo de vacaciones')), 200);
             }
             $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
@@ -1615,14 +1615,45 @@ class Guardian extends Controller {
 
                 // Le damos de comer y beber
                 $CIUDADANO->setIdEstado($ESTADO_VACACIONES);
-                $CIUDADANO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $hoy));
-                $CIUDADANO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $hoy));
+                $CIUDADANO->setTiempoSinComer($hoy);
+                $CIUDADANO->setTiempoSinBeber($hoy);
                 $em->persist($CIUDADANO);
                 
+                $em->flush();
+                
             }
-            $em->flush();
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los ciudadanos están de vacaciones')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+    
+    /**
+     * @Route("/guardian/tdvParaTodos", name="tdvParaTodos")
+     */
+    public function tdvParaTodosAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            // Comprobamos que el usuario es admin, si no, redireccionamos a /
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ajustes/tdvParaTodos', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+            }
+            $tiempo = $request->request->get('tiempo');
+            if($tiempo === 0){
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes asignar un tdv')), 200);
+            }
+            $concepto = $request->request->get('motivo');
+            $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
+            if (!count($CIUDADANOS)) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ciudadanos vivos')), 200);
+            }
+            foreach($CIUDADANOS as $CIUDADANO){
+                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $tiempo, $concepto);
+            }
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Operación realizada con éxito')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
