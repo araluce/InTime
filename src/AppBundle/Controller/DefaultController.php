@@ -943,7 +943,6 @@ class DefaultController extends Controller {
 //                                }
                                 if (!$SESION->getEvaluado()) {
 //                                    Utils::pretty_print("Sesión no evaluada");
-//                                    foreach ($RETOS as $RETO) {
                                     if ($SESION->getTipo() === 'running') {
                                         if (($retoRunning->getRitmo() >= $SESION->getRitmo())) {
                                             $duracion_acumulada += $duracion;
@@ -980,7 +979,6 @@ class DefaultController extends Controller {
                                             }
                                         }
                                     }
-//                                    }
                                 }
                             }
                         }
@@ -989,7 +987,7 @@ class DefaultController extends Controller {
             }
 //            Utils::pretty_print("Esta semana se han contado " . $estaSemana . " sesiones");
         }
-        $em->flush();
+//        $em->flush();
         if ($ok) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
         }

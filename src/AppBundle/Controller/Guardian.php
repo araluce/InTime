@@ -1602,7 +1602,7 @@ class Guardian extends Controller {
                 // Ponemos la fecha del fin de vacaciones y el tiempo que se mostrará
                 $CUENTA = $CIUDADANO->getIdCuenta();
                 $CUENTA->setFinbloqueo($finBloqueo->setTimestamp($finBloqueoTimestamp));
-                $tdvVacaciones = intval($hoy->getTimestamp()) - intval($CUENTA->getTdv()->getTimestamp());
+                $tdvVacaciones = intval(intval($CUENTA->getTdv()->getTimestamp() - $hoy->getTimestamp()));
                 $CUENTA->setTdvVacaciones($tdvVacaciones);
 
                 // Sumamos el tdv correspondiente a las vacaciones a su cuenta

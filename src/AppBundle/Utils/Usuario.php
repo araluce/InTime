@@ -212,21 +212,30 @@ class Usuario {
      * @param type $concepto Concepto del ingreso o cobro
      */
     static function operacionSobreTdV($doctrine, $USUARIO, $tdv, $concepto, $comprobar_muerte = true) {
-        $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
+        $em = $doctrine->getManager();
+        
+        $CUENTA = $USUARIO->getIdCuenta();
+        $TDV_USUARIO = $CUENTA->getTdv()->getTimestamp();
         $TDV_RESTANTE = $TDV_USUARIO + $tdv;
         $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
         $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
+        $CUENTA->setTdv($TDV_RESTANTE_DATETIME);
+        $em->persist($CUENTA);
+        
         $fecha = new \DateTime('now');
-
-        $USUARIO->getIdCuenta()->setTdv($TDV_RESTANTE_DATETIME);
         $MOVIMIENTO = new \AppBundle\Entity\UsuarioMovimiento();
         $MOVIMIENTO->setCantidad($tdv);
         $MOVIMIENTO->setCausa($concepto);
         $MOVIMIENTO->setIdUsuario($USUARIO);
         $MOVIMIENTO->setFecha($fecha);
-        $em = $doctrine->getManager();
-        $em->persist($USUARIO);
         $em->persist($MOVIMIENTO);
+        
+        // Si está de vacaciones aumenta tambien su TdvVacaciones
+        $ESTADO_VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Vacaciones');
+        if ($USUARIO->getIdEstado() === $ESTADO_VACACIONES) {
+            $CUENTA->setTdvVacaciones($USUARIO->getIdCuenta()->getTdvVacaciones() + $tdv);
+            $em->persist($CUENTA);
+        }
         $em->flush();
 
         // Opcional para no muera un ciudadano al mejorar la nota
@@ -1024,7 +1033,11 @@ class Usuario {
             $USUARIO_NIVEL->setPuntos(1);
         } else {
             $USUARIO_NIVEL->setNivel($USUARIO_NIVEL->getNivel() + 1);
-            $nuevos_xp = $USUARIO_NIVEL->getNivel() + $USUARIO_NIVEL->getPuntos();
+            if($USUARIO_NIVEL->getNivel() > 3){
+                $nuevos_xp = 3 + $USUARIO_NIVEL->getPuntos();
+            } else {
+                $nuevos_xp = $USUARIO_NIVEL->getNivel() + $USUARIO_NIVEL->getPuntos();
+            }
             $USUARIO_NIVEL->setPuntos($nuevos_xp);
         }
         $em = $doctrine->getManager();

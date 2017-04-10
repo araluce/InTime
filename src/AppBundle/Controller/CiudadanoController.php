@@ -818,7 +818,7 @@ class CiudadanoController extends Controller {
             $finBloqueo->add(new \DateInterval('P7D'));
             $CUENTA->setFinbloqueo($finBloqueo);
 //            $tdvVacaciones = $hoy->diff($CUENTA->getTdv());
-            $tdvVacaciones = intval($hoy->getTimestamp()) - intval($CUENTA->getTdv()->getTimestamp());
+            $tdvVacaciones = intval(intval($CUENTA->getTdv()->getTimestamp() - $hoy->getTimestamp()));
             $CUENTA->setTdvVacaciones($tdvVacaciones);
             $em->persist($CUENTA);
             $em->flush();
