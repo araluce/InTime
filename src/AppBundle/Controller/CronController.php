@@ -620,4 +620,34 @@ class CronController extends Controller {
         return new JsonResponse(json_encode($contador . " cartas fuera de circulación"), 200);
     }
 
+    /**
+     * @Route("/cron/paronNocturno", name="paronNocturno")
+     */
+    public function paronNocturnoAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $HOY = new \DateTime('now');
+        $contador = 0;
+        
+        $paronNocturno = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
+        $paronNocturnoComprado = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
+            'idBonificacionExtra' => $paronNocturno, 'usado' => 0
+        ]);
+        if (count($paronNocturnoComprado)) {
+            foreach ($paronNocturnoComprado as $MC) {
+                if ($HOY->format('W') === $MC->getFecha()->format('W')) {
+                    $contador++;
+                    Usuario::operacionSobreTdV($doctrine, $MC->getIdUsuario(), 480, 'Ingreso - Parón nocturno');
+                } else {
+                    $MC->setUsado(1);
+                    $em->persist($MC);
+                    $em->flush();
+                }
+            }
+        }
+
+        Utils::setError($doctrine, 3, "Parón nocturno - " . $contador);
+        return new JsonResponse("OK", 200);
+    }
+
 }
