@@ -152,9 +152,10 @@ class Ejercicio {
      * @param type $doctrine
      * @param type $EJERCICIO
      * @param type $USUARIO
-     * @param type $SESION
+     * @param type $SESIONES
+     * @param boolean $beneficioDoble
      */
-    static function evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $SESIONES) {
+    static function evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $SESIONES, $beneficioDoble = false) {
         $em = $doctrine->getManager();
         $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
         $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
@@ -171,8 +172,11 @@ class Ejercicio {
             $em->persist($SESION);
         }
         $em->flush();
-
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Reto deportivo superado.');
+        if ($beneficioDoble) {
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, 2 * $NOTA->getBonificacion(), 'Ingreso - Reto deportivo superado (beneficio doble).');
+        } else {
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Reto deportivo superado.');
+        }
     }
 
     /**
@@ -215,20 +219,20 @@ class Ejercicio {
         }
         return $ENTREGA;
     }
-    
+
     /**
      * Marca a vistos los retos de paga extra
      * @param type $doctrine
      * @param type $USUARIO
      */
-    static function actualizarPagaVisto($doctrine, $USUARIO){
+    static function actualizarPagaVisto($doctrine, $USUARIO) {
         $em = $doctrine->getManager();
         $SECCION_PAGA = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('paga_extra');
         $NO_VISTOS = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
             'idSeccion' => $SECCION_PAGA, 'idUsu' => $USUARIO, 'visto' => 0
         ]);
-        if(count($NO_VISTOS)){
-            foreach($NO_VISTOS as $EJERCICIO){
+        if (count($NO_VISTOS)) {
+            foreach ($NO_VISTOS as $EJERCICIO) {
                 $EJERCICIO->setVisto(1);
                 $em->persist($EJERCICIO);
             }

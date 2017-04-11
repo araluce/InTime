@@ -928,12 +928,12 @@ class DefaultController extends Controller {
                 foreach ($SESIONES_RUNTASTIC as $SESION) {
                     if (!$ok) {
                         $retoDepSemanaPasada = Utils::semanaPasada($SESION->getFecha());
-//                        if ($retoDepSemanaPasada) {
-//                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
-//                            $estaSemana++;
-//                        } else {
-//                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
-//                        }
+                        if ($retoDepSemanaPasada) {
+                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+                            $estaSemana++;
+                        } else {
+                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+                        }
                         if ($retoDepSemanaPasada) {
                             $duracion = $SESION->getDuracion();
                             if ($comparar) {
@@ -944,15 +944,17 @@ class DefaultController extends Controller {
                                 if (!$SESION->getEvaluado()) {
 //                                    Utils::pretty_print("Sesión no evaluada");
                                     if ($SESION->getTipo() === 'running') {
+                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoRunning->getVelocidad() . "Km/h");
+                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
                                         if (($retoRunning->getRitmo() >= $SESION->getRitmo())) {
                                             $duracion_acumulada += $duracion;
                                             $id_sesiones[] = $SESION;
                                             if ($duracion_acumulada >= $retoRunning->getDuracion()) {
                                                 $n_sesiones++;
                                                 $contador++;
-//                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
-//                                                    Utils::pretty_print('Duracion reto: ' . $retoRunning->getDuracion());
-//                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
+                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
+                                                    Utils::pretty_print('Duracion reto: ' . $retoRunning->getDuracion());
+                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
                                                 if ($n_sesiones >= 2) {
                                                     $ok = true;
                                                     Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);

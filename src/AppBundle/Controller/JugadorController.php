@@ -198,7 +198,7 @@ class JugadorController extends Controller {
 
         return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
-    
+
     /**
      * 
      * @Route("/ciudadano/info/getClasificacionGlobalMes", name="getClasificacionGlobalMes")
@@ -256,7 +256,7 @@ class JugadorController extends Controller {
 
         return Usuario::getClasificacionJsonResponse($doctrine, $USUARIO, $USUARIOS);
     }
-    
+
     /**
      * 
      * @Route("/ciudadano/info/getClasificacionDistritoMes", name="getClasificacionDistritoMes")
@@ -302,10 +302,10 @@ class JugadorController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
         }
         $RESPUESTA = Usuario::getClasificacionDistritos($doctrine);
-        
+
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
-    
+
     /**
      * 
      * @Route("/ciudadano/info/getClasificacionDistritosMes", name="getClasificacionDistritosMes")
@@ -318,7 +318,7 @@ class JugadorController extends Controller {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado'));
         }
         $RESPUESTA = Usuario::getClasificacionDistritosMes($doctrine);
-        
+
         return new JsonResponse(array('estado' => 'OK', 'message' => $RESPUESTA));
     }
 
@@ -364,12 +364,14 @@ class JugadorController extends Controller {
                 $aux['IMAGEN'] = $MC->getImagen();
                 $aux['COSTE'] = $MC->getCosteXp();
                 $aux['COMPRADA'] = 0;
+                $compras = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findByIdBonificacionExtra($MC);
+                $aux['VECES_COMPRADA'] = count($compras);
                 if (in_array($MC, $array_mc) && $MC->getDisponible()) {
                     $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
                         'idBonificacionExtra' => $MC, 'idUsuario' => $USUARIO
                     ]);
                     if (null !== $MI_MC) {
-                        if ($hoy->format('W') === $MI_MC->getFecha()->format('W') && !$MI_MC->getUsado()) {
+                        if (!$MI_MC->getUsado()) {
                             $aux['COMPRADA'] = 1;
                         }
                     }
@@ -420,12 +422,22 @@ class JugadorController extends Controller {
         }
 
         $MI_MC->setFecha(new \DateTime('now'));
-        $MI_MC->setContador($MI_MC->getContador()+1);
+        $MI_MC->setContador($MI_MC->getContador() + 1);
         $MI_MC->setIdBonificacionExtra($MC);
         $MI_MC->setIdUsuario($USUARIO);
         $MI_MC->setUsado(0);
         $em->persist($MI_MC);
         $em->flush();
+
+        if ($MC->getIdBonificacionExtra() === 11) {
+            $USUARIO->setTiempoSinComer(new \DateTime('now'));
+            $USUARIO->setTiempoSinBeber(new \DateTime('now'));
+            $MI_MC->setUsado(1);
+            $em->persist($USUARIO);
+            $em->persist($MI_MC);
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tus barras ahora están al 100%')));
+        }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Su compra ha sido realizada correctamente')));
     }
 

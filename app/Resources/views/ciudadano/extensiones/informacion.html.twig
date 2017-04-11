@@ -7,6 +7,24 @@
 
 {% block stylesheets %}
     <style>
+        .thumbnail .caption {
+            padding: 9px;
+            color: #333;
+        }
+        .caption {
+            height: 300px;
+            overflow: hidden;
+        }
+        .caption h4{
+            font-size: 27px;
+        }
+        .ratings p,
+        .caption p{
+            font-size: 22px;
+        }
+        .btn-mc{
+            border-radius: 0px;
+        }
         .modal-header{
             padding: 4% 6%;
         }
@@ -352,6 +370,16 @@
             }
         }
         @media (min-width: 1200px){
+            .caption {
+                height: 130px;
+                overflow: hidden;
+            }
+            .caption h4{
+                font-size: 18px;
+            }
+            .caption p{
+                font-size: 17px;
+            }
             .info-button{
                 font-size: 20px;
             }
@@ -408,6 +436,11 @@
             #clasificacion-distritos{
                 font-size: 25px;
             }
+            /*
+            .btn-mc{
+                font-size: 20px;
+            }
+            */
         }
     </style>
 {% endblock %}
@@ -712,7 +745,7 @@
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
             $('.btn-pref .btn').height($('#menu-primer').height());
-        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
         $(function () {
 
@@ -723,14 +756,12 @@
                         label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
                 input.trigger('fileselect', [numFiles, label]);
             });
-
             // We can watch for our custom `fileselect` event like this
             $(document).ready(function () {
                 $(':file').on('fileselect', function (event, numFiles, label) {
 
                     var input = $(this).parents('.input-group').find(':text'),
                             log = numFiles > 1 ? numFiles + ' files selected' : label;
-
                     if (input.length) {
                         input.val(log);
                     } else {
@@ -740,7 +771,6 @@
 
                 });
             });
-
         });
         function mostrarCarga(texto) {
             $("#mensaje-texto").empty();
@@ -1023,28 +1053,62 @@
                     $("#nivel-usuario").html('NIVEL: ' + data.message.NIVEL + '<span style="float: right;">XP: ' + data.message.XP + '</span>');
                     $("#minicartas").html('');
                     $.each(data.message.MC, function (k, v) {
-                        contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
-                        contenido += '  <figure>';
-                        contenido += '      <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
-                        contenido += '      <figcaption>';
-                        contenido += '          <div class="row">';
-                        contenido += '          <div class="col-md-12">';
-                        contenido += '          <p>' + v.DESCRIPCION + '</p>';
-                        contenido += '          </div>';
-                        contenido += '          <div class="col-md-10 col-md-offset-2">';
+                        //contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
+                        //contenido += '  <figure>';
+                        //contenido += '      <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
+                        //contenido += '      <figcaption>';
+                        //contenido += '          <div class="row">';
+                        //contenido += '          <div class="col-md-12">';
+                        //contenido += '          <p>' + v.DESCRIPCION + '</p>';
+                        //contenido += '          </div>';
+                        //contenido += '          <div class="col-md-10 col-md-offset-2">';
+                        //if (v.COMPRADA) {
+                        //    contenido += '          <button type="button" class="btn btn-block btn-primary" disabled">';
+                        //    contenido += '              COMPRADA';
+                        //    contenido += '          </button>';
+                        //} else {
+                        //    contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
+                        //    contenido += '              COMPRAR (' + v.COSTE + 'XP)';
+                        //    contenido += '          </button>';
+                        //}
+                        //contenido += '          </div>';
+                        //contenido += '          </div>';
+                        //contenido += '      </figcaption>';
+                        //contenido += '  </figure>';
+
+                        contenido = '<div class="col-sm-4 col-lg-4 col-md-4">';
+                        contenido += '<div class="thumbnail">';
+                        contenido += '    <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
+                        contenido += '    <div class="caption">';
+                        contenido += '        <h4 class="pull-right">' + v.COSTE + ' XP</h4>';
+                        contenido += '        <h4>' + v.TITULO + '</h4>';
+                        contenido += '        <p>' + v.DESCRIPCION + '</p>';
+                        contenido += '    </div>';
+                        contenido += '    <div class="ratings">';
+                        if (v.VECES_COMPRADA === 1) {
+                            contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' vez comprada</p>';
+                        } else {
+                            contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' veces comprada</p>';
+                        }
                         if (v.COMPRADA) {
-                            contenido += '          <button type="button" class="btn btn-block btn-primary" disabled">';
+                            contenido += '          <button type="button" class="btn btn-block btn-warning btn-mc" disabled">';
                             contenido += '              COMPRADA';
                             contenido += '          </button>';
                         } else {
-                            contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
-                            contenido += '              COMPRAR (' + v.COSTE + 'XP)';
+                            contenido += '          <button type="button" class="btn btn-block btn-primary btn-mc" onclick="comprarMC(' + v.ID + ')">';
+                            contenido += '              COMPRAR';
                             contenido += '          </button>';
                         }
-                        contenido += '          </div>';
-                        contenido += '          </div>';
-                        contenido += '      </figcaption>';
-                        contenido += '  </figure>';
+                        //contenido += '        <p>';
+                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
+                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
+                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
+                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
+                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
+                        //contenido += '        </p>';
+                        contenido += '    </div>';
+                        contenido += '</div>';
+                        contenido += '</div>';
                         $("#minicartas").append(contenido);
                     });
                 } else {
