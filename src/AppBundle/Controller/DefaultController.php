@@ -885,98 +885,109 @@ class DefaultController extends Controller {
     public function comprobarRetosAliasAction(Request $request, $alias) {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
-        $qb = $em->createQueryBuilder();
         $CIUDADANO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
         $ok = false;
-        $query = $qb->select('ur')
-                ->from('\AppBundle\Entity\UsuarioRuntastic', 'ur')
-                ->where('ur.idUsuario = :IdUsuario')
-                ->setParameters(['IdUsuario' => $CIUDADANO]);
-        $CUENTAS_RUNTASTIC = $query->getQuery()->getResult();
-        if (!count($CUENTAS_RUNTASTIC)) {
-            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Error inesperado')), 200);
-        }
-        $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
-        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-        if (null !== $EJERCICIO) {
-            $comparar = 1;
-            $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
-            if (!count($RETOS)) {
-                $comparar = 0;
-            }
-            $retoRunning = null;
-            $retoCycling = null;
-            foreach ($RETOS as $RETO) {
-                if ($RETO->getTipo() === 'running') {
-                    $retoRunning = $RETO;
+        $MC_DEPORTE = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(10);
+        $MC_COMPRADA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
+            'idUsuario' => $CIUDADANO, 'idBonificacionExtra' => $MC_DEPORTE, 'usado' => 0
+        ]);
+        // Actualizar sus sesiones
+        $CUENTAS_RUNTASTIC = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($CIUDADANO);
+        if (count($CUENTAS_RUNTASTIC)) {
+            $actividades_semana = [];
+            foreach ($CUENTAS_RUNTASTIC as $U) {
+                $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
+                $array_sesiones = [];
+                if (count($SESIONES)) {
+                    foreach ($SESIONES as $S) {
+                        $array_sesiones[] = $S->getIdRuntastic();
+                    }
                 }
-                if ($RETO->getTipo() === 'cycling') {
-                    $retoCycling = $RETO;
-                }
-            }
-            if (null === $retoCycling || null === $retoRunning) {
-                $comparar = 0;
-            }
-            $duracion_acumulada = 0;
-            $id_sesiones = [];
-            $n_sesiones = 1;
-            $contador = 0;
-            $estaSemana = 0;
-            foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
-                $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
-                //$cont = 0;
-                foreach ($SESIONES_RUNTASTIC as $SESION) {
-                    if (!$ok) {
-                        $retoDepSemanaPasada = Utils::semanaPasada($SESION->getFecha());
-                        if ($retoDepSemanaPasada) {
-                            Utils::pretty_print("Se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
-                            $estaSemana++;
-                        } else {
-                            Utils::pretty_print("No se evalúa la sesión del " . $SESION->getFecha()->format('d-m-Y'));
+                $r = new Runtastic();
+                $timeout = false;
+                $tiempo_inicio = microtime(true);
+                $hoy = new \DateTime('now');
+                do {
+                    $r->setUsername($U->getUsername())->setPassword($U->getPassword());
+                    echo $r->getResponseStatusCode();
+                    $week_activities = $r->getActivities($hoy->format('W') - 1);
+                    $tiempo_fin = microtime(true);
+                    $tiempo = $tiempo_fin - $tiempo_inicio;
+                    if ($tiempo >= 10.0) {
+                        $timeout = true;
+                    }
+                } while ($r->getResponseStatusCode() !== 200 && !$timeout);
+                $response['usuario'] = $r->getUsername();
+                $response['Uid'] = $r->getUid();
+                foreach ($week_activities as $activity) {
+                    $actividades_semana[] = $activity;
+                    if (!in_array($activity->id, $array_sesiones)) {
+                        $SESION = new \AppBundle\Entity\SesionRuntastic();
+                        $SESION->setIdRuntastic($activity->id);
+                        $SESION->setIdUsuarioRuntastic($U);
+                        $SESION->setTipo('cycling');
+                        if ($activity->type === 'running') {
+                            $SESION->setTipo('running');
                         }
-                        if ($retoDepSemanaPasada) {
+                        $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
+                        $SESION->setDistancia($activity->distance);
+                        $SESION->setRitmo($activity->pace);
+                        $SESION->setVelocidad($activity->speed);
+                        $SESION->setEvaluado(0);
+                        $FECHA = new \Datetime();
+                        $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
+                        $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
+                        $SESION->setFecha($FECHA);
+                        $em->persist($SESION);
+                    }
+                }
+                $em->flush();
+            }
+
+            // Comprobación de las sesiones
+            $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
+            if (null !== $EJERCICIO) {
+                $comparar = 1;
+                $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
+                if (!count($RETOS)) {
+                    $comparar = 0;
+                }
+                $duracion_acumulada = 0;
+                $id_sesiones = [];
+                $n_sesiones = 1;
+                $ok = false;
+                $duracionReto = 0;
+                foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
+                    $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
+                    foreach ($SESIONES_RUNTASTIC as $SESION) {
+                        if (Utils::semanaPasada($SESION->getFecha())) {
                             $duracion = $SESION->getDuracion();
                             if ($comparar) {
-//                                Utils::pretty_print("Se evalúa una sesión");
-//                                if ($SESION->getEvaluado()) {
-//                                    Utils::pretty_print("Sesión evaluada");
-//                                }
                                 if (!$SESION->getEvaluado()) {
-//                                    Utils::pretty_print("Sesión no evaluada");
-                                    if ($SESION->getTipo() === 'running') {
-                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoRunning->getVelocidad() . "Km/h");
-                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
-                                        if (($retoRunning->getRitmo() >= $SESION->getRitmo())) {
-                                            $duracion_acumulada += $duracion;
-                                            $id_sesiones[] = $SESION;
-                                            if ($duracion_acumulada >= $retoRunning->getDuracion()) {
-                                                $n_sesiones++;
-                                                $contador++;
-                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
-                                                    Utils::pretty_print('Duracion reto: ' . $retoRunning->getDuracion());
-                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
-                                                if ($n_sesiones >= 2) {
-                                                    $ok = true;
-                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                    foreach ($RETOS as $RETO) {
+                                        $duracionReto = $RETO->getDuracion();
+                                        if ($RETO->getTipo() === 'running') {
+                                            if (($RETO->getTipo() === $SESION->getTipo() && $RETO->getRitmo() >= $SESION->getRitmo())) {
+                                                $duracion_acumulada += $duracion;
+                                                $id_sesiones[] = $SESION;
+                                                if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                                    $n_sesiones++;
+                                                    if ($n_sesiones >= 2) {
+                                                        $ok = true;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    if ($SESION->getTipo() === 'cycling') {
-//                                        Utils::pretty_print("Esta sesión marca una velocidad mínima de " . $retoCycling->getVelocidad() . "Km/h");
-//                                        Utils::pretty_print("Tu sesión es de " . $SESION->getVelocidad() . "Km/h");
-                                        if ($retoCycling->getVelocidad() <= $SESION->getVelocidad()) {
-                                            $duracion_acumulada += $duracion;
-                                            $id_sesiones[] = $SESION;
-                                            if ($duracion_acumulada >= $retoCycling->getDuracion()) {
-                                                $n_sesiones++;
-                                                $contador++;
-//                                                    Utils::pretty_print('Duracion ac: ' . $duracion_acumulada);
-//                                                    Utils::pretty_print('Duracion reto: ' . $retoCycling->getDuracion());
-//                                                    Utils::pretty_print('Numero sesiones: ' . $n_sesiones);
-                                                if ($n_sesiones >= 2) {
-                                                    $ok = true;
-                                                    Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                                        if ($RETO->getTipo() === 'cycling') {
+                                            if ($RETO->getTipo() === $SESION->getTipo() && $RETO->getVelocidad() <= $SESION->getVelocidad()) {
+                                                $duracion_acumulada += $duracion;
+                                                $id_sesiones[] = $SESION;
+                                                if ($duracion_acumulada >= $RETO->getDuracion()) {
+                                                    $n_sesiones++;
+                                                    if ($n_sesiones >= 2) {
+                                                        $ok = true;
+                                                    }
                                                 }
                                             }
                                         }
@@ -986,10 +997,18 @@ class DefaultController extends Controller {
                         }
                     }
                 }
+                if ($ok) {
+                    if (null !== $MC_COMPRADA && $duracion_acumulada >= ($duracionReto * 2)) {
+                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones, true);
+                        $MC_COMPRADA->setUsado(1);
+                        $em->persist($MC_COMPRADA);
+                        $em->flush();
+                    } else {
+                        Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
+                    }
+                }
             }
-//            Utils::pretty_print("Esta semana se han contado " . $estaSemana . " sesiones");
         }
-//        $em->flush();
         if ($ok) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
         }
@@ -1012,7 +1031,7 @@ class DefaultController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
-    
+
     /**
      * @Route("/ok", name="ok")
      */
