@@ -1053,62 +1053,55 @@
                     $("#nivel-usuario").html('NIVEL: ' + data.message.NIVEL + '<span style="float: right;">XP: ' + data.message.XP + '</span>');
                     $("#minicartas").html('');
                     $.each(data.message.MC, function (k, v) {
-                        //contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
-                        //contenido += '  <figure>';
-                        //contenido += '      <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
-                        //contenido += '      <figcaption>';
-                        //contenido += '          <div class="row">';
-                        //contenido += '          <div class="col-md-12">';
-                        //contenido += '          <p>' + v.DESCRIPCION + '</p>';
-                        //contenido += '          </div>';
-                        //contenido += '          <div class="col-md-10 col-md-offset-2">';
-                        //if (v.COMPRADA) {
-                        //    contenido += '          <button type="button" class="btn btn-block btn-primary" disabled">';
-                        //    contenido += '              COMPRADA';
-                        //    contenido += '          </button>';
-                        //} else {
-                        //    contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
-                        //    contenido += '              COMPRAR (' + v.COSTE + 'XP)';
-                        //    contenido += '          </button>';
-                        //}
-                        //contenido += '          </div>';
-                        //contenido += '          </div>';
-                        //contenido += '      </figcaption>';
-                        //contenido += '  </figure>';
-
-                        contenido = '<div class="col-sm-4 col-lg-4 col-md-4">';
-                        contenido += '<div class="thumbnail">';
-                        contenido += '    <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
-                        contenido += '    <div class="caption">';
-                        contenido += '        <h4 class="pull-right">' + v.COSTE + ' XP</h4>';
-                        contenido += '        <h4>' + v.TITULO + '</h4>';
-                        contenido += '        <p>' + v.DESCRIPCION + '</p>';
-                        contenido += '    </div>';
-                        contenido += '    <div class="ratings">';
-                        if (v.VECES_COMPRADA === 1) {
-                            contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' vez comprada</p>';
-                        } else {
-                            contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' veces comprada</p>';
-                        }
+                        contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
+                        contenido += '  <figure>';
+                        contenido += '      <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
+                        contenido += '      <figcaption>';
+                        contenido += '          <div class="row">';
+                        contenido += '          <div class="col-md-12">';
+                        contenido += '          <p>' + v.DESCRIPCION + '</p>';
+                        contenido += '          </div>';
+                        contenido += '          <div class="col-md-10 col-md-offset-2">';
                         if (v.COMPRADA) {
-                            contenido += '          <button type="button" class="btn btn-block btn-warning btn-mc" disabled">';
+                            contenido += '          <button type="button" class="btn btn-block btn-primary" disabled">';
                             contenido += '              COMPRADA';
                             contenido += '          </button>';
                         } else {
-                            contenido += '          <button type="button" class="btn btn-block btn-primary btn-mc" onclick="comprarMC(' + v.ID + ')">';
-                            contenido += '              COMPRAR';
+                            contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
+                            contenido += '              COMPRAR (' + v.COSTE + 'XP)';
                             contenido += '          </button>';
                         }
-                        //contenido += '        <p>';
-                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
-                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
-                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
-                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
-                        //contenido += '            <span class="glyphicon glyphicon-star"></span>';
-                        //contenido += '        </p>';
-                        contenido += '    </div>';
-                        contenido += '</div>';
-                        contenido += '</div>';
+                        contenido += '          </div>';
+                        contenido += '          </div>';
+                        contenido += '      </figcaption>';
+                        contenido += '  </figure>';
+
+                        //contenido = '<div class="col-sm-4 col-lg-4 col-md-4">';
+                        //contenido += '<div class="thumbnail">';
+                        //contenido += '    <img alt="MiniCarta ' + v.TITULO + '" src="{{ asset('/images/iconos/Minicartas/')}}' + v.IMAGEN + '">';
+                        //contenido += '    <div class="caption">';
+                        //contenido += '        <h4 class="pull-right">' + v.COSTE + ' XP</h4>';
+                        //contenido += '        <h4>' + v.TITULO + '</h4>';
+                        //contenido += '        <p>' + v.DESCRIPCION + '</p>';
+                        //contenido += '    </div>';
+                        //contenido += '    <div class="ratings">';
+                        //if (v.VECES_COMPRADA === 1) {
+                        //    contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' vez comprada</p>';
+                        //} else {
+                        //    contenido += '        <p class="pull-right">' + v.VECES_COMPRADA + ' veces comprada</p>';
+                        //}
+                        //if (v.COMPRADA) {
+                        //    contenido += '          <button type="button" class="btn btn-block btn-warning btn-mc" disabled">';
+                        //    contenido += '              COMPRADA';
+                        //    contenido += '          </button>';
+                        //} else {
+                        //    contenido += '          <button type="button" class="btn btn-block btn-primary btn-mc" onclick="comprarMC(' + v.ID + ')">';
+                        //    contenido += '              COMPRAR';
+                        //    contenido += '          </button>';
+                        //}
+                        //contenido += '    </div>';
+                        //contenido += '</div>';
+                        //contenido += '</div>';
                         $("#minicartas").append(contenido);
                     });
                 } else {

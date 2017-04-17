@@ -131,9 +131,16 @@ class CronController extends Controller {
         $intervaloBebida = Utils::getConstante($doctrine, "tiempo_acabar_de_beber");
         $topeComida = $fecha->getTimestamp();
         $topeBebida = $fecha->getTimestamp();
+        $VACACIONES = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre("Vacaciones");
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
-                // Ya está contemplado el usuario con vacaciones
+                // Ciudadano en vacaciones
+                if($CIUDADANO->getIdEstado() === $VACACIONES){
+                    $CIUDADANO->setTiempoSinComer(new \DateTime('now'));
+                    $CIUDADANO->setTiempoSinBeber(new \DateTime('now'));
+                    $em->persist($CIUDADANO);
+                    $em->flush();
+                }
                 if ($CIUDADANO->getTiempoSinComer()->getTimestamp() + $intervaloComida < $topeComida ||
                         $CIUDADANO->getTiempoSinBeber()->getTimestamp() + $intervaloBebida < $topeBebida) {
                     Usuario::setDefuncion($doctrine, $CIUDADANO);
@@ -141,7 +148,6 @@ class CronController extends Controller {
                 }
             }
         }
-        $em->flush();
         Utils::setError($doctrine, 3, 'CRON - Comprobar alimentación');
         if ($contador) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $contador . ' ciudadanos han fallecido de inanición')), 200);
