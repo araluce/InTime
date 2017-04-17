@@ -742,6 +742,23 @@ class Usuario {
 
         return $CIUDADANOS;
     }
+    
+    /**
+     * Obtiene los ciudadanos con estado fallecido
+     * @param type $doctrine
+     * @return array
+     */
+    static function getCiudadanosFallecidos($doctrine) {
+        $ESTADO_FALLECIDO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Fallecido');
+        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $doctrine->getRepository('AppBundle:Usuario')->createQueryBuilder('a');
+        $query->select('a');
+        $query->where('a.idEstado = :ESTADO_F AND a.idRol = :ROL');
+        $query->setParameters(['ESTADO_F' => $ESTADO_FALLECIDO, 'ROL' => $ROL_CIUDADANO]);
+        $CIUDADANOS = $query->getQuery()->getResult();
+
+        return $CIUDADANOS;
+    }
 
     /**
      * Obtiene los ciudadanos con estado vivo

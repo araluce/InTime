@@ -337,6 +337,26 @@ class JugadorController extends Controller {
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($USUARIO);
         $DATOS = [];
+        $DATOS['CIUDADANOS_VIVOS'] = [];
+        $CIUDADANOS_VIVOS = Usuario::getCiudadanosVivos($doctrine);
+        if (count($CIUDADANOS_VIVOS)) {
+            foreach ($CIUDADANOS_VIVOS as $CIUDADANO_VIVO) {
+                $aux = [];
+                $aux['ALIAS'] = $CIUDADANO_VIVO->getSeudonimo();
+                $aux['ID'] = $CIUDADANO_VIVO->getIdUsuario();
+                $DATOS['CIUDADANOS_VIVOS'][] = $aux;
+            }
+        }
+        $DATOS['CIUDADANOS_FALLECIDOS'] = [];
+        $CIUDADANOS_FALLECIDOS = Usuario::getCiudadanosFallecidos($doctrine);
+        if (count($CIUDADANOS_FALLECIDOS)) {
+            foreach ($CIUDADANOS_FALLECIDOS as $CIUDADANO_FALLECIDO) {
+                $aux = [];
+                $aux['ALIAS'] = $CIUDADANO_FALLECIDO->getSeudonimo();
+                $aux['ID'] = $CIUDADANO_FALLECIDO->getIdUsuario();
+                $DATOS['CIUDADANOS_FALLECIDOS'][] = $aux;
+            }
+        }
         $DATOS['NIVEL'] = 0;
         $DATOS['XP'] = 0;
         if (null !== $USUARIO_NIVEL) {
@@ -344,6 +364,8 @@ class JugadorController extends Controller {
             $DATOS['XP'] = $USUARIO_NIVEL->getPuntos();
         }
         $DATOS['MC'] = [];
+        $MC_REANIMACION = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+        $MC_BONO_REGALO = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(6);
         $MINICARTAS = $doctrine->getRepository('AppBundle:BonificacionExtra')->findAll();
         $MIS_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
             'idUsuario' => $USUARIO, 'usado' => 0
@@ -358,6 +380,7 @@ class JugadorController extends Controller {
         if (count($MINICARTAS)) {
             foreach ($MINICARTAS as $MC) {
                 $aux = [];
+                $aux['LISTA_CIUDADANOS'] = 0;
                 $aux['ID'] = $MC->getIdBonificacionExtra();
                 $aux['TITULO'] = $MC->getBonificacion();
                 $aux['DESCRIPCION'] = $MC->getDescripcion();
@@ -376,6 +399,12 @@ class JugadorController extends Controller {
                         }
                     }
                 }
+                if ($MC === $MC_BONO_REGALO) {
+                    $aux['LISTA_CIUDADANOS'] = 1;
+                }
+                if ($MC === $MC_REANIMACION) {
+                    $aux['LISTA_CIUDADANOS'] = 2;
+                }
                 if ($MC->getDisponible()) {
                     $DATOS['MC'][] = $aux;
                 }
@@ -386,9 +415,9 @@ class JugadorController extends Controller {
 
     /**
      * 
-     * @Route("/ciudadano/info/comprarMC/{idMC}", name="comprarMC")
+     * @Route("/ciudadano/info/comprarMC/{idMC}/{idCiudadano}", name="comprarMC")
      */
-    public function comprarMCAction(Request $request, $idMC) {
+    public function comprarMCAction(Request $request, $idMC, $idCiudadano) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/info/comprarMC/' . $idMC);
@@ -405,7 +434,7 @@ class JugadorController extends Controller {
         $MI_MC = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
             'idUsuario' => $USUARIO, 'idBonificacionExtra' => $MC
         ]);
-        if ($MI_MC !== null) {
+        if (null !== $MI_MC) {
             if (!$MI_MC->getUsado()) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Ya tenías comprada esta carta')));
             }
@@ -416,27 +445,67 @@ class JugadorController extends Controller {
         $em = $doctrine->getManager();
         $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getPuntos() - $MC->getCosteXp());
         $em->persist($USUARIO_NIVEL);
-        if ($MI_MC === null) {
-            $MI_MC = new \AppBundle\Entity\BonificacionXUsuario();
-            $MI_MC->setContador(0);
-        }
+        if (!$idCiudadano) {
+            if ($MI_MC === null) {
+                $MI_MC = new \AppBundle\Entity\BonificacionXUsuario();
+                $MI_MC->setContador(0);
+            }
 
-        $MI_MC->setFecha(new \DateTime('now'));
-        $MI_MC->setContador($MI_MC->getContador() + 1);
-        $MI_MC->setIdBonificacionExtra($MC);
-        $MI_MC->setIdUsuario($USUARIO);
-        $MI_MC->setUsado(0);
-        $em->persist($MI_MC);
-        $em->flush();
-
-        if ($MC->getIdBonificacionExtra() === 11) {
-            $USUARIO->setTiempoSinComer(new \DateTime('now'));
-            $USUARIO->setTiempoSinBeber(new \DateTime('now'));
-            $MI_MC->setUsado(1);
-            $em->persist($USUARIO);
+            $MI_MC->setFecha(new \DateTime('now'));
+            $MI_MC->setContador($MI_MC->getContador() + 1);
+            $MI_MC->setIdBonificacionExtra($MC);
+            $MI_MC->setIdUsuario($USUARIO);
+            $MI_MC->setUsado(0);
             $em->persist($MI_MC);
             $em->flush();
-            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tus barras ahora están al 100%')));
+
+            if ($MC->getIdBonificacionExtra() === 11) {
+                $USUARIO->setTiempoSinComer(new \DateTime('now'));
+                $USUARIO->setTiempoSinBeber(new \DateTime('now'));
+                $MI_MC->setUsado(1);
+                $em->persist($USUARIO);
+                $em->persist($MI_MC);
+                $em->flush();
+                return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Tus barras ahora están al 100%')));
+            }
+        } else {
+            $CIUDADANO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($idCiudadano);
+            if (null === $CIUDADANO) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'El ciudadano seleccionado no existe')));
+            }
+            $MC_REANIMACION = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(1);
+            $MC_BONO_REGALO = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(6);
+            if($MC === $MC_BONO_REGALO){
+                $USUARIO_NIVEL = $doctrine->getRepository('AppBundle:UsuarioNivel')->findOneByIdUsuario($CIUDADANO);
+                if(null === $USUARIO_NIVEL){
+                    $USUARIO_NIVEL = new \AppBundle\Entity\UsuarioNivel();
+                    $USUARIO_NIVEL->setNivel(0);
+                    $USUARIO_NIVEL->setIdUsuario($CIUDADANO);
+                    $USUARIO_NIVEL->setPuntos(2);
+                } else {
+                    $USUARIO_NIVEL->setPuntos($USUARIO_NIVEL->getPuntos() + 2);
+                }
+                $em->persist($USUARIO_NIVEL);
+                $em->flush();
+            }
+            if($MC === $MC_REANIMACION){
+                // Se le da una semana de vida
+                $CUENTA = $CIUDADANO->getIdCuenta();
+                $semana = new \DateTime('now');
+                $semana->add(new \DateInterval('P7D'));
+                $CUENTA->setTdv($semana);
+                $em->persist($CUENTA);
+                
+                // Se le da de comer y beber
+                $CIUDADANO->setTiempoSinComer(new \DateTime('now'));
+                $CIUDADANO->setTiempoSinBeber(new \DateTime('now'));
+                
+                // Se le cambia el estado a vivo
+                $VIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
+                $CIUDADANO->setIdEstado($VIVO);
+                $em->persist($CIUDADANO);
+                $em->flush();
+            }
         }
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Su compra ha sido realizada correctamente')));
     }

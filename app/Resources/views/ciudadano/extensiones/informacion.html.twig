@@ -7,6 +7,11 @@
 
 {% block stylesheets %}
     <style>
+        select{
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+        }
         .thumbnail .caption {
             padding: 9px;
             color: #333;
@@ -713,6 +718,8 @@
 {% block javascripts %}
     <script>
         var todoOk = true;
+        var ciudadanosVivos = [];
+        var ciudadanosFallecidos = [];
         function mostrarCartas() {
             $('#btn-privilegios').hide();
             $('#minicartas').show();
@@ -745,7 +752,7 @@
                 $(this).removeClass("btn-default").addClass("btn-primary");
             });
             $('.btn-pref .btn').height($('#menu-primer').height());
-            {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
+        {% if info.message is defined or info.type is defined%} $('#box_modal_result').click();{% endif %}
         });
         $(function () {
 
@@ -1052,6 +1059,8 @@
                     console.log(data);
                     $("#nivel-usuario").html('NIVEL: ' + data.message.NIVEL + '<span style="float: right;">XP: ' + data.message.XP + '</span>');
                     $("#minicartas").html('');
+                    ciudadanosVivos = data.message.CIUDADANOS_VIVOS;
+                    ciudadanosFallecidos = data.message.CIUDADANOS_FALLECIDOS;
                     $.each(data.message.MC, function (k, v) {
                         contenido = '<div class="col-lg-4 col-xs-6 minicarta">';
                         contenido += '  <figure>';
@@ -1067,7 +1076,7 @@
                             contenido += '              COMPRADA';
                             contenido += '          </button>';
                         } else {
-                            contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprarMC(' + v.ID + ')">';
+                            contenido += '          <button type="button" class="btn btn-block btn-primary" onclick="comprobarListaUsuarios(' + v.ID + ', ' + v.LISTA_CIUDADANOS + ')">';
                             contenido += '              COMPRAR (' + v.COSTE + 'XP)';
                             contenido += '          </button>';
                         }
@@ -1109,14 +1118,83 @@
                 }
             });
         }
-        function comprarMC(id) {
-            $("#modal-avisos2").click();
-            mostrarCarga('Comprobando requisitos');
-            ruta = '/ciudadano/info/comprarMC/' + id;
-            $.get(ruta, function (data, status) {
-                data = jQuery.parseJSON(data);
-                mostrarResultadoOperacion(data.message);
-            });
+        function comprobarListaUsuarios(id, listaUsuarios) {
+            if (listaUsuarios) {
+                // Es una carta para un ciudadano
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      Selecciona un ciudadano';
+                contenido += '  </center>';
+                contenido += '</div>';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <span class="flecha-select">';
+                contenido += '          <select class="custom-select" id="selectorCiudadanoMC">';
+                contenido += '              <option selected value="-1">Selecciona un ciudadano</option>';
+                if(listaUsuarios === 1){
+                    $.each(ciudadanosVivos, function(k, v){
+                        contenido += '              <option selected value="'+v.ID+'">'+v.ALIAS+'</option>';
+                    });
+                }
+                if(listaUsuarios === 2){
+                    $.each(ciudadanosFallecidos, function(k, v){
+                        contenido += '              <option selected value="'+v.ID+'">'+v.ALIAS+'</option>';
+                    });
+                }
+                contenido += '          </select>';
+                contenido += '      </span>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <button class="btn btn-block" onclick="comprarMC('+id+', 1);"> ACEPTAR </button>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                //$("#modal-button-aceptar").show();
+                $("#mensaje-texto").append(contenido);
+                $("#modal-avisos2").click();
+            } else {
+                // No tiene que elegir ciudadano
+                comprarMC(id, 0);
+            }
+        }
+        function comprarMC(id, ciudadano) {
+            var idCiudadano = 0;
+            if (ciudadano) {
+                idCiudadano = $('#selectorCiudadanoMC').val();
+            }
+            console.log(idCiudadano);
+            if (idCiudadano !== -1) {
+                if(!ciudadano){
+                    $("#modal-avisos2").click();
+                }
+                mostrarCarga('Comprobando requisitos');
+                ruta = '/ciudadano/info/comprarMC/' + id + '/' + idCiudadano;
+                $.get(ruta, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    mostrarResultadoOperacion(data.message);
+                });
+            } else {
+                $("#mensaje-texto").empty();
+                contenido = '';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <center>';
+                contenido += '      Debes seleccionar un ciudadano';
+                contenido += '  </center>';
+                contenido += '</div>';
+                contenido += '<div class="row" style="margin-top:2%;">';
+                contenido += '  <div class="col-xs-12">';
+                contenido += '      <button class="btn btn-block" onclick="cerrarModal();"> ACEPTAR </button>';
+                contenido += '  </div>';
+                contenido += '</div>';
+                //$("#modal-button-aceptar").show();
+                $("#mensaje-texto").append(contenido);
+            }
+        }
+        function cerrarModal() {
+            $('#modal-advice2').modal('toggle');
         }
     </script>
 {% endblock %}
