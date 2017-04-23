@@ -1073,7 +1073,7 @@ class Guardian extends Controller {
                                     'idBonificacionExtra' => $TARJETA, 'idUsuario' => $CIUDADANO, 'usado' => 0
                                 ]);
                                 if (null !== $MI_TARJETA && $EJERCICIO->getCoste() <= 259200) {
-                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), (2) * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de reto en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                                    Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de reto en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
                                     $MI_TARJETA->setUsado(1);
                                     $em->persist($MI_TARJETA);
                                 }
@@ -1097,10 +1097,10 @@ class Guardian extends Controller {
                     $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(2);
                     if (null !== $TARJETA) {
                         $MI_TARJETA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
-                            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $doctrine, $CALIFICACION->getIdUsuario(), 'usado' => 0
+                            'idBonificacionExtra' => $TARJETA, 'idUsuario' => $CALIFICACION->getIdUsuario(), 'usado' => 0
                         ]);
                         if (null !== $MI_TARJETA) {
-                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), 2 * $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                            Usuario::operacionSobreTdV($doctrine, $CALIFICACION->getIdUsuario(), $BONIFICACION->getBonificacion(), 'Ingreso - Corrección de ejercicio en ' . $SECCION->getSeccion() . ' por el GdT (Bonificación doble)(id: ' . $EJERCICIO->getIdEjercicio() . ')');
                             $MI_TARJETA->setUsado(1);
                             $em->persist($MI_TARJETA);
                         }
