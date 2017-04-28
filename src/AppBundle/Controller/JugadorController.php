@@ -490,11 +490,12 @@ class JugadorController extends Controller {
             }
             if($MC === $MC_REANIMACION){
                 // Se le da una semana de vida
-                $CUENTA = $CIUDADANO->getIdCuenta();
-                $semana = new \DateTime('now');
-                $semana->add(new \DateInterval('P7D'));
-                $CUENTA->setTdv($semana);
-                $em->persist($CUENTA);
+                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $semana, 'Ingreso - Resurrección por @' . $USUARIO->getSeudonimo());
+//                $CUENTA = $CIUDADANO->getIdCuenta();
+//                $semana = new \DateTime('now');
+//                $semana->add(new \DateInterval('P7D'));
+//                $CUENTA->setTdv($semana);
+//                $em->persist($CUENTA);
                 
                 // Se le da de comer y beber
                 $CIUDADANO->setTiempoSinComer(new \DateTime('now'));

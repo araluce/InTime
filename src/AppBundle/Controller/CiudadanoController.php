@@ -793,7 +793,7 @@ class CiudadanoController extends Controller {
                     return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No tienes tarjeta de vacaciones')), 200);
                 }
             }
-            $tiempo = 6048000;
+            $tiempo = 604800;
             $VACACIONES = $doctrine->getRepository('AppBundle:UsuarioPrestamo')->findBy([
                 'idUsuario' => $USUARIO,
                 'motivo' => 'vacaciones'
@@ -839,14 +839,7 @@ class CiudadanoController extends Controller {
             $em->flush();
             
             // Sumamos el tdv correspondiente a las vacaciones a su cuenta
-            $TDV_USUARIO = $USUARIO->getIdCuenta()->getTdv()->getTimestamp();
-            $TDV_RESTANTE = $TDV_USUARIO + $tiempo;
-            $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
-            $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
-            $CUENTA->setTdv($TDV_RESTANTE_DATETIME);
-            $em->persist($CUENTA);
-            $em->flush();
-//            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
+            Usuario::operacionSobreTdV($doctrine, $USUARIO, $tiempo, 'Ingreso - Vacaciones');
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Vacaciones en marcha.')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se ha recibido ningún dato')), 200);

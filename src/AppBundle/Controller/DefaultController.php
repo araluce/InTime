@@ -25,7 +25,7 @@ class DefaultController extends Controller {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         if ($session->get('id_usuario') !== null) {
-            Usuario::compruebaUsuario($doctrine, $session, '/guardian/registro');
+            Usuario::compruebaUsuario($doctrine, $session, '/');
             $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
 
             return $this->inicio_usuario($usuario, $session);
@@ -1022,13 +1022,18 @@ class DefaultController extends Controller {
         $doctrine = $this->getDoctrine();
 
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
-        $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
+//        $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
 //        Utils::pretty_print($ok);
-        if ($ok) {
-            Utils::pretty_print('Sube de nivel');
-        } else {
-            Utils::pretty_print('No superado');
-        }
+//        if ($ok) {
+//            Utils::pretty_print('Sube de nivel');
+//        } else {
+//            Utils::pretty_print('No superado');
+//        }
+        $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
+        $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
+        $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
+
+        Utils::pretty_print(array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion));
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 
