@@ -338,6 +338,7 @@ class Usuario {
      * @return JsonResponse
      */
     static function getClasificacionMes($doctrine, $USUARIO, $USUARIOS) {
+        $hoy = new \DateTime('now');
         if ($USUARIO->getSeudonimo() === null) {
             $RESPUESTA = [];
             $RESPUESTA['ERROR'] = 'Debes tener un alias para participar en los rankings';
@@ -370,7 +371,7 @@ class Usuario {
         $cantidad = 0;
         foreach ($movimientos as $movimiento) {
             $fecha = $movimiento->getFecha();
-            if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+            if ($fecha->format('m') === $hoy->format('m')) {
                 $cantidad += $movimiento->getCantidad();
             }
         }
@@ -389,7 +390,7 @@ class Usuario {
                 if (null !== $movimientos) {
                     foreach ($movimientos as $movimiento) {
                         $fecha = $movimiento->getFecha();
-                        if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+                        if ($fecha->format('m') === $hoy->format('m')) {
                             $aux['UsuarioMovimientos'] += $movimiento->getCantidad();
                         }
                     }
@@ -503,6 +504,7 @@ class Usuario {
         $RESPUESTA = [];
         $numMaxCiudadanos = 0;
         $DISTRITOS = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findAll();
+        $hoy = new \DateTime('now');
         if (count($DISTRITOS)) {
             foreach ($DISTRITOS AS $DISTRITO) {
                 $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
@@ -535,7 +537,7 @@ class Usuario {
                         if (count($movimientos)) {
                             foreach ($movimientos as $movimiento) {
                                 $fecha = $movimiento->getFecha();
-                                if ($fecha->format('m') >= 4 && $fecha->format('d') >= 8) {
+                                if ($fecha->format('m') === $hoy->format('m')) {
                                     $aux['CANTIDAD'] += $movimiento->getCantidad();
                                 }
                             }
