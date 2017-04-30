@@ -541,7 +541,7 @@ class CronController extends Controller {
                     $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '1er puesto en la clasificación global'];
                     Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1erGlobal'], 'Ingreso - 1er puesto en la clasificación global');
                 } else if ($miListaDePremios['2doGlobal']) {
-                    $globalBonificado = true;
+//                    $globalBonificado = true;
                     $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '2do puesto en la clasificación global'];
                     Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['2doGlobal'], 'Ingreso - 2do puesto en la clasificación global');
                 } else if ($miListaDePremios['3eroGlobal']) {
@@ -553,7 +553,7 @@ class CronController extends Controller {
                     $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '1er puesto en tu distrito'];
                     Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1eroMiDistrito'], 'Ingreso - 1er puesto en tu distrito');
                 }
-                
+
                 if ($miListaDePremios['1erDistrito']) {
                     $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => 'Pertenencia al 1er distrito del mes'];
                     Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1erDistrito'], 'Ingreso - Pertenencia al 1er distrito del mes');
@@ -678,14 +678,15 @@ class CronController extends Controller {
         $em = $doctrine->getManager();
         $HOY = new \DateTime('now');
         $contador = 0;
+        $sieteDias = 604800;
+        $paronNocturno = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(5);
 
-        $paronNocturno = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
         $paronNocturnoComprado = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
             'idBonificacionExtra' => $paronNocturno, 'usado' => 0
         ]);
         if (count($paronNocturnoComprado)) {
             foreach ($paronNocturnoComprado as $MC) {
-                if ($HOY->format('W') === $MC->getFecha()->format('W')) {
+                if ($HOY->getTimestamp() - $MC->getTimestamp() <= $sieteDias) {
                     $contador++;
                     Usuario::operacionSobreTdV($doctrine, $MC->getIdUsuario(), 480, 'Ingreso - Parón nocturno');
                 } else {
