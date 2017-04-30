@@ -275,6 +275,7 @@ class DefaultController extends Controller {
                 $aux['PUESTO'] = $infoPuesto['PUESTO'];
                 $infoPuestoMes = Usuario::getClasificacionMes($doctrine, $JUGADOR, $JUGADORES);
                 $aux['PUESTO_MES'] = $infoPuestoMes['PUESTO'];
+                $aux['TDV_MES'] = Utils::segundosToDias($infoPuestoMes['CANTIDAD']);
                 $DATOS['JUGADORES'][] = $aux;
             }
         }

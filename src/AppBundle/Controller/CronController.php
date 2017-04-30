@@ -135,7 +135,7 @@ class CronController extends Controller {
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 // Ciudadano en vacaciones
-                if($CIUDADANO->getIdEstado() === $VACACIONES){
+                if ($CIUDADANO->getIdEstado() === $VACACIONES) {
                     $CIUDADANO->setTiempoSinComer(new \DateTime('now'));
                     $CIUDADANO->setTiempoSinBeber(new \DateTime('now'));
                     $em->persist($CIUDADANO);
@@ -404,11 +404,11 @@ class CronController extends Controller {
         $em = $doctrine->getManager();
 
         // Obtenemos los tres primeros distritos
-        $clasificacionDistritos = Usuario::getClasificacionDistritos($doctrine);
+        $clasificacionDistritos = Usuario::getClasificacionDistritosMes($doctrine);
         $DISTRITO_PRIMERO = null;
         $DISTRITO_SEGUNDO = null;
         $DISTRITO_TERCERO = null;
-        // Necesitamos al menos 3 distritos
+        // Necesitamos sólo los 3 primeros distritos
         if (count($clasificacionDistritos) >= 3) {
             $DISTRITO_PRIMERO = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByNombre($clasificacionDistritos[0]['DISTRITO']);
             $DISTRITO_SEGUNDO = $doctrine->getRepository('AppBundle:UsuarioDistrito')->findOneByNombre($clasificacionDistritos[1]['DISTRITO']);
@@ -420,8 +420,16 @@ class CronController extends Controller {
         $listaCiudadanosPremiados = [];
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
-                $miListaDePremios = [];
-
+                $globalBonificado = false;
+                $miListaDePremios = [
+                    '1erGlobal' => 0,
+                    '2doGlobal' => 0,
+                    '3eroGlobal' => 0,
+                    '1eroMiDistrito' => 0,
+                    '1erDistrito' => 0,
+                    '2doDistrito' => 0,
+                    '3eroDistrito' => 0
+                ];
                 // Obtenemos todos los ciudadanos menos yo
                 // y obtenemos nuestra clasificación entre ese conjunto de 
                 // usuarios (clasificación global)
@@ -431,26 +439,29 @@ class CronController extends Controller {
                         ->where('u.idUsuario != :ID_USUARIO AND u.idRol = :ROL')
                         ->setParameters(['ID_USUARIO' => $CIUDADANO->getIdUsuario(), 'ROL' => $ROL_JUGADOR]);
                 $RESTO_CIUDADANOS = $query->getQuery()->getResult();
-                $clasificacionGlobal = Usuario::getClasificacion($doctrine, $CIUDADANO, $RESTO_CIUDADANOS);
+                $clasificacionGlobal = Usuario::getClasificacionMes($doctrine, $CIUDADANO, $RESTO_CIUDADANOS);
 
                 switch ($clasificacionGlobal['PUESTO']) {
                     case '1':
-                        $aux = [];
-                        $aux['causa'] = 'Ingreso - 1er puesto en la clasificación global';
-                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroGlobalMes');
-                        $miListaDePremios[] = $aux;
+//                        $aux = [];
+//                        $aux['causa'] = 'Ingreso - 1er puesto en la clasificación global';
+//                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroGlobalMes');
+//                        $miListaDePremios[] = $aux;
+                        $miListaDePremios['1erGlobal'] = Utils::getConstante($doctrine, 'primeroGlobalMes');
                         break;
                     case '2':
-                        $aux = [];
-                        $aux['causa'] = 'Ingreso - 2do puesto en la clasificación global';
-                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoGlobalMes');
-                        $miListaDePremios[] = $aux;
+//                        $aux = [];
+//                        $aux['causa'] = 'Ingreso - 2do puesto en la clasificación global';
+//                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoGlobalMes');
+//                        $miListaDePremios[] = $aux;
+                        $miListaDePremios['2doGlobal'] = Utils::getConstante($doctrine, 'segundoGlobalMes');
                         break;
                     case '3':
-                        $aux = [];
-                        $aux['causa'] = 'Ingreso - 3er puesto en la clasificación global';
-                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'terceroGlobalMes');
-                        $miListaDePremios[] = $aux;
+//                        $aux = [];
+//                        $aux['causa'] = 'Ingreso - 3er puesto en la clasificación global';
+//                        $aux['bonificacion'] = Utils::getConstante($doctrine, 'terceroGlobalMes');
+//                        $miListaDePremios[] = $aux;
+                        $miListaDePremios['3eroGlobal'] = Utils::getConstante($doctrine, 'terceroGlobalMes');
                         break;
                 }
 
@@ -467,12 +478,13 @@ class CronController extends Controller {
                     'DISTRITO' => $CIUDADANO->getIdDistrito()
                 ]);
                 $CIUDADANOS_DE_MI_DISTRITO = $query->getQuery()->getResult();
-                $clasificacionEnDistrito = Usuario::getClasificacion($doctrine, $CIUDADANO, $CIUDADANOS_DE_MI_DISTRITO);
+                $clasificacionEnDistrito = Usuario::getClasificacionMes($doctrine, $CIUDADANO, $CIUDADANOS_DE_MI_DISTRITO);
                 if ($clasificacionEnDistrito['PUESTO'] === 1) {
-                    $aux = [];
-                    $aux['causa'] = 'Ingreso - 1er puesto en tu distrito';
-                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroEnDistritoMes');
-                    $miListaDePremios[] = $aux;
+//                    $aux = [];
+//                    $aux['causa'] = 'Ingreso - 1er puesto en tu distrito';
+//                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primeroEnDistritoMes');
+//                    $miListaDePremios[] = $aux;
+                    $miListaDePremios['1eroMiDistrito'] = Utils::getConstante($doctrine, 'primeroEnDistritoMes');
                 }
 //                $aux = [];
 //                $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
@@ -482,22 +494,25 @@ class CronController extends Controller {
                 // Obtenemos posibles bonificaciones por la clasificación
                 // de nuestro distrito
                 if ($CIUDADANO->getIdDistrito() === $DISTRITO_PRIMERO) {
-                    $aux = [];
-                    $aux['causa'] = 'Ingreso - Pertenencia al 1er distrito del mes';
-                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primerDistritoMes');
-                    $miListaDePremios[] = $aux;
+//                    $aux = [];
+//                    $aux['causa'] = 'Ingreso - Pertenencia al 1er distrito del mes';
+//                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'primerDistritoMes');
+//                    $miListaDePremios[] = $aux;
+                    $miListaDePremios['1erDistrito'] = Utils::getConstante($doctrine, 'primerDistritoMes');
                 }
                 if ($CIUDADANO->getIdDistrito() === $DISTRITO_SEGUNDO) {
-                    $aux = [];
-                    $aux['causa'] = 'Ingreso - Pertenencia al 2do distrito del mes';
-                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoDistritoMes');
-                    $miListaDePremios[] = $aux;
+//                    $aux = [];
+//                    $aux['causa'] = 'Ingreso - Pertenencia al 2do distrito del mes';
+//                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'segundoDistritoMes');
+//                    $miListaDePremios[] = $aux;
+                    $miListaDePremios['2doDistrito'] = Utils::getConstante($doctrine, 'segundoDistritoMes');
                 }
                 if ($CIUDADANO->getIdDistrito() === $DISTRITO_TERCERO) {
-                    $aux = [];
-                    $aux['causa'] = 'Ingreso - Pertenencia al 3er distrito del mes';
-                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'tercerDistritoMes');
-                    $miListaDePremios[] = $aux;
+//                    $aux = [];
+//                    $aux['causa'] = 'Ingreso - Pertenencia al 3er distrito del mes';
+//                    $aux['bonificacion'] = Utils::getConstante($doctrine, 'tercerDistritoMes');
+//                    $miListaDePremios[] = $aux;
+                    $miListaDePremios['3eroDistrito'] = Utils::getConstante($doctrine, 'tercerDistritoMes');
                 }
 
 //                $aux = [];
@@ -506,19 +521,48 @@ class CronController extends Controller {
 //                Utils::pretty_print($aux);
                 // En este punto ya tenemos todas las posibles bonificaciones
                 // ahora bonificamos la más alta
-                if (count($miListaDePremios)) {
-                    $miBonificacionMasAlta = 0;
-                    $aux = [];
-                    foreach ($miListaDePremios as $bonificacion) {
-                        if ($bonificacion['bonificacion'] > $miBonificacionMasAlta) {
-                            $miBonificacionMasAlta = $bonificacion['bonificacion'];
-                            $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
-                            $aux['causa'] = $bonificacion['causa'];
-                            $aux['bonificacion'] = $bonificacion['bonificacion'];
-                        }
-                    }
-                    $listaCiudadanosPremiados[] = $aux;
-                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $aux['bonificacion'], $aux['causa']);
+//                if (count($miListaDePremios)) {
+//                    $miBonificacionMasAlta = 0;
+//                    $aux = [];
+//                    foreach ($miListaDePremios as $bonificacion) {
+//                        if ($bonificacion['bonificacion'] > $miBonificacionMasAlta) {
+//                            $miBonificacionMasAlta = $bonificacion['bonificacion'];
+//                            $aux['ciudadano'] = $CIUDADANO->getSeudonimo();
+//                            $aux['causa'] = $bonificacion['causa'];
+//                            $aux['bonificacion'] = $bonificacion['bonificacion'];
+//                        }
+//                    }
+//                    $listaCiudadanosPremiados[] = $aux;
+//                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $aux['bonificacion'], $aux['causa']);
+//                }
+                // Se bonifican los premios globales
+                if ($miListaDePremios['1erGlobal']) {
+                    $globalBonificado = true;
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '1er puesto en la clasificación global'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1erGlobal'], 'Ingreso - 1er puesto en la clasificación global');
+                } else if ($miListaDePremios['2doGlobal']) {
+                    $globalBonificado = true;
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '2do puesto en la clasificación global'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['2doGlobal'], 'Ingreso - 2do puesto en la clasificación global');
+                } else if ($miListaDePremios['3eroGlobal']) {
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '3er puesto en la clasificación global'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['3eroGlobal'], 'Ingreso - 3er puesto en la clasificación global');
+                }
+
+                if (!$globalBonificado && $miListaDePremios['1eroMiDistrito']) {
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '1er puesto en tu distrito'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1eroMiDistrito'], 'Ingreso - 1er puesto en tu distrito');
+                }
+                
+                if ($miListaDePremios['1erDistrito']) {
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => 'Pertenencia al 1er distrito del mes'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1erDistrito'], 'Ingreso - Pertenencia al 1er distrito del mes');
+                } else if ($miListaDePremios['2doDistrito']) {
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => 'Pertenencia al 2do distrito del mes'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['2doDistrito'], 'Ingreso - Pertenencia al 2do distrito del mes');
+                } else if ($miListaDePremios['3eroDistrito']) {
+                    $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => 'Pertenencia al 3er distrito del mes'];
+                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['3eroDistrito'], 'Ingreso - Pertenencia al 3er distrito del mes');
                 }
             }
         }
@@ -530,7 +574,7 @@ class CronController extends Controller {
             }
         }
         Utils::setError($doctrine, 3, "Clasificaciones - " . $reporte);
-        Utils::pretty_print($listaCiudadanosPremiados);
+//        Utils::pretty_print($listaCiudadanosPremiados);
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 
@@ -634,7 +678,7 @@ class CronController extends Controller {
         $em = $doctrine->getManager();
         $HOY = new \DateTime('now');
         $contador = 0;
-        
+
         $paronNocturno = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
         $paronNocturnoComprado = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
             'idBonificacionExtra' => $paronNocturno, 'usado' => 0

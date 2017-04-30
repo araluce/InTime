@@ -342,12 +342,14 @@ class Usuario {
             $RESPUESTA = [];
             $RESPUESTA['ERROR'] = 'Debes tener un alias para participar en los rankings';
             $RESPUESTA['PUESTO'] = 0;
+            $RESPUESTA['CANTIDAD'] = 0;
             return $RESPUESTA;
         }
         if (!count($USUARIOS)) {
             $RESPUESTA = [];
             $RESPUESTA['ERROR'] = 'No hay usuarios';
             $RESPUESTA['PUESTO'] = 0;
+            $RESPUESTA['CANTIDAD'] = 0;
             return $RESPUESTA;
         }
         $query = $doctrine
@@ -362,6 +364,7 @@ class Usuario {
             $RESPUESTA = [];
             $RESPUESTA['ERROR'] = 'Aún no has participado este mes';
             $RESPUESTA['PUESTO'] = 0;
+            $RESPUESTA['CANTIDAD'] = 0;
             return $RESPUESTA;
         }
         $cantidad = 0;
