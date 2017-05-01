@@ -973,6 +973,7 @@ class Usuario {
         $SECCION_DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION_DEPORTE);
         $HOY = new \DateTime('now');
+        $sieteDias = 604800;
         if (count($EJERCICIOS)) {
             foreach ($EJERCICIOS as $EJERCICIO) {
                 $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
@@ -980,7 +981,7 @@ class Usuario {
                 ]);
                 if (count($CALIFICACIONES)) {
                     foreach ($CALIFICACIONES as $CALIFICACION) {
-                        if (intval($CALIFICACION->getFecha()->format('W')) === intval($HOY->format('W'))) {
+                        if ($HOY->getTimestamp() - $CALIFICACION->getFecha()->getTimestamp() <= $sieteDias) {
                             return 1;
                         }
                     }

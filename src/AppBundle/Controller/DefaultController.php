@@ -1023,18 +1023,18 @@ class DefaultController extends Controller {
         $doctrine = $this->getDoctrine();
 
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneBySeudonimo($alias);
-//        $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
-//        Utils::pretty_print($ok);
-//        if ($ok) {
-//            Utils::pretty_print('Sube de nivel');
-//        } else {
-//            Utils::pretty_print('No superado');
-//        }
-        $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
-        $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
-        $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
-
-        Utils::pretty_print(array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion));
+        $ok = Usuario::comprobarNivel($doctrine, $USUARIO);
+        Utils::pretty_print($ok);
+        if ($ok) {
+            Utils::pretty_print('Sube de nivel');
+        } else {
+            Utils::pretty_print('No superado');
+        }
+//        $balon = Usuario::comprobarSiBalon($doctrine, $USUARIO);
+//        $deporte = Usuario::comprobarDeporte($doctrine, $USUARIO);
+//        $inspeccion = Usuario::comprobarInspeccion($doctrine, $USUARIO);
+//
+//        Utils::pretty_print(array('BALON' => $balon, 'DEPORTE' => $deporte, 'INSPECCION' => $inspeccion));
         return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
 
