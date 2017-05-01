@@ -686,7 +686,7 @@ class CronController extends Controller {
         ]);
         if (count($paronNocturnoComprado)) {
             foreach ($paronNocturnoComprado as $MC) {
-                if ($HOY->getTimestamp() - $MC->getTimestamp() <= $sieteDias) {
+                if ($HOY->getTimestamp() - $MC->getFecha()->getTimestamp() <= $sieteDias) {
                     $contador++;
                     Usuario::operacionSobreTdV($doctrine, $MC->getIdUsuario(), 480, 'Ingreso - Parón nocturno');
                 } else {
