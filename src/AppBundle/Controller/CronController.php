@@ -537,7 +537,7 @@ class CronController extends Controller {
 //                }
                 // Se bonifican los premios globales
                 if ($miListaDePremios['1erGlobal']) {
-                    $globalBonificado = true;
+//                    $globalBonificado = true;
                     $listaCiudadanosPremiados[] = ['ciudadano' => $CIUDADANO->getSeudonimo(), 'causa' => '1er puesto en la clasificación global'];
                     Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $miListaDePremios['1erGlobal'], 'Ingreso - 1er puesto en la clasificación global');
                 } else if ($miListaDePremios['2doGlobal']) {

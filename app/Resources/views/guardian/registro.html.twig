@@ -293,11 +293,15 @@
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.NOMBRE }}&nbsp;{{ JUGADOR.APELLIDOS }}</a></td>
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.EMAIL }}</a></td>
                                                         {% if JUGADOR.TDV_RED %}
-                                                        <td style="color:red; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
+                                                        <td style="background-color: lightcoral;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% else %}
-                                                        <td style="color:green; font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
+                                                        <td><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV.dias }}D {{ JUGADOR.TDV.horas }}H {{ JUGADOR.TDV.minutos }}M {{ JUGADOR.TDV.segundos }}S</a></td>
                                                     {% endif %}
-                                                    <td class="responsive" style="font-weight: bold;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV_MES.dias }}D {{ JUGADOR.TDV_MES.horas }}H {{ JUGADOR.TDV_MES.minutos }}M {{ JUGADOR.TDV_MES.segundos }}S</a></td>
+                                                    {% if JUGADOR.TDV_MES_RED %}
+                                                        <td class="responsive" style="background-color: lightcoral;"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV_MES.dias }}D {{ JUGADOR.TDV_MES.horas }}H {{ JUGADOR.TDV_MES.minutos }}M {{ JUGADOR.TDV_MES.segundos }}S</a></td>
+                                                    {% else %}
+                                                        <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.TDV_MES.dias }}D {{ JUGADOR.TDV_MES.horas }}H {{ JUGADOR.TDV_MES.minutos }}M {{ JUGADOR.TDV_MES.segundos }}S</a></td>
+                                                    {% endif %}
                                                     <td class="responsive"><a href="/guardian/directorio/getDirectorio/{{ JUGADOR.DNI }}">{{ JUGADOR.ESTADO }}</a></td>
                                                 </tr>
                                             {% endfor %}
