@@ -169,20 +169,20 @@ class CronController extends Controller {
         if (count($CIUDADANOS)) {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 $CUENTA = $CIUDADANO->getIdCuenta();
-                if ($diaSemana !== '6' && $diaSemana !== '0') {
+//                if ($diaSemana !== '6' && $diaSemana !== '0') {
                     if ($CUENTA->getFinbloqueo() < $fecha) {
                         $ESTADO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
                         $CIUDADANO->setIdEstado($ESTADO);
                         $em->persist($CIUDADANO);
                         $contador++;
                     }
-                } else {
+//                } else {
 //                    $CUENTA = $USUARIO->getIdCuenta();
 //                    $finBloqueo = new \DateTime('now');
 //                    $finBloqueo->add(new \DateInterval('P1D'));
 //                    $CUENTA->setFinbloqueo($finBloqueo);
 //                    $em->persist($CUENTA);
-                }
+//                }
             }
         }
         $em->flush();
@@ -688,7 +688,7 @@ class CronController extends Controller {
             foreach ($paronNocturnoComprado as $MC) {
                 if ($HOY->getTimestamp() - $MC->getFecha()->getTimestamp() <= $sieteDias) {
                     $contador++;
-                    Usuario::operacionSobreTdV($doctrine, $MC->getIdUsuario(), 480, 'Ingreso - Parón nocturno');
+                    Usuario::operacionSobreTdV($doctrine, $MC->getIdUsuario(), 28800, 'Ingreso - Parón nocturno');
                 } else {
                     $MC->setUsado(1);
                     $em->persist($MC);
