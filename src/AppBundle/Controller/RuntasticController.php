@@ -23,6 +23,7 @@ use AppBundle\Utils\Utils;
 use AppBundle\Utils\DataManager;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Ejercicio;
+use AppBundle\Utils\RuntasticUtils;
 
 /**
  * Description of CiudadanoController
@@ -235,55 +236,7 @@ class RuntasticController extends Controller {
         if (!count($UR)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
         }
-        $actividades_semana = [];
-        foreach ($UR as $U) {
-            $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
-            $sesiones_ids = [];
-            if(count($SESIONES)){
-                foreach($SESIONES as $S){
-                    $sesiones_ids[] = $S->getIdRuntastic();
-                }
-            }
-            $r = new Runtastic();
-            $timeout = false;
-            $tiempo_inicio = microtime(true);
-            do {
-                $r->setUsername($U->getUsername())->setPassword($U->getPassword());
-                $week_activities = $r->getActivities();
-                $tiempo_fin = microtime(true);
-                $tiempo = $tiempo_fin - $tiempo_inicio;
-                if ($tiempo >= 10.0) {
-                    $timeout = true;
-                }
-            } while ($r->getResponseStatusCode() !== 200 && !$timeout);
-            $response['usuario'] = $r->getUsername();
-            $response['Uid'] = $r->getUid();
-
-            $week_activities = $r->getActivities();
-            foreach ($week_activities as $activity) {
-                $actividades_semana[] = $activity;
-                if (!in_array($activity->id, $sesiones_ids)) {
-                    $SESION = new \AppBundle\Entity\SesionRuntastic();
-                    $SESION->setIdRuntastic($activity->id);
-                    $SESION->setIdUsuarioRuntastic($U);
-                    $SESION->setTipo('cycling');
-                    if ($activity->type === 'running') {
-                        $SESION->setTipo('running');
-                    }
-                    $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
-                    $SESION->setDistancia($activity->distance);
-                    $SESION->setRitmo($activity->pace);
-                    $SESION->setVelocidad($activity->speed);
-                    $SESION->setEvaluado(0);
-                    $FECHA = new \Datetime();
-                    $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
-                    $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
-                    $SESION->setFecha($FECHA);
-                    $em->persist($SESION);
-                }
-            }
-            $em->flush();
-        }
+        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR);
         if (!count($actividades_semana)) {
             return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han actualizado sus sesiones. '
                 . 'Puede que hayas excedido el máximo de sesiones abiertas permitidas por Runtastic. Podría ayudar cerrar sesiones '

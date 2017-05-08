@@ -19,6 +19,7 @@ use AppBundle\Utils\Distrito;
 use AppBundle\Utils\Pago;
 use AppBundle\Utils\Ejercicio;
 use AppBundle\Runtastic\Runtastic;
+use AppBundle\Utils\RuntasticUtils;
 
 /**
  * Description of CronController
@@ -170,12 +171,12 @@ class CronController extends Controller {
             foreach ($CIUDADANOS as $CIUDADANO) {
                 $CUENTA = $CIUDADANO->getIdCuenta();
 //                if ($diaSemana !== '6' && $diaSemana !== '0') {
-                    if ($CUENTA->getFinbloqueo() < $fecha) {
-                        $ESTADO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
-                        $CIUDADANO->setIdEstado($ESTADO);
-                        $em->persist($CIUDADANO);
-                        $contador++;
-                    }
+                if ($CUENTA->getFinbloqueo() < $fecha) {
+                    $ESTADO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');
+                    $CIUDADANO->setIdEstado($ESTADO);
+                    $em->persist($CIUDADANO);
+                    $contador++;
+                }
 //                } else {
 //                    $CUENTA = $USUARIO->getIdCuenta();
 //                    $finBloqueo = new \DateTime('now');
@@ -206,120 +207,21 @@ class CronController extends Controller {
                 ]);
                 // Actualizar sus sesiones
                 $CUENTAS_RUNTASTIC = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($CIUDADANO);
+                RuntasticUtils::actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC);
                 if (count($CUENTAS_RUNTASTIC)) {
-                    $actividades_semana = [];
-                    foreach ($CUENTAS_RUNTASTIC as $U) {
-                        $SESIONES = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($U);
-                        $array_sesiones = [];
-                        if (count($SESIONES)) {
-                            foreach ($SESIONES as $S) {
-                                $array_sesiones[] = $S->getIdRuntastic();
-                            }
-                        }
-                        $r = new Runtastic();
-                        $timeout = false;
-                        $tiempo_inicio = microtime(true);
-                        $hoy = new \DateTime('now');
-                        do {
-                            $r->setUsername($U->getUsername())->setPassword($U->getPassword());
-                            echo $r->getResponseStatusCode();
-                            $week_activities = $r->getActivities($hoy->format('W') - 1);
-                            $tiempo_fin = microtime(true);
-                            $tiempo = $tiempo_fin - $tiempo_inicio;
-                            if ($tiempo >= 10.0) {
-                                $timeout = true;
-                            }
-                        } while ($r->getResponseStatusCode() !== 200 && !$timeout);
-                        $response['usuario'] = $r->getUsername();
-                        $response['Uid'] = $r->getUid();
-                        foreach ($week_activities as $activity) {
-                            $actividades_semana[] = $activity;
-                            if (!in_array($activity->id, $array_sesiones)) {
-                                $SESION = new \AppBundle\Entity\SesionRuntastic();
-                                $SESION->setIdRuntastic($activity->id);
-                                $SESION->setIdUsuarioRuntastic($U);
-                                $SESION->setTipo('cycling');
-                                if ($activity->type === 'running') {
-                                    $SESION->setTipo('running');
-                                }
-                                $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
-                                $SESION->setDistancia($activity->distance);
-                                $SESION->setRitmo($activity->pace);
-                                $SESION->setVelocidad($activity->speed);
-                                $SESION->setEvaluado(0);
-                                $FECHA = new \Datetime();
-                                $FECHA->setDate($activity->date->year, $activity->date->month, $activity->date->day);
-                                $FECHA->setTime($activity->date->hour, $activity->date->minutes, $activity->date->seconds);
-                                $SESION->setFecha($FECHA);
-                                $em->persist($SESION);
-                            }
-                        }
-                        $em->flush();
-                    }
-
                     // Comprobación de las sesiones
                     $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
                     $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($DEPORTE);
-                    if (null !== $EJERCICIO) {
-                        $comparar = 1;
-                        $RETOS = $doctrine->getRepository('AppBundle:EjercicioRuntastic')->findByIdEjercicio($EJERCICIO);
-                        if (!count($RETOS)) {
-                            $comparar = 0;
-                        }
-                        $duracion_acumulada = 0;
-                        $id_sesiones = [];
-                        $n_sesiones = 1;
-                        $ok = false;
-                        $duracionReto = 0;
-                        foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
-                            $SESIONES_RUNTASTIC = $doctrine->getRepository('AppBundle:SesionRuntastic')->findByIdUsuarioRuntastic($CUENTA);
-                            foreach ($SESIONES_RUNTASTIC as $SESION) {
-                                if (Utils::semanaPasada($SESION->getFecha())) {
-                                    $duracion = $SESION->getDuracion();
-                                    if ($comparar) {
-                                        if (!$SESION->getEvaluado()) {
-                                            foreach ($RETOS as $RETO) {
-                                                $duracionReto = $RETO->getDuracion();
-                                                if ($RETO->getTipo() === 'running') {
-                                                    if (($RETO->getTipo() === $SESION->getTipo() && $RETO->getRitmo() >= $SESION->getRitmo())) {
-                                                        $duracion_acumulada += $duracion;
-                                                        $id_sesiones[] = $SESION;
-                                                        if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                                            $n_sesiones++;
-                                                            if ($n_sesiones >= 2) {
-                                                                $ok = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                if ($RETO->getTipo() === 'cycling') {
-                                                    if ($RETO->getTipo() === $SESION->getTipo() && $RETO->getVelocidad() <= $SESION->getVelocidad()) {
-                                                        $duracion_acumulada += $duracion;
-                                                        $id_sesiones[] = $SESION;
-                                                        if ($duracion_acumulada >= $RETO->getDuracion()) {
-                                                            $n_sesiones++;
-                                                            if ($n_sesiones >= 2) {
-                                                                $ok = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if ($ok) {
-                            $contador++;
-                            if (null !== $MC_COMPRADA && $duracion_acumulada >= ($duracionReto * 2)) {
-                                Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones, true);
-                                $MC_COMPRADA->setUsado(1);
-                                $em->persist($MC_COMPRADA);
-                                $em->flush();
-                            } else {
-                                Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $id_sesiones);
-                            }
+                    $DATOS = RuntasticUtils::comprobarRetoDeportivo($doctrine, $CUENTAS_RUNTASTIC, $EJERCICIO);
+                    if ($DATOS['OK']) {
+                        $contador++;
+                        if (null !== $MC_COMPRADA && $DATOS['DURACION_ACUMULADA'] >= ($DATOS['DURACION_RETO'] * 2)) {
+                            Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $DATOS['ID_SESIONES'], true);
+                            $MC_COMPRADA->setUsado(1);
+                            $em->persist($MC_COMPRADA);
+                            $em->flush();
+                        } else {
+                            Ejercicio::evaluaFasePartes($doctrine, $EJERCICIO, $CIUDADANO, $DATOS['ID_SESIONES']);
                         }
                     }
                 }

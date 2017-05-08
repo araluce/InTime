@@ -1586,7 +1586,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
             }
             $tiempo = $request->request->get('tiempo');
-            if($tiempo <= 0){
+            if ($tiempo <= 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes asignar un tiempo de vacaciones')), 200);
             }
             $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
@@ -1602,32 +1602,26 @@ class Guardian extends Controller {
                 // Ponemos la fecha del fin de vacaciones y el tiempo que se mostrará
                 $CUENTA = $CIUDADANO->getIdCuenta();
                 $CUENTA->setFinbloqueo($finBloqueo->setTimestamp($finBloqueoTimestamp));
-                $tdvVacaciones = intval(intval($CUENTA->getTdv()->getTimestamp() - $hoy->getTimestamp()));
+                $tdvVacaciones = intval($CUENTA->getTdv()->getTimestamp() - $hoy->getTimestamp() - $tiempo);
                 $CUENTA->setTdvVacaciones($tdvVacaciones);
 
                 // Sumamos el tdv correspondiente a las vacaciones a su cuenta
-                $TDV_USUARIO = $CIUDADANO->getIdCuenta()->getTdv()->getTimestamp();
-                $TDV_RESTANTE = $TDV_USUARIO + $tiempo;
-                $TDV_RESTANTE_DATE = date('Y-m-d H:i:s', intval($TDV_RESTANTE));
-                $TDV_RESTANTE_DATETIME = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV_RESTANTE_DATE);
-                $CUENTA->setTdv($TDV_RESTANTE_DATETIME);
-                $em->persist($CUENTA);
+                Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $tiempo, 'Ingreso - Vacaciones');
 
                 // Le damos de comer y beber
                 $CIUDADANO->setIdEstado($ESTADO_VACACIONES);
                 $CIUDADANO->setTiempoSinComer($hoy);
                 $CIUDADANO->setTiempoSinBeber($hoy);
                 $em->persist($CIUDADANO);
-                
+
                 $em->flush();
-                
             }
 
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Todos los ciudadanos están de vacaciones')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-    
+
     /**
      * @Route("/guardian/tdvParaTodos", name="tdvParaTodos")
      */
@@ -1642,7 +1636,7 @@ class Guardian extends Controller {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
             }
             $tiempo = $request->request->get('tiempo');
-            if($tiempo === 0){
+            if ($tiempo === 0) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Debes asignar un tdv')), 200);
             }
             $concepto = $request->request->get('motivo');
@@ -1650,7 +1644,7 @@ class Guardian extends Controller {
             if (!count($CIUDADANOS)) {
                 return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No hay ciudadanos vivos')), 200);
             }
-            foreach($CIUDADANOS as $CIUDADANO){
+            foreach ($CIUDADANOS as $CIUDADANO) {
                 Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $tiempo, $concepto);
             }
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Operación realizada con éxito')), 200);
