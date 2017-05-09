@@ -496,6 +496,59 @@ class Guardian extends Controller {
     }
 
     /**
+     * @Route("/guardian/proyecto_innovacion/getEjerciciosPI", name="getEjerciciosFelicidadGuardian")
+     */
+    public function getEjerciciosPIAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/proyecto_innovacion/getEjerciciosPI', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso denegado')), 200);
+        }
+        $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('proyecto_innovacion');
+        $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($EJERCICIO_SECCION);
+        $CALIFICACIONES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($EJERCICIO);
+
+        $ENTREGADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('entregado');
+        $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
+
+        $EJERCICIOS = [];
+        foreach ($CALIFICACIONES as $CALIFICACION) {
+            $CIUDADANO = $CALIFICACION->getIdUsuario();
+            $ENTREGA = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findOneBy([
+                'idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO
+            ]);
+            if (null !== $ENTREGA) {
+                $aux['DISTRITO'] = $CIUDADANO->getIdDistrito()->getNombre();
+                $aux['CIUDADANO'] = [];
+                $aux['CIUDADANO']['NOMBRE'] = $CIUDADANO->getNombre();
+                $aux['CIUDADANO']['APELLIDOS'] = $CIUDADANO->getApellidos();
+                $aux['CIUDADANO']['DNI'] = $CIUDADANO->getDni();
+                $aux['CIUDADANO']['ALIAS'] = $CIUDADANO->getSeudonimo();
+
+                $aux['ID'] = $CALIFICACION->getIdEjercicioCalificacion();
+                $aux['ENTREGADO'] = 1;
+
+                if ($CALIFICACION->getIdEjercicioEstado() === $EVALUADO) {
+                    $aux['ENTREGADO'] = 0;
+                    $aux['CALIFICACION'] = [];
+                    $aux['CALIFICACION']['ICONO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaIcono();
+                    $aux['CALIFICACION']['TEXTO'] = $CALIFICACION->getIdCalificaciones()->getCorrespondenciaTexto();
+                }
+
+
+                $aux['ENTREGA'] = [];
+                $aux['ENTREGA']['FECHA'] = $ENTREGA->getFecha();
+                $aux['ENTREGA']['NOMBRE'] = $ENTREGA->getNombre();
+                $aux['ENTREGA']['RUTA'] = $aux['CIUDADANO']['DNI'] . '/proyecto_innovacion/' . $aux['ID'] . '/' . $aux['ENTREGA']['NOMBRE'];
+
+                $EJERCICIOS[] = $aux;
+            }
+        }
+        return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $EJERCICIOS)), 200);
+    }
+
+    /**
      * @Route("/guardian/pagaExtra/getEntregasPaga/{id_ejercicio}", name="getEntregasPaga")
      */
     public function getEntregasPagaAction(Request $request, $id_ejercicio) {
@@ -1042,7 +1095,7 @@ class Guardian extends Controller {
                 $CIUDADANOS = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);
                 foreach ($CIUDADANOS as $CIUDADANO) {
 //                    if (null !== $EJERCICIO_CALIFICACION) {
-//                        // Si este ejercicio ya había sido calificacdo, se resta el TdV anterior
+//                        // Si este ejercicio ya había sido calificado, se resta el TdV anterior
 //                        // y se le asigna el TdV por defecto hasta que el GdT lo califique
 //                        if ($EJERCICIO_CALIFICACION->getIdCalificaciones() !== null) {
 //                            $BONIFICACION = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
@@ -1054,11 +1107,15 @@ class Guardian extends Controller {
 //                            }
 //                        }
 //                    }
-                    Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_MEDIA->getBonificacion(), 'Cobro (Ajuste) - Se descuenta el pago temporal (id: ' . $EJERCICIO->getIdEjercicio() . ')');
-                    if (null !== $BONIFICACION_ANTERIOR) {
-                        Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo reto (id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                    if ($SECCION->getSeccion() !== 'proyecto_innovacion') {
+                        Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_MEDIA->getBonificacion(), 'Cobro (Ajuste) - Se descuenta el pago temporal (id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                        if (null !== $BONIFICACION_ANTERIOR) {
+                            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, (-1) * $BONIFICACION_ANTERIOR->getBonificacion(), 'Cobro (Ajuste) - Sustitución de beneficios al calificar de nuevo el mismo reto (id: ' . $EJERCICIO->getIdEjercicio() . ')');
+                        }
                     }
-                    $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy(['idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO]);
+                    $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
+                        'idUsuario' => $CIUDADANO, 'idEjercicio' => $EJERCICIO
+                    ]);
                     if (null !== $CALIFICACION) {
                         $CALIFICACION->setIdEvaluador($GdT);
                         $CALIFICACION->setIdEjercicioEstado($EVALUADO);
@@ -1066,7 +1123,7 @@ class Guardian extends Controller {
                         $CALIFICACION->setFecha(new \DateTime('now'));
                         $em->persist($CALIFICACION);
 
-                        if ($SECCION === 'comida') {
+                        if ($SECCION->getSeccion() === 'comida') {
                             $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(2);
                             if (null !== $TARJETA) {
                                 $MI_TARJETA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
@@ -1093,7 +1150,7 @@ class Guardian extends Controller {
                 $CALIFICACION->setIdCalificaciones($NOTA);
                 $CALIFICACION->setFecha(new \DateTime('now'));
                 $em->persist($CALIFICACION);
-                if ($SECCION === 'comida') {
+                if ($SECCION->getSeccion() === 'comida') {
                     $TARJETA = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(2);
                     if (null !== $TARJETA) {
                         $MI_TARJETA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
@@ -1199,6 +1256,77 @@ class Guardian extends Controller {
             }
             $CONSTANTE->setValor($felicidadBonificacion25);
             $em->persist($CONSTANTE);
+
+            $em->flush();
+            return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);
+        }
+        return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * 
+     * @Route("/guardian/proyecto_innovacion/setProyectoInnovacion", name="setProyectoInnovacion")
+     */
+    public function setProyectoInnovacionAction(Request $request) {
+        if ($request->getMethod() == 'POST') {
+            $doctrine = $this->getDoctrine();
+            $em = $doctrine->getManager();
+            $session = $request->getSession();
+            $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/proyecto_innovacion/setProyectoInnovacion', true);
+            if (!$status) {
+                return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+            }
+
+            $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('proyecto_innovacion');
+            $EJERCICIO = $doctrine->getRepository('AppBundle:Ejercicio')->findOneByIdEjercicioSeccion($EJERCICIO_SECCION);
+
+            $t1 = $request->request->get('t1');
+            $CALIFICACION_1 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(1);
+            $b1 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_1
+            ]);
+            $b1->setBonificacion($t1);
+            $em->persist($b1);
+
+            $t2 = $request->request->get('t2');
+            $CALIFICACION_2 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(2);
+            $b2 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_2
+            ]);
+            $b2->setBonificacion($t2);
+            $em->persist($b2);
+
+            $t3 = $request->request->get('t3');
+            $CALIFICACION_3 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(3);
+            $b3 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_3
+            ]);
+            $b3->setBonificacion($t3);
+            $em->persist($b3);
+
+            $t4 = $request->request->get('t4');
+            $CALIFICACION_4 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(4);
+            $b4 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_4
+            ]);
+            $b4->setBonificacion($t4);
+            $em->persist($b4);
+
+            $t5 = $request->request->get('t5');
+            $CALIFICACION_5 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(5);
+            $b5 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_5
+            ]);
+            $b5->setBonificacion($t5);
+            $em->persist($b5);
+
+            $t6 = $request->request->get('t6');
+            $CALIFICACION_6 = $doctrine->getRepository('AppBundle:Calificaciones')->findOneByIdCalificaciones(6);
+            $b6 = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneBy([
+                'idEjercicio' => $EJERCICIO, 'idCalificacion' => $CALIFICACION_6
+            ]);
+            $b6->setBonificacion($t6);
+            $em->persist($b6);
 
             $em->flush();
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Cambios realizados correctamente')), 200);

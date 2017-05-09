@@ -536,6 +536,7 @@ class CronController extends Controller {
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
         $HOY = new \DateTime('now');
+        $sieteDias = 604800;
         $contador = 0;
 
         $libreMinuteros = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(3);
@@ -544,22 +545,7 @@ class CronController extends Controller {
         ]);
         if (count($libreMinuterosCompradas)) {
             foreach ($libreMinuterosCompradas as $MC) {
-                if ($HOY->format('W') !== $MC->getFecha()->format('W')) {
-                    $contador++;
-                    $MC->setUsado(1);
-                    $em->persist($MC);
-                    $em->flush();
-                }
-            }
-        }
-
-        $paronNocturno = $doctrine->getRepository('AppBundle:BonificacionExtra')->findOneByIdBonificacionExtra(5);
-        $paronNocturnoCompradas = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findBy([
-            'idBonificacionExtra' => $paronNocturno, 'usado' => 0
-        ]);
-        if (count($paronNocturnoCompradas)) {
-            foreach ($paronNocturnoCompradas as $MC) {
-                if ($HOY->format('W') !== $MC->getFecha()->format('W')) {
+                if ($HOY->getTimestamp() - $MC->getFecha()->getTimestamp() <= $sieteDias) {
                     $contador++;
                     $MC->setUsado(1);
                     $em->persist($MC);

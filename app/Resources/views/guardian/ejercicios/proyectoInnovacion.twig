@@ -1,0 +1,314 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block title %}{% endblock %}
+
+{% block header %}
+    {% include "guardian/header.html.twig" %}
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/alimentacion.css')}}" rel="stylesheet" type="text/css" />
+    <style>
+        .alert{
+            font-size: 40px;
+        }
+        #ejercicio-evaluacion,
+        #ejercicios{
+            font-size: 50px;  
+        }
+        .caja-opcion{
+            border-left: 5px #337ab7 solid;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 1%;
+        }
+        .fila-producto{
+            height: 20vw;
+        }
+        .slot{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            margin-left: 0px;
+            width:  20vw;
+            height: 20vw;
+        }
+        .slot img{
+            height: 12vw;
+        }
+        @media (max-width: 760px){
+
+        }
+        @media (min-width: 760px){
+            .slot{
+                width:  15vw;
+                height: 15vw;
+            }
+            .slot img{
+                height: 10vw;
+            }
+        }
+        @media (min-width: 992px){
+
+        }
+        @media (min-width: 1200px){
+            .slot{
+                width:  6vw;
+                height: 6vw;
+            }
+            .slot img{
+                height: 4vw;
+            }
+            #ejercicio-evaluacion,
+            #ejercicios{
+                font-size: 20px;  
+            }
+            .alert{
+                font-size: 15px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" id="resultados" class="btn btn-primary btn13" href="#tab1" data-toggle="tab" onclick="getEjercicios();">
+                        <span class="fa fa-file-word-o" aria-hidden="true"></span>
+                        <div class="hidden-xs">ENTREGAS</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="resultados" class="btn btn-default btn13" href="#tab2" data-toggle="tab">
+                        <span class="fa fa-gift" aria-hidden="true"></span>
+                        <div class="hidden-xs">BONIFICACIONES</div>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="exit" class="btn btn-default btn4" onclick="window.history.back();" >
+                        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+                        <div class="hidden-xs">ATRAS</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div id="alerta" style="margin-top: 1%;"></div>
+                    <div class="tab-pane fade in active" id="tab1">
+                        <div class="row" style="margin-top: 1%;">
+                            <div id="ejercicios"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tab2">
+                        <div class="row bordes border-radius bonificadores" style="margin-top: 1%;">
+                            <legend>Bonificación por calificación</legend>
+                            {% for c in ULT_CAL %}
+                                <img src="{{ asset('images/badges/' ~ c.CALIFICACION.getCorrespondenciaIcono())}}" />
+                                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="dias{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.dias}}" min="0" max="100" />
+                                                <span class="input-group-addon">d</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="horas{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.horas}}" min="0" max="24" />
+                                                <span class="input-group-addon">h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="minutos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.minutos}}" min="0" max="60" />
+                                                <span class="input-group-addon">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" id="segundos{{c.CALIFICACION.getIdCalificaciones()}}" class="form-control input-number" value="{{c.BONIFICACION.segundos}}" min="0" max="60" />
+                                                <span class="input-group-addon">s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-block btn-primary" onclick="setProyectoInnovacion();">Modificar bonificaciones</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        function getEjercicios() {
+            ruta = '/guardian/proyecto_innovacion/getEjerciciosPI';
+            $.get(ruta, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                console.log(data);
+                if (data.estado === 'OK') {
+                    mostrarEjercicios(data.message);
+                } else {
+                    $('#alerta').html(setAlert(data.message));
+                }
+            });
+        }
+        function mostrarEjercicios(ejercicios) {
+            $('#ejercicios').html('');
+            $.each(ejercicios, function (k, v) {
+                contenido = '<div class="col-lg-6" style="margin-bottom: 1%;">';
+                contenido += '  <div class="row bordes border-radius" style="margin: 1%;">';
+                contenido += '  <div class="col-lg-12">';
+                contenido += '      <legend>Distrito</legend>';
+                contenido += '      Nombre: ' + v.DISTRITO + '<br>';
+                contenido += '  </div>';
+                contenido += '   <div class="col-lg-12">';
+                contenido += '      <legend>Datos del usuario que ha entregado</legend>';
+                contenido += '      Alias: <a href="/guardian/directorio/getDirectorio/' + v.CIUDADANO.DNI + '">' + v.CIUDADANO.ALIAS + '</a><br>';
+                contenido += '      Nombre y Apellidos: <a href="/guardian/directorio/getDirectorio/' + v.CIUDADANO.DNI + '">' + v.CIUDADANO.NOMBRE + ' ' + v.CIUDADANO.APELLIDOS + '</a><br>';
+                contenido += '  </div>';
+                contenido += '  <div class="col-lg-12">';
+                contenido += '      <legend>Entrega</legend>';
+                contenido += '      Fecha de entrega: ' + v.ENTREGA.FECHA.date + '<br>';
+                contenido += '      Entrega: <a href="{{ asset('/USUARIOS/') }}' + v.ENTREGA.RUTA + '">' + v.ENTREGA.NOMBRE + '</a>';
+                contenido += '  </div>';
+                if (!v.ENTREGADO) {
+                    contenido += '   <div class="col-lg-12" id="aviso-entrega-' + v.ID + '">';
+                    contenido += '      <legend>Calificación</legend>';
+                    contenido += '      <div class="slot bordes">';
+                    contenido += '              <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" alt="' + v.CALIFICACION.TEXTO + '"/></center>';
+                    contenido += '      </div>';
+                    contenido += '   </div>';
+                } else {
+                    contenido += '      <legend>Evaluación</legend>';
+                    contenido += '      <div class="slot fila btn-menu-first">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '1" onclick="setNota(' + v.ID + ',1);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/cerezon.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '2" onclick="setNota(' + v.ID + ',2);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/balonmas.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '3" onclick="setNota(' + v.ID + ',3);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/balon.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '4" onclick="setNota(' + v.ID + ',4);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/balon-.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '5" onclick="setNota(' + v.ID + ',5);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/silbato.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="slot fila btn-menu-last">';
+                    contenido += '          <span class="btn-tienda" id="image-tienda-' + v.ID + '6" onclick="setNota(' + v.ID + ',6);">';
+                    contenido += '              <center><img src="{{ asset('images/badges/llaves.png') }}" /></center>';
+                    contenido += '          </span>';
+                    contenido += '      </div>';
+                    contenido += '      <div class="col-lg-12" id="' + v.ID + '"></div>';
+                }
+                contenido += '  </div>';
+                contenido += '</div>';
+                $('#ejercicios').append(contenido);
+            });
+        }
+        function setNota(idCalificacion, idNota) {
+            var idCajas = $.trim(idCalificacion + '' + idNota);
+            $(".btn-tienda").addClass("opacidad");
+            $("#tab1 .slot").css('background-color', 'gray');
+            $("#image-tienda-" + idCajas).removeClass("opacidad");
+            $("#image-tienda-" + idCajas).parent().css('background-color', 'white');
+            ruta = '/guardian/setCalificacion';
+            datos = {
+                'idCalificacion': idCalificacion,
+                'idNota': idNota
+            };
+            $.post(ruta, datos, function (datos, status) {
+                data = jQuery.parseJSON(datos);
+                alert(data.message);
+                location.reload();
+            });
+        }
+        $(document).ready(function () {
+            getEjercicios();
+            $(".btn-pref .btn").click(function () {
+                $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-primary");
+            });
+        });
+        function setProyectoInnovacion() {
+            var dias_1 = parseInt($('#dias1').val());
+            var horas_1 = parseInt($('#horas1').val());
+            var minutos_1 = parseInt($('#minutos1').val());
+            var segundos_1 = parseInt($('#segundos1').val());
+            var t1 = (((((dias_1 * 24) + horas_1) * 60) + minutos_1) * 60) + segundos_1;
+            var dias_2 = parseInt($('#dias2').val());
+            var horas_2 = parseInt($('#horas2').val());
+            var minutos_2 = parseInt($('#minutos2').val());
+            var segundos_2 = parseInt($('#segundos2').val());
+            var t2 = (((((dias_2 * 24) + horas_2) * 60) + minutos_2) * 60) + segundos_2;
+            var dias_3 = parseInt($('#dias3').val());
+            var horas_3 = parseInt($('#horas3').val());
+            var minutos_3 = parseInt($('#minutos3').val());
+            var segundos_3 = parseInt($('#segundos3').val());
+            var t3 = (((((dias_3 * 24) + horas_3) * 60) + minutos_3) * 60) + segundos_3;
+            var dias_4 = parseInt($('#dias4').val());
+            var horas_4 = parseInt($('#horas4').val());
+            var minutos_4 = parseInt($('#minutos4').val());
+            var segundos_4 = parseInt($('#segundos4').val());
+            var t4 = (((((dias_4 * 24) + horas_4) * 60) + minutos_4) * 60) + segundos_4;
+            var dias_5 = parseInt($('#dias5').val());
+            var horas_5 = parseInt($('#horas5').val());
+            var minutos_5 = parseInt($('#minutos5').val());
+            var segundos_5 = parseInt($('#segundos5').val());
+            var t5 = (((((dias_5 * 24) + horas_5) * 60) + minutos_5) * 60) + segundos_5;
+            var dias_6 = parseInt($('#dias6').val());
+            var horas_6 = parseInt($('#horas6').val());
+            var minutos_6 = parseInt($('#minutos6').val());
+            var segundos_6 = parseInt($('#segundos6').val());
+            var t6 = (((((dias_6 * 24) + horas_6) * 60) + minutos_6) * 60) + segundos_6;
+
+            if (t1 <= 0 || t2 <= 0 || t3 <= 0 || t4 <= 0 || t5 <= 0 || t6 <= 0) {
+                alert('El valor de los campos debe ser mayor que 0');
+            } else {
+                ruta = '/guardian/proyecto_innovacion/setProyectoInnovacion';
+                datos = {
+                    't1': t1,
+                    't2': t2,
+                    't3': t3,
+                    't4': t4,
+                    't5': t5,
+                    't6': t6
+                };
+                $.post(ruta, datos, function (data, status) {
+                    data = jQuery.parseJSON(data);
+                    alert(data.message);
+                    location.reload();
+                });
+            }
+        }
+    </script>
+{% endblock %}

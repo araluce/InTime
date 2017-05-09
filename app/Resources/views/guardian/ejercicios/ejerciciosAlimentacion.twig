@@ -425,11 +425,11 @@
                 if (v.CALIFICACION.ESTADO === 'entregado') {
                     if (v.CALIFICACION.CALIFICADO) {
                         contenido += '      <legend>Datos de entrega anterior</legend>';
-                        contenido += '              <div class="slot border-radius">';
-                        contenido += '                  <span class="btn-tienda">';
-                        contenido += '                      <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
-                        contenido += '                  </span>';
-                        contenido += '              </div>';
+                        contenido += '      <div class="slot border-radius">';
+                        contenido += '          <span class="btn-tienda">';
+                        contenido += '              <center><img src="{{ asset('images/badges/') }}' + v.CALIFICACION.ICONO + '" /></center>';
+                        contenido += '          </span>';
+                        contenido += '      </div>';
                     }
                     contenido += '      <legend>Evaluación</legend>';
                     contenido += '      <div class="slot fila btn-menu-first">';

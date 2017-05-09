@@ -359,5 +359,4 @@ class FelicidadController extends Controller {
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
     }
-
 }
