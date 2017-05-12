@@ -41,8 +41,7 @@ class RuntasticUtils {
                 $hoy = new \DateTime('now');
                 do {
                     $r->setUsername($U->getUsername())->setPassword($U->getPassword());
-                    echo $r->getResponseStatusCode();
-                    $week_activities = $r->getActivities($hoy->format('W') - 1);
+                    $week_activities = $r->getActivities($hoy->format('W'));
                     $tiempo_fin = microtime(true);
                     $tiempo = $tiempo_fin - $tiempo_inicio;
                     if ($tiempo >= 10.0) {

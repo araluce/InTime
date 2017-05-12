@@ -169,9 +169,9 @@ class ProyectoInnovacionController extends Controller {
 
     /**
      * 
-     * @Route("/guardian/ejercicios/proyectoInnovacion", name="felicidadGuardian")
+     * @Route("/guardian/ejercicios/proyectoInnovacion", name="proyectoInnovacionGuardian")
      */
-    public function felicidadGuardianAction(Request $request) {
+    public function proyectoInnovacionGuardianAction(Request $request) {
         $doctrine = $this->getDoctrine();
         $session = $request->getSession();
         $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/ejercicios/proyectoInnovacion', true);

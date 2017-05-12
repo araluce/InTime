@@ -496,7 +496,7 @@ class Guardian extends Controller {
     }
 
     /**
-     * @Route("/guardian/proyecto_innovacion/getEjerciciosPI", name="getEjerciciosFelicidadGuardian")
+     * @Route("/guardian/proyecto_innovacion/getEjerciciosPI", name="getEjerciciosPIGuardian")
      */
     public function getEjerciciosPIAction(Request $request) {
         $doctrine = $this->getDoctrine();

@@ -622,6 +622,7 @@ class Usuario {
         $cuenta = new \AppBundle\Entity\UsuarioCuenta();
         $TDV_formato = \DateTime::createFromFormat('Y-m-d H:i:s', $TDV);
         $cuenta->setTdv($TDV_formato);
+        $cuenta->setTdvvacaciones(0);
         $em->persist($cuenta);
         $em->flush();
         $usuario = new \AppBundle\Entity\Usuario();
