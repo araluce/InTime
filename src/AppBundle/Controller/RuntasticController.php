@@ -236,7 +236,7 @@ class RuntasticController extends Controller {
         if (!count($UR)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
         }
-        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR);
+        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR, false);
         if (!count($actividades_semana)) {
             return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han actualizado sus sesiones. '
                 . 'Puede que hayas excedido el máximo de sesiones abiertas permitidas por Runtastic. Podría ayudar cerrar sesiones '

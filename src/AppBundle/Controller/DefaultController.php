@@ -825,7 +825,7 @@ class DefaultController extends Controller {
         if (!count($UR)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
         }
-        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR);
+        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR, false);
         Utils::pretty_print($actividades_semana);
         if (!count($actividades_semana)) {
             return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han actualizado sus sesiones. '

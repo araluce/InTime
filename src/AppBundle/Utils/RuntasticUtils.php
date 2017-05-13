@@ -21,9 +21,10 @@ class RuntasticUtils {
      * Actualiza las sesiones de Runtastic de un ciudadano en particular
      * @param doctrine $doctrine
      * @param array(\AppBundle\Entity\UsuarioRuntastic) $CUENTAS_RUNTASTIC Un array de las cuentas que tiene el usuario array<\AppBundle\Entity\UsuarioRuntastic>
+     * @param boolean $semana_pasada
      * @return array Actividades de la semana
      */
-    static function actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC) {
+    static function actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC, $semana_pasada = false) {
         $em = $doctrine->getManager();
         $actividades_semana = [];
         if (count($CUENTAS_RUNTASTIC)) {
@@ -41,7 +42,11 @@ class RuntasticUtils {
                 $hoy = new \DateTime('now');
                 do {
                     $r->setUsername($U->getUsername())->setPassword($U->getPassword());
-                    $week_activities = $r->getActivities($hoy->format('W'));
+                    if($semana_pasada){
+                        $week_activities = $r->getActivities($hoy->format('W') - 1);
+                    } else {
+                        $week_activities = $r->getActivities($hoy->format('W'));
+                    }
                     $tiempo_fin = microtime(true);
                     $tiempo = $tiempo_fin - $tiempo_inicio;
                     if ($tiempo >= 10.0) {
@@ -62,7 +67,7 @@ class RuntasticUtils {
                         }
                         $SESION->setDuracion(Utils::milisegundosToSegundos($activity->duration));
                         $SESION->setDistancia($activity->distance);
-                        $SESION->setRitmo($activity->pace - 0.5);
+                        $SESION->setRitmo($activity->pace - 0.13);
                         $SESION->setVelocidad($activity->speed);
                         $SESION->setEvaluado(0);
                         $FECHA = new \Datetime();

@@ -207,7 +207,7 @@ class CronController extends Controller {
                 ]);
                 // Actualizar sus sesiones
                 $CUENTAS_RUNTASTIC = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($CIUDADANO);
-                RuntasticUtils::actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC);
+                RuntasticUtils::actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC, true);
                 if (count($CUENTAS_RUNTASTIC)) {
                     // Comprobación de las sesiones
                     $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
