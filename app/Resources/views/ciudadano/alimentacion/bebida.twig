@@ -122,6 +122,7 @@
         var ya_solicitado_distrito = false;
         var puede_entregar = true;
         var aleatorio = 0;
+        var hay_aleatorio = 0;
         var id_ejercicio = 0;
         function setId(id) {
             id_ejercicio = id;
@@ -256,12 +257,17 @@
                 datos = jQuery.parseJSON(data);
                 console.log(datos);
                 if (datos.estado === 'OK') {
-                    aleatorio = datos.message.ALEATORIO.ID;
+                    hay_aleatorio = datos.message.HAY_ALEATORIO;
+                    if (hay_aleatorio) {
+                        aleatorio = datos.message.ALEATORIO.ID;
+                    }
                     if (datos.message.YA_SOLICITADO_INDIVIDUAL) {
                         ya_solicitado_individual = true;
 
                     } else {
-                        $('#img-aleatorio').show();
+                        if (hay_aleatorio) {
+                            $('#img-aleatorio').show();
+                        }
                     }
                     if (datos.message.YA_SOLICITADO_DISTRITO) {
                         ya_solicitado_distrito = true;

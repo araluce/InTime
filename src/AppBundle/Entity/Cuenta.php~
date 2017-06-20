@@ -1,0 +1,39 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Cuenta
+ *
+ * @ORM\Table(name="CUENTA")
+ * @ORM\Entity
+ */
+class Cuenta
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="tdv", type="datetime", nullable=false)
+     */
+    private $tdv = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="finbloqueo", type="datetime", nullable=true)
+     */
+    private $finbloqueo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_cuenta", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idCuenta;
+
+
+}

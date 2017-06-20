@@ -1,0 +1,52 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioApuesta
+ *
+ * @ORM\Table(name="USUARIO_APUESTA", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario", "id_apuesta_posibilidad"}), @ORM\Index(name="id_apuesta_posibilidad", columns={"id_apuesta_posibilidad"}), @ORM\Index(name="IDX_42A94AE7FCF8192D", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class UsuarioApuesta
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tdv_apostado", type="bigint", nullable=false)
+     */
+    private $tdvApostado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_apuesta", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioApuesta;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\ApuestaPosibilidad
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ApuestaPosibilidad")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_apuesta_posibilidad", referencedColumnName="id_apuesta_posibilidad")
+     * })
+     */
+    private $idApuestaPosibilidad;
+
+
+}

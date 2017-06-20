@@ -8,10 +8,11 @@
 
 namespace AppBundle\Utils;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use AppBundle\Entity\EjercicioCalificacion;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
-use AppBundle\Utils\Ejercicio;
+use DateTime;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Description of Trabajo
@@ -20,8 +21,18 @@ use AppBundle\Utils\Ejercicio;
  */
 class Trabajo {
 
+    /**
+     * Solicita un reto de Paga Extra para un ciudadano específico
+     * y comprueba si el reto no ha sido ya solicitado por el número máximo
+     * de solicitantes especificado por el GdT
+     * @param type $doctrine
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO
+     * @param boolean $seCobra
+     * @return JsonResponse
+     */
     static function solicitar_paga($doctrine, $USUARIO, $EJERCICIO, $seCobra) {
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
@@ -33,7 +44,7 @@ class Trabajo {
             $num_max_solicitudes = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga')->getValor();
             Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
             if (intval($num_solicitudes) < intval($num_max_solicitudes)) {
-                $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
+                $EJERCICIO_CALIFICACION = new EjercicioCalificacion();
                 $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
                 $EJERCICIO_CALIFICACION->setIdEjercicio($EJERCICIO);
                 $EJERCICIO_CALIFICACION->setIdEjercicioEstado($ESTADO_SOLICITADO);
@@ -62,8 +73,17 @@ class Trabajo {
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => $mensaje)), 200);
     }
 
+    /**
+     * Marca como solicitado un reto de alimentación para un ciudadano específico
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $EJERCICIO
+     * @param type $SECCION
+     * @param type $seCobra
+     * @return JsonResponse
+     */
     static function solicitar_alimentacion($doctrine, $USUARIO, $EJERCICIO, $SECCION, $seCobra) {
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         $ESTADO_SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $EJERCICIO_CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findOneBy([
             'idUsuario' => $USUARIO, 'idEjercicio' => $EJERCICIO
@@ -71,7 +91,7 @@ class Trabajo {
         $em = $doctrine->getManager();
         Utils::setVisto($doctrine, $USUARIO, $EJERCICIO, null);
         if ($EJERCICIO_CALIFICACION === null) {
-            $EJERCICIO_CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
+            $EJERCICIO_CALIFICACION = new EjercicioCalificacion();
         }
         $EJERCICIO_CALIFICACION->setIdUsuario($USUARIO);
         $EJERCICIO_CALIFICACION->setIdEjercicio($EJERCICIO);
@@ -91,7 +111,7 @@ class Trabajo {
      * Comprueba que el usuario ha compartido el número de tweets diarios
      * 
      * @param type $doctrine
-     * @param Entity:USUARIO $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return true|false
      */
     static function comprobarJornadaLaboral($doctrine, $USUARIO) {
@@ -102,14 +122,9 @@ class Trabajo {
         // Si no lo está se cuentan los tweets
         $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('a');
         $query->select('COUNT(a)');
-//        $query->where('DATE_DIFF(CURRENT_DATE(), a.fecha) = 0 AND a.idUsuario = :USUARIO');
         $query->where("DATE_DIFF(DATE_ADD(CURRENT_DATE(), '-1', 'day'), a.fecha) = 0 AND a.idUsuario = :USUARIO");
         $query->setParameters(['USUARIO' => $USUARIO]);
         $N_TUITS = $query->getQuery()->getSingleScalarResult();
-//        $query = $doctrine->getRepository('AppBundle:MochilaTweets')->createQueryBuilder('b');
-//        $query->select("DATE_ADD(CURRENT_DATE(),'-1','day')");
-//        $N_TUITS = $query->getQuery()->getResult();
-//        Utils::pretty_print($N_TUITS);
         $TWEETS_X_DIA = Utils::getConstante($doctrine, 'jornada_laboral_tweets');
         if ($N_TUITS >= $TWEETS_X_DIA) {
             return 1;
@@ -119,8 +134,8 @@ class Trabajo {
 
     /**
      * Determina si las respuestas dadas a un test son las correctas o no
-     * @param type $RESPUESTAS_TEST
-     * @param type $RESPUESTAS_USUARIO
+     * @param array $RESPUESTAS_TEST
+     * @param array $RESPUESTAS_USUARIO
      * @return int 1 si test correcto, 0 en otro caso
      */
     static function calcularTest($RESPUESTAS_TEST, $RESPUESTAS_USUARIO) {
@@ -143,8 +158,8 @@ class Trabajo {
      * Asigna a un usuario la bonificación de nota media en caso de tener el test correcto. Sin bonificación
      * para cualquier test con algún fallo. Realiza la tarea de ingreso en cuenta.
      * @param type $doctrine
-     * @param type $USUARIO
-     * @param type $EJERCICIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO
      * @param int $nota 1 si test correcto, 0 en otro caso
      * @return array ['estado'] = 'OK|ERROR', ['message'] = string
      */
@@ -161,8 +176,8 @@ class Trabajo {
         $ROL_GUARDIAN = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
         $USUARIO_GUARDIAN = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GUARDIAN);
 
-        $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
-        $CALIFICACION->setFecha(new \DateTime('now'));
+        $CALIFICACION = new EjercicioCalificacion();
+        $CALIFICACION->setFecha(new DateTime('now'));
         $CALIFICACION->setIdEjercicio($EJERCICIO);
         $CALIFICACION->setIdUsuario($USUARIO);
 

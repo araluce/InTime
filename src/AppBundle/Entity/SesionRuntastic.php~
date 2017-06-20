@@ -1,0 +1,91 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * SesionRuntastic
+ *
+ * @ORM\Table(name="SESION_RUNTASTIC", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario_runtastic"})})
+ * @ORM\Entity
+ */
+class SesionRuntastic
+{
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="evaluado", type="boolean", nullable=false)
+     */
+    private $evaluado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_runtastic", type="integer", nullable=false)
+     */
+    private $idRuntastic;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo", type="string", length=1000, nullable=false)
+     */
+    private $tipo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="duracion", type="integer", nullable=false)
+     */
+    private $duracion;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="distancia", type="integer", nullable=false)
+     */
+    private $distancia;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="ritmo", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $ritmo;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="velocidad", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $velocidad;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_sesion_runtastic", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idSesionRuntastic;
+
+    /**
+     * @var \AppBundle\Entity\UsuarioRuntastic
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\UsuarioRuntastic")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario_runtastic", referencedColumnName="id_usuario_runtastic")
+     * })
+     */
+    private $idUsuarioRuntastic;
+
+
+}

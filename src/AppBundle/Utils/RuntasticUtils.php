@@ -20,7 +20,7 @@ class RuntasticUtils {
     /**
      * Actualiza las sesiones de Runtastic de un ciudadano en particular
      * @param doctrine $doctrine
-     * @param array(\AppBundle\Entity\UsuarioRuntastic) $CUENTAS_RUNTASTIC Un array de las cuentas que tiene el usuario array<\AppBundle\Entity\UsuarioRuntastic>
+     * @param array(<AppBundle\Entity\UsuarioRuntastic>) $CUENTAS_RUNTASTIC Un array de las cuentas que tiene el usuario array<\AppBundle\Entity\UsuarioRuntastic>
      * @param boolean $semana_pasada
      * @return array Actividades de la semana
      */
@@ -86,8 +86,8 @@ class RuntasticUtils {
     /**
      * Comprueba si un ciudadano ha superado un reto deportivo
      * @param doctrine $doctrine $this->getDoctrine()
-     * @param array(\AppBundle\Entity\UsuarioRuntastic) $CUENTAS_RUNTASTIC Un array de las cuentas que tiene el usuario array<\AppBundle\Entity\UsuarioRuntastic>
-     * @param \AppBundle\Entity\Ejercicio $EJERCICIO El ejercicio asociado al reto deportivo
+     * @param array(<AppBundle\Entity\UsuarioRuntastic>) $CUENTAS_RUNTASTIC Un array de las cuentas que tiene el usuario array<\AppBundle\Entity\UsuarioRuntastic>
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO El ejercicio asociado al reto deportivo
      * @return array ['OK', 'DURACION_ACUMULADA', 'DURACION_RETO', 'ID_SESIONES']
      */
     static function comprobarRetoDeportivo($doctrine, $CUENTAS_RUNTASTIC, $EJERCICIO) {

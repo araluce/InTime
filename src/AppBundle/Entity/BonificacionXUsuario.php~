@@ -1,0 +1,66 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * BonificacionXUsuario
+ *
+ * @ORM\Table(name="BONIFICACION_X_USUARIO", indexes={@ORM\Index(name="id_bonificacion_extra", columns={"id_bonificacion_extra", "id_usuario"}), @ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="IDX_FBE9D154C3B63D1A", columns={"id_bonificacion_extra"})})
+ * @ORM\Entity
+ */
+class BonificacionXUsuario
+{
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="usado", type="boolean", nullable=false)
+     */
+    private $usado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="contador", type="integer", nullable=false)
+     */
+    private $contador;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=true)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_bonificacion_x_usuario", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idBonificacionXUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\BonificacionExtra
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\BonificacionExtra")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_bonificacion_extra", referencedColumnName="id_bonificacion_extra")
+     * })
+     */
+    private $idBonificacionExtra;
+
+
+}

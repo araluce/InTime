@@ -9,6 +9,7 @@
 namespace AppBundle\Utils;
 
 use AppBundle\Utils\Usuario;
+use DateTime;
 
 /**
  * Description of DataManager
@@ -17,13 +18,20 @@ use AppBundle\Utils\Usuario;
  */
 class DataManager {
 
+    /**
+     * Información básica de un ciudadano específico que es cargada en cada vista
+     * @param type $doctrine
+     * @param string $TITULO título de la vista
+     * @param type $session
+     * @return array
+     */
     static function setDefaultData($doctrine, $TITULO, $session) {
         $id_usuario = $session->get('id_usuario');
         $usuario = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
         $DATOS['TITULO'] = $TITULO;
         $DATOS['TDV'] = $usuario->getIdCuenta()->getTdv();
         $DATOS['BLOQUEO'] = $usuario->getIdCuenta()->getTdvVacaciones();
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         if ($DATOS['TDV'] < $FECHA) {
             Usuario::setDefuncion($doctrine, $usuario);
         }
@@ -106,6 +114,13 @@ class DataManager {
         return $DATOS;
     }
 
+    /**
+     * Controla si los datos básicos del perfil del ciudadano están o no
+     * inicializados
+     * @param type $doctrine
+     * @param type $session
+     * @return int
+     */
     static function infoUsu($doctrine, $session) {
         $id_usuario = $session->get('id_usuario');
         $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($id_usuario);
@@ -121,7 +136,7 @@ class DataManager {
     /**
      * Retorna el número de mensajes del chat que tiene el usuario
      * @param type $doctrine
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return int
      */
     static function chatsPendientes($doctrine, $USUARIO) {
@@ -152,8 +167,8 @@ class DataManager {
      * Recolecta la toda la información que relacione al usuario con los un reto
      * específico de inspección y la retorna de forma estructurada
      * @param type $doctrine
-     * @param type $USUARIO
-     * @param type $EJERCICIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO
      * @return array
      */
     static function getDatosEjercicioInspeccion($doctrine, $USUARIO, $EJERCICIO) {
@@ -186,8 +201,8 @@ class DataManager {
      * Recolecta la toda la información que relacione al usuario con los un reto
      * específico de Paga Extra y la retorna de forma estructurada
      * @param type $doctrine
-     * @param type $USUARIO
-     * @param type $ejercicio
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\Ejercicio> $ejercicio
      * @return type
      */
     static function getDatosEjercicioPaga($doctrine, $USUARIO, $ejercicio) {
@@ -200,7 +215,6 @@ class DataManager {
         $SOLICITANTES = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findByIdEjercicio($ejercicio);
         $NUM_MAX_SOLICITANTES = $doctrine->getRepository('AppBundle:Constante')->findOneByClave('num_max_solicitantes_paga');
 
-        //$NUM_EJERCICIOS_SOLICITADOS = count($UTILS->ejercicios_solicitados_por_en($doctrine, $USUARIO, $ejercicio, 'paga_extra'));
         $aux = [];
         $aux['ELEGIBLE'] = true;
         $aux['ENUNCIADO'] = $ejercicio->getEnunciado();
@@ -228,7 +242,7 @@ class DataManager {
     /**
      * Obtiene y estructura los datos de entregas en Felicidad
      * @param type $doctrine
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return string
      */
     static function getRetosFelicidad($doctrine, $USUARIO) {
@@ -286,7 +300,7 @@ class DataManager {
      */
     static function getCitasPendientesGuardian($doctrine) {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
-        $fecha = new \DateTime('now');
+        $fecha = new DateTime('now');
         $DATOS = 0;
 
         $TUTORIAS = $doctrine->getRepository('AppBundle:UsuarioTutoria')->findAll();
@@ -309,7 +323,7 @@ class DataManager {
      */
     static function getCitasDeHoyGuardian($doctrine) {
         $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
-        $fecha = new \DateTime('now');
+        $fecha = new DateTime('now');
         $DATOS = 0;
 
         $TUTORIAS = $doctrine->getRepository('AppBundle:UsuarioTutoria')->findAll();
@@ -351,7 +365,12 @@ class DataManager {
         }
         return $cont;
     }
-
+    /**
+     * Retorna el número de entregas pendientes de calificar por GdT en la 
+     * sección de paga extra
+     * @param type $doctrine
+     * @return int
+     */
     static function numEntregasPagaGuardian($doctrine) {
         $cont = 0;
         $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();
@@ -373,7 +392,13 @@ class DataManager {
         }
         return $cont;
     }
-
+    
+    /**
+     * Retorna el número de entregas pendientes de calificar por el GdT
+     * en la sección de felicidad
+     * @param type $doctrine
+     * @return int
+     */
     static function numEntregasFelicidadGuardian($doctrine) {
         $cont = 0;
         $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findAll();

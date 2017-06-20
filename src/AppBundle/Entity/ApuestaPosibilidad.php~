@@ -1,0 +1,49 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ApuestaPosibilidad
+ *
+ * @ORM\Table(name="APUESTA_POSIBILIDAD", indexes={@ORM\Index(name="id_apuesta", columns={"id_apuesta"})})
+ * @ORM\Entity
+ */
+class ApuestaPosibilidad
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="posibilidad", type="string", length=1000, nullable=false)
+     */
+    private $posibilidad;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="resultado", type="boolean", nullable=true)
+     */
+    private $resultado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_apuesta_posibilidad", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idApuestaPosibilidad;
+
+    /**
+     * @var \AppBundle\Entity\Apuesta
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Apuesta")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_apuesta", referencedColumnName="id_apuesta")
+     * })
+     */
+    private $idApuesta;
+
+
+}

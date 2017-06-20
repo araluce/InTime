@@ -1,0 +1,46 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Calificaciones
+ *
+ * @ORM\Table(name="CALIFICACIONES")
+ * @ORM\Entity
+ */
+class Calificaciones
+{
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="correspondencia_numerica", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $correspondenciaNumerica;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="correspondencia_texto", type="string", length=100, nullable=false)
+     */
+    private $correspondenciaTexto;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="correspondencia_icono", type="string", length=100, nullable=false)
+     */
+    private $correspondenciaIcono;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_calificaciones", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idCalificaciones;
+
+
+}

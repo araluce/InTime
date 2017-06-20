@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen 2.8.0">
+
+	<title>Class AppBundle\Utils\Trabajo</title>
+
+	<link rel="stylesheet" href="resources/style.css?3901564645">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-AppBundle.html">AppBundle<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Controller.html">Controller</a>
+						</li>
+				<li><a href="namespace-AppBundle.Entity.html">Entity</a>
+						</li>
+				<li><a href="namespace-AppBundle.Runtastic.html">Runtastic</a>
+						</li>
+				<li><a href="namespace-AppBundle.Tests.html">Tests<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Tests.Controller.html">Controller</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-AppBundle.Twitter.html">Twitter</a>
+						</li>
+				<li class="active"><a href="namespace-AppBundle.Utils.html">Utils</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-AppBundle.Utils.Alimentacion.html">Alimentacion</a></li>
+				<li><a href="class-AppBundle.Utils.DataManager.html">DataManager</a></li>
+				<li><a href="class-AppBundle.Utils.Distrito.html">Distrito</a></li>
+				<li><a href="class-AppBundle.Utils.Ejercicio.html">Ejercicio</a></li>
+				<li><a href="class-AppBundle.Utils.Pago.html">Pago</a></li>
+				<li><a href="class-AppBundle.Utils.RuntasticUtils.html">RuntasticUtils</a></li>
+				<li class="active"><a href="class-AppBundle.Utils.Trabajo.html">Trabajo</a></li>
+				<li><a href="class-AppBundle.Utils.Twitter.html">Twitter</a></li>
+				<li><a href="class-AppBundle.Utils.Usuario.html">Usuario</a></li>
+				<li><a href="class-AppBundle.Utils.Utils.html">Utils</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text">
+		<input type="submit" value="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-AppBundle.Utils.html" title="Summary of AppBundle\Utils"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Trabajo</h1>
+
+
+	<div class="description">
+	
+<p>Description of Trabajo</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-AppBundle.html">AppBundle</a>\<a href="namespace-AppBundle.Utils.html">Utils</a><br>
+		
+
+				<b>Author:</b>
+				araluce<br>
+		<b>Located at</b> <a href="source-class-AppBundle.Utils.Trabajo.html#17-204" title="Go to source code">AppBundle/Utils/Trabajo.php</a><br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="solicitar_paga" id="_solicitar_paga">
+
+		<td class="attributes"><code>
+			 public static
+			Symfony\Component\HttpFoundation\JsonResponse
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_solicitar_paga">#</a>
+		<code><a href="source-class-AppBundle.Utils.Trabajo.html#24-74" title="Go to source code">solicitar_paga</a>( <span>type <var>$doctrine</var></span>, <span>&lt;AppBundle\Entity\Usuario&gt; <var>$USUARIO</var></span>, <span>&lt;AppBundle\Entity\Ejercicio&gt; <var>$EJERCICIO</var></span>, <span>boolean <var>$seCobra</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Solicita un reto de Paga Extra para un ciudadano específico y comprueba si
+el reto no ha sido ya solicitado por el número máximo de solicitantes
+especificado por el GdT</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Solicita un reto de Paga Extra para un ciudadano específico y comprueba si
+el reto no ha sido ya solicitado por el número máximo de solicitantes
+especificado por el GdT</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$EJERCICIO</var></dt>
+					<dd></dd>
+					<dt><var>$seCobra</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>Symfony\Component\HttpFoundation\JsonResponse</code><br>JsonResponse<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="solicitar_alimentacion" id="_solicitar_alimentacion">
+
+		<td class="attributes"><code>
+			 public static
+			Symfony\Component\HttpFoundation\JsonResponse
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_solicitar_alimentacion">#</a>
+		<code><a href="source-class-AppBundle.Utils.Trabajo.html#76-108" title="Go to source code">solicitar_alimentacion</a>( <span>type <var>$doctrine</var></span>, <span>type <var>$USUARIO</var></span>, <span>type <var>$EJERCICIO</var></span>, <span>type <var>$SECCION</var></span>, <span>type <var>$seCobra</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Marca como solicitado un reto de alimentación para un ciudadano
+específico</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Marca como solicitado un reto de alimentación para un ciudadano
+específico</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$EJERCICIO</var></dt>
+					<dd></dd>
+					<dt><var>$SECCION</var></dt>
+					<dd></dd>
+					<dt><var>$seCobra</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>Symfony\Component\HttpFoundation\JsonResponse</code><br>JsonResponse<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="comprobarJornadaLaboral" id="_comprobarJornadaLaboral">
+
+		<td class="attributes"><code>
+			 public static
+			true|false
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_comprobarJornadaLaboral">#</a>
+		<code><a href="source-class-AppBundle.Utils.Trabajo.html#110-133" title="Go to source code">comprobarJornadaLaboral</a>( <span>type <var>$doctrine</var></span>, <span>&lt;AppBundle\Entity\Usuario&gt; <var>$USUARIO</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Comprueba que el usuario ha compartido el número de tweets diarios</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Comprueba que el usuario ha compartido el número de tweets diarios</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>true|false</code><br>true|false<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="calcularTest" id="_calcularTest">
+
+		<td class="attributes"><code>
+			 public static
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_calcularTest">#</a>
+		<code><a href="source-class-AppBundle.Utils.Trabajo.html#135-155" title="Go to source code">calcularTest</a>( <span>array <var>$RESPUESTAS_TEST</var></span>, <span>array <var>$RESPUESTAS_USUARIO</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Determina si las respuestas dadas a un test son las correctas o no</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Determina si las respuestas dadas a un test son las correctas o no</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$RESPUESTAS_TEST</var></dt>
+					<dd></dd>
+					<dt><var>$RESPUESTAS_USUARIO</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br>1 si test correcto, 0 en otro caso<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setCalificacionInspeccion" id="_setCalificacionInspeccion">
+
+		<td class="attributes"><code>
+			 public static
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setCalificacionInspeccion">#</a>
+		<code><a href="source-class-AppBundle.Utils.Trabajo.html#157-202" title="Go to source code">setCalificacionInspeccion</a>( <span>type <var>$doctrine</var></span>, <span>&lt;AppBundle\Entity\Usuario&gt; <var>$USUARIO</var></span>, <span>&lt;AppBundle\Entity\Ejercicio&gt; <var>$EJERCICIO</var></span>, <span>integer <var>$nota</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Asigna a un usuario la bonificación de nota media en caso de tener el test
+correcto. Sin bonificación para cualquier test con algún fallo. Realiza la
+tarea de ingreso en cuenta.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Asigna a un usuario la bonificación de nota media en caso de tener el test
+correcto. Sin bonificación para cualquier test con algún fallo. Realiza la
+tarea de ingreso en cuenta.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$EJERCICIO</var></dt>
+					<dd></dd>
+					<dt><var>$nota</var></dt>
+					<dd>1 si test correcto, 0 en otro caso</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br>['estado'] = 'OK|ERROR', ['message'] = string<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js?3440165155"></script>
+<script src="elementlist.js?1284720559"></script>
+</body>
+</html>

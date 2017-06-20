@@ -1,0 +1,77 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioTutoria
+ *
+ * @ORM\Table(name="USUARIO_TUTORIA", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class UsuarioTutoria
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="hora", type="string", length=100, nullable=false)
+     */
+    private $hora;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="dia", type="string", length=100, nullable=false)
+     */
+    private $dia;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="motivo", type="string", length=1000, nullable=false)
+     */
+    private $motivo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="coste", type="integer", nullable=false)
+     */
+    private $coste;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="estado", type="integer", nullable=false)
+     */
+    private $estado;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_solicitud", type="datetime", nullable=false)
+     */
+    private $fechaSolicitud;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_tutoria", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioTutoria;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

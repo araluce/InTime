@@ -1,0 +1,56 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Mensaje
+ *
+ * @ORM\Table(name="MENSAJE", indexes={@ORM\Index(name="id_tipo_mensaje", columns={"id_tipo_mensaje"})})
+ * @ORM\Entity
+ */
+class Mensaje
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="titulo", type="string", length=1000, nullable=false)
+     */
+    private $titulo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mensaje", type="string", length=1000, nullable=false)
+     */
+    private $mensaje;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_mensaje", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idMensaje;
+
+    /**
+     * @var \AppBundle\Entity\TipoMensaje
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TipoMensaje")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_tipo_mensaje", referencedColumnName="id_tipo_mensaje")
+     * })
+     */
+    private $idTipoMensaje;
+
+
+}

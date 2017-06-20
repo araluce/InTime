@@ -1,0 +1,32 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioDistrito
+ *
+ * @ORM\Table(name="USUARIO_DISTRITO")
+ * @ORM\Entity
+ */
+class UsuarioDistrito
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=1000, nullable=false)
+     */
+    private $nombre;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_distrito", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioDistrito;
+
+
+}

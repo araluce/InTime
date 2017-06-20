@@ -1,0 +1,56 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Calendario
+ *
+ * @ORM\Table(name="calendario", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="id_usuario_2", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class Calendario
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="contenido", type="string", length=1000, nullable=false)
+     */
+    private $contenido;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="semana_ini", type="string", length=100, nullable=true)
+     */
+    private $semanaIni;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="semana_fin", type="string", length=100, nullable=true)
+     */
+    private $semanaFin;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_calendario", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idCalendario;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

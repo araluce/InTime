@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen 2.8.0">
+
+	<title>Class AppBundle\Utils\Twitter</title>
+
+	<link rel="stylesheet" href="resources/style.css?3901564645">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-AppBundle.html">AppBundle<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Controller.html">Controller</a>
+						</li>
+				<li><a href="namespace-AppBundle.Entity.html">Entity</a>
+						</li>
+				<li><a href="namespace-AppBundle.Runtastic.html">Runtastic</a>
+						</li>
+				<li><a href="namespace-AppBundle.Tests.html">Tests<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Tests.Controller.html">Controller</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-AppBundle.Twitter.html">Twitter</a>
+						</li>
+				<li class="active"><a href="namespace-AppBundle.Utils.html">Utils</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-AppBundle.Utils.Alimentacion.html">Alimentacion</a></li>
+				<li><a href="class-AppBundle.Utils.DataManager.html">DataManager</a></li>
+				<li><a href="class-AppBundle.Utils.Distrito.html">Distrito</a></li>
+				<li><a href="class-AppBundle.Utils.Ejercicio.html">Ejercicio</a></li>
+				<li><a href="class-AppBundle.Utils.Pago.html">Pago</a></li>
+				<li><a href="class-AppBundle.Utils.RuntasticUtils.html">RuntasticUtils</a></li>
+				<li><a href="class-AppBundle.Utils.Trabajo.html">Trabajo</a></li>
+				<li class="active"><a href="class-AppBundle.Utils.Twitter.html">Twitter</a></li>
+				<li><a href="class-AppBundle.Utils.Usuario.html">Usuario</a></li>
+				<li><a href="class-AppBundle.Utils.Utils.html">Utils</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text">
+		<input type="submit" value="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-AppBundle.Utils.html" title="Summary of AppBundle\Utils"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Twitter</h1>
+
+
+	<div class="description">
+	
+<p>Algunos métodos para descargar información de twitter, formatearla y
+mostrarla</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-AppBundle.html">AppBundle</a>\<a href="namespace-AppBundle.Utils.html">Utils</a><br>
+		
+
+				<b>Author:</b>
+				araluce<br>
+		<b>Located at</b> <a href="source-class-AppBundle.Utils.Twitter.html#11-280" title="Go to source code">AppBundle/Utils/Twitter.php</a><br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="twitter" id="_twitter">
+
+		<td class="attributes"><code>
+			 public static
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_twitter">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#18-45" title="Go to source code">twitter</a>( <span>type <var>$doctrine</var></span>, <span>&lt;AppBundle/Entity/Usuario&gt; <var>$USUARIO</var></span>, <span>string <var>$usuario_tw</var></span>, <span>integer <var>$count</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Descarga los tweets de un usuario de twitter y los retorna en formato para
+consumir en la vista</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Descarga los tweets de un usuario de twitter y los retorna en formato para
+consumir en la vista</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$usuario_tw</var></dt>
+					<dd></dd>
+					<dt><var>$count</var></dt>
+					<dd>número de tweets a descargar</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br>array<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="tweetsFormato" id="_tweetsFormato">
+
+		<td class="attributes"><code>
+			 public static
+			array|null
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_tweetsFormato">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#47-98" title="Go to source code">tweetsFormato</a>( <span>array <var>$tweets</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Devuelve los tweets en un formato que pueda ser leido por la vista más
+fácilmente</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Devuelve los tweets en un formato que pueda ser leido por la vista más
+fácilmente</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tweets</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array|null</code><br>array|null<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="descargarTweets" id="_descargarTweets">
+
+		<td class="attributes"><code>
+			 public static
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_descargarTweets">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#100-122" title="Go to source code">descargarTweets</a>( <span>integer <var>$usuario_tw</var></span>, <span>integer <var>$count</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Descarga un número específico de tweets de un usuario específico de
+twitter</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Descarga un número específico de tweets de un usuario específico de
+twitter</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$usuario_tw</var></dt>
+					<dd>Usuario de twitter del que descargar sus tweets</dd>
+					<dt><var>$count</var></dt>
+					<dd>offset del número de tweets a descargar</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br>array<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="descargarTweet" id="_descargarTweet">
+
+		<td class="attributes"><code>
+			 public static
+			json
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_descargarTweet">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#124-145" title="Go to source code">descargarTweet</a>( <span>type <var>$doctrine</var></span>, <span>&lt;AppBundle/Entity/Tweet&gt; <var>$tweet</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Descarga un tweet específico</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Descarga un tweet específico</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$tweet</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>json</code><br>json<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="almacenar_tweet" id="_almacenar_tweet">
+
+		<td class="attributes"><code>
+			 public static
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_almacenar_tweet">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#147-213" title="Go to source code">almacenar_tweet</a>( <span>integer <var>$id_tuitero</var></span>, <span>integer <var>$id_tweet</var></span>, <span>integer <var>$tipo_tweet</var></span>, <span>integer <var>$id_usu</var></span>, <span>integer <var>$id_usu_des</var></span>, <span>&lt;\DateTime&gt; <var>$fecha</var></span>, <span>type <var>$doctrine</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Almacena un tweet en una mochila específica de un ciudadano específico</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Almacena un tweet en una mochila específica de un ciudadano específico</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id_tuitero</var></dt>
+					<dd></dd>
+					<dt><var>$id_tweet</var></dt>
+					<dd></dd>
+					<dt><var>$tipo_tweet</var></dt>
+					<dd></dd>
+					<dt><var>$id_usu</var></dt>
+					<dd></dd>
+					<dt><var>$id_usu_des</var></dt>
+					<dd></dd>
+					<dt><var>$fecha</var></dt>
+					<dd></dd>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br>int<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getFecha" id="_getFecha">
+
+		<td class="attributes"><code>
+			 public static
+			integer|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getFecha">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#215-241" title="Go to source code">getFecha</a>( <span>integer <var>$id_tweet</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Obtiene la fecha de creación de un tweet específico</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Obtiene la fecha de creación de un tweet específico</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id_tweet</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer|string</code><br>int|string<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getMochila" id="_getMochila">
+
+		<td class="attributes"><code>
+			 public static
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getMochila">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#243-263" title="Go to source code">getMochila</a>( <span>type <var>$doctrine</var></span>, <span>type <var>$USUARIO</var></span>, <span>type <var>$TIPO_TWEET</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Obtiene todos los tweets alojados en la mochila de un ciudadano
+específico</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Obtiene todos los tweets alojados en la mochila de un ciudadano
+específico</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$TIPO_TWEET</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br>int<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getIdsTweetsMochilaTipo" id="_getIdsTweetsMochilaTipo">
+
+		<td class="attributes"><code>
+			 public static
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getIdsTweetsMochilaTipo">#</a>
+		<code><a href="source-class-AppBundle.Utils.Twitter.html#265-278" title="Go to source code">getIdsTweetsMochilaTipo</a>( <span>type <var>$doctrine</var></span>, <span>type <var>$USUARIO</var></span>, <span>type <var>$TIPO_TWEET</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Obtiene todos los ids de los tweets almacenados en una mochila específica de
+un usuario</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Obtiene todos los ids de los tweets almacenados en una mochila específica de
+un usuario</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doctrine</var></dt>
+					<dd></dd>
+					<dt><var>$USUARIO</var></dt>
+					<dd></dd>
+					<dt><var>$TIPO_TWEET</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br>array<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js?3440165155"></script>
+<script src="elementlist.js?1284720559"></script>
+</body>
+</html>

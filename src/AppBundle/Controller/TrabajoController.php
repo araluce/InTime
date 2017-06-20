@@ -341,45 +341,6 @@ class TrabajoController extends Controller {
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => $DATOS)), 200);
     }
 
-//    public function inspeccion_trabajoAction(Request $request) {
-//        $doctrine = $this->getDoctrine();
-//        $session = $request->getSession();
-//        $status = Usuario::compruebaUsuario($doctrine, $session, '/ciudadano/trabajo/inspeccion');
-//        if (!$status) {
-//            return new RedirectResponse('/');
-//        }
-//        $DATOS = DataManager::setDefaultData($doctrine, 'Inspección de trabajo', $session);
-//        $USUARIO = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdUsuario($session->get('id_usuario'));
-//        Ejercicio::actualizarEjercicioXUsuario($doctrine, $USUARIO);
-//        $EJERCICIO_SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneByIdEjercicioSeccion(1);
-//        $EJERCICIO_X_GRUPO = $doctrine->getRepository('AppBundle:EjercicioXGrupo')->findAll();
-//        $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($EJERCICIO_SECCION);
-//        $DATOS['SECCION'] = $EJERCICIO_SECCION->getSeccion();
-//        $DATOS['EJERCICIOS'] = [];
-//
-//        $ids_ejercicios = [];
-//
-//        if (count($EJERCICIO_X_GRUPO)) {
-//            $ids_ejercicios_grupos = [];
-//            foreach ($EJERCICIO_X_GRUPO as $ejercicio_grupo) {
-//                $ejercicio = $ejercicio_grupo->getIdEjercicio();
-//                if (!in_array($ejercicio_grupo->getIdGrupoEjercicios(), $ids_ejercicios_grupos)) {
-//                    $ids_ejercicios_grupos[] = $ejercicio_grupo->getIdGrupoEjercicios();
-//                    $DATOS['EJERCICIOS'][] = Utils::getDatosInspeccion($doctrine, $USUARIO, null, $ejercicio_grupo->getIdGrupoEjercicios());
-//                }
-//                $ids_ejercicios[] = $ejercicio->getIdEjercicio();
-//            }
-//        }
-//        if (count($EJERCICIOS)) {
-//            foreach ($EJERCICIOS as $ejercicio) {
-//                if (!in_array($ejercicio->getIdEjercicio(), $ids_ejercicios)) {
-//                    $DATOS['EJERCICIOS'][] = Utils::getDatosInspeccion($doctrine, $USUARIO, $ejercicio, null);
-//                }
-//            }
-//        }
-//
-//        return $this->render('ciudadano/trabajo/inspeccion_trabajo.html.twig', $DATOS);
-//    }
     /**
      * @Route("/ciudadano/trabajo/getEjercicioInspeccion/{id_ejercicio}", name="getEjercicioInspeccion")
      */

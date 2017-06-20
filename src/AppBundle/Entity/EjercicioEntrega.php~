@@ -1,0 +1,66 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioEntrega
+ *
+ * @ORM\Table(name="EJERCICIO_ENTREGA", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"}), @ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class EjercicioEntrega
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=1000, nullable=false)
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mime", type="string", length=1000, nullable=false)
+     */
+    private $mime;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_entrega", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioEntrega;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+
+}

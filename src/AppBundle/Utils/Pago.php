@@ -12,7 +12,7 @@ use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 
 /**
- * Description of Pago
+ * Métodos para gestionar todo lo relacionado con pagos a ciudadanos
  *
  * @author araluce
  */
@@ -22,8 +22,8 @@ class Pago {
      * Paga una mina a un usuario asignandole un premio base a ciudadanos que no han logrado 
      * desactivar la mina y el premio a los que la han desactivado
      * @param type $doctrine
-     * @param type $USUARIO
-     * @param type $ganador
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param boolean $ganador
      * @return int
      */
     static function pagarMina($doctrine, $MINA, $USUARIO,$n_ganadores, $ganador = false) {

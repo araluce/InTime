@@ -86,15 +86,6 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("ciudadano/trabajo/service/show_tweet/{id_mochila}", name="showTweet")
-     */
-    public function showTweet($id_mochila) {
-        $doctrine = $this->getDoctrine();
-        $respuesta = Twitter::getTweetByIdMochila($id_mochila, $doctrine);
-        return new JsonResponse($respuesta, 200);
-    }
-
-    /**
      * @Route("compartir", name="compartir")
      */
     public function compartir(Request $request) {
@@ -274,9 +265,12 @@ class DefaultController extends Controller {
                 }
                 $infoPuesto = Usuario::getClasificacion($doctrine, $JUGADOR, $JUGADORES);
                 $aux['PUESTO'] = $infoPuesto['PUESTO'];
+                
+                $aux['PUESTO_MES'] = 0;
+                $aux['TDV_MES_RED'] = 0;
+                $aux['TDV_MES'] = Utils::segundosToDias(0);
                 $infoPuestoMes = Usuario::getClasificacionMes($doctrine, $JUGADOR, $JUGADORES);
                 $aux['PUESTO_MES'] = $infoPuestoMes['PUESTO'];
-                
                 $tdvMes = $infoPuestoMes['CANTIDAD'];
                 $aux['TDV_MES_RED'] = 1;
                 $aux['TDV_MES'] = Utils::segundosToDias($tdvMes);
@@ -753,8 +747,13 @@ class DefaultController extends Controller {
         $rol_usu = $usuario->getIdRol()->getIdRol();
 
         if ($rol_usu === 1 || $rol_usu === 5) {
-
+            
             $render = $this->inicio_ciudadano($usuario, $session);
+            if($usuario->getIdEstado()->getNombre() === 'Fin'){
+                $DATOS = Twitter::tweetsProyectoSinTime();
+//                Utils::pretty_print($DATOS);
+                $render = $this->render('despedida.html.twig', $DATOS);
+            }
         }
         if ($rol_usu === 2) {
             $render = $this->inicio_guardian($usuario);
@@ -825,7 +824,7 @@ class DefaultController extends Controller {
         if (!count($UR)) {
             return new JsonResponse(array('estado' => 'ERROR', 'message' => 'Fallo al actualizar la información'), 200);
         }
-        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR, false);
+        $actividades_semana = RuntasticUtils::actualizarSesionesRuntastic($doctrine, $UR, true);
         Utils::pretty_print($actividades_semana);
         if (!count($actividades_semana)) {
             return new JsonResponse(['estatus' => 'ERROR', 'message' => 'No se han actualizado sus sesiones. '
@@ -849,9 +848,11 @@ class DefaultController extends Controller {
         $MC_COMPRADA = $doctrine->getRepository('AppBundle:BonificacionXUsuario')->findOneBy([
             'idUsuario' => $CIUDADANO, 'idBonificacionExtra' => $MC_DEPORTE, 'usado' => 0
         ]);
+        $duracion_acumulada = 0;
+        $n_sesiones = 1;
         // Actualizar sus sesiones
         $CUENTAS_RUNTASTIC = $doctrine->getRepository('AppBundle:UsuarioRuntastic')->findByIdUsuario($CIUDADANO);
-        RuntasticUtils::actualizarSesionesRuntastic($doctrine, $CIUDADANO, $CUENTAS_RUNTASTIC);
+        RuntasticUtils::actualizarSesionesRuntastic($doctrine, $CUENTAS_RUNTASTIC, true);
         if (count($CUENTAS_RUNTASTIC)) {
             // Comprobación de las sesiones
             $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
@@ -862,9 +863,7 @@ class DefaultController extends Controller {
                 if (!count($RETOS)) {
                     $comparar = 0;
                 }
-                $duracion_acumulada = 0;
                 $id_sesiones = [];
-                $n_sesiones = 1;
                 $ok = false;
                 $duracionReto = 0;
                 foreach ($CUENTAS_RUNTASTIC as $CUENTA) {
@@ -921,6 +920,8 @@ class DefaultController extends Controller {
         if ($ok) {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo superado')), 200);
         }
+        Utils::pretty_print($duracion_acumulada);
+        Utils::pretty_print($n_sesiones);
         return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Reto deportivo no superado')), 200);
     }
 
@@ -950,15 +951,16 @@ class DefaultController extends Controller {
      * @Route("/ok", name="ok")
      */
     public function okAction() {
-//        $doctrine = $this->getDoctrine();
-//
-//        $CIUDADANOS = Usuario::getCiudadanosVivos($doctrine);
-//        $unDia = 86400;
-//        $motivo = "Fair play";
-//        foreach($CIUDADANOS as $CIUDADANO){
-//            Usuario::operacionSobreTdV($doctrine, $CIUDADANO, $unDia, $motivo);
-//        }
-//        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+        $CIUDADANOS = Usuario::getCiudadanos($doctrine);
+        $FIN = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Fin');
+        foreach($CIUDADANOS as $CIUDADANO){
+            $CIUDADANO->setIdEstado($FIN);
+            $em->persist($CIUDADANO);
+        }
+        $em->flush();
+        return new JsonResponse(json_encode(array('estado' => 'OK')), 200);
     }
     
     

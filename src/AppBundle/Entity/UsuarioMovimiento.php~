@@ -1,0 +1,56 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioMovimiento
+ *
+ * @ORM\Table(name="USUARIO_MOVIMIENTO", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class UsuarioMovimiento
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="cantidad", type="bigint", nullable=false)
+     */
+    private $cantidad;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="causa", type="string", length=1000, nullable=false)
+     */
+    private $causa;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_movimiento", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioMovimiento;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

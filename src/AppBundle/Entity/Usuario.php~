@@ -1,0 +1,149 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Usuario
+ *
+ * @ORM\Table(name="USUARIO", indexes={@ORM\Index(name="id_rol", columns={"id_rol", "id_estado"}), @ORM\Index(name="id_estado", columns={"id_estado"}), @ORM\Index(name="id_cuenta", columns={"id_cuenta"}), @ORM\Index(name="id_distrito", columns={"id_distrito"}), @ORM\Index(name="IDX_1D204E4790F1D76D", columns={"id_rol"})})
+ * @ORM\Entity
+ */
+class Usuario
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=30, nullable=true)
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="apellidos", type="string", length=40, nullable=true)
+     */
+    private $apellidos;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_nacimiento", type="datetime", nullable=true)
+     */
+    private $fechaNacimiento;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="clave", type="string", length=40, nullable=true)
+     */
+    private $clave;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=120, nullable=true)
+     */
+    private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="seudonimo", type="string", length=40, nullable=true)
+     */
+    private $seudonimo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="dni", type="string", length=9, nullable=false)
+     */
+    private $dni;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="usu_runtastic", type="string", length=30, nullable=true)
+     */
+    private $usuRuntastic;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="certificado", type="string", length=40, nullable=false)
+     */
+    private $certificado;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="imagen", type="string", length=1000, nullable=true)
+     */
+    private $imagen;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="tiempo_sin_comer", type="datetime", nullable=true)
+     */
+    private $tiempoSinComer;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="tiempo_sin_beber", type="datetime", nullable=true)
+     */
+    private $tiempoSinBeber;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\UsuarioDistrito
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\UsuarioDistrito")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_distrito", referencedColumnName="id_usuario_distrito")
+     * })
+     */
+    private $idDistrito;
+
+    /**
+     * @var \AppBundle\Entity\Rol
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Rol")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_rol", referencedColumnName="id_rol")
+     * })
+     */
+    private $idRol;
+
+    /**
+     * @var \AppBundle\Entity\UsuarioEstado
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\UsuarioEstado")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_estado", referencedColumnName="id_estado")
+     * })
+     */
+    private $idEstado;
+
+    /**
+     * @var \AppBundle\Entity\UsuarioCuenta
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\UsuarioCuenta")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_cuenta", referencedColumnName="id_cuenta")
+     * })
+     */
+    private $idCuenta;
+
+
+}

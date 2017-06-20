@@ -1,0 +1,72 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioXUsuario
+ *
+ * @ORM\Table(name="EJERCICIO_X_USUARIO", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio", "id_usu"}), @ORM\Index(name="id_seccion", columns={"id_seccion"}), @ORM\Index(name="id_usu", columns={"id_usu"}), @ORM\Index(name="id_grupo", columns={"id_grupo"}), @ORM\Index(name="IDX_B618B30D159873D3", columns={"id_ejercicio"})})
+ * @ORM\Entity
+ */
+class EjercicioXUsuario
+{
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="visto", type="boolean", nullable=false)
+     */
+    private $visto;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_x_usuario", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioXUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usu", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsu;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioSeccion
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioSeccion")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_seccion", referencedColumnName="id_ejercicio_seccion")
+     * })
+     */
+    private $idSeccion;
+
+    /**
+     * @var \AppBundle\Entity\GrupoEjercicios
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GrupoEjercicios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_grupo", referencedColumnName="id_grupo_ejercicios")
+     * })
+     */
+    private $idGrupo;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+
+}

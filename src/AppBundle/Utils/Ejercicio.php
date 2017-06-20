@@ -8,10 +8,13 @@
 
 namespace AppBundle\Utils;
 
+use AppBundle\Entity\EjercicioCalificacion;
+use AppBundle\Entity\EjercicioXUsuario;
 use AppBundle\Utils\Distrito;
+use DateTime;
 
 /**
- * Description of Ejercicio
+ * Métodos que gestionan los retos de la app
  *
  * @author araluce
  */
@@ -21,7 +24,7 @@ class Ejercicio {
      * Actualiza la lista de ejercicios del usuario
      * 
      * @param type $doctrine
-     * @param Entity:USUARIO $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      */
     static function actualizarEjercicioXUsuario($doctrine, $USUARIO) {
         $em = $doctrine->getManager();
@@ -36,7 +39,7 @@ class Ejercicio {
         if (count($EJERCICIOS)) {
             foreach ($EJERCICIOS as $EJERCICIO) {
                 if (!in_array($EJERCICIO, $EJERCICIOS_ACTUALES)) {
-                    $EJERCICIO_X_USUARIO = new \AppBundle\Entity\EjercicioXUsuario();
+                    $EJERCICIO_X_USUARIO = new EjercicioXUsuario();
                     $EJERCICIO_X_USUARIO->setIdSeccion($EJERCICIO->getIdEjercicioSeccion());
                     $EJERCICIO_X_USUARIO->setIdUsu($USUARIO);
                     $EJERCICIO_X_USUARIO->setIdEjercicio($EJERCICIO);
@@ -51,7 +54,7 @@ class Ejercicio {
     /**
      * Comprueba si un ejercicio es de distrito o no
      * @param type $doctrine
-     * @param type $EJERCICIO
+     * @param <AppBundle\Entity\Ejericicio> $EJERCICIO
      * @return true|false
      */
     static function esEjercicioDistrito($doctrine, $EJERCICIO) {
@@ -62,35 +65,10 @@ class Ejercicio {
     }
 
     /**
-     * Localiza la calificación de un ejercicio de distrito realizada por un integrante del mismo
-     * @param type $doctrine
-     * @param type $EJERCICIO
-     * @param type $DISTRITO
-     * @return EJERCICIO_CALIFICACION|null
-     */
-    static function getCalificacionPrincipalDistrito($doctrine, $EJERCICIO, $DISTRITO) {
-        $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
-        $ENTREGAS = $doctrine->getRepository('AppBundle:EjercicioEntrega')->findByIdEjercicio($EJERCICIO);
-        if (!count($CIUDADANOS || !count($ENTREGAS))) {
-            return null;
-        }
-        foreach ($ENTREGAS as $ENTREGA) {
-            $CIUDADANO = $ENTREGA->getIdUsuario();
-            if (in_array($CIUDADANO, $CIUDADANOS)) {
-                $CALIFICACION = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
-                    'idEjercicio' => $EJERCICIO, 'idUsuario' => $CIUDADANO
-                ]);
-                return $CALIFICACION;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Obtiene el ejercicio de tipo deportivo más bajo no superado
      * @param type $doctrine
-     * @param type $USUARIO
-     * @return int|EJERCICIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @return int|<AppBundle\Entity\Ejercicio>
      */
     static function getFase($doctrine, $USUARIO) {
         $DEPORTE = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion('deporte');
@@ -122,45 +100,20 @@ class Ejercicio {
     }
 
     /**
-     * Evalua e ingresa el beneficio obtenido al superar una fase
+     * Evalua e ingresa el beneficio obtenido al superar una fase de un reto
+     * deportivo
      * @param type $doctrine
-     * @param type $EJERCICIO
-     * @param type $USUARIO
-     * @param type $SESION
-     */
-    static function evaluaFase($doctrine, $EJERCICIO, $USUARIO, $SESION) {
-        $em = $doctrine->getManager();
-        $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
-        $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
-        $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
-        $CALIFICACION->setFecha(new \DateTime('now'));
-        $CALIFICACION->setIdCalificaciones($NOTA->getIdCalificacion());
-        $CALIFICACION->setIdEjercicio($EJERCICIO);
-        $CALIFICACION->setIdEjercicioEstado($EVALUADO);
-        $CALIFICACION->setIdUsuario($USUARIO);
-        $em->persist($CALIFICACION);
-
-        $SESION->setEvaluado(1);
-        $em->persist($SESION);
-        $em->flush();
-
-        Usuario::operacionSobreTdV($doctrine, $USUARIO, $NOTA->getBonificacion(), 'Ingreso - Fase de deportes superada.');
-    }
-
-    /**
-     * Evalua e ingresa el beneficio obtenido al superar una fase
-     * @param type $doctrine
-     * @param type $EJERCICIO
-     * @param type $USUARIO
-     * @param type $SESIONES
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO Reto deportivo
+     * @param <AppBundle\Entity\Usuario> $USUARIO Ciudadano
+     * @param array(<AppBundle\Entity\RuntasticSesion>) $SESIONES
      * @param boolean $beneficioDoble
      */
     static function evaluaFasePartes($doctrine, $EJERCICIO, $USUARIO, $SESIONES, $beneficioDoble = false) {
         $em = $doctrine->getManager();
         $EVALUADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('evaluado');
         $NOTA = $doctrine->getRepository('AppBundle:EjercicioBonificacion')->findOneByIdEjercicio($EJERCICIO);
-        $CALIFICACION = new \AppBundle\Entity\EjercicioCalificacion();
-        $CALIFICACION->setFecha(new \DateTime('now'));
+        $CALIFICACION = new EjercicioCalificacion();
+        $CALIFICACION->setFecha(new DateTime('now'));
         $CALIFICACION->setIdCalificaciones($NOTA->getIdCalificacion());
         $CALIFICACION->setIdEjercicio($EJERCICIO);
         $CALIFICACION->setIdEjercicioEstado($EVALUADO);
@@ -183,8 +136,8 @@ class Ejercicio {
      * Nos devuelve la primera entrega de un ejercicio, 0 si nunca ha sido
      * entregado el ejercicio
      * @param type $doctrine
-     * @param type $USUARIO
-     * @param type $EJERCICIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO
      * @param type $DISTRITO
      * @return int
      */
@@ -201,7 +154,7 @@ class Ejercicio {
             }
             // Como es de distrito y no lo he entregado yo buscamos al que
             // entregó la primera vez
-            $CIUDADANOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
+            $CIUDADANOS = Distrito::getCiudadanosDistrito($doctrine, $DISTRITO);
             if (!count($CIUDADANOS)) {
                 return 0;
             }
@@ -223,7 +176,7 @@ class Ejercicio {
     /**
      * Marca a vistos los retos de paga extra
      * @param type $doctrine
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      */
     static function actualizarPagaVisto($doctrine, $USUARIO) {
         $em = $doctrine->getManager();

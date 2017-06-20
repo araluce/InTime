@@ -19,11 +19,13 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "richsage/rms-push-notifications-bundle": "dev-master",
         "beberlei/DoctrineExtensions": "^1.0",
-        "liip/imagine-bundle": "^1.7"
+        "liip/imagine-bundle": "^1.7",
+        "liuggio/excelbundle": "^2.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
-        "symfony/phpunit-bridge": "~2.7"
+        "symfony/phpunit-bridge": "~2.7",
+        "apigen/apigen": "^2.8"
     },
     "scripts": {
         "symfony-scripts": [

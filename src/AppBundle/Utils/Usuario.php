@@ -7,7 +7,7 @@ use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 
 /**
- * Clase que gestiona todo lo relacionado con el usuario
+ * Clase que gestiona todo lo relacionado con los ciudadanos
  * 
  * @author araluce
  */
@@ -43,7 +43,7 @@ class Usuario {
 
     /**
      * Retorna la plantilla de ciudadano (Rol normal)
-     * @param type $usuario
+     * @param <AppBundle/Entity/Usuario> $usuario
      * @param type $session
      * @return render
      */
@@ -237,12 +237,6 @@ class Usuario {
             $em->persist($CUENTA);
         }
         $em->flush();
-
-        // Opcional para no muera un ciudadano al mejorar la nota
-        //    La nota anterior se resta (en TdV) y se sustituye por la nueva
-        if ($comprobar_muerte) {
-            //Llamada a la función comprobar muerte
-        }
     }
 
     /**
@@ -371,7 +365,7 @@ class Usuario {
         $cantidad = 0;
         foreach ($movimientos as $movimiento) {
             $fecha = $movimiento->getFecha();
-            if ($fecha->format('m') === $hoy->format('m')) {
+            if (intval($fecha->format('m')) === intval($hoy->format('m') - 1)) {
                 $cantidad += $movimiento->getCantidad();
             }
         }
@@ -390,7 +384,7 @@ class Usuario {
                 if (null !== $movimientos) {
                     foreach ($movimientos as $movimiento) {
                         $fecha = $movimiento->getFecha();
-                        if ($fecha->format('m') === $hoy->format('m')) {
+                        if (intval($fecha->format('m')) === intval($hoy->format('m') - 1)) {
                             $aux['UsuarioMovimientos'] += $movimiento->getCantidad();
                         }
                     }
@@ -537,7 +531,7 @@ class Usuario {
                         if (count($movimientos)) {
                             foreach ($movimientos as $movimiento) {
                                 $fecha = $movimiento->getFecha();
-                                if ($fecha->format('m') === $hoy->format('m')) {
+                                if (intval($fecha->format('m')) === intval($hoy->format('m') - 1)) {
                                     $aux['CANTIDAD'] += $movimiento->getCantidad();
                                 }
                             }
@@ -725,10 +719,26 @@ class Usuario {
             $USUARIO->setIdEstado($estadoFallecido);
             $em->persist($USUARIO);
             $em->flush();
-            Usuario::mensajeSistemaDefuncion($doctrine, $USUARIO);
+            //Usuario::mensajeSistemaDefuncion($doctrine, $USUARIO);
         }
         Usuario::dejarHerencia($doctrine, $USUARIO);
         return 1;
+    }
+    
+    /**
+     * Obtiene todos los ciudadanos
+     * @param type $doctrine
+     * @return array
+     */
+    static function getCiudadanos($doctrine) {
+        $ROL_CIUDADANO = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Jugador');
+        $query = $doctrine->getRepository('AppBundle:Usuario')->createQueryBuilder('a');
+        $query->select('a');
+        $query->where('a.idRol = :ROL');
+        $query->setParameters(['ROL' => $ROL_CIUDADANO]);
+        $CIUDADANOS = $query->getQuery()->getResult();
+
+        return $CIUDADANOS;
     }
 
     /**
@@ -844,12 +854,6 @@ class Usuario {
                 return 0;
             }
             return $MENSAJES_SIN_VER->getCantidad();
-//            $query = $qb->select('cm')
-//                    ->from('\AppBundle\Entity\ChatMensajes', 'cm')
-//                    ->where('cm.idChat = :idChat AND cm.visto = 0')
-//                    ->setParameters(array('idChat' => $CHAT));
-//            $n_mensajes = $query->getQuery()->getResult();
-//            return count($n_mensajes);
         }
         return 0;
     }
@@ -1162,10 +1166,15 @@ class Usuario {
         }
     }
 
+    /**
+     * Crea un mensaje directo del guardián con destino el usuario especificado
+     * @param type $doctrine
+     * @param <AppBundle/Entity/Usuario> $CIUDADANO
+     * @param string $texto
+     * @param <AppBundle\Entity\Mensaje> $MENSAJE
+     */
     static function mensajeGuardianACiudadano($doctrine, $CIUDADANO, $texto, $MENSAJE = null) {
         $em = $doctrine->getManager();
-        $ROL_GDT = $doctrine->getRepository('AppBundle:Rol')->findOneByNombre('Guardián');
-        $GDT = $doctrine->getRepository('AppBundle:Usuario')->findOneByIdRol($ROL_GDT);
 
         $MENSAJE_DIRECTO = $doctrine->getRepository('AppBundle:TipoMensaje')->findOneByTipo('directo');
         if (null === $MENSAJE) {
@@ -1186,4 +1195,20 @@ class Usuario {
         $em->flush();
     }
 
+    /**
+     * Incrementa un aviso de chat sin ver en un chat determinado
+     * @param type $doctrine
+     * @param type $USUARIO
+     */
+    static function getCantidadTiempo($doctrine, $USUARIO) {
+        $cantidad = 0;
+        $movimientos = $doctrine->getRepository('AppBundle:UsuarioMovimiento')->findByIdUsuario($USUARIO);
+        
+        if (count($movimientos)){
+            foreach($movimientos as $m){
+            $cantidad += $m->getCantidad();
+            }
+        }
+        return $cantidad;
+    }
 }

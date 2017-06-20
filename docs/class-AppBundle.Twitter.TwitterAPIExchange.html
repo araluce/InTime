@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="ApiGen 2.8.0">
+
+	<title>Class AppBundle\Twitter\TwitterAPIExchange</title>
+
+	<link rel="stylesheet" href="resources/style.css?3901564645">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-AppBundle.html">AppBundle<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Controller.html">Controller</a>
+						</li>
+				<li><a href="namespace-AppBundle.Entity.html">Entity</a>
+						</li>
+				<li><a href="namespace-AppBundle.Runtastic.html">Runtastic</a>
+						</li>
+				<li><a href="namespace-AppBundle.Tests.html">Tests<span></span></a>
+						<ul>
+				<li><a href="namespace-AppBundle.Tests.Controller.html">Controller</a>
+						</li>
+							</ul></li>
+				<li class="active"><a href="namespace-AppBundle.Twitter.html">Twitter</a>
+						</li>
+				<li><a href="namespace-AppBundle.Utils.html">Utils</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-AppBundle.Twitter.TwitterAPIExchange.html">TwitterAPIExchange</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text">
+		<input type="submit" value="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-AppBundle.Twitter.html" title="Summary of AppBundle\Twitter"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class TwitterAPIExchange</h1>
+
+
+	<div class="description">
+	
+<p>Twitter-API-PHP : Simple PHP wrapper for the v1.1 API</p>
+
+<p>PHP version 5.3.10</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-AppBundle.html">AppBundle</a>\<a href="namespace-AppBundle.Twitter.html">Twitter</a><br>
+		<b>Package:</b> Twitter-API-PHP<br>
+
+				<b>Category:</b>
+				Awesomeness<br>
+				<b>License:</b>
+				<a href="MIT">License</a><br>
+				<b>Author:</b>
+				James Mallison &lt;<a
+href="mailto:me&#64;j7mbo.co.uk">me&#64;<!-- -->j7mbo.co.uk</a>&gt;<br>
+				<b>Version:</b>
+				1.0.4<br>
+				<b>Link:</b>
+				<a href="http://github.com/j7mbo/twitter-api-php">http://github.com/j7mbo/twitter-api-php</a><br>
+		<b>Located at</b> <a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#5-368" title="Go to source code">AppBundle/Twitter/TwitterAPIExchange.php</a><br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#71-95" title="Go to source code">__construct</a>( <span>array <var>$settings</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Create the API access object. Requires an array of settings:: oauth access
+token, oauth access token secret, consumer key, consumer secret These are all
+available by creating your own application on dev.twitter.com Requires the cURL
+library</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Create the API access object. Requires an array of settings:: oauth access
+token, oauth access token secret, consumer key, consumer secret These are all
+available by creating your own application on dev.twitter.com Requires the cURL
+library</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$settings</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-RuntimeException.html">RuntimeException</a></code></code><br>When cURL isn't loaded<br>
+					<code><code><a href="class-InvalidArgumentException.html">InvalidArgumentException</a></code></code><br>When incomplete settings parameters are provided<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setPostfields" id="_setPostfields">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-AppBundle.Twitter.TwitterAPIExchange.html">AppBundle\Twitter\TwitterAPIExchange</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setPostfields">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#97-129" title="Go to source code">setPostfields</a>( <span>array <var>$array</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Set postfields array, example: array('screen_name' =&gt; 'J7mbo')</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Set postfields array, example: array('screen_name' =&gt; 'J7mbo')</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$array</var></dt>
+					<dd>Array of parameters to send to API</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-AppBundle.Twitter.TwitterAPIExchange.html">AppBundle\Twitter\TwitterAPIExchange</a></code></code><br>Instance of self for method chaining<br>
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br>When you are trying to set both get and post fields<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setGetfield" id="_setGetfield">
+
+		<td class="attributes"><code>
+			 public 
+			TwitterAPIExchange
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setGetfield">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#131-158" title="Go to source code">setGetfield</a>( <span>string <var>$string</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Set getfield string, example: '?screen_name=J7mbo'</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Set getfield string, example: '?screen_name=J7mbo'</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$string</var></dt>
+					<dd>Get key and value pairs as string</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>TwitterAPIExchange</code><br>Instance of self for method chaining<br>
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br>\Exception<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getGetfield" id="_getGetfield">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getGetfield">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#160-167" title="Go to source code">getGetfield</a>( )</code>
+
+		<div class="description short">
+			
+<p>Get getfield string (simple getter)</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Get getfield string (simple getter)</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br>$this-&gt;getfields<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getPostfields" id="_getPostfields">
+
+		<td class="attributes"><code>
+			 public 
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getPostfields">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#169-176" title="Go to source code">getPostfields</a>( )</code>
+
+		<div class="description short">
+			
+<p>Get postfields array (simple getter)</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Get postfields array (simple getter)</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br>$this-&gt;postfields<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="buildOauth" id="_buildOauth">
+
+		<td class="attributes"><code>
+			 public 
+			TwitterAPIExchange
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_buildOauth">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#178-241" title="Go to source code">buildOauth</a>( <span>string <var>$url</var></span>, <span>string <var>$requestMethod</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Build the Oauth object using params set in construct and additionals passed
+to this method. For v1.1, see: <a
+href="https://dev.twitter.com/docs/api/1.1">https://dev.twitter.com/docs/api/1.1</a></p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Build the Oauth object using params set in construct and additionals passed
+to this method. For v1.1, see: <a
+href="https://dev.twitter.com/docs/api/1.1">https://dev.twitter.com/docs/api/1.1</a></p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$url</var></dt>
+					<dd>The API url to use. Example: &lt;a
+href="https://api.twitter.com/1.1/search/tweets.json"&gt;https://api.twitter.com/1.1/search/tweets.json&lt;/a&gt;</dd>
+					<dt><var>$requestMethod</var></dt>
+					<dd>Either POST or GET</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>TwitterAPIExchange</code><br>Instance of self for method chaining<br>
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br>\Exception<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="performRequest" id="_performRequest">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_performRequest">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#243-294" title="Go to source code">performRequest</a>( <span>boolean <var>$return</var> = <span class="php-keyword1">true</span></span>, <span>array <var>$curlOptions</var> = <span class="php-keyword1">array</span>()</span> )</code>
+
+		<div class="description short">
+			
+<p>Perform the actual data retrieval from the API</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Perform the actual data retrieval from the API</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$return</var></dt>
+					<dd>If true, returns data. This is left in for backward compatibility reasons</dd>
+					<dt><var>$curlOptions</var></dt>
+					<dd>Additional Curl options for this request</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br>json If $return param is true, returns json data.<br>
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br>\Exception<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="request" id="_request">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_request">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#338-358" title="Go to source code">request</a>( <span>string <var>$url</var></span>, <span>string <var>$method</var> = <span class="php-quote">'get'</span></span>, <span>string <var>$data</var> = <span class="php-keyword1">null</span></span>, <span>array <var>$curlOptions</var> = <span class="php-keyword1">array</span>()</span> )</code>
+
+		<div class="description short">
+			
+<p>Helper method to perform our request</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Helper method to perform our request</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$url</var></dt>
+					<dd></dd>
+					<dt><var>$method</var></dt>
+					<dd></dd>
+					<dt><var>$data</var></dt>
+					<dd></dd>
+					<dt><var>$curlOptions</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br>The json response from the server<br>
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br>\Exception<br>
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getHttpStatusCode" id="_getHttpStatusCode">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getHttpStatusCode">#</a>
+		<code><a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#360-367" title="Go to source code">getHttpStatusCode</a>( )</code>
+
+		<div class="description short">
+			
+<p>Get the HTTP status code for the previous request</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Get the HTTP status code for the previous request</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br>integer<br>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+	<table class="summary properties" id="properties">
+	<caption>Properties summary</caption>
+	<tr data-order="oauth" id="$oauth">
+		<td class="attributes"><code>
+			protected  
+			mixed
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#49-52" title="Go to source code"><var>$oauth</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value"><div><a href="#$oauth" class="anchor">#</a><code></code></div></td>
+	</tr>
+	<tr data-order="url" id="$url">
+		<td class="attributes"><code>
+			public  
+			string
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#54-57" title="Go to source code"><var>$url</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value"><div><a href="#$url" class="anchor">#</a><code></code></div></td>
+	</tr>
+	<tr data-order="requestMethod" id="$requestMethod">
+		<td class="attributes"><code>
+			public  
+			string
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#59-62" title="Go to source code"><var>$requestMethod</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value"><div><a href="#$requestMethod" class="anchor">#</a><code></code></div></td>
+	</tr>
+	<tr data-order="httpStatusCode" id="$httpStatusCode">
+		<td class="attributes"><code>
+			protected  
+			integer
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-AppBundle.Twitter.TwitterAPIExchange.html#64-69" title="Go to source code"><var>$httpStatusCode</var></a>
+
+			<div class="description short">
+				
+<p>The HTTP status code from the previous request</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+<p>The HTTP status code from the previous request</p>
+
+
+			</div>
+		</td>
+		<td class="value"><div><a href="#$httpStatusCode" class="anchor">#</a><code></code></div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js?3440165155"></script>
+<script src="elementlist.js?1284720559"></script>
+</body>
+</html>

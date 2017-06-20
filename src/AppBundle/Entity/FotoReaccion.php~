@@ -1,0 +1,52 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * FotoReaccion
+ *
+ * @ORM\Table(name="FOTO_REACCION", indexes={@ORM\Index(name="id_album_foto_2", columns={"id_album_foto"}), @ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class FotoReaccion
+{
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="like_social", type="boolean", nullable=false)
+     */
+    private $likeSocial;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_foto_reaccion", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idFotoReaccion;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\AlbumFoto
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AlbumFoto")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_album_foto", referencedColumnName="id_album_foto")
+     * })
+     */
+    private $idAlbumFoto;
+
+
+}

@@ -1,0 +1,63 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Mina
+ *
+ * @ORM\Table(name="MINA", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"})})
+ * @ORM\Entity
+ */
+class Mina
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="enunciado", type="string", length=1000, nullable=false)
+     */
+    private $enunciado;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="codigo", type="string", length=1000, nullable=false)
+     */
+    private $codigo;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_final", type="datetime", nullable=false)
+     */
+    private $fechaFinal;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_mina", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idMina;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+
+}

@@ -1,0 +1,70 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioPrestamo
+ *
+ * @ORM\Table(name="USUARIO_PRESTAMO", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class UsuarioPrestamo
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="motivo", type="string", length=100, nullable=false)
+     */
+    private $motivo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="cantidad", type="integer", nullable=false)
+     */
+    private $cantidad;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="restante", type="integer", nullable=false)
+     */
+    private $restante;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="interes", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $interes;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_prestamo", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioPrestamo;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

@@ -8,10 +8,11 @@
 
 namespace AppBundle\Utils;
 
-use AppBundle\Utils\Utils;
 use AppBundle\Utils\Alimentacion;
-use AppBundle\Utils\Ejercicio;
 use AppBundle\Utils\Distrito;
+use AppBundle\Utils\Ejercicio;
+use AppBundle\Utils\Utils;
+use DateTime;
 
 /**
  * Description of Alimentacion
@@ -20,8 +21,16 @@ use AppBundle\Utils\Distrito;
  */
 class Alimentacion {
 
+    /**
+     * Obtiene los datos de cafa reto de alimantación de la sección 
+     * especificada [comida, bebida]
+     * @param type $doctrine
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param array $DATOS
+     * @param int $SECCION
+     */
     static function getDatosAlimentacion($doctrine, $USUARIO, &$DATOS, $SECCION) {
-        // Obtenemos los ejercicios de comida del usuario
+        // Obtenemos los ejercicios de la sección especificada del usuario
         Ejercicio::actualizarEjercicioXUsuario($doctrine, $USUARIO);
         $EJERCICIOS_COMIDA_DEL_USUARIO = $doctrine->getRepository('AppBundle:EjercicioXUsuario')->findBy([
             'idUsu' => $USUARIO, 'idSeccion' => $SECCION
@@ -36,6 +45,14 @@ class Alimentacion {
         }
     }
 
+    /**
+     * Obtiene toda la información de un reto específico adaptada al ciudadano
+     * que lo solicita
+     * @param type $doctrine
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @param <AppBundle\Entity\EjercicioUsuario> $EJERCICIO_USUARIO
+     * @return int
+     */
     static function makeInfoEjercicio($doctrine, $USUARIO, $EJERCICIO_USUARIO) {
         // Obtenemos el ejercicio en cuestión
         $EJERCICIO = $EJERCICIO_USUARIO->getIdEjercicio();
@@ -75,38 +92,11 @@ class Alimentacion {
         return $DATOS;
     }
 
-    static function getCalificacionSolicitado($doctrine, $USUARIO, $seccion) {
-        $SECCION = $doctrine->getRepository('AppBundle:EjercicioSeccion')->findOneBySeccion($seccion);
-        $SOLICITADO = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
-        if ($SECCION === 'null') {
-            return 0;
-        }
-
-        $EJERCICIOS_SECCION = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION);
-        if (!count($EJERCICIOS_SECCION)) {
-            return 0;
-        }
-
-        $EJERCICIOS = $doctrine->getRepository('AppBundle:EjercicioCalificacion')->findBy([
-            'idUsuario' => $USUARIO, 'idEjercicioEstado' => $SOLICITADO
-        ]);
-        if (!count($EJERCICIOS)) {
-            return 0;
-        }
-
-        foreach ($EJERCICIOS as $EJERCICIO) {
-            if (in_array($EJERCICIO->getIdEjercicio(), $EJERCICIOS_SECCION)) {
-                return $EJERCICIO;
-            }
-        }
-        return 0;
-    }
-
     /**
      * Comprueba si se han solicitado ejercicios de la sección comida
      * 
      * @param type $doctrine
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return int 0 si no se han encontrado ejercicios en estado "solicitado"
      * de la sección "comida", 1 en cualquier otro caso
      */
@@ -145,7 +135,7 @@ class Alimentacion {
      * Comprueba si se han solicitado ejercicios de la sección bebida
      * 
      * @param type $doctrine
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return int 0 si no se han encontrado ejercicios en estado "solicitado"
      * de la sección "bebida", 1 en cualquier otro caso
      */
@@ -187,7 +177,7 @@ class Alimentacion {
      * @return type
      */
     static function porcetajeEnergia($ts_usuario, $ts_defecto) {
-        $HOY = new \DateTime('now');
+        $HOY = new DateTime('now');
         $respuesta = [];
         $respuesta['suelo'] = $ts_usuario->getTimestamp();
         $respuesta['techo'] = $respuesta['suelo'] + $ts_defecto->getValor();
@@ -205,15 +195,15 @@ class Alimentacion {
      */
     static function setTSC_TSB($doctrine, $USUARIO, $SECCION) {
         $em = $doctrine->getManager();
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
         $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
 
         if ($SECCION === 'comida') {
-            $USUARIO->setTiempoSinComer(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+            $USUARIO->setTiempoSinComer(DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
         }
         if ($SECCION === 'bebida') {
-            $USUARIO->setTiempoSinBeber(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+            $USUARIO->setTiempoSinBeber(DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
         }
         $em->persist($USUARIO);
         $em->flush();
@@ -227,15 +217,15 @@ class Alimentacion {
      */
     static function setTSCD_TSBD($doctrine, $USUARIO, $SECCION) {
         $em = $doctrine->getManager();
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         $DATE_TIEMPO_SIN = $FECHA->getTimestamp();
         $DATE = date('Y-m-d H:i:s', intval($DATE_TIEMPO_SIN));
 
         if ($SECCION === 'comida') {
-            $USUARIO->setTiempoSinComerDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+            $USUARIO->setTiempoSinComerDistrito(DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
         }
         if ($SECCION === 'bebida') {
-            $USUARIO->setTiempoSinBeberDistrito(\DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
+            $USUARIO->setTiempoSinBeberDistrito(DateTime::createFromFormat('Y-m-d H:i:s', $DATE));
         }
         $em->persist($USUARIO);
         $em->flush();
@@ -247,16 +237,15 @@ class Alimentacion {
      * sección está dentro del tiempo establecido por el valor 'diasDifEntregas'
      * @param type $doctrine
      * @param type $SECCION
-     * @param type $USUARIO
+     * @param <AppBundle\Entity\Usuario> $USUARIO
      * @return int
      */
     static function tiempoEntreEntregas($doctrine, $SECCION, $USUARIO, $DISTRITO = null) {
-        $FECHA = new \DateTime('now');
+        $FECHA = new DateTime('now');
         if ($DISTRITO === null) {
             $ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO);
         } else {
             return 1;
-            //$ultimoEjercicio = Alimentacion::ultimaEntrega($doctrine, $SECCION, $USUARIO, $USUARIO->getIdDistrito());
         }
         if ($ultimoEjercicio) {
             $diasDif = Utils::getConstante($doctrine, 'diasDifEntregas');
@@ -274,8 +263,8 @@ class Alimentacion {
      * Obtiene la última entrega de una sección específica
      * @param type $doctrine
      * @param type $SECCION
-     * @param type $USUARIO
-     * @return 0|Ejercicio
+     * @param <AppBundle\Entity\Usuario> $USUARIO
+     * @return 0|<AppBundle\Entity\Ejercicio>
      */
     static function ultimaEntrega($doctrine, $SECCION, $USUARIO, $DISTRITO = null) {
         $EJERCICIOS = $doctrine->getRepository('AppBundle:Ejercicio')->findByIdEjercicioSeccion($SECCION);
@@ -323,7 +312,14 @@ class Alimentacion {
         }
         return $ENTREGAS[0];
     }
-
+    
+    /**
+     * Retorna el número de ciudadanos que han solicitado de un reto específico
+     * @param type $doctrine
+     * @param <AppBundle\Entity\Ejercicio> $EJERCICIO
+     * @param type $DISTRITO
+     * @return type
+     */
     static function numeroSolicitantes($doctrine, $EJERCICIO, $DISTRITO) {
         $estadoSolicitado = $doctrine->getRepository('AppBundle:EjercicioEstado')->findOneByEstado('solicitado');
         $usuariosDistrito = Distrito::getCiudadanosVivosDistrito($doctrine, $DISTRITO);

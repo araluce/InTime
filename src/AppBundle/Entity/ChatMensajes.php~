@@ -1,0 +1,66 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ChatMensajes
+ *
+ * @ORM\Table(name="CHAT_MENSAJES", indexes={@ORM\Index(name="id_chat", columns={"id_chat"}), @ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class ChatMensajes
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mensaje", type="string", length=1000, nullable=false)
+     */
+    private $mensaje;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="visto", type="boolean", nullable=false)
+     */
+    private $visto;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_chat_mensajes", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idChatMensajes;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Chat
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_chat", referencedColumnName="id_chat")
+     * })
+     */
+    private $idChat;
+
+
+}

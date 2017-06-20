@@ -16,10 +16,10 @@ namespace AppBundle\Utils;
 class Distrito {
     
     /**
-     * Devuelve los ciudadanos de un distrito
+     * Devuelve el conjunto de ciudadanos de un distrito
      * @param type $doctrine
-     * @param type $DISTRITO
-     * @return type
+     * @param int $DISTRITO
+     * @return null|array(<AppBundle\Entity\Usuario>)
      */
     static function getCiudadanosDistrito($doctrine, $DISTRITO){
         $USUARIOS = $doctrine->getRepository('AppBundle:Usuario')->findByIdDistrito($DISTRITO);
@@ -27,10 +27,11 @@ class Distrito {
     }
     
     /**
-     * Obtiene los ciudadanos con estado distinto de fallecido o inactivo de un distrito
+     * Obtiene los ciudadanos de un distrito con estado distinto de fallecido o 
+     * inactivo
      * @param type $doctrine
-     * @param type $DISTRITO
-     * @return null|array
+     * @param int $DISTRITO
+     * @return null|array(<AppBundle\Entity\Usuario>)
      */
     static function getCiudadanosVivosDistrito($doctrine, $DISTRITO){
         $ESTADO_FALLECIDO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Fallecido');
@@ -47,8 +48,8 @@ class Distrito {
     /**
      * Obtiene los ciudadanos con estado activo de un distrito
      * @param type $doctrine
-     * @param type $DISTRITO
-     * @return null|array
+     * @param int $DISTRITO
+     * @return null|array(<AppBundle\Entity\Usuario>)
      */
     static function getCiudadanosActivosDistrito($doctrine, $DISTRITO){
         $ESTADO_ACTIVO = $doctrine->getRepository('AppBundle:UsuarioEstado')->findOneByNombre('Activo');

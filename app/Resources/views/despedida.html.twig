@@ -1,0 +1,402 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css?family=Oregano" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: "Kimberley";
+            src: url("{{ asset('font/digital-7.ttf') }}");
+        }
+        #index-logo-app img{
+            margin-bottom: 4%;
+        }
+        .index-frase{
+            font-family: 'Oregano', cursive;
+            text-align: center;
+        }
+        .index-autor{
+            font-family: 'Oregano', cursive;
+            text-align: right;
+        }
+        .no-padding{
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .help-block{
+            font-family: 'Isocpeur
+                }
+                .login-form{
+                font-family: 'Kimberley
+        }
+        .btn-index{
+            padding: 5px 15px;
+        }
+        .btn-index:hover,
+        .btn-index:focus{
+            color: #FFFFFF;
+            background-color:#000000;
+        }
+
+
+        .titulo-xs{
+            display: block;
+        }
+        .separador-tweets{
+            border-top: 2px solid #000000;
+        }
+        .tweet-perfil{
+            padding-left: 5%; 
+            padding-top: 1%;
+        }
+        .tweet-perfil img{
+            width: 146px;
+            height: 146px;
+        }
+        .tweet-perfil p{
+            font-size: 25px; 
+            color: #8899A6;
+        }
+        .tweet-cuerpo{
+            padding-left: 5%;
+        }
+        .tweet-cuerpo p{
+            font-size: 65px; 
+            line-height: 40px; 
+            font-weight: 400;
+        }
+        .div-tweet-folders-mvl{
+            display: block;
+        }
+        .div-tweet-folders-comp{
+            display: none;
+        }
+        .btn-group img{
+            height: 70px;
+        }
+        .panel-btn-seguir button{
+            border-width: 0px;
+        }
+        .panel-btn-seguir button img{
+            height: 100px;
+        }
+        .titulo-xs{
+            font-size: 20px;
+        }
+        .input-group-btn .btn{
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            border-left-width: 0px;
+        }
+        .panel-seguir{
+            margin-top: 1%;
+        }
+        select{
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+        }
+        .panel-btn-seguir div{
+            display: table-cell;
+            float: none;
+            /*width: 1%;*/
+        }
+        .button-tweet-panel{
+            border-bottom: 2px #000000 solid;
+        }
+        .button-tweet-panel img{
+            width: 100%;
+        }
+        #img-compartir{
+            width: 30%;
+        }
+        .btn-group-tweet img{
+            height: 140px;
+            width: auto;
+        }
+        .compartir-alias{
+            font-size: 40px;
+            margin-right: 30px;
+        }
+        @media (max-width: 760px){
+            #index-titulo-app img{
+                height: 135px;
+            }
+            #index-logo-app img{
+                height: 110px;
+            }
+            .index-frase{
+                font-size: 18px;
+                font-weight: 500;
+            }
+            .help-block,
+            .index-autor{
+                font-size: 29px;
+                font-weight: 500;
+            }
+            .login-form h4{
+                font-size: 29px;
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 760px){
+            #index-titulo-app img{
+                height: 350px;
+            }
+            #index-logo-app img{
+                height: 280px;
+            }
+            .index-frase{
+                font-size: 70px;
+                font-weight: 500;
+            }
+            .help-block,
+            .index-autor{
+                font-weight: 500;
+                font-size: 50px;
+            }
+            .login-form h4{
+                font-size: 50px;
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+            }
+            .tweet-perfil img{
+                width: 153px;
+                height: 153px;
+            }
+            .tweet-perfil p{
+                font-size: 35px;
+            }
+            .tweet-cuerpo p{
+                line-height: 62px; 
+                font-size: 65px;
+            }
+            .button-tweet-folders-comp img,
+            .button-tweet-folders img{
+                height: 75px;
+            }
+            .div-tweet-folders-mvl{
+                display: none;
+            }
+            .div-tweet-folders-comp{
+                display: block;
+            }
+            .btn-group img{
+                height: 31px;
+            }
+            .panel-btn-seguir button img{
+                height: 47px;
+            }
+            .btn-group-tweet img{
+                height: 70px;
+                width: auto;
+            }
+            .panel-seguir{
+                margin-top: 1%;
+            }
+            .compartir-alias{
+                font-size: 20px;
+                margin-right: 15px;
+            }
+            .titulo-xs{
+                font-size: 15px;
+            }
+        }
+        @media (min-width: 992px){
+            #index-titulo-app img{
+                height: 10px;
+            }
+            #index-logo-app img{
+                height: 155px;
+            }
+            .index-frase{
+                font-size: 70px;
+                font-weight: 500;
+            }
+            .help-block,
+            .index-autor{
+                font-weight: 500;
+                font-size: 50px;
+            }
+            .login-form h4{
+                font-size: 50px;
+            }
+            .index-input{
+                /*padding: 50px;*/
+                /*height: 80px;*/
+            }
+            .index-input,
+            .btn-index{
+                border: 5px solid #000000;
+                border-radius: 10px;
+                /*font-size: 60px;*/
+            }
+        }
+        @media (min-width: 1200px){
+            #index-titulo-app img,
+            #index-logo-app img{
+                height: 120px;
+            }
+            .index-frase{
+                font-size: 50px;
+            }
+            .help-block,
+            .index-autor{
+                font-size: 30px;
+            }
+            .login-form h4{
+                font-size: 18px;
+            }
+            .index-input {
+                padding: 0 10px;
+                height: 50px;
+            }
+            .index-input,
+            .btn-index{
+                font-size: 20px;
+                border: 2px solid #000000;
+                border-radius: 7px;
+            }
+
+            .tweet-perfil img{
+                width: 73px;
+                height: 73px;
+            }
+            .tweet-perfil p{
+                font-size: 13px;
+            }
+            .tweet-cuerpo p{
+                line-height: 22px; 
+                font-size: 16px;
+            }
+            .button-tweet-folders-comp img,
+            .button-tweet-folders img{
+                height: 150px;
+            }
+            .div-tweet-folders-mvl{
+                display: none;
+            }
+            .div-tweet-folders-comp{
+                display: block;
+            }
+            .btn-group img{
+                height: 31px;
+            }
+            .panel-btn-seguir button img{
+                height: 31px;
+            }
+            .btn-group-tweet img{
+                height: 70px;
+                width: auto;
+            }
+            .titulo-xs{
+                font-size: 20px;
+            }
+            .panel-seguir{
+                margin-top: 0%;
+            }
+            .compartir-alias{
+                font-size: 20px;
+                margin-right: 15px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div id="index-titulo-app">
+            <center>
+                <img alt="titulo-app" src="{{ asset('images/inTime.png') }}"  />
+            </center>
+        </div>
+        <div class="row" style="margin: 0px 1%;">
+            <div class="col-lg-12">
+                <div class="col-md-12" id="index-logo-app">
+                    <center>
+                        <img id="logo-app" class="animated pulse" alt="logo-app" src="{{ asset('fondo-principalLow.png') }}"  />
+                    </center>
+                </div>
+                <div class="col-md-12 index-frase">
+                    Ciudadanos de $inTime<br> Dejando huella desde el 06/03/2017
+                </div>
+                <div class="col-md-12 index-autor">#proyectoSinTime</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row-lg-12">
+                {% for v in TWEETS %}
+                    <div class="row tweet-perfil">
+                        <div style="float: left;">
+                            <img src="{{ v.IMG_PERFIL }}" alt="profile_twitter" class="img-thumbnail"/>
+                        </div>
+                        {% if v.RETWEET %}
+                            <div style="display: inline-block; margin-left: 2%;">
+                                <p> Tweet de <strong>{{ v.NOMBRE_COMP }}</strong> @{{ v.ALIAS }}<br> Retweet por @{{ data.message.ALIAS }}<br>{{ v.FECHA }}</p>
+                            </div>
+                        {% else %}
+                            <div style="display: inline-block; margin-left: 2%;">
+                                <p> Tweet de <strong>{{ v.NOMBRE_COMP }}</strong> @{{ v.ALIAS }}<br>{{ v.FECHA }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row tweet-cuerpo">
+                        <div class="col-xs-11">
+                            <p>{{ v.TWEET }}</p>
+                            {% if v.FOTO %}
+                                {% for fv in v.VIDEO %}
+                                    <div class="col-lg-6 col-lg-offset-3">
+                                        <img style="width: 100%;" src="{{ fv }}" alt="media_twitter" />
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if v.VIDEO.length %}
+                                {% for vv in v.VIDEO %}
+                                    <div class="col-lg-6 col-lg-offset-3">
+                                        <div class="embed-responsive embed-responsive-16by9">
+                                            <video loop class="embed-responsive-item" controls>
+                                                <source src="{{ vv }}" type="video/mp4">
+                                            </video>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <center>
+                        <button class="btn btn-sm btn-default">
+                            <a href="{{ 'https://twitter.com/araluce1/status/' ~ v.ID_STR }}">
+                                <span class="fa fa-twitter"></span>
+                            </a>
+                        </button>
+                    </center>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row" id="log-sal">
+            <div id="menu-logo">
+                <a href="http://bit.ly/2llGQYb">
+                    <img alt="Logo" id="logo-inTime" class="animated pulse" src="{{ asset('images/inTime.png') }}" />
+                </a>
+            </div>
+            <div id="menu-salir" style="float:right;">
+                <a href="/logout"><img alt="Logo" src="{{ asset('images/iconos/exit.png') }}" /></a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        setInterval(function () {
+            var logo_app = $("#logo-app");
+            logo_app.before(logo_app.clone(true)).remove();
+        }, 1500);
+    </script>
+{% endblock %}

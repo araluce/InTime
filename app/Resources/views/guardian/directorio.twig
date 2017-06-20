@@ -680,12 +680,32 @@
             $('.btn-pref .btn').height($('#menu-primer').height());
         });
         function modificarTDV() {
+            var negativo = false;
             var dni = $("#dni-ciudadano").val();
             var dias = parseInt($("#dias").val());
             var horas = parseInt($("#horas").val());
             var minutos = parseInt($("#minutos").val());
             var segundos = parseInt($("#segundos").val());
-            var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60 + segundos);
+            if(dias < 0){
+                negativo = true;
+                dias *= -1;
+            }
+            if(horas < 0){
+                negativo = true;
+                horas *= -1;
+            }
+            if(minutos < 0){
+                negativo = true;
+                minutos *= -1;
+            }
+            if(segundos < 0){
+                negativo = true;
+                segundos *= -1;
+            }
+            var tiempo = (((((dias * 24) + horas) * 60) + minutos) * 60) + segundos;
+            if(negativo){
+                tiempo *= -1;
+            }
             var motivo = $('#motivo').val();
             $('#modal-avisos2').click();
             mostrarCarga('Enviando solicitud al servidor');

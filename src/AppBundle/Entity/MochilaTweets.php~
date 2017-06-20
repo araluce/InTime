@@ -1,0 +1,69 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * MochilaTweets
+ *
+ * @ORM\Table(name="MOCHILA_TWEETS", indexes={@ORM\Index(name="id_tweet", columns={"id_tweet"}), @ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="id_usuario_destino", columns={"id_usuario_destino"}), @ORM\Index(name="id_tipo_tweet", columns={"id_tipo_tweet"}), @ORM\Index(name="id_tweet_2", columns={"id_tweet"})})
+ * @ORM\Entity
+ */
+class MochilaTweets
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_tweet", type="bigint", nullable=false)
+     */
+    private $idTweet;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=true)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_mochila", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idMochila;
+
+    /**
+     * @var \AppBundle\Entity\TipoTweet
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TipoTweet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_tipo_tweet", referencedColumnName="id")
+     * })
+     */
+    private $idTipoTweet;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario_destino", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuarioDestino;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

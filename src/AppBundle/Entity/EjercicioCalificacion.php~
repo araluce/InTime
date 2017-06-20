@@ -1,0 +1,92 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioCalificacion
+ *
+ * @ORM\Table(name="EJERCICIO_CALIFICACION", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="id_grupo", columns={"id_grupo"}), @ORM\Index(name="id_ejercicio", columns={"id_ejercicio"}), @ORM\Index(name="id_calificaciones", columns={"id_calificaciones"}), @ORM\Index(name="id_evaluador", columns={"id_evaluador"}), @ORM\Index(name="id_ejercicio_estado", columns={"id_ejercicio_estado"})})
+ * @ORM\Entity
+ */
+class EjercicioCalificacion
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_calificacion", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioCalificacion;
+
+    /**
+     * @var \AppBundle\Entity\GrupoEjercicios
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GrupoEjercicios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_grupo", referencedColumnName="id_grupo_ejercicios")
+     * })
+     */
+    private $idGrupo;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_evaluador", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idEvaluador;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioEstado
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioEstado")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio_estado", referencedColumnName="id_ejercicio_estado")
+     * })
+     */
+    private $idEjercicioEstado;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+    /**
+     * @var \AppBundle\Entity\Calificaciones
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Calificaciones")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_calificaciones", referencedColumnName="id_calificaciones")
+     * })
+     */
+    private $idCalificaciones;
+
+
+}

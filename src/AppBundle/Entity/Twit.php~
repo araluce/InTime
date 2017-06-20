@@ -1,0 +1,39 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Twit
+ *
+ * @ORM\Table(name="TWIT", indexes={@ORM\Index(name="id_twittero", columns={"id_twittero"})})
+ * @ORM\Entity
+ */
+class Twit
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="id_twittero", type="string", length=30, nullable=false)
+     */
+    private $idTwittero;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_twit", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idTwit;
+
+
+}

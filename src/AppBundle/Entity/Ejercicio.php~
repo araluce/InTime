@@ -1,0 +1,76 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Ejercicio
+ *
+ * @ORM\Table(name="EJERCICIO", indexes={@ORM\Index(name="id_tipo_ejercicio", columns={"id_tipo_ejercicio"}), @ORM\Index(name="id_ejercicio_seccion", columns={"id_ejercicio_seccion"}), @ORM\Index(name="icono", columns={"icono"})})
+ * @ORM\Entity
+ */
+class Ejercicio
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="enunciado", type="string", length=1000, nullable=false)
+     */
+    private $enunciado;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="coste", type="integer", nullable=false)
+     */
+    private $coste;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicio;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioTipo
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioTipo")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_tipo_ejercicio", referencedColumnName="id_tipo_ejercicio")
+     * })
+     */
+    private $idTipoEjercicio;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioSeccion
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioSeccion")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio_seccion", referencedColumnName="id_ejercicio_seccion")
+     * })
+     */
+    private $idEjercicioSeccion;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioIcono
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioIcono")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="icono", referencedColumnName="id_ejercicio_icono")
+     * })
+     */
+    private $icono;
+
+
+}

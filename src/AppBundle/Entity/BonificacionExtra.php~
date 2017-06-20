@@ -1,0 +1,60 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * BonificacionExtra
+ *
+ * @ORM\Table(name="BONIFICACION_EXTRA")
+ * @ORM\Entity
+ */
+class BonificacionExtra
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bonificacion", type="string", length=100, nullable=false)
+     */
+    private $bonificacion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="descripcion", type="string", length=1000, nullable=false)
+     */
+    private $descripcion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="imagen", type="string", length=100, nullable=false)
+     */
+    private $imagen;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="coste_xp", type="integer", nullable=false)
+     */
+    private $costeXp;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="disponible", type="boolean", nullable=false)
+     */
+    private $disponible;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_bonificacion_extra", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idBonificacionExtra;
+
+
+}

@@ -1,0 +1,69 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Chat
+ *
+ * @ORM\Table(name="CHAT", indexes={@ORM\Index(name="id_usuario_1", columns={"id_usuario_1", "id_usuario_2"}), @ORM\Index(name="id_usuario_2", columns={"id_usuario_2"}), @ORM\Index(name="id_distrito", columns={"id_distrito"}), @ORM\Index(name="IDX_53081F1E69655D89", columns={"id_usuario_1"})})
+ * @ORM\Entity
+ */
+class Chat
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_ultimo_mensaje", type="datetime", nullable=true)
+     */
+    private $fechaUltimoMensaje;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_chat", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idChat;
+
+    /**
+     * @var \AppBundle\Entity\UsuarioDistrito
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\UsuarioDistrito")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_distrito", referencedColumnName="id_usuario_distrito")
+     * })
+     */
+    private $idDistrito;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario_2", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario2;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario_1", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario1;
+
+
+}

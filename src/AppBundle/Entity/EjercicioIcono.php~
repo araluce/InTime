@@ -1,0 +1,49 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioIcono
+ *
+ * @ORM\Table(name="EJERCICIO_ICONO", indexes={@ORM\Index(name="seccion", columns={"seccion"})})
+ * @ORM\Entity
+ */
+class EjercicioIcono
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=1000, nullable=false)
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre_img", type="string", length=1000, nullable=false)
+     */
+    private $nombreImg;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_icono", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioIcono;
+
+    /**
+     * @var \AppBundle\Entity\EjercicioSeccion
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EjercicioSeccion")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="seccion", referencedColumnName="id_ejercicio_seccion")
+     * })
+     */
+    private $seccion;
+
+
+}

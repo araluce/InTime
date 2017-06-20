@@ -1,0 +1,49 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioRespuesta
+ *
+ * @ORM\Table(name="EJERCICIO_RESPUESTA", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"})})
+ * @ORM\Entity
+ */
+class EjercicioRespuesta
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="respuesta", type="string", length=1000, nullable=false)
+     */
+    private $respuesta;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="correcta", type="boolean", nullable=true)
+     */
+    private $correcta;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_respuesta", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioRespuesta;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+
+}

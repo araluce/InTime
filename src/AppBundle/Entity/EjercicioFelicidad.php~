@@ -1,0 +1,83 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioFelicidad
+ *
+ * @ORM\Table(name="EJERCICIO_FELICIDAD", indexes={@ORM\Index(name="id_ejercicio_propuesta", columns={"id_ejercicio_propuesta", "id_ejercicio_entrega"}), @ORM\Index(name="id_ejercicio_entrega", columns={"id_ejercicio_entrega"}), @ORM\Index(name="id_usuario", columns={"id_usuario"}), @ORM\Index(name="IDX_2DE39626D8F558A", columns={"id_ejercicio_propuesta"})})
+ * @ORM\Entity
+ */
+class EjercicioFelicidad
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="enunciado", type="string", length=1000, nullable=false)
+     */
+    private $enunciado;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=true)
+     */
+    private $fecha;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="fase", type="integer", nullable=false)
+     */
+    private $fase;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="porcentaje", type="integer", nullable=false)
+     */
+    private $porcentaje;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_felicidad", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioFelicidad;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio_propuesta", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicioPropuesta;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio_entrega", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicioEntrega;
+
+
+}

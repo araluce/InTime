@@ -1,0 +1,42 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * MinaPista
+ *
+ * @ORM\Table(name="MINA_PISTA", indexes={@ORM\Index(name="id_mina", columns={"id_mina"})})
+ * @ORM\Entity
+ */
+class MinaPista
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pista", type="string", length=1000, nullable=false)
+     */
+    private $pista;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_mina_pista", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idMinaPista;
+
+    /**
+     * @var \AppBundle\Entity\Mina
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Mina")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_mina", referencedColumnName="id_mina")
+     * })
+     */
+    private $idMina;
+
+
+}

@@ -13,6 +13,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use AppBundle\Utils\Usuario;
 use AppBundle\Utils\Utils;
 use AppBundle\Utils\Ejercicio;
@@ -1752,6 +1754,7 @@ class Guardian extends Controller {
 
     /**
      * @Route("/guardian/tdvParaTodos", name="tdvParaTodos")
+     * @Template()
      */
     public function tdvParaTodosAction(Request $request) {
         if ($request->getMethod() == 'POST') {
@@ -1778,6 +1781,45 @@ class Guardian extends Controller {
             return new JsonResponse(json_encode(array('estado' => 'OK', 'message' => 'Operación realizada con éxito')), 200);
         }
         return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'No se han enviado datos')), 200);
+    }
+
+    /**
+     * @Route("/generarExcel", name="generarExcel")
+     */
+    public function generarExcelAction(Request $request) {
+        $doctrine = $this->getDoctrine();
+        $session = $request->getSession();
+        $status = Usuario::compruebaUsuario($doctrine, $session, '/guardian/generarExcel', true);
+        if (!$status) {
+            return new JsonResponse(json_encode(array('estado' => 'ERROR', 'message' => 'Acceso no autorizado')), 200);
+        }
+
+        $results = Usuario::getCiudadanos($doctrine);
+
+        $response = new StreamedResponse();
+        $response->setCallback(
+            function () use ($results) {
+                $doctrine = $this->getDoctrine();
+                $handle = fopen('php://output', 'r+');
+                foreach ($results as $row) {
+                    $segundos = Usuario::getCantidadTiempo($doctrine, $row);
+                    $tiempo = Utils::segundosToDias($segundos);
+                    $string = $tiempo['dias'] . 'D ' . $tiempo['horas'] . 'H ' . $tiempo['minutos'] . 'M ' . $tiempo['segundos'] . 'S';
+                    //array list fields you need to export
+                    $data = array(
+                        $row->getApellidos(),
+                        $string,
+                        $segundos
+                    );
+                    fputcsv($handle, $data, ';');
+                }
+                fclose($handle);
+            }
+        );
+        $response->headers->set('Content-Type', 'application/force-download');
+        $response->headers->set('Content-Disposition', 'attachment; filename="TdV_Globales.csv"');
+
+        return $response;
     }
 
 }

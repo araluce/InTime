@@ -1,0 +1,49 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * UsuarioNivel
+ *
+ * @ORM\Table(name="USUARIO_NIVEL", indexes={@ORM\Index(name="id_usuario", columns={"id_usuario"})})
+ * @ORM\Entity
+ */
+class UsuarioNivel
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="nivel", type="integer", nullable=false)
+     */
+    private $nivel;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="puntos", type="integer", nullable=false)
+     */
+    private $puntos;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_usuario_nivel", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idUsuarioNivel;
+
+    /**
+     * @var \AppBundle\Entity\Usuario
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_usuario", referencedColumnName="id_usuario")
+     * })
+     */
+    private $idUsuario;
+
+
+}

@@ -1,0 +1,81 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * TipoTransaccion
+ *
+ * @ORM\Table(name="tipo_transaccion")
+ * @ORM\Entity
+ */
+class TipoTransaccion
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=30, nullable=false)
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="descripcion", type="string", length=120, nullable=true)
+     */
+    private $descripcion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="origen", type="string", length=30, nullable=true)
+     */
+    private $origen;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="destino", type="string", length=30, nullable=true)
+     */
+    private $destino;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="devuelve", type="boolean", nullable=true)
+     */
+    private $devuelve;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="tiempo_devolucion", type="time", nullable=true)
+     */
+    private $tiempoDevolucion;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="veces", type="integer", nullable=true)
+     */
+    private $veces;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="limite_max_tdv", type="datetime", nullable=false)
+     */
+    private $limiteMaxTdv;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_tipo_transaccion", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idTipoTransaccion;
+
+
+}

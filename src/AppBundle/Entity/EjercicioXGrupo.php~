@@ -1,0 +1,45 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EjercicioXGrupo
+ *
+ * @ORM\Table(name="EJERCICIO_X_GRUPO", indexes={@ORM\Index(name="id_ejercicio", columns={"id_ejercicio"}), @ORM\Index(name="id_grupo_ejercicios", columns={"id_grupo_ejercicios"})})
+ * @ORM\Entity
+ */
+class EjercicioXGrupo
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_ejercicio_x_grupo", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idEjercicioXGrupo;
+
+    /**
+     * @var \AppBundle\Entity\GrupoEjercicios
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GrupoEjercicios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_grupo_ejercicios", referencedColumnName="id_grupo_ejercicios")
+     * })
+     */
+    private $idGrupoEjercicios;
+
+    /**
+     * @var \AppBundle\Entity\Ejercicio
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Ejercicio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_ejercicio", referencedColumnName="id_ejercicio")
+     * })
+     */
+    private $idEjercicio;
+
+
+}

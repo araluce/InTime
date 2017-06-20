@@ -9,12 +9,21 @@
 namespace AppBundle\Utils;
 
 /**
- * Description of Twitter
+ * Algunos métodos para descargar información de twitter, formatearla y mostrarla
  *
  * @author araluce
  */
 class Twitter {
 
+    /**
+     * Descarga los tweets de un usuario de twitter y los retorna en formato
+     * para consumir en la vista
+     * @param type $doctrine
+     * @param <AppBundle/Entity/Usuario> $USUARIO
+     * @param string $usuario_tw
+     * @param int $count número de tweets a descargar
+     * @return array
+     */
     static function twitter($doctrine, $USUARIO, $usuario_tw, $count) {
         $tweetsSinFormato = Twitter::descargarTweets(strtolower($usuario_tw), $count);
         $twiteer = $doctrine->getRepository('AppBundle:UsuarioXTuitero')->findOneBy(
@@ -31,15 +40,13 @@ class Twitter {
         $tweets = [];
         $tweets['ALIAS'] = strtolower($usuario_tw);
         $tweets['TWEETS'] = Twitter::tweetsFormato($tweetsSinFormato);
-//        $tweets['real_data'] = $tweetsSinFormato;
         
-//        return $tweetsSinFormato;
         return $tweets;
     }
 
     /**
      * Devuelve los tweets en un formato que pueda ser leido por la vista más fácilmente
-     * @param type $tweets
+     * @param array $tweets
      * @return array|null
      */
     static function tweetsFormato($tweets) {
@@ -92,8 +99,8 @@ class Twitter {
 
     /**
      * Descarga un número específico de tweets de un usuario específico de twitter
-     * @param type $usuario_tw
-     * @param type $count
+     * @param int $usuario_tw Usuario de twitter del que descargar sus tweets
+     * @param int $count offset del número de tweets a descargar
      * @return array
      */
     static function descargarTweets($usuario_tw, $count) {
@@ -113,7 +120,93 @@ class Twitter {
                         ->performRequest(), $assoc = TRUE);
         return $string;
     }
+    
+    /**
+     * Descarga tweets con el hangstag #ProyectoSinTime
+     * @return array
+     */
+    static function tweetsProyectoSinTime() {
+        $settings = array(
+            'oauth_access_token' => "743191767164592129-ZQwH3OpEmZ7lji1Lo7xGNd9cJGzbI5x",
+            'oauth_access_token_secret' => "Im8zcvNeTUQvCLuCp7PR9dPNE2GZCiISt7qLXReZ3Fd8Y",
+            'consumer_key' => "wNhHfRrCJiKqtpGKNoESzZf10",
+            'consumer_secret' => "UFrFsCIIMwRZK5KVGAfUBAb5VY53EuXmdTReirOGyi6uFJZ0vn"
+        );
+        $url = "https://api.twitter.com/1.1/search/tweets.json";
+        $requestMethod = "GET";
+        $getfield = "?q=%23proyectosintime";
+        $twitter = new \AppBundle\Twitter\TwitterAPIExchange($settings);
+        $string = json_decode($twitter->setGetfield($getfield)
+                        ->buildOauth($url, $requestMethod)
+                        ->performRequest(), $assoc = TRUE);
+//        return $string;
+        return Twitter::tweetsFormato2($string);
+    }
+    
+    /**
+     * Devuelve los tweets en un formato que pueda ser leido por la vista más fácilmente
+     * @param array $tweets
+     * @return array|null
+     */
+    static function tweetsFormato2($tweets) {
+        if (isset($tweets['errors']) ||
+                isset($tweets['error'])) {
+            return null;
+        }
+        $DATOS = [];
+        $DATOS['TWEETS'] = [];
+        foreach ($tweets['statuses'] as $tweet) {
+            $info = [];
+            $info['FECHA'] = $tweet['created_at'];
+            $info['TWEET'] = str_replace("\\", "", $tweet['text']);
+            $info['RETWEET'] = false;
+            $info['VIDEO'] = false;
+            $info['FOTO'] = false;
+            $info['VIDEOS'] = [];
+            $info['FOTOS'] = [];
+            if (isset($tweet['retweeted_status'])) {
+//                $info['RETWEET'] = true;
+//                $info['ID_STR'] = $tweet['retweeted_status']['id_str'];
+//                $info['IMG_PERFIL'] = $tweet['retweeted_status']['user']['profile_image_url'];
+//                $info['NOMBRE_COMP'] = $tweet['retweeted_status']['user']['name'];
+//                $info['ALIAS'] = $tweet['retweeted_status']['user']['screen_name'];
+                $info['ID_STR'] = $tweet['id_str'];
+                $info['IMG_PERFIL'] = $tweet['user']['profile_image_url'];
+                $info['NOMBRE_COMP'] = $tweet['user']['name'];
+                $info['ALIAS'] = $tweet['user']['screen_name'];
+            } else {
+                $info['ID_STR'] = $tweet['id_str'];
+                $info['IMG_PERFIL'] = $tweet['user']['profile_image_url'];
+                $info['NOMBRE_COMP'] = $tweet['user']['name'];
+                $info['ALIAS'] = $tweet['user']['screen_name'];
+            }
+            if (isset($tweet['extended_entities'])) {
+                if (isset($tweet['extended_entities']['media'])) {
+                    foreach ($tweet['extended_entities']['media'] as $media) {
+                        if (isset($media['video_info'])) {
+                            $info['VIDEO'] = true;
+                            $video = str_replace("\\", "", $media['video_info']['variants'][0]['url']);
+                            $info['VIDEOS'][] = $video;
+                        }
+                        if (isset($media['media_url'])) {
+                            $info['FOTO'] = true;
+                            $foto = str_replace("\\", "", $media['media_url']);
+                            $info['FOTOS'][] = $foto;
+                        }
+                    }
+                }
+            }
+            $DATOS['TWEETS'][] = $info;
+        }
+        return $DATOS;
+    }
 
+    /**
+     * Descarga un tweet específico
+     * @param type $doctrine
+     * @param <AppBundle/Entity/Tweet> $tweet
+     * @return json
+     */
     static function descargarTweet($doctrine, $tweet) {
         $settings = array(
             'oauth_access_token' => "743191767164592129-ZQwH3OpEmZ7lji1Lo7xGNd9cJGzbI5x",
@@ -131,6 +224,17 @@ class Twitter {
         return $tweet_json;
     }
 
+    /**
+     * Almacena un tweet en una mochila específica de un ciudadano específico
+     * @param int $id_tuitero
+     * @param int $id_tweet
+     * @param int $tipo_tweet
+     * @param int $id_usu
+     * @param int $id_usu_des
+     * @param <\DateTime> $fecha
+     * @param type $doctrine
+     * @return int
+     */
     static function almacenar_tweet($id_tuitero, $id_tweet, $tipo_tweet, $id_usu, $id_usu_des, $fecha, $doctrine) {
         $em = $doctrine->getManager();
 
@@ -188,7 +292,11 @@ class Twitter {
         return 1;
     }
 
-
+    /**
+     * Obtiene la fecha de creación de un tweet específico
+     * @param int $id_tweet
+     * @return int|string
+     */
     static function getFecha($id_tweet) {
 // Preparamos los datos para conectar y la consulta a realizar
         $settings = array(
@@ -211,59 +319,14 @@ class Twitter {
         }
         return 0;
     }
-
-    static function getTweetByIdMochila($id_mochila, $doctrine) {
-        $id_mochila = $doctrine->getRepository('AppBundle:MochilaTweets')->findOneByIdMochila($id_mochila);
-        $tweet = $doctrine->getRepository('AppBundle:Tweet')->findOneByIdTweet($id_mochila->getIdTweet());
-
-        $settings = array(
-            'oauth_access_token' => "743191767164592129-ZQwH3OpEmZ7lji1Lo7xGNd9cJGzbI5x",
-            'oauth_access_token_secret' => "Im8zcvNeTUQvCLuCp7PR9dPNE2GZCiISt7qLXReZ3Fd8Y",
-            'consumer_key' => "wNhHfRrCJiKqtpGKNoESzZf10",
-            'consumer_secret' => "UFrFsCIIMwRZK5KVGAfUBAb5VY53EuXmdTReirOGyi6uFJZ0vn"
-        );
-        $url = 'https://api.twitter.com/1.1/statuses/show.json';
-        $requestMethod = "GET";
-        $getfield = "?id=" . $tweet->getIdTweet();
-        $twitter = new \AppBundle\Twitter\TwitterAPIExchange($settings);
-        $tweet_json = json_decode($twitter->setGetfield($getfield)
-                        ->buildOauth($url, $requestMethod)
-                        ->performRequest(), $assoc = TRUE);
-
-        $info = [];
-        if (!isset($tweet_json['error'])) {
-            $info['id_mochila'] = $id_mochila->getIdMochila();
-            $info['alias'] = $id_mochila->getIdUsuario()->getSeudonimo();
-            $info['created_at'] = $tweet_json['created_at'];
-            $info['text'] = str_replace("\\", "", $tweet_json['text']);
-            $info['user'] = [];
-            $info['user']['name'] = $tweet_json['user']['name'];
-            $info['user']['screen_name'] = $tweet_json['user']['screen_name'];
-            $info['user']['profile_image_url'] = $tweet_json['user']['profile_image_url'];
-
-            if (isset($tweet_json['extended_entities'])) {
-                $info['extended_entities'] = [];
-                $info['extended_entities']['media'] = [];
-                $info_media = [];
-                foreach ($tweet_json['extended_entities']['media'] as $media) {
-                    $info_media['type'] = $media['type'];
-                    if (isset($media['video_info'])) {
-                        $info_media['video_info'] = [];
-                        $info_media['video_info']['url'] = str_replace("\\", "", $media['video_info']['variants'][1]['url']);
-                        $info['extended_entities']['media'][] = $info_media;
-                    }
-                    if (isset($media['media_url'])) {
-                        $info_media['media_url'] = str_replace("\\", "", $media['media_url']);
-                        $info['extended_entities']['media'][] = $info_media;
-                    }
-                }
-            } else {
-                $info['extended_entities'] = 'undefined';
-            }
-        }
-        return $info;
-    }
-
+    
+    /**
+     * Obtiene todos los tweets alojados en la mochila de un ciudadano específico
+     * @param type $doctrine
+     * @param type $USUARIO
+     * @param type $TIPO_TWEET
+     * @return int
+     */
     static function getMochila($doctrine, $USUARIO, $TIPO_TWEET) {
         $MOCHILAS = Twitter::getIdsTweetsMochilaTipo($doctrine, $USUARIO, $TIPO_TWEET);
         if(!count($MOCHILAS)){
